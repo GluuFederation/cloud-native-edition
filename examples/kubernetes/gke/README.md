@@ -58,7 +58,7 @@
     Example:
 
         {
-            "hostname": "kube.gluu.local",
+            "hostname": "demoexample.gluu.org",
             "country_code": "US",
             "state": "TX",
             "city": "Austin",
@@ -149,7 +149,7 @@ Deploy Redis pod:
 
        sh tls-secrets.sh
 
-1. Adjust all references to the hostname `kube.gluu.local` in `nginx.yaml` to the hostname you applied earlier while generating the configuration. Afterwards deploy the custom Ingress for Gluu Server routes.
+1. Adjust all references to the hostname `demoexample.gluu.org` in `nginx.yaml` to the hostname you applied earlier while generating the configuration. Afterwards deploy the custom Ingress for Gluu Server routes.
 
        kubectl apply -f nginx.yaml
 
@@ -174,7 +174,7 @@ Deploy Redis pod:
             NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                      AGE
             ingress-nginx          LoadBalancer   10.11.254.183   35.240.221.38   80:30306/TCP,443:30247/TCP   1m
 
-1. In the example above, the external IP is set to `35.240.221.38`. Adjust the hostname from `kube.gluu.local` in `oxauth.yaml` to the hostname you applied earlier while generating the configuration. Pass the value as seen below to deploy oxAuth:
+1. In the example above, the external IP is set to `35.240.221.38`. Adjust the hostname from `demoexample.gluu.org` in `oxauth.yaml` to the hostname you applied earlier while generating the configuration. Pass the value as seen below to deploy oxAuth:
 
             NGINX_IP=NGINX_EXTERNAL_IP sh deploy-pod.sh
 
@@ -225,7 +225,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
     where `ZONE_NAME` is the name of zone used when creating cluster
 
-1.  Adjust the hostname from `kube.gluu.local` in `oxtrust.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxTrust pod:
+1.  Adjust the hostname from `demoexample.gluu.org` in `oxtrust.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxTrust pod:
 
     -   Get the `EXTERNAL-IP` of `ingress-nginx` with `kubectl get svc -n ingress-nginx`:
 
@@ -238,7 +238,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
 ### oxShibboleth
 
-1. Adjust the hostname from `kube.gluu.local` in `oxshibboleth.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxShibboleth pod:
+1. Adjust the hostname from `demoexample.gluu.org` in `oxshibboleth.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxShibboleth pod:
 
     -   Get the `EXTERNAL-IP` of `ingress-nginx` with `kubectl get svc -n ingress-nginx`:
 
@@ -247,7 +247,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
 ### oxPassport
 
-1. Adjust the hostname from `kube.gluu.local` in `oxpassport.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxPassport pod:
+1. Adjust the hostname from `demoexample.gluu.org` in `oxpassport.yaml` to the hostname you applied earlier while generating the configuration. Deploy oxPassport pod:
 
     -   Get the `EXTERNAL-IP` of `ingress-nginx` with `kubectl get svc -n ingress-nginx`:
 
