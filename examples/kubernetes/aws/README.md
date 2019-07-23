@@ -32,9 +32,9 @@ The labels displayed above are used throughout the docs to indicate certain comm
 
 -   Get the source code:
 
-        wget -q https://github.com/GluuFederation/gluu-docker/archive/4.0.0.zip
+        wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.0.zip
         unzip 4.0.0.zip
-        cd gluu-docker-4.0.0/examples/kubernetes/aws/clb
+        cd enterprise-edition-4.0.0/examples/kubernetes/aws/clb
 
 -  Please follow this [guide](https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/controller/setup/) to install the `aws-alb-ingress-controller` ![CDNJS](https://img.shields.io/badge/ALB--red.svg)
 

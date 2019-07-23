@@ -14,9 +14,9 @@ For futher reading, please see the [Gluu Server Enterprise Edition Documentation
 
 -   Get the source code:
 
-        wget -q https://github.com/GluuFederation/gluu-docker/archive/4.0.0.zip
+        wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.0.zip
         unzip 4.0.0.zip
-        cd gluu-docker-4.0.0/examples/multi-hosts/
+        cd enterprise-edition-4.0.0/examples/multi-hosts/
 
 ## Provisioning Cluster Nodes
 
