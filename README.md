@@ -42,10 +42,6 @@ Images are hosted at Docker Hub:
 
 - The directory contains `README.md` as a guide to deploy a basic Gluu server stack on Google Kubernetes Engine.
 
-[Minikube](./examples/kubernetes/minikube)
-
-- The directory contains `README.md` as a guide to deploy a basic Gluu server stack on Minikube.
-
 [AWS](./examples/kubernetes/aws)
 
 - The directory contains `README.md` as a guide to deploy a basic Gluu server stack on AWS.
