@@ -82,7 +82,7 @@ spec:
       containers:
       - name: opendj
         imagePullPolicy: Always
-        image: gluufederation/opendj:4.0.0_dev
+        image: gluufederation/wrends:4.0.0_dev
         envFrom:
         - configMapRef:
             name: opendj-init-cm

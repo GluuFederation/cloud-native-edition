@@ -107,7 +107,7 @@ In this example, the following services/containers are used to deploy the Gluu s
 - Vault service
 - Registrator service
 - config-init container
-- OpenDJ container
+- WrenDS (a fork of OpenDJ) container
 - oxAuth service
 - oxTrust service
 - oxShibboleth service
@@ -250,9 +250,6 @@ LDAP containers are divided into two roles:
     Repeat for third LDAP server by running this command:
 
         docker stack deploy -c ldap-worker-2.yml gluu
-
-__NOTE__: OpenDJ containers are not deployed as service tasks because each of these containers requires a reachable unique address for establishing replication.
-Due to how the Docker service works, there's no guarantee that the address will still be unique after restart, hence OpenDJ containers are deployed via a plain `docker run` command.
 
 ### 6 - Deploy Registrator
 

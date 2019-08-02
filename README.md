@@ -7,7 +7,7 @@
 Repositories for supported images are shown below:
 
 - [config-init](http://github.com/GluuFederation/docker-config-init)
-- [opendj](http://github.com/GluuFederation/docker-opendj)
+- [wrends](http://github.com/GluuFederation/docker-wrends)
 - [oxauth](http://github.com/GluuFederation/docker-oxauth)
 - [oxtrust](http://github.com/GluuFederation/docker-oxtrust)
 - [nginx](http://github.com/GluuFederation/docker-nginx)
@@ -22,7 +22,7 @@ Repositories for supported images are shown below:
 Images are hosted at Docker Hub:
 
 - [config-init](https://hub.docker.com/r/gluufederation/config-init)
-- [opendj](https://hub.docker.com/r/gluufederation/opendj)
+- [wrends](https://hub.docker.com/r/gluufederation/wrends)
 - [oxauth](https://hub.docker.com/r/gluufederation/oxauth)
 - [oxtrust](https://hub.docker.com/r/gluufederation/oxtrust)
 - [nginx](https://hub.docker.com/r/gluufederation/nginx)
