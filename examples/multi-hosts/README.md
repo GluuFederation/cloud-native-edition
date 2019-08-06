@@ -4,6 +4,8 @@ This is an example of how to deploy Gluu Server Enterprise Edition on multi-host
 
 For futher reading, please see the [Gluu Server Enterprise Edition Documentation](https://gluu.org/docs/de/4.0.0).
 
+Are you using **Openstack** take a look at [these](https://github.com/GluuFederation/enterprise-edition/blob/4.0.0/examples/multi-hosts/README.md#notes-on-deploying-multi-hosts-gluu-example-on-openstack) notes before moving forward.
+
 ## Requirements
 
 -   [Docker](https://docs.docker.com/install/)
