@@ -57,7 +57,7 @@ spec:
           - -c
           - |
               /usr/bin/python /scripts/update-clb-ip.py &
-              /opt/scripts/entrypoint.sh
+              /app/scripts/entrypoint.sh
         resources:
           requests:
             memory: "1000Mi"

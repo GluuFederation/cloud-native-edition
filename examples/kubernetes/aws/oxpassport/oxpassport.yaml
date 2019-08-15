@@ -55,7 +55,7 @@ spec:
           - -c
           - |
               /usr/bin/python /scripts/update-clb-ip.py &
-              /opt/scripts/entrypoint.sh
+              /app/scripts/entrypoint.sh
         ports:
         - containerPort: 8090
         envFrom:
