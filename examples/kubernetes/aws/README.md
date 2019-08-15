@@ -445,7 +445,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
 	![CDNJS](https://img.shields.io/badge/ALB--red.svg)
 
-		kubectl apply -f oxauth.yaml
+		kubectl apply -f oxtrust.yaml
 
 ### oxShibboleth
 
@@ -475,7 +475,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
 	![CDNJS](https://img.shields.io/badge/ALB--red.svg)
 
-		kubectl apply -f oxauth.yaml
+		kubectl apply -f oxshibboleth.yaml
 
 ### oxPassport
 
@@ -504,7 +504,7 @@ As oxTrust and oxShibboleth shares Shibboleth configuration files, we need to ha
 
 	![CDNJS](https://img.shields.io/badge/ALB--red.svg)
 
-		kubectl apply -f oxauth.yaml
+		kubectl apply -f oxpassport.yaml
 
 
 
