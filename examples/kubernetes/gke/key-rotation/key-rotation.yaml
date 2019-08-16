@@ -43,7 +43,7 @@ spec:
       containers:
       - name: key-rotation
         imagePullPolicy: Always
-        image: gluufederation/cr-rotate:4.0.0_dev
+        image: gluufederation/key-rotation:4.0.0_dev
         envFrom:
         - configMapRef:
             name: key-rotation-cm
