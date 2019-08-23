@@ -294,12 +294,13 @@ Deploy Redis pod:
 
         cd ../nginx
         kubectl apply -f mandatory.yaml
-        kubectl apply -f cloud-generic.yaml
+        kubectl apply -f service-l4.yaml
+		kubectl apply -f patch-configmap-l4.yaml
 
     To allow external traffic to the cluster, we need to deploy nginx Ingress and its controller but for NLB we must add an annotation `service.beta.kubernetes.io/aws-load-balancer-type: nlb` along with other annotations for using the right certificate when deploying nginx. These annotaions are added to the `cloud-generic.yaml`. ![CDNJS](https://img.shields.io/badge/NLB--orange.svg)
 
 		cd ../nginx
-		vi cloud-generic.yaml
+		vi service-l4.yaml
 
 		  ...
 		  ...
@@ -321,8 +322,10 @@ Deploy Redis pod:
 		  ...
 
         kubectl apply -f mandatory.yaml
-        kubectl apply -f cloud-generic.yaml
-
+        kubectl apply -f service-l4.yaml
+        kubectl apply -f patch-configmap-l4.yaml
+		
+		
 1.  The commands above will deploy a `LoadBalancer` service in the `ingress-nginx` namespace. Run `kubectl get svc -n ingress-nginx`: ![CDNJS](https://img.shields.io/badge/CLB--green.svg) ![CDNJS](https://img.shields.io/badge/NLB--orange.svg)
 
         NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP                                                        PORT(S)                      AGE
