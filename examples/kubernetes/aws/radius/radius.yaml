@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: radius-cm
+data:
+  LB_ADDR: ""
+  GLUU_CONFIG_ADAPTER: "kubernetes"
+  GLUU_SECRET_ADAPTER: "kubernetes"
+  DOMAIN: "demoexample.gluu.org"
+  GLUU_OXAUTH_BACKEND: "oxauth:8080"
+  #GLUU_MAX_RAM_FRACTION: "1"
+  # options: ldap/couchbase/hybrid
+  GLUU_PERSISTENCE_TYPE: "ldap"
+  # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+  #GLUU_PERSISTENCE_LDAP_MAPPING:default
+  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  GLUU_LDAP_URL: "opendj:1636"
+  # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  # GLUU_COUCHBASE_URL: couchbase
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: radius
+  labels:
+    app: radius
+spec:
+  ports:
+  - port: 1812
+    name: radius-authentication
+  - port: 1813
+    name: radius-accounting
+  - port: 8080
+    name: jetty-service
+  selector:
+    app: radius
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radius
+  labels:
+    app: radius
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radius
+  template:
+    metadata:
+      labels:
+        app: radius
+    spec:
+      containers:
+      - name: radius
+        imagePullPolicy: Always
+        image: gluufederation/radius:4.0.0_dev
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-clb-ip.py &
+              /app/scripts/entrypoint.sh
+        resources:
+          requests:
+            memory: "1000Mi"
+          limits:
+            memory: "1536Mi"
+        ports:
+        - containerPort: 8080
+        - containerPort: 1812
+        - containerPort: 1813
+        envFrom:
+        - configMapRef:
+            name: radius-cm
+        volumeMounts:
+          - mountPath: /opt/gluu/radius/logs
+            name: radius-logs
+          - mountPath: /scripts
+            name: update-clb-ip
+        livenessProbe:
+          httpGet:
+            path: /radius
+            port: 1812
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /radius
+            port: 1812
+          initialDelaySeconds: 25
+          periodSeconds: 25
+      hostAliases:
+      - ip: NGINX_IP
+        hostnames:
+        - demoexample.gluu.org
+      volumes:
+      - name: radius-logs
+        persistentVolumeClaim:
+          claimName: radius-logs-volume-claim
+      - name: update-clb-ip
+        configMap:
+          name: updateclbip
