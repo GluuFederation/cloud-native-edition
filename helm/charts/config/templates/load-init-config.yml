@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "config.fullname" . }}
+spec:
+  template:
+    metadata:
+      name: {{ template "gluu.name" . }}-job
+      labels:
+        app: {{ template "gluu.name" . }}-load
+    spec:
+      volumes:
+        - name: {{ template "gluu.name" . }}-config
+          persistentVolumeClaim:
+            claimName: {{ include "config.fullname" . }}
+        - name: {{ include "config.fullname" . }}-mount-gen-file
+          configMap:
+            name: {{ include "config.fullname" . }}-gen-json-file
+        - name: {{ include "config.fullname" . }}-tls-script
+          configMap:
+            name: {{ include "config.fullname" . }}-tls-script
+      containers:
+      - name: {{ template "gluu.name" . }}-load
+        image: gluufederation/config-init:4.0.0_dev
+        volumeMounts:
+          - mountPath: /opt/config-init/db/
+            name: {{ template "gluu.name" . }}-config
+          - mountPath: /opt/config-init/db/generate.json
+            name: {{ include "config.fullname" . }}-mount-gen-file
+            subPath: generate.json
+          - mountPath: /scripts/tls_generator.py
+            name: {{ include "config.fullname" . }}-tls-script
+            subPath: tls_generator.py
+        envFrom:
+        - configMapRef:
+            name: {{ include "config.fullname" . }}-config-cm
+        command: ["/bin/sh", "-c"]
+        args: ["tini -g -- /app/scripts/entrypoint.sh load && /usr/bin/python /scripts/tls_generator.py"]
+      restartPolicy: Never
+          

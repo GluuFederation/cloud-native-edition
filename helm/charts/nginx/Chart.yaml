@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: "4.0.0"
+description: nginx chart
+name: nginx
+version: 1.1.0
+maintainers:
+- name: Gluu
+email: support@gluu.org
+home: https://www.gluu.org

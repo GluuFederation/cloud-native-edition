@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "gluu.fullname" . }}-init-ss
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.global.serviceName }} # has to match .spec.template.metadata.labels
+  serviceName: {{ .Values.global.serviceName }}
+  replicas: {{ .Values.statefulSetReplicas }} # by default is 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.serviceName }} # has to match .spec.selector.matchLabels
+    spec:
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #     - labelSelector:
+      #         matchExpressions:
+      #         - key: app
+      #           operator: In
+      #           values:
+      #           - {{ .Values.global.serviceName }}
+      #       topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: opendj-config
+          persistentVolumeClaim:
+            claimName: {{ include "opendj.fullname" . }}-config
+        - name: opendj-ldif
+          persistentVolumeClaim:
+            claimName: {{ include "opendj.fullname" . }}-ldif
+        - name: opendj-logs
+          persistentVolumeClaim:
+            claimName: {{ include "opendj.fullname" . }}-logs
+        - name: opendj-db
+          persistentVolumeClaim:
+            claimName: {{ include "opendj.fullname" . }}-db
+        - name: opendj-flag
+          persistentVolumeClaim:
+            claimName: {{ include "opendj.fullname" . }}-flag
+      containers:
+      - name: {{ template "gluu.fullname" . }}-init-container
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.image }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "opendj.fullname" . }}
+        ports:
+        {{- range $key, $value := .Values.ports }}
+          - containerPort: {{ $value.targetPort }}
+            name: {{ $key }}
+        {{- end }}
+        volumeMounts:
+          - mountPath: /opt/opendj/config
+            name: opendj-config
+          - mountPath: /opt/opendj/ldif
+            name: opendj-ldif
+          - mountPath: /opt/opendj/logs
+            name: opendj-logs
+          - mountPath: /opt/opendj/db
+            name: opendj-db
+          - mountPath: /flag
+            name: opendj-flag
+        readinessProbe:
+          tcpSocket: 
+            port: {{ .Values.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+  

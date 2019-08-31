@@ -1,0 +1,72 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "radius.fullname" . }}
+  labels:
+    app: {{ include "radius.name" . }}
+    chart: {{ include "radius.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "radius.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "radius.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          - name: radius-auth
+            containerPort: 1812
+          - name: radius-ac
+            containerPort: 1813
+        envFrom:
+          - configMapRef:
+              name: {{ include "radius.fullname" . }}
+        volumeMounts:
+          - mountPath: /opt/gluu/radius/logs
+            name: radius-logs
+        # livenessProbe:
+        #   httpGet:
+        #     path: /radius
+        #     port: radius-auth
+        #   initialDelaySeconds: 40
+        #   periodDelaySeconds: 40 
+        # readinessProbe:
+        #   httpGet:
+        #     path: /radius
+        #     port: radius-auth
+        #   initialDelaySeconds: 25
+      hostAliases:
+        - ip: {{ .Values.global.nginxIp }}
+          hostname:
+            - {{ .Values.global.domain }} 
+      volumes:
+      - name: radius-logs
+        persistentVolumeClaim:
+          claimName: {{ include "radius.fullname" . }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+    {{- end }}

@@ -1,0 +1,10 @@
+apiVersion: v1
+appVersion: "4.0.0_dev"
+description: A Helm chart for Kubernetes
+name: oxshibboleth
+version: 1.1.0
+maintainers:
+- name: Shammir
+email: support@gluu.org
+home: https://wwwgluu.org
+

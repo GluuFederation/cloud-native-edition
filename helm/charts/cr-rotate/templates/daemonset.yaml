@@ -1,0 +1,28 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: {{ include "cr-rotate.fullname" . }}
+  labels:
+    app: {{ include "cr-rotate.name" . }}
+    chart: {{ include "cr-rotate.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "cr-rotate.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cr-rotate.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "cr-rotate.fullname" . }}
+

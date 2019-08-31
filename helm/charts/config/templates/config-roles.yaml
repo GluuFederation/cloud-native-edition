@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "gluu.fullname" . }}-role-binding
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: ""
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+    

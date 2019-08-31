@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "gluu.fullname" .}}-cluster-rolebinding
+subjects:
+- kind: User
+  name: system:serviceaccount:default:default # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole # this must be Role or ClusterRole
+  name: {{ template "gluu.fullname" . }}-role # this must match the name of the ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io

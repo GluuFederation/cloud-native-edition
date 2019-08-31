@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxtrust
+  labels:
+    app: {{ template "oxtrust.fullname" . }}
+    APP_NAME: oxtrust
+spec:
+  ports:
+  - port: {{ .Values.port }}
+    name: {{ template "oxtrust.fullname" . }}
+  selector:
+    app: {{ template "oxtrust.fullname" . }}
+  clusterIP: {{ .Values.clusterIp }}
+    

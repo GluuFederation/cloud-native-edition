@@ -1,0 +1,17 @@
+# Default values for cr-rotate.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: gluufederation/cr-rotate
+  tag: 4.0.0_dev
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  port: 8080
+
+configMap:
+  gluuContainerMetadata: kubernetes

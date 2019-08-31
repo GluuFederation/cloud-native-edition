@@ -1,0 +1,69 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-oxtrust-logs-volume-claim
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-oxtrust-logs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  selector:
+    matchLabels:
+      oxtrust: logs
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-oxtrust-lib-ext-volume-claim
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-oxtrust-lib-ext
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  selector:
+    matchLabels:
+      oxtrust: lib-ext
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-oxtrust-custom-static-volume-claim
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-oxtrust-custom-static
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  selector:
+    matchLabels:
+      oxtrust: custom-static
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-oxtrust-custom-pages-volume-claim
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-oxtrust-custom-pages
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+  selector:
+    matchLabels:
+      oxtrust: custom-pages

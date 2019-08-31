@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}-config
+  labels:
+    opendj: config
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  hostPath:
+    path: "/data/opendj/config"
+    type: {{ .Values.persistence.type }}
+
+--- 
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}-ldif
+  labels:
+    opendj: ldif
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  hostPath:
+    path: "/data/opendj/ldif"
+    type: {{ .Values.persistence.type }}
+  
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}-logs
+  labels:
+    opendj: logs
+spec:
+  accessModes: 
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  hostPath:
+    path: "/data/opendj/logs"
+    type: {{ .Values.persistence.type }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}-db
+  labels:
+    opendj: db
+spec:
+  accessModes: 
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.dbStorageSize }}
+  hostPath:
+    path: "/data/opendj/db"
+    type: {{ .Values.persistence.type }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}-flag
+  labels:
+    opendj: flag
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  hostPath:
+    path: "/data/opendj/flag"
+    type: {{ .Values.persistence.type }}

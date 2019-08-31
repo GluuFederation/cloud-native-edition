@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ include "config.fullname" . }}
+  labels:
+    config: data
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  hostPath:
+    path: "/data/config/db"
+

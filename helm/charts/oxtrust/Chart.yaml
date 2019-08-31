@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: 4.0.0_dev
+description: An oxtrust Helm chart for Kubernetes
+name: oxtrust
+version: 1.1.0
+maintainers:
+- name: gluu
+home: https://www.gluu.org/ee
+email: support@gluu.org

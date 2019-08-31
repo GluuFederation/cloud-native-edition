@@ -1,0 +1,22 @@
+# Required environment variables for generating Gluu server initial config
+#values for environment variables
+orgName: Gluu
+adminPass: P@ssw0rd
+email: support@gluu.com
+domain: demoexample.gluu.org
+countryCode: US
+state: TE
+city: SLC
+ldapType: opendj
+
+nameOverride: ""
+fullNameOverride: ""
+
+# VolumeClaim values
+volumeClaim:
+  storage: 1Gi
+
+persistence:
+  size: 1Gi
+  accessModes: ReadWriteOnce
+  storageClassName: ""

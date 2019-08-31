@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-oxtrust-logs
+  labels:
+      oxtrust: logs
+spec:
+  capacity:
+    storage: 10M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+      path: "/data/oxtrust/logs"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-oxtrust-lib-ext
+  labels:
+      oxtrust: lib-ext
+spec:
+  capacity:
+    storage: 10M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+      path: "/data/oxtrust/custom/libs"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-oxtrust-custom-static
+  labels:
+      oxtrust: custom-static
+spec:
+  capacity:
+    storage: 10M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+      path: "/data/oxtrust/custom/static"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-oxtrust-custom-pages
+  labels:
+      oxtrust: custom-pages
+spec:
+  capacity:
+    storage: 10M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/oxtrust/custom/pages"

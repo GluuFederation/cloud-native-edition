@@ -1,0 +1,113 @@
+# opendj Environament Variables
+# common ConfigMap values
+gluuLdapInit: true
+gluuLdapInitHost: localhost
+gluuLdapInitPort: 1636
+gluuOxtrustConfigGeneration: true
+gluuCacheType: NATIVE_PERSISTENCE
+gluuCertAltName: opendj
+# gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
+gluuRedisEnabled: false
+gluuRedisCacheType: REDIS
+gluuRedisUrl: redis:6379
+gluuRedisType: STANDALONE
+#repl diferent env vars
+gluuLdapInitRepl: false
+gluuOxtrustConfigGenerationRepl: false
+
+nameOverride: ""
+fullnameOverride: ""
+
+# StatefulSets 
+# values declaration
+statefulSetReplicas: 1
+imagePullPolicy: Always
+image: gluufederation/opendj:4.0.0_dev
+
+persistence:
+  size: 100M
+  accessModes: ReadWriteOnce
+  type: DirectoryOrCreate
+  dbStorageSize: 5Gi
+
+#container specific values declared here
+tcpSocket:
+  port: 1636
+readinessProbe:
+  initialDelaySeconds: 25
+  periodSeconds: 25
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+
+#servicePorts values used in StatefulSet container
+ports:
+  ldaps:
+    port: 1636
+    targetPort: 1636
+  ldap:
+    port: 1389
+    targetPort: 1389
+  replication:
+    port: 8989
+    targetPort: 8989
+  admin:
+    port: 4444
+    targetPort: 4444
+# VolumeMounts for StatefulSet
+# opendj-init vm
+volumeInitMounts:
+  config:
+    mountPath: /opt/opendj/config
+    name: opendj-init-volume
+  ldif: 
+    mountPath: /opt/opendj/ldif
+    name: opendj-init-volume
+  logs: 
+    mountPath: /opt/opendj/logs
+    name: opendj-init-volume
+  db: 
+    mountPath: /opt/opendj/db
+    name: opendj-init-volume
+  flag: 
+    mountPath: /flag
+    name: opendj-init-volume
+
+#opedj-repl vm
+volumeReplMounts:
+  config:
+    mountPath: /opt/opendj/config
+    name: opendj-repl-volume
+  ldif: 
+    mountPath: /opt/opendj/ldif
+    name: opendj-repl-volume
+  logs: 
+    mountPath: /opt/opendj/logs
+    name: opendj-repl-volume
+  db: 
+    mountPath: /opt/opendj/db
+    name: opendj-repl-volume
+  flag: 
+    mountPath: /flag
+    name: opendj-repl-volume
+
+#VolumeClaimTemplates
+storage: 1Gi
+
+#opendj-config-pv
+opendj-config:
+  hostPath:
+    path: "/data/opendj/config"
+    type: DirectoryOrCreate
+
+#opendj-ldif
+opendj-ldif:
+  hostPath:
+    path: "/data/opendj/ldif"
+    type: DirectoryOrCreate
+
+#opendj-logs
+opendj-logs:
+  hostPath:
+    path: "/data/opendj/logs"
+    type: DirectoryOrCreate

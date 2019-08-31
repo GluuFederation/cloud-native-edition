@@ -1,0 +1,96 @@
+# Declare variables to be passed into your templates.
+
+#global values to be used across charts
+global:
+  namespace: default
+  serviceName: opendj
+  nginxIp: 192.168.99.100
+  oxAuthServiceName: oxauth
+  oxTrustSeriveName: oxtrust
+  domain: demoexample.gluu.org
+  gluuLdapUrl: opendj:1636
+  gluuMaxRamFraction: 1
+  configAdapterName: kubernetes
+  configSecretAdapter: kubernetes
+  provisioner: k8s.io/minikube-hostpath
+
+# Required environment variables for generating Gluu server initial config
+# values for config-init sub-chart
+config:
+  enabled: true
+  orgName: Gluu
+  # email address of the administrator usually. Used for certificate creation
+  email: support@gluu.com
+  # adminPass is administrator password for oxTrust and LDAP
+  adminPass: P@ssw0rd
+  # domain name where the Gluu Server resides
+  domain: demoexample.gluu.org
+  # organisation location details
+  countryCode: US
+  state: TE
+  city: SLC
+  # ldapType only OpenDJ is supported
+  ldapType: opendj
+  
+  # <<<---------------------- SKIPPED THIS IN THE DOCUMENTATION -------->>>
+  # StorageClass values
+  # values used to define the StorageClass template
+  encrypted: true
+  reclaimPolicy: Retain
+  pool: default
+  description: gluu-config-init-volume
+  fsType: ext4
+  provisioner: k8s.io/minikube-hostpath
+  awsZones: us-west-2a
+  gcePdStorageType: pd-standard
+  azureStorageAccountType: Standard_LRS
+  azureStorageKind: Shared
+
+oxauth:
+  enabled: true
+  dynamicStorage: true
+
+opendj:
+  enabled: true
+  # options REDIS/NATIVE_PERSISTENCE
+  gluuCacheType: NATIVE_PERSISTENCE
+  # options true/false : must be enabled if cache type is REDIS
+  gluuRedisEnabled: false
+
+# redis should be enabled only when cacheType is REDIS
+redis:
+  enabled: false
+
+shared-shib:
+  enabled: true
+
+oxtrust:
+  enabled: true
+  dynamicStorage: true
+
+nginx:
+  enabled: true 
+
+oxshibboleth:
+  enabled: false
+
+oxpassport:
+  enabled: false
+
+key-rotation:
+  enabled: false
+
+cr-rotate:
+  enabled: false 
+
+radius:
+  enabled: true
+
+#tags enable/disable installation of subcharts
+tags:
+  redis: false
+  oxpassport: false
+  key-rotate: false
+  cr-rotate: false
+  radius: true
+  

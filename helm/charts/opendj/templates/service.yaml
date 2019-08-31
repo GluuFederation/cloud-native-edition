@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.global.serviceName }} #{{ template "gluu.fullname" . }}-service
+  labels:
+    app: {{ .Values.global.serviceName }} #{{ template "gluu.fullname" . }}-service
+spec:
+  ports:
+    {{- range $key, $value := .Values.ports }}
+    - port: {{ $value.port }}
+      targetPort: {{ $value.targetPort }}
+      type: TCP
+      name: {{ $key }}
+    {{- end }}
+  clusterIP: None
+  selector:
+    app: {{ .Values.global.serviceName }} #{{ template "gluu.fullname" . }}-service

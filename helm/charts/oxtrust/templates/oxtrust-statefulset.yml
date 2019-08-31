@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "oxtrust.fullname" . }}-ss
+  labels:
+    app: {{ template "oxtrust.fullname" . }}
+    APP_NAME: oxtrust
+spec:
+  serviceName: oxtrust
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "oxtrust.fullname" . }}
+      APP_NAME: oxtrust
+  template:
+    metadata:
+      labels: 
+        app: {{ template "oxtrust.fullname" . }}
+        APP_NAME: oxtrust
+    spec:
+      containers:
+      - name: {{ include "oxtrust.name" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: gluufederation/oxtrust:4.0.0_dev
+        resources:
+          requests:
+            memory: {{ .Values.requests.memory }}
+          # limits:
+          #   memory: {{ .Values.limits.memory }}
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        env:
+        - name: JVM_OPTS
+          value: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
+        envFrom:
+        - configMapRef:
+            name: {{ template "oxtrust.fullname" . }}-cm
+        volumeMounts:
+          # name must match the volume name below
+          - name: {{ .Release.Name }}-shared-shib
+            mountPath: "/opt/shared-shibboleth-idp"
+          - mountPath: /opt/gluu/jetty/identity/logs
+            name: oxtrust-logs
+          - mountPath: /opt/gluu/jetty/identity/lib/ext
+            name: oxtrust-lib-ext
+          - mountPath: /opt/gluu/jetty/identity/custom/static
+            name: oxtrust-custom-static
+          - mountPath: /opt/gluu/jetty/identity/custom/pages
+            name: oxtrust-custom-pages
+        livenessProbe:
+          httpGet:
+            path: /identity/restv1/scim-configuration
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /identity/restv1/scim-configuration
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 25
+      volumes:
+        - name: {{ .Release.Name }}-shared-shib
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-shared-shib-pvc
+        - name: oxtrust-logs
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-oxtrust-logs-volume-claim
+        - name: oxtrust-lib-ext
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-oxtrust-lib-ext-volume-claim
+        - name: oxtrust-custom-static
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-oxtrust-custom-static-volume-claim
+        - name: oxtrust-custom-pages
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-oxtrust-custom-pages-volume-claim
+      hostAliases:
+      - ip: {{ .Values.global.nginxIp }}
+        hostnames:
+        - {{ .Values.global.domain }}

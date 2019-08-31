@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: {{ include "config.fullname" . }}-config-cm
+  namespace: {{ .Values.global.namespace }}
+data:
+  ADMIN_PW:  {{ .Values.adminPass }}
+  EMAIL: {{ .Values.email }}
+  DOMAIN: {{ .Values.domain }}
+  ORG_NAME: {{ .Values.orgName }}
+  COUNTRY_CODE: {{ .Values.countryCode }}
+  STATE: {{ .Values.state }}
+  CITY: {{ .Values.city }}
+  LDAP_TYPE: {{ .Values.ldapType }}
+  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
+  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "config.fullname" . }}-gen-json-file
+data:
+  generate.json: |-
+    {
+      "hostname": {{ .Values.domain | quote }},
+      "country_code": {{ .Values.countryCode | quote }},
+      "state": {{ .Values.state | quote }},
+      "city": {{ .Values.city | quote }},
+      "admin_pw": {{ .Values.adminPass | quote }},
+      "email": {{ .Values.email | quote }},
+      "org_name": {{ .Values.orgName | quote }}
+    }
+
+---
+
+apiVersion: v1
+data:
+  tls_generator.py: "from pprint import pprint\nfrom kubernetes import config, client\nimport
+    logging\n\n#use the serviceAccount k8s gives to pods\nconfig.load_incluster_config()
+    \nv1 = client.CoreV1Api()\n\n#global vars\nname = \"tls-certificate\"\nnamespace
+    = \"default\"\n\n# check if gluu secret exists\ndef get_certs():\n    if ( v1.read_namespaced_secret(
+    'gluu', 'default' ) ):\n        ssl_cert = v1.read_namespaced_secret( 'gluu',
+    'default' ).data['ssl_cert']\n        ssl_key = v1.read_namespaced_secret( \"gluu\",
+    \"default\" ).data['ssl_key']\n        \n        print('ssl_cert / {} \\n ssl_key:
+    {}'.format(ssl_cert, ssl_key) )\n\n    return ssl_cert, ssl_key\n\n\ndef create_tls(cert,
+    key):\n\n    v1 = client.CoreV1Api()\n    try:\n        secret = v1.read_namespaced_secret(name,
+    namespace)\n    except client.rest.ApiException as e:\n        if e.status ==
+    404:\n            print('secret/{} in ns/{} does not exist. Creating...'.format(\n
+    \               name, namespace))\n            metadata = {\n                'name':
+    name,\n                'namespace': namespace\n            }\n            data
+    = {\n                'tls.crt': cert,\n                'tls.key' : key,\n            }\n
+    \           api_version = 'v1'\n            kind = 'Secret'\n            body
+    = client.V1Secret(api_version, data , kind, metadata, \n                type='kubernetes.io/tls')\n
+    \           api_response = v1.create_namespaced_secret(namespace, body )\n            pprint(api_response)\n
+    \       else:\n            logging.exception(e)\n        return False\n    else:\n
+    \       print('tls-certificate already exists as /{}'. format(\n            secret\n
+    \       ))\n\n        \ndef main():\n    cert, key = get_certs()\n    create_tls(cert,
+    key)\n\nif __name__ == \"__main__\":\n    main()"
+kind: ConfigMap
+metadata:
+  name: {{ include "config.fullname" . }}-tls-script
+

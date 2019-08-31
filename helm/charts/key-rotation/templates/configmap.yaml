@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "key-rotation.name" . }}
+data:
+  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
+  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
+  GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}

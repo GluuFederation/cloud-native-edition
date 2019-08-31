@@ -1,0 +1,13 @@
+{{- if .Values.dynamicStorage }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "gluu.fullname" . }}-storage-pvc
+spec:
+  storageClassName: {{ template "gluu.fullname" . }}-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumeClaim.storage }}
+{{- end }}
