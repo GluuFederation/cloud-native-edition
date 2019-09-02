@@ -1,6 +1,3 @@
-**Note**:  
-For minikube, Specs used to test the charts are. 3GB RAM and 40GB memory.
-
 ## Gluu Server
 
 [Gluu server](https://www.google.com) is an open-source IAM server that sync backend identities, leverage external IDPs, and achieve SSO, 2FA and more.

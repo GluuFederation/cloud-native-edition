@@ -32,13 +32,13 @@ spec:
                 name: {{ include "oxpassport.name" . }}
           livenessProbe:
             httpGet:
-              path: /passport
+              path: /passport/token
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /passport
+              path: /passport/token
               port: http
             initialDelaySeconds: 25
             periodSeconds: 25
