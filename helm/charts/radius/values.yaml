@@ -25,13 +25,6 @@ service:
 configMap:
   lbAddr: ""
   oxauthBackendUrl: oxauth:8080
-  # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap
-  # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
-  gluuPersistenceLdapMapping: default
-  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
-  # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  gluuCouchBaseUrl: couchbase
   
 persistence:
   enabled: true

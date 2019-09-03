@@ -41,8 +41,8 @@ spec:
             claimName: {{ include "opendj.fullname" . }}-flag
       containers:
       - name: {{ template "gluu.fullname" . }}-init-container
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
-        image: {{ .Values.image }}
+        imagePullPolicy: {{ .Values.image.statefulset.pullPolicy }}
+        image: "{{ .Values.image.statefulset.repository }}:{{ .Values.image.statefulset.tag }}"
         envFrom:
         - configMapRef:
             name: {{ include "opendj.fullname" . }}

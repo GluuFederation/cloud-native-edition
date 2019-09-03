@@ -11,7 +11,7 @@ gluuRedisEnabled: false
 gluuRedisCacheType: REDIS
 gluuRedisUrl: redis:6379
 gluuRedisType: STANDALONE
-#repl diferent env vars
+
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
 
@@ -21,8 +21,15 @@ fullnameOverride: ""
 # StatefulSets 
 # values declaration
 statefulSetReplicas: 1
-imagePullPolicy: Always
-image: gluufederation/opendj:4.0.0_dev
+
+image:
+  job:
+    repository: gluufederation/persistence
+    tag: 4.0.0_dev
+  statefulset:
+    repository: gluufederation/wrends
+    tag: 4.0.0_no_data
+    pullPolicy: Always
 
 persistence:
   size: 100M
