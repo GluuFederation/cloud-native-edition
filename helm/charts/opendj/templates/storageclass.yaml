@@ -5,7 +5,7 @@ metadata:
   labels:
     storage: opendj
   annotations:
-    storageclass.beta.kubernetes.io/is-default-class: "true"
+    storageclass.beta.kubernetes.io/is-default-class: "false"
 provisioner: {{ .Values.persistence.provisioner }}
 parameters:
   {{- if eq .Values.persistence.provisioner "kubernetes.io/aws-ebs" }}

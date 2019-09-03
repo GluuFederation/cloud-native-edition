@@ -1,5 +1,3 @@
-# Declare variables to be passed into your templates.
-
 #global values to be used across charts
 global:
   namespace: default
@@ -12,9 +10,7 @@ global:
   gluuMaxRamFraction: 1
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
-  
   #persistence types and options
-  
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: ldap
   # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
@@ -22,6 +18,8 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
+  #cloud provisioner
+  provisioner: k8s.io/minikube-hostpath
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -95,7 +93,7 @@ cr-rotate:
   enabled: false 
 
 radius:
-  enabled: false
+  enabled: true
 
 #tags enable/disable installation of subcharts
 tags:
@@ -103,5 +101,5 @@ tags:
   oxpassport: false
   key-rotate: false
   cr-rotate: false
-  radius: false
+  radius: true
   
