@@ -18,7 +18,7 @@ gluuOxtrustConfigGenerationRepl: false
 nameOverride: ""
 fullnameOverride: ""
 
-# StatefulSets 
+# StatefulSet
 # values declaration
 statefulSetReplicas: 1
 
@@ -36,16 +36,18 @@ persistence:
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
   dbStorageSize: 5Gi
-
-#container specific values declared here
-tcpSocket:
-  port: 1636
-readinessProbe:
-  initialDelaySeconds: 25
-  periodSeconds: 25
-livenessProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 30
+  # StorageClass values
+  # values used to define the StorageClass template
+  encrypted: true
+  reclaimPolicy: Retain
+  pool: default
+  description: gluu-config-init-volume
+  fsType: ext4
+  provisioner: k8s.io/minikube-hostpath
+  awsZones: us-west-2a
+  gcePdStorageType: pd-standard
+  azureStorageAccountType: Standard_LRS
+  azureStorageKind: Shared
 
 #servicePorts values used in StatefulSet container
 ports:
@@ -63,58 +65,19 @@ ports:
     targetPort: 4444
 # VolumeMounts for StatefulSet
 # opendj-init vm
-volumeInitMounts:
+volumeMounts:
   config:
     mountPath: /opt/opendj/config
-    name: opendj-init-volume
+    name: opendj-volume
   ldif: 
     mountPath: /opt/opendj/ldif
-    name: opendj-init-volume
+    name: opendj-volume
   logs: 
     mountPath: /opt/opendj/logs
-    name: opendj-init-volume
+    name: opendj-volume
   db: 
     mountPath: /opt/opendj/db
-    name: opendj-init-volume
+    name: opendj-volume
   flag: 
     mountPath: /flag
-    name: opendj-init-volume
-
-#opedj-repl vm
-volumeReplMounts:
-  config:
-    mountPath: /opt/opendj/config
-    name: opendj-repl-volume
-  ldif: 
-    mountPath: /opt/opendj/ldif
-    name: opendj-repl-volume
-  logs: 
-    mountPath: /opt/opendj/logs
-    name: opendj-repl-volume
-  db: 
-    mountPath: /opt/opendj/db
-    name: opendj-repl-volume
-  flag: 
-    mountPath: /flag
-    name: opendj-repl-volume
-
-#VolumeClaimTemplates
-storage: 1Gi
-
-#opendj-config-pv
-opendj-config:
-  hostPath:
-    path: "/data/opendj/config"
-    type: DirectoryOrCreate
-
-#opendj-ldif
-opendj-ldif:
-  hostPath:
-    path: "/data/opendj/ldif"
-    type: DirectoryOrCreate
-
-#opendj-logs
-opendj-logs:
-  hostPath:
-    path: "/data/opendj/logs"
-    type: DirectoryOrCreate
+    name: opendj-volume

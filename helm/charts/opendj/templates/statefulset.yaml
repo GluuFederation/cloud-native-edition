@@ -24,21 +24,9 @@ spec:
       #           - {{ .Values.global.serviceName }}
       #       topologyKey: "kubernetes.io/hostname"
       volumes:
-        - name: opendj-config
+        - name: opendj-volume
           persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}-config
-        - name: opendj-ldif
-          persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}-ldif
-        - name: opendj-logs
-          persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}-logs
-        - name: opendj-db
-          persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}-db
-        - name: opendj-flag
-          persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}-flag
+            claimName: {{ include "opendj.fullname" . }}
       containers:
       - name: {{ template "gluu.fullname" . }}-init-container
         imagePullPolicy: {{ .Values.image.statefulset.pullPolicy }}
@@ -52,24 +40,19 @@ spec:
             name: {{ $key }}
         {{- end }}
         volumeMounts:
-          - mountPath: /opt/opendj/config
-            name: opendj-config
-          - mountPath: /opt/opendj/ldif
-            name: opendj-ldif
-          - mountPath: /opt/opendj/logs
-            name: opendj-logs
-          - mountPath: /opt/opendj/db
-            name: opendj-db
-          - mountPath: /flag
-            name: opendj-flag
+        {{- range $key, $values := .Values.volumeMounts }}
+          - mountPath: {{$values.mountPath}}
+            name: {{$values.name}}
+            subPath: {{$key}}
+        {{- end }}
         readinessProbe:
           tcpSocket: 
-            port: {{ .Values.tcpSocket.port }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            port: 1636
+          initialDelaySeconds: 25
+          periodSeconds: 25
         livenessProbe:
           tcpSocket:
-            port: {{ .Values.tcpSocket.port }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            port: 1636
+          initialDelaySeconds: 30
+          periodSeconds: 30
   

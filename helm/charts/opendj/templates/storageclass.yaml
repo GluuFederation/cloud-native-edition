@@ -1,0 +1,29 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ include "opendj.fullname" . }}
+  labels:
+    storage: opendj
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+provisioner: {{ .Values.global.provisioner }}
+parameters:
+  {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
+  type: gp2
+  encrypted: {{ .Values.persistence.encrypted }}
+  description: {{ .Values.persistence.description }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
+  type: {{ .Values.persistence.gcePdStorageType }}
+  description: {{ .Values.persistence.description }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
+  storageAccountType: {{ .Values.persistence.azureStorageAccountType }}
+  kind: {{ .Values.persistence.azureStorageKind }}
+  {{- else }}
+  pool: {{ .Values.persistence.pool }}
+  description: {{ .Values.persistence.description }}
+  fsType: {{ .Values.persistence.fsType }}
+  {{- end }}
+allowVolumeExpansion: true
+reclaimPolicy: {{ .Values.persistence.reclaimPolicy }}
+mountOptions:
+  - debug
