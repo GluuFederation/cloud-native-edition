@@ -12,8 +12,7 @@ global:
   gluuMaxRamFraction: 1
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
-  provisioner: k8s.io/minikube-hostpath
-
+  
   #persistence types and options
   
   # options: ldap/couchbase/hybrid
@@ -66,6 +65,8 @@ opendj:
   gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: false
+  persistence:
+    provisioner: k8s.io/minikube-hostpath
 
 # redis should be enabled only when cacheType is REDIS
 redis:

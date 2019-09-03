@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "gluu.fullname" . }}-init-ss
+  name: {{ include "opendj.fullname" . }}
 spec:
   selector:
     matchLabels:
@@ -12,21 +12,17 @@ spec:
     metadata:
       labels:
         app: {{ .Values.global.serviceName }} # has to match .spec.selector.matchLabels
+  volumeClaimTemplates:
+  - metadata:
+      name: opendj-volume
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: app
-      #           operator: In
-      #           values:
-      #           - {{ .Values.global.serviceName }}
-      #       topologyKey: "kubernetes.io/hostname"
-      volumes:
-        - name: opendj-volume
-          persistentVolumeClaim:
-            claimName: {{ include "opendj.fullname" . }}
+      accessModes:
+      - {{ .Values.persistence.accessModes }}
+      storageClassName: {{ include "opendj.fullname" . }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size }}
+    spec:
       containers:
       - name: {{ template "gluu.fullname" . }}-init-container
         imagePullPolicy: {{ .Values.image.statefulset.pullPolicy }}
