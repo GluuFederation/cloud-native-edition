@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oxauth.name" . }}-logs
+  labels:
+    oxauth: logs
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  hostPath:
+    path: "/data/oxauth/logs"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oxauth.name" . }}-lib-ext
+  labels:
+    oxauth: lib-ext
+spec:
+  accessModes: 
+    - {{ .Values.persistence.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  hostPath:
+    path: "/data/oxauth/custom/libs"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oxauth.name" . }}-custom-static
+  labels:
+    oxauth: custom-static
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  hostPath:
+    path: "/data/oxauth/custom/static"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oxauth.name" . }}-custom-pages
+  labels:
+    oxauth: custom-pages
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  hostPath:
+    path: "/data/oxauth/custom/pages"

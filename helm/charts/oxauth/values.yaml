@@ -8,6 +8,11 @@ image:
   tag: 4.0.0_dev
   pullPolicy: Always
 
+persistence:
+  size: 10M
+  accessModes: ReadWriteOnce
+  storageClassName: ""
+
 # VolumeClaim values
 volumeClaim:
   storage: 50M
@@ -28,16 +33,6 @@ nginxIP: 192.168.99.100
 #ports for the deployment
 ports:
   containerPort: 8080
-
-# livenessProbe
-livenessProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 30
-
-# readinessProbe
-readinessProbe:
-  initialDelaySeconds: 25
-  periodSeconds: 25
 
 #VolumeMounts
 volumeMounts:

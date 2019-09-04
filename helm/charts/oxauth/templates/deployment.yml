@@ -29,28 +29,40 @@ spec:
         - configMapRef:
             name: {{ template "oxauth.fullname" . }}-cm
         volumeMounts:
-        {{- range $key, $value := .Values.volumeMounts }}
-          - mountPath: {{ $value.mountPath }}
-            name: {{ $value.name }}
-            subPath: {{ $key }}
-        {{- end }}
+          - mountPath: /opt/gluu/jetty/oxauth/logs
+            name: oxauth-logs
+          - mountPath: /opt/gluu/jetty/oxauth/lib/ext
+            name: oxauth-lib-ext
+          - mountPath: /opt/gluu/jetty/oxauth/custom/static
+            name: oxauth-custom-static
+          - mountPath: /opt/gluu/jetty/oxauth/custom/pages
+            name: oxauth-custom-pages
         livenessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
             port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          initialDelaySeconds: 30
+          periodSeconds: 30
         readinessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
             port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          initialDelaySeconds: 25
+          periodSeconds: 25
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
         hostnames:
         - {{ .Values.global.domain }}
       volumes:
-      - name: oxauth-volume
+      - name: oxauth-logs
         persistentVolumeClaim:
-          claimName: {{ template "gluu.fullname" . }}-storage-pvc
+          claimName: {{ include "oxauth.name" . }}-logs
+      - name: oxauth-lib-ext
+        persistentVolumeClaim:
+          claimName: {{ include "oxauth.name" . }}-lib-ext
+      - name: oxauth-custom-static
+        persistentVolumeClaim:
+          claimName: {{ include "oxauth.name" . }}-custom-static
+      - name: oxauth-custom-pages
+        persistentVolumeClaim:
+          claimName: {{ include "oxauth.name" . }}-custom-pages
