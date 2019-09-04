@@ -65,6 +65,7 @@ opendj:
   gluuRedisEnabled: false
   persistence:
     provisioner: k8s.io/minikube-hostpath
+  replicas: 3
 
 # redis should be enabled only when cacheType is REDIS
 redis:
@@ -101,5 +102,5 @@ tags:
   oxpassport: false
   key-rotate: false
   cr-rotate: false
-  radius: true
+  radius: false
   

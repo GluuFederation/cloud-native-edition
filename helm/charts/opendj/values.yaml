@@ -20,7 +20,7 @@ fullnameOverride: ""
 
 # StatefulSet
 # values declaration
-statefulSetReplicas: 1
+replicas: 1
 
 image:
   job:
