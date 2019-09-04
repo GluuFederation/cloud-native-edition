@@ -18,7 +18,7 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
-  #cloud provisioner
+  #cloud provisioner. Will be used in wrends for dymanic provisioning
   provisioner: k8s.io/minikube-hostpath
 
 # Required environment variables for generating Gluu server initial config

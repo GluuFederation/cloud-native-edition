@@ -34,18 +34,19 @@ If during installation the release was not defined, release name is checked by r
 
 ## Configuration
 
-|       Parameter               |      Description                                          |    Default                          |
-|:------------------------------|:----------------------------------------------------------|:------------------------------------|
+|       Parameter               |      Description                                           |    Default                          |
+|:------------------------------|:-----------------------------------------------------------|:------------------------------------|
 | `global.namespace`            | namespace in which to deploy the server                    | `default`                           |
 | `global.serviceName`          | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | DNS IP address to be used                                  | `192.168.99.100`                    |
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
 |`global.oxTrustSeriveName`     | `oxtrust` service name - should not be changed             | `oxtrust`                           |
 | `global.domain`               | DNS domain name                                            | `demoexample.gluu.org`              |
-| `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed   |  `opendj:1636` |
-| `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps           |  `1`           |
+| `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed |  `opendj:1636` |
+| `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
 | `global.configAdapterName`    | The config backend adapter                                 | `kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `kubernetes`                        |
+| `global.gluuPersistenceType`  | Which database backend to use ( Used by radius and wrends service )            | `ldap`          |
 | `config.enabled`              | Either to install config chart or not.                     | `true`                              |   
 | `config.orgName`              | Organisation Name                                          | `Gluu`                              |
 | `config.email`                | Email to be registered with ssl                            | `support@gluu.org`                  |
