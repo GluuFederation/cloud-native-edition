@@ -159,41 +159,7 @@ To deploy the service:
 
 Vault must be initialized (once) and configured to allow containers accessing the secrets:
 
-    export VAULT_MANAGER=$(docker ps --filter name=vault --format '{{.Names}}')
-
-    # the output is redirected to a file; securet this file as it contains recovery key and root token
-    docker exec $VAULT_MANAGER vault operator init \
-        -key-shares=1 \
-        -key-threshold=1 \
-        -recovery-shares=1 \
-        -recovery-threshold=1 > vault_key_token.txt
-
-    # when prompted for token, enter the root token from file above
-    docker exec -ti $VAULT_MANAGER vault login -no-print
-
-    # custom policy
-    docker exec $VAULT_MANAGER vault policy write gluu /vault/config/policy.hcl
-
-    # enable approle
-    docker exec $VAULT_MANAGER vault auth enable approle
-    docker exec $VAULT_MANAGER vault write auth/approle/role/gluu policies=gluu
-    docker exec $VAULT_MANAGER vault write auth/approle/role/gluu \
-        secret_id_ttl=0 \
-        token_num_uses=0 \
-        token_ttl=20m \
-        token_max_ttl=30m \
-        secret_id_num_uses=0
-
-    # generate RoleID
-    docker exec $VAULT_MANAGER vault read -field=role_id auth/approle/role/gluu/role-id > vault_role_id.txt
-    docker secret create vault_role_id vault_role_id.txt
-
-    # generate SecretID
-    docker exec $VAULT_MANAGER vault write -f -field=secret_id auth/approle/role/gluu/secret-id > vault_secret_id.txt
-    docker secret create vault_secret_id vault_secret_id.txt
-
-    # re-establish Vault cluster by restarting all Vault containers
-    docker service update --force gluu_vault
+    ./init-vault.sh
 
 ### 3 - Prepare cluster-wide config and secret
 
@@ -211,47 +177,15 @@ By default, the cache storage is set to `NATIVE_PERSISTENCE`. To use `REDIS`, de
 
     docker stack deploy -c redis.yml gluu
 
-Make sure to change `ldap-manager.yml` file:
-
-```
-services:
-  ldap_manager:
-    environment:
-      - GLUU_CACHE_TYPE=REDIS  # don't forget to enable redis service
-      - GLUU_REDIS_URL=redis:6379
-      - GLUU_REDIS_TYPE=STANDALONE
-```
-
 ### 5 - Deploy LDAP
 
-LDAP containers are divided into two roles:
+Run the following command to deploy `ldap` services (manager, worker-1, and worker-2):
 
-1.  LDAP that has initial data
+    docker stack deploy -c ldap.yml gluu
 
-        docker stack deploy -c ldap-manager.yml gluu
+Import initial data into LDAP:
 
-    The process of initializing data will take some time.
-
-2.  LDAP that has no initial data (data will be replicated from existing LDAP if any)
-
-    Before deploying this service (and other services that need to run after LDAP is ready),
-    we need to check if existing LDAP server in `manager` node has been fully ready:
-
-        docker-machine ssh manager 'docker logs $(docker ps --filter name=gluu_ldap_init -q) 2>&1' | grep 'The Directory Server has started successfully'
-
-    If we see the output similar to this one:
-
-        [05/Apr/2018:19:59:27 +0000] category=CORE severity=NOTICE msgID=org.opends.messages.core.135 msg=The Directory Server has started successfully
-
-    then we can proceed to deploy the next LDAP container:
-
-        docker stack deploy -c ldap-worker-1.yml gluu
-
-    The process will also take some time, but it's safe to proceed to deploy next services/containers.
-
-    Repeat for third LDAP server by running this command:
-
-        docker stack deploy -c ldap-worker-2.yml gluu
+    ./persistence.sh
 
 ### 6 - Deploy Registrator
 
@@ -306,12 +240,12 @@ To enable key rotation for oxAuth keys (useful when we have RP) and cr-rotate (t
         iptables -I INPUT -p udp --dport 4789 -j GLUU
         # SSL PORT
          iptables -I INPUT -p tcp --dport 443 -j GLUU
-         #or 
-         iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT 
+         #or
+         iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
         ####
         iptables -A GLUU -j LOG --log-prefix "unauth-swarm-access"
    ```
-   
+
 1) Please note that networking is **key** for a successful installation. Before initializing the setup make sure your nodes can reach each other on the ports used for gluu i.e **attach the security policies that allow inner communications between the nodes**.
 
 1) Install latest [Docker](https://docs.docker.com/install/) on each VM.
@@ -319,49 +253,49 @@ To enable key rotation for oxAuth keys (useful when we have RP) and cr-rotate (t
 1) Initialize Docker swarm mode for your first VM here that would be `Node-1`
 
     ```bash
-    
+
         docker swarm init --advertise-addr <ip-for-node-1>
         # docker swarm init --advertise-addr 104.130.198.53
     ```
-    
+
 1) The above command will initialize Docker swarm and output a command that will be used to add workers to this manager node.
 
     ```bash
-    
+
         To add a worker to this swarm, run the following command:
 
         docker swarm join \
         --token SWMTKN-1-3pu6hszjassdfsdfknkj234u2938u4jksdfnl-1awxwuwd3z9j1z3puu7rcgdbx \
         104.130.198.53:2377
-        
+
     ```
-    
+
 1) Execute the output command on the other nodes here `Node-2` and `Node-3`.
 
     ```bash
-    
+
         docker swarm join \
         --token SWMTKN-1-3pu6hszjassdfsdfknkj234u2938u4jksdfnl-1awxwuwd3z9j1z3puu7rcgdbx \
         104.130.198.53:2377
-        
+
     ```
-    
+
 1) **Optional** If you want all of the nodes to be managers promote them using the following command:
 
     ```bash
-    
+
     docker node promote node1 node2
-    
+
     ```
-    
+
 1) Create the network.
 
     ```bash
-    
+
         docker network create -d overlay gluu
-        
+
     ```
-    
+
 1) Create volumes for `Node-1`
 
     ```bash
@@ -375,12 +309,12 @@ To enable key rotation for oxAuth keys (useful when we have RP) and cr-rotate (t
 1) Create volumes for `Node-2` and `Node-3`
 
     ```bash
-    
+
         mkdir -p /opt/opendj/config /opt/opendj/db /opt/opendj/ldif /opt/opendj/logs /opt/opendj/backup \
             /opt/consul \
             /opt/vault/config /opt/vault/data /opt/vault/logs \
             /opt/shared-shibboleth-idp
-            
+
     ```
-   
+
 1) Continue [deploying services](#deploying-services). But note that you will not use any `docker-machine` commands, but instead execute the commands directly on the respective node here `Node-1` is the manager.
