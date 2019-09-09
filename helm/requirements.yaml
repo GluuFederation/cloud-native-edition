@@ -1,58 +1,64 @@
 dependencies:
   - name: config
     condition: config.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: redis
     condition: redis.enabled
-    version: 1.1.0
+    version: 1.0.0
     tags:
       - redis
 
   - name: opendj
     condition: opendj.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: oxauth
     condition: oxauth.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: shared-shib
     condition: shared-shib.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: oxtrust
     condition: oxtrust.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: nginx
     condition: nginx.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: oxshibboleth
     condition: oxshibboleth.enabled
-    version: 1.1.0
+    version: 1.0.0
 
   - name: oxpassport
-    version: 1.1.0
+    version: 1.0.0
     condition: oxpassport.enabled
     tags:
       - oxpassport
 
   - name: key-rotation
     condition: key-rotation.enabled
-    version: 1.1.0
+    version: 1.0.0
     tags:
       - key-rotation
 
   - name: cr-rotate
     condtion: cr-rotate.enabled
-    version: 1.1.0
+    version: 1.0.0
     tags:
       - cr-rotate
 
   - name: radius
     condition: radius.enabled
-    version: 1.1.0
+    version: 1.0.0
     tags:
       - radius
+  
+  - name: rbac
+    condition: rbac.enabled
+    version: 1.0.0
+    tags:
+      - rbac

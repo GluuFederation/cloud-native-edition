@@ -1,9 +1,9 @@
 apiVersion: v1
-appVersion: 4.0.0_dev
+appVersion: {{ .Values.global.appVersion }}
 home: https://www.gluu.org/de
 maintainers:
-- name: gluu
+- name: Gluu
 email: support@gluu.org
-description: A Helm chart for Kubernetes
+description: Helm chart for oxauth service
 name: oxauth
-version: 1.1.0
+version: 1.0.0

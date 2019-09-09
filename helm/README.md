@@ -36,11 +36,13 @@ If during installation the release was not defined, release name is checked by r
 
 |       Parameter               |      Description                                           |    Default                          |
 |:------------------------------|:-----------------------------------------------------------|:------------------------------------|
+| `global.cloud`                | Whether to enable cloud provisioning.                      | `false`                             |
+| `global.cloud.provisioner`    | Which cloud provisioner to use when deploying              | `k8s.io/minikube-hostpath`          |
 | `global.namespace`            | namespace in which to deploy the server                    | `default`                           |
 | `global.serviceName`          | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | DNS IP address to be used                                  | `192.168.99.100`                    |
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
-|`global.oxTrustSeriveName`     | `oxtrust` service name - should not be changed             | `oxtrust`                           |
+| `global.oxTrustSeriveName`    | `oxtrust` service name - should not be changed             | `oxtrust`                           |
 | `global.domain`               | DNS domain name                                            | `demoexample.gluu.org`              |
 | `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed |  `opendj:1636` |
 | `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
@@ -69,7 +71,7 @@ If during installation the release was not defined, release name is checked by r
 | `cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
 | `radius.enabled`              | Enabled radius installation                                | `false`                             |
 
-## Instructions on how to different services
+## Instructions on how to install different services
 
 The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
 

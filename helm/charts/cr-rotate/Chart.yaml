@@ -4,6 +4,6 @@ description: A Helm chart for Kubernetes
 name: cr-rotate
 version: 1.1.0
 maintainers:
-- name: Shammir
+- name: Gluu
 email: support@gluu.org
 home: https://www.gluu.org 

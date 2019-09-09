@@ -1,9 +1,8 @@
 #global values to be used across charts
 global:
   # deploymentType options: cloud/local  
-  cloud: enabled
+  cloud: false
     provisioner: k8s.io/minikube-hostpath
-
   namespace: default
   serviceName: opendj
   nginxIp: 34.102.221.149 # 192.168.99.100
@@ -22,6 +21,8 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
+
+  appVersion: 4.0.0_dev
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -98,6 +99,9 @@ cr-rotate:
 radius:
   enabled: true
 
+rbac:
+  enabled: true
+
 #tags enable/disable installation of subcharts
 tags:
   redis: false
@@ -105,4 +109,5 @@ tags:
   key-rotate: false
   cr-rotate: false
   radius: false
+  rbac: true
   

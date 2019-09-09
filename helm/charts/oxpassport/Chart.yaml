@@ -1,8 +1,8 @@
 apiVersion: v1
 appVersion: "4.0.0_dev"
-description: A Helm chart for Kubernetes
+description: oxpassport Helm chart
 name: oxpassport
-version: 1.1.0
+version: 1.0.0
 maintainers:
 - name: Gluu
 email: support@gluu.org
