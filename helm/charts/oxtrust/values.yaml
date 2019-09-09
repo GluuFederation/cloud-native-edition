@@ -1,8 +1,7 @@
 # Default values for oxtrust.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-gluuMaxRamFraction: 1
+replicas: 1
 
 dynamicStorage: true
 
@@ -13,7 +12,8 @@ image:
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
+  clusterIp: None
 
 # PVC storage
 volumeClaim:
@@ -30,26 +30,18 @@ containerPort: 8080
 
 gluuOxauthBackend: oxauth:8080
 
-#service values
-#port for which to open in oxtrust ss
-port: 8080
-clusterIp: None
-
 #VolumeMounts
 volumeMounts:
-  shared-shibboleth-idp:
-    mountPath: /opt/shared-shibboleth-idp
-    name: shared-shib
   logs:
     mountPath: /opt/gluu/jetty/identity/logs
-    name: shared-shib
+    name: oxtrust
   ext:
     mountPath: /opt/gluu/jetty/identity/lib/ext
-    name: shared-shib
+    name: oxtrust
   static:
     mountPath: /opt/gluu/jetty/identity/custom/static
-    name: shared-shib
+    name: oxtrust
   pages:
     mountPath: /opt/gluu/jetty/identity/custom/pages
-    name: shared-shib
+    name: oxtrust
     

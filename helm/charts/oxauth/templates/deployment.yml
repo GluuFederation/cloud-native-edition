@@ -17,7 +17,7 @@ spec:
       containers:
       - name: {{ template "gluu.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        image: gluufederation/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         resources:
           requests:
             memory: {{ .Values.requests.memory }}
@@ -29,14 +29,11 @@ spec:
         - configMapRef:
             name: {{ template "oxauth.fullname" . }}-cm
         volumeMounts:
-          - mountPath: /opt/gluu/jetty/oxauth/logs
-            name: oxauth-logs
-          - mountPath: /opt/gluu/jetty/oxauth/lib/ext
-            name: oxauth-lib-ext
-          - mountPath: /opt/gluu/jetty/oxauth/custom/static
-            name: oxauth-custom-static
-          - mountPath: /opt/gluu/jetty/oxauth/custom/pages
-            name: oxauth-custom-pages
+        {{- range $key, $value := .Values.volumeMounts }}
+          - mountPath: {{ $value.mountPath }}
+            name: {{ $value.name }}
+            subPath: {{ $key }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
@@ -54,15 +51,6 @@ spec:
         hostnames:
         - {{ .Values.global.domain }}
       volumes:
-      - name: oxauth-logs
+      - name: oxauth-volume
         persistentVolumeClaim:
-          claimName: {{ include "oxauth.name" . }}-logs
-      - name: oxauth-lib-ext
-        persistentVolumeClaim:
-          claimName: {{ include "oxauth.name" . }}-lib-ext
-      - name: oxauth-custom-static
-        persistentVolumeClaim:
-          claimName: {{ include "oxauth.name" . }}-custom-static
-      - name: oxauth-custom-pages
-        persistentVolumeClaim:
-          claimName: {{ include "oxauth.name" . }}-custom-pages
+          claimName: {{ include "oxauth.fullname" . }}

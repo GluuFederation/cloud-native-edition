@@ -3,13 +3,13 @@ kind: Service
 metadata:
   name: oxtrust
   labels:
-    app: {{ template "oxtrust.fullname" . }}
+    app: {{ include "oxtrust.fullname" . }}
     APP_NAME: oxtrust
 spec:
   ports:
-  - port: {{ .Values.port }}
+  - port: {{ .Values.service.port }}
     name: {{ template "oxtrust.fullname" . }}
   selector:
     app: {{ template "oxtrust.fullname" . }}
-  clusterIP: {{ .Values.clusterIp }}
+  clusterIP: {{ .Values.service.clusterIp }}
     

@@ -6,9 +6,8 @@ global:
   encrypted: true
   reclaimPolicy: Retain
   pool: default
-  description: gluu-config-init-volume
   fsType: ext4
-  awsZones: us-west-2a
+  awsZone: us-west-2a
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Shared
@@ -77,6 +76,9 @@ oxtrust:
   enabled: true
   dynamicStorage: true
 
+rbac:
+  enabled: true
+  
 nginx:
   enabled: true 
 
@@ -93,10 +95,8 @@ cr-rotate:
   enabled: false 
 
 radius:
-  enabled: true
+  enabled: false
 
-rbac:
-  enabled: true
 
 #tags enable/disable installation of subcharts
 tags:

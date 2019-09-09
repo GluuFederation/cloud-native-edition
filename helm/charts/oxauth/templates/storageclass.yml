@@ -1,0 +1,28 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ include "oxauth.fullname" . }}
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "false"
+provisioner: {{ .Values.global.provisioner }}
+parameters:
+  {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
+  type: gp2
+  encrypted: "true"
+  zones: {{ .Values.global.awsZone }}
+  description: "Storage for oxauth data"
+  {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
+  type: {{ .Values.global.gcePdStorageType }}
+  description: "Storage for oxauth data"
+  {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
+  storageAccountType: {{ .Values.global.azureStorageAccountType }}
+  kind: {{ .Values.global.azureStorageKind }}
+  {{- else }}
+  pool: {{ .Values.global.pool }}
+  description: "Storage for oxauth data"
+  fsType: {{ .Values.global.fsType }}
+  {{- end }}
+allowVolumeExpansion: true
+reclaimPolicy: {{ .Values.global.reclaimPolicy }}
+mountOptions:
+  - debug

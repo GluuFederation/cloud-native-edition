@@ -4,7 +4,7 @@ replicaCount: 1
 dynamicStorage: true
 
 image:
-  repository: oxauth
+  repository: gluufederation/oxauth
   tag: 4.0.0_dev
   pullPolicy: Always
 
