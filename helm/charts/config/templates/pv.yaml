@@ -10,5 +10,5 @@ spec:
   accessModes:
     - {{ .Values.persistence.accessModes }}
   hostPath:
-    path: "/data/config/db"
+    path: "/var/lib/data/config/db"
 

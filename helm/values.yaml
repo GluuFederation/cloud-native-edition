@@ -1,8 +1,12 @@
 #global values to be used across charts
 global:
+  # deploymentType options: cloud/local  
+  cloud: enabled
+    provisioner: k8s.io/minikube-hostpath
+
   namespace: default
   serviceName: opendj
-  nginxIp: 192.168.99.100
+  nginxIp: 34.102.221.149 # 192.168.99.100
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   domain: demoexample.gluu.org
@@ -18,8 +22,6 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
-  #cloud provisioner. Will be used in wrends for dymanic provisioning
-  provisioner: k8s.io/minikube-hostpath
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart

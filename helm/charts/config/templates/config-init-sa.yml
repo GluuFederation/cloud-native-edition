@@ -9,5 +9,5 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ template "gluu.fullname" .}}-sa
+  name: {{ include "config.fullname" .}}-sa
   namespace: {{ .Values.global.namespace }}
