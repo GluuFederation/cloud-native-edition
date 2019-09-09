@@ -1,11 +1,21 @@
 #global values to be used across charts
 global:
-  # deploymentType options: cloud/local  
-  cloud: false
-    provisioner: k8s.io/minikube-hostpath
+  # StorageClass values 
+  # values used to define the StorageClass template
+  provisioner: k8s.io/minikube-hostpath
+  encrypted: true
+  reclaimPolicy: Retain
+  pool: default
+  description: gluu-config-init-volume
+  fsType: ext4
+  awsZones: us-west-2a
+  gcePdStorageType: pd-standard
+  azureStorageAccountType: Standard_LRS
+  azureStorageKind: Shared
+
   namespace: default
   serviceName: opendj
-  nginxIp: 34.102.221.149 # 192.168.99.100
+  nginxIp: 192.168.99.100
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   domain: demoexample.gluu.org
@@ -41,20 +51,6 @@ config:
   city: SLC
   # ldapType only OpenDJ is supported
   ldapType: opendj
-  
-  # <<<---------------------- SKIPPED THIS IN THE DOCUMENTATION -------->>>
-  # StorageClass values
-  # values used to define the StorageClass template
-  encrypted: true
-  reclaimPolicy: Retain
-  pool: default
-  description: gluu-config-init-volume
-  fsType: ext4
-  provisioner: k8s.io/minikube-hostpath
-  awsZones: us-west-2a
-  gcePdStorageType: pd-standard
-  azureStorageAccountType: Standard_LRS
-  azureStorageKind: Shared
 
 oxauth:
   enabled: true
