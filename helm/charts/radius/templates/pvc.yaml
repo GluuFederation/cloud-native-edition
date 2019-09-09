@@ -3,13 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "radius.fullname" . }}
 spec:
-  storageClassName: ""
-  volumeName: {{ include "radius.fullname" . }}
+  storageClassName: {{ include "radius.fullname" . }}
   resources:
     requests:
       storage: {{ .Values.persistence.size }}
   accessModes:
     - {{ .Values.persistence.accessModes }}
-  selector:
-    matchLabels:
-      radius: logs

@@ -9,7 +9,6 @@ parameters:
   {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: "true"
-  zones: {{ .Values.global.awsZone }}
   description: "Storage for oxauth data"
   {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}

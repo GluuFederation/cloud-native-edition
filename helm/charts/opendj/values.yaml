@@ -28,7 +28,7 @@ image:
     tag: 4.0.0_dev
   statefulset:
     repository: gluufederation/wrends
-    tag: 4.0.0_no_data
+    tag: 4.0.0_dev
     pullPolicy: Always
 
 persistence:
@@ -44,7 +44,6 @@ persistence:
   description: gluu-config-init-volume
   fsType: ext4
   provisioner: k8s.io/minikube-hostpath
-  awsZones: us-west-2a
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Shared
