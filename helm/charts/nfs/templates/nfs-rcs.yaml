@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: v1
 kind: ReplicationController
 metadata:
   name: {{ include "nfs.fullname" . }}
@@ -9,14 +9,11 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
-    matchLabels:
-      role: {{ include "nfs.name" . }}
-      release: {{ .Release.Name }}
+    role: {{ include "nfs.name" . }}
   template:
     metadata:
       labels:
         role: {{ include "nfs.name" . }}
-        release: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

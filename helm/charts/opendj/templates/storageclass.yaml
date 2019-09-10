@@ -11,16 +11,13 @@ parameters:
   {{- if eq .Values.persistence.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: {{ .Values.persistence.encrypted }}
-  description: {{ .Values.persistence.description }}
   {{- else if eq .Values.persistence.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.persistence.gcePdStorageType }}
-  description: {{ .Values.persistence.description }}
   {{- else if eq .Values.persistence.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.persistence.azureStorageAccountType }}
   kind: {{ .Values.persistence.azureStorageKind }}
   {{- else }}
   pool: {{ .Values.persistence.pool }}
-  description: {{ .Values.persistence.description }}
   fsType: {{ .Values.persistence.fsType }}
   {{- end }}
 allowVolumeExpansion: true

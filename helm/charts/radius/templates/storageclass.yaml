@@ -11,16 +11,13 @@ parameters:
   {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: "true"
-  description: "Radius storageclass"
   {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}
-  description: "Radius storageclass"
   {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
   {{- else }}
   pool: {{ .Values.global.pool }}
-  description: "Radius storageclass"
   fsType: {{ .Values.global.fsType }}
   {{- end }}
 allowVolumeExapansion: true

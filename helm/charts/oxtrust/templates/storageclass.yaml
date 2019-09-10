@@ -11,16 +11,13 @@ parameters:
   {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: "true"
-  description: "oxtrust storageclass volume"
   {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}
-  description: "oxtrust storageclass volume"
   {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
   {{- else }}
   pool: {{ .Values.global.pool }}
-  description: "oxtrust storageclass volume"
   fsType: {{ .Values.global.fsType }}
   {{- end }}
 allowVolumeExpansion: true

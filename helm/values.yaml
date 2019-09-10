@@ -2,10 +2,10 @@
 global:
   # StorageClass values 
   cloud:
-    enabled: false
+    enabled: true
     provisioner: k8s.io/minikube-hostpath
   # values used to define the StorageClass template
-  provisioner: k8s.io/minikube-hostpath
+  provisioner: kubernetes.io/gce-pd # k8s.io/minikube-hostpath
   encrypted: true
   reclaimPolicy: Retain
   pool: default
@@ -65,7 +65,7 @@ opendj:
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: false
   persistence:
-    provisioner: k8s.io/minikube-hostpath
+    provisioner: kubernetes.io/gce-pd #k8s.io/minikube-hostpath
   replicas: 1
 
 # redis should be enabled only when cacheType is REDIS
@@ -73,7 +73,7 @@ redis:
   enabled: false
 
 shared-shib:
-  enabled: true
+  enabled: false
 
 oxtrust:
   enabled: true
@@ -83,7 +83,7 @@ nginx:
   enabled: true 
 
 rbac:
-  enabled: true
+  enabled: false
 
 oxshibboleth:
   enabled: false
@@ -102,5 +102,3 @@ cr-rotate:
 
 radius:
   enabled: false
-
-  

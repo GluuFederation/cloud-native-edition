@@ -15,4 +15,3 @@ spec:
   {{- end }}
   selector:
     role: {{ include "nfs.name" . }}
-    release: {{ .Release.Name }}
