@@ -1,6 +1,9 @@
 #global values to be used across charts
 global:
   # StorageClass values 
+  cloud:
+    enabled: false
+    provisioner: k8s.io/minikube-hostpath
   # values used to define the StorageClass template
   provisioner: k8s.io/minikube-hostpath
   encrypted: true
@@ -46,7 +49,7 @@ config:
   domain: demoexample.gluu.org
   # organisation location details
   countryCode: US
-  state: TE
+  state: TX
   city: SLC
   # ldapType only OpenDJ is supported
   ldapType: opendj
@@ -63,7 +66,7 @@ opendj:
   gluuRedisEnabled: false
   persistence:
     provisioner: k8s.io/minikube-hostpath
-  replicas: 3
+  replicas: 1
 
 # redis should be enabled only when cacheType is REDIS
 redis:
@@ -76,14 +79,17 @@ oxtrust:
   enabled: true
   dynamicStorage: true
 
-rbac:
-  enabled: true
-  
 nginx:
   enabled: true 
 
+rbac:
+  enabled: true
+
 oxshibboleth:
   enabled: false
+
+nfs: #enable nfs for GCP deployment
+  enabled: true 
 
 oxpassport:
   enabled: false
@@ -97,13 +103,4 @@ cr-rotate:
 radius:
   enabled: false
 
-
-#tags enable/disable installation of subcharts
-tags:
-  redis: false
-  oxpassport: false
-  key-rotate: false
-  cr-rotate: false
-  radius: false
-  rbac: true
   

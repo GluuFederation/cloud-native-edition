@@ -62,3 +62,8 @@ dependencies:
     version: 1.0.0
     tags:
       - rbac
+
+  - name: nfs
+    condition: nfs.enabled
+    version: 1.0.0
+    

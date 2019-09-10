@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta2
+kind: ReplicationController
+metadata:
+  name: {{ include "nfs.fullname" . }}
+  labels:
+    app: {{ include "nfs.name" . }}
+    chart: {{ include "nfs.chart" . }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      role: {{ include "nfs.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        role: {{ include "nfs.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          {{- range $key, $value := .Values.service.ports }}
+            - name: {{ $value.name }}
+              containerPort: {{ $value.port }}
+          {{- end }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /exports
+              name: {{ include "nfs.name" . }}
+      volumes:
+        - name: {{ include "nfs.name" . }}
+          persistentVolumeClaim: 
+            claimName: {{ include "nfs.name" . }}-pv-provisioning-demo
