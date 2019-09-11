@@ -6,12 +6,12 @@ metadata:
 data:
   ADMIN_PW:  {{ .Values.adminPass }}
   EMAIL: {{ .Values.email }}
-  DOMAIN: {{ .Values.domain }}
   ORG_NAME: {{ .Values.orgName }}
   COUNTRY_CODE: {{ .Values.countryCode }}
   STATE: {{ .Values.state }}
   CITY: {{ .Values.city }}
   LDAP_TYPE: {{ .Values.ldapType }}
+  DOMAIN: {{ .Values.global.domain }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
 
@@ -24,7 +24,7 @@ metadata:
 data:
   generate.json: |-
     {
-      "hostname": {{ .Values.domain | quote }},
+      "hostname": {{ .Values.global.domain | quote }},
       "country_code": {{ .Values.countryCode | quote }},
       "state": {{ .Values.state | quote }},
       "city": {{ .Values.city | quote }},
