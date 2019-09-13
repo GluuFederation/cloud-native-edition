@@ -16,8 +16,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "nfs.name" . }}
+  name: {{ include "nfs.name" . }} # will result to nfs
 spec:
+  storageClassName: ""
   accessModes:
     - {{ .Values.persistence.nfsVolumes.accessModes }}
   resources:

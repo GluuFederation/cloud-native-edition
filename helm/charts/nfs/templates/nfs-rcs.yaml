@@ -27,8 +27,15 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - mountPath: /exports
-              name: {{ include "nfs.name" . }}
+            - name: {{ include "nfs.name" . }}
+              mountPath: /exports
+      initContainers:
+        - name: nfs-dir
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /exports/opt/shared-shibboleth-idp']
+          volumeMounts:
+            - name: {{ include "nfs.name" . }}
+              mountPath: /exports
       volumes:
         - name: {{ include "nfs.name" . }}
           persistentVolumeClaim: 

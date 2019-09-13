@@ -7,6 +7,8 @@ spec:
     storage: {{ .Values.persistence.nfsVolumes.size }}
   accessModes:
     - {{ .Values.persistence.nfsVolumes.accessModes }}
+  mountOptions:
+    - nfsvers=4.1
   nfs:
-    server: {{ include "nfs.name" . }}.default.svc.cluster.local
+    server: nfs.default.svc.cluster.local # nfs is from svc {{ include "nfs.name" .}}
     path: "/opt/shared-shibboleth-idp"

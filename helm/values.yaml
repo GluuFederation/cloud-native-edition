@@ -20,9 +20,9 @@ global:
   nginxIp: 192.168.99.100
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
-  domain: demoexample.gluu.org
+  domain: www.gluu-helm-example.tk # demoexample.gluu.org
   gluuLdapUrl: opendj:1636
-  gluuMaxRamFraction: 1
+  gluuMaxRamPercent: 25.0
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
   #persistence types and options
@@ -45,8 +45,6 @@ config:
   email: support@gluu.com
   # adminPass is administrator password for oxTrust and LDAP
   adminPass: P@ssw0rd
-  # domain name where the Gluu Server resides
-  domain: demoexample.gluu.org
   # organisation location details
   countryCode: US
   state: TX

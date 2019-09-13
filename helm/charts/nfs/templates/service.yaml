@@ -7,11 +7,11 @@ metadata:
     chart: {{ include "nfs.chart" . }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
   ports:
   {{- range $key, $value := .Values.service.ports}}
-    - port: {{ $value.port }}
-      name: {{ $value.name }}
+    - name: {{ $value.name }}
+      port: {{ $value.port }}
+      protocol: {{ $value.protocol }}
   {{- end }}
   selector:
     role: {{ include "nfs.name" . }}

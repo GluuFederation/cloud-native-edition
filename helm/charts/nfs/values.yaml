@@ -18,12 +18,28 @@ service:
     nfs:
       name: nfs
       port: 2049
+      protocol: TCP
     mountd:
       name: mountd
       port: 20048
+      protocol: TCP
     rpcbind:
       name: rpcbind
       port: 111
+      protocol: TCP
+    rpcnbind-udp:
+      name: rpcnbind-udp
+      port: 111
+      protocol: UDP
+    mountd-udp:
+      name: mountd-udp
+      port: 20048
+      protocol: UDP
+    nfs-udp:
+      name: nfs-udp
+      port: 2049
+      protocol: UDP
+    
     
 persistence:
   nfsGce:
