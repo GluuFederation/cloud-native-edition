@@ -66,4 +66,8 @@ dependencies:
   - name: nfs
     condition: nfs.enabled
     version: 1.0.0
+
+  - name: nginx-ingress
+    condition: global.cloud.enabled
+    version: 0.25.1
     

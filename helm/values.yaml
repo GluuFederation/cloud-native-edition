@@ -3,9 +3,9 @@ global:
   # StorageClass values 
   cloud:
     enabled: true
-    provisioner: k8s.io/minikube-hostpath
+    provisioner: kubernetes.io/gce-pd # k8s.io/minikube-hostpath
   # values used to define the StorageClass template
-  provisioner: kubernetes.io/gce-pd # k8s.io/minikube-hostpath
+  provisioner: kubernetes.io/gce-pd # 
   encrypted: true
   reclaimPolicy: Retain
   pool: default
@@ -17,9 +17,10 @@ global:
 
   namespace: default
   serviceName: opendj
-  nginxIp: 192.168.99.100
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
+  # nginx config
+  nginxIp: 34.102.221.149 # 192.168.99.100
   domain: www.gluu-helm-example.tk # demoexample.gluu.org
   gluuLdapUrl: opendj:1636
   gluuMaxRamPercent: 25.0
@@ -35,6 +36,16 @@ global:
   gluuCouchBaseUrl: couchbase
 
   appVersion: 4.0.0_dev
+
+nginx-ingress:
+  controller:
+    service:
+      loadBalancerIP: 34.102.221.149 # ""
+
+      ## Set external traffic policy to: "Local" to preserve source IP on
+      ## providers supporting it
+      ## Ref: https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-typeloadbalancer
+      externalTrafficPolicy: "Local"
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -62,8 +73,6 @@ opendj:
   gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: false
-  persistence:
-    provisioner: kubernetes.io/gce-pd #k8s.io/minikube-hostpath
   replicas: 1
 
 # redis should be enabled only when cacheType is REDIS
@@ -75,28 +84,41 @@ shared-shib:
 
 oxtrust:
   enabled: true
-  dynamicStorage: true
 
 nginx:
-  enabled: true 
+  enabled: true
+  # ingress resources
+  # TODO: update the references in ingress resources
+  ingress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - www.gluu-helm-example.tk
+  tls: 
+   - secretName: tls-certificate # DON'T change 
+     hosts:
+       - www.gluu-helm-example.tk
 
 rbac:
   enabled: false
 
 oxshibboleth:
-  enabled: false
+  enabled: true
 
-nfs: #enable nfs for GCP deployment
+nfs: 
   enabled: true 
 
 oxpassport:
-  enabled: false
+  enabled: true
 
 key-rotation:
   enabled: false
 
 cr-rotate:
-  enabled: false 
+  enabled: true 
 
 radius:
   enabled: false

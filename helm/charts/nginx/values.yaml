@@ -23,11 +23,11 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - demoexample.gluu.org
+    - www.gluu-helm-example.tk
   tls: 
    - secretName: tls-certificate
      hosts:
-       - demoexample.gluu.org
+       - www.gluu-helm-example.tk
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

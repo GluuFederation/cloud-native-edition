@@ -6,14 +6,14 @@ metadata:
     storage: opendj
   annotations:
     storageclass.beta.kubernetes.io/is-default-class: "false"
-provisioner: {{ .Values.persistence.provisioner }}
+provisioner: {{ .Values.global.provisioner }}
 parameters:
-  {{- if eq .Values.persistence.provisioner "kubernetes.io/aws-ebs" }}
+  {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: {{ .Values.persistence.encrypted }}
-  {{- else if eq .Values.persistence.provisioner "kubernetes.io/gce-pd" }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.persistence.gcePdStorageType }}
-  {{- else if eq .Values.persistence.provisioner "kubernetes.io/azure-disk" }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.persistence.azureStorageAccountType }}
   kind: {{ .Values.persistence.azureStorageKind }}
   {{- else }}
