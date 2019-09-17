@@ -16,12 +16,13 @@ global:
   azureStorageKind: Shared
 
   namespace: default
+  nginxNamespace: ingress
   serviceName: opendj
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   # nginx config
-  nginxIp: 34.102.221.149 # 192.168.99.100
-  domain: www.gluu-helm-example.tk # demoexample.gluu.org
+  nginxIp: 34.70.112.93 # 192.168.99.100
+  domain: demo.gluu-helm-example.tk # demoexample.gluu.org
   gluuLdapUrl: opendj:1636
   gluuMaxRamPercent: 25.0
   configAdapterName: kubernetes
@@ -40,7 +41,7 @@ global:
 nginx-ingress:
   controller:
     service:
-      loadBalancerIP: 34.102.221.149 # ""
+      loadBalancerIP: 34.70.112.93 # ""
 
       ## Set external traffic policy to: "Local" to preserve source IP on
       ## providers supporting it
@@ -96,29 +97,29 @@ nginx:
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - www.gluu-helm-example.tk
+    - demo.gluu-helm-example.tk
   tls: 
    - secretName: tls-certificate # DON'T change 
      hosts:
-       - www.gluu-helm-example.tk
+       - demo.gluu-helm-example.tk
 
 rbac:
   enabled: false
 
 oxshibboleth:
-  enabled: true
+  enabled: false
 
 nfs: 
   enabled: true 
 
 oxpassport:
-  enabled: true
+  enabled: false
 
 key-rotation:
   enabled: false
 
 cr-rotate:
-  enabled: true 
+  enabled: false 
 
 radius:
   enabled: false

@@ -165,7 +165,7 @@ controller:
     ##
     externalIPs: []
 
-    loadBalancerIP: ""
+    loadBalancerIP: 34.70.112.93
     loadBalancerSourceRanges: []
 
     enableHttp: true
@@ -245,7 +245,7 @@ controller:
       ##
       externalIPs: []
 
-      loadBalancerIP: ""
+      loadBalancerIP: 34.70.112.93
       loadBalancerSourceRanges: []
       servicePort: 18080
       type: ClusterIP
@@ -267,7 +267,7 @@ controller:
       ##
       externalIPs: []
 
-      loadBalancerIP: ""
+      loadBalancerIP: 34.70.112.93
       loadBalancerSourceRanges: []
       servicePort: 9913
       type: ClusterIP
@@ -343,7 +343,7 @@ defaultBackend:
     ##
     externalIPs: []
 
-    loadBalancerIP: ""
+    loadBalancerIP: 34.70.112.93
     loadBalancerSourceRanges: []
     servicePort: 80
     type: ClusterIP
