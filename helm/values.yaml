@@ -24,7 +24,7 @@ global:
   nginxIp: 34.70.112.93 # 192.168.99.100
   domain: demo.gluu-helm-example.tk # demoexample.gluu.org
   gluuLdapUrl: opendj:1636
-  gluuMaxRamPercent: 25.0
+  gluuMaxRamPercent: 75.0
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
   #persistence types and options
