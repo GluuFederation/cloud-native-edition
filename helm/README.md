@@ -92,6 +92,20 @@ For both deployments, different configurations needs to be changed as described 
 
 2. ### local or minikube
   - Most of the default args are meant to install the chart to a local environment.
+  - One should not forget to add the domain to local machine in `/etc/hosts` file pointing to the minikube IP as shown below.
+  ```
+  ~ cat /etc/hosts
+  ##
+  # Host Database
+  #
+  # localhost is used to configure the loopback interface
+  # when the system is booting.  Do not change this entry.
+  ##
+  192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+  127.0.0.1	localhost
+  255.255.255.255	broadcasthost
+  ::1             localhost
+  ```
 
 
 The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
