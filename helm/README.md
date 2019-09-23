@@ -1,6 +1,6 @@
 ## Gluu Server
 
-[Gluu server](https://www.google.com) is an open-source IAM server that sync backend identities, leverage external IDPs, and achieve SSO, 2FA and more.
+[Gluu server](https://www.gluu.org) is an open-source IAM server that sync backend identities, leverage external IDPs, and achieve SSO, 2FA and more.
 
 ## TL;DR;
 
@@ -76,7 +76,7 @@ If during installation the release was not defined, release name is checked by r
 
 ### Deployments are of 2 types 
 - `cloud`
-- `local`/ `minikube`
+- `local` or `minikube`
 
 For both deployments, different configurations needs to be changed as described below.
 
@@ -87,6 +87,7 @@ For both deployments, different configurations needs to be changed as described 
   - Enable cloud deployment in `values.yaml`. 
     Set `global.cloud.enabled` to `true`
   - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
+  - Update `loadBalancerIP` in the `nginx-ingress` values.
   - Install chart and other required services as described below.
 
 2. ### local or minikube
@@ -97,7 +98,7 @@ The recommended way to install the chart is with a custom `values.yaml` to speci
 
 `helm install --name release-name -f values.yaml .`
 
-Tip! The default [values.yaml](https://github.com/mirr254/gluu-server-helm/blob/develop/values.yaml)
+Tip! The default [values.yaml](values.yaml) can be found here.
 
 ### Passport
 

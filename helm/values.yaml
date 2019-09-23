@@ -86,6 +86,8 @@ opendj:
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: false
   replicas: 1
+  persistence:
+    size: 5Gi
 
 # redis should be enabled only when cacheType is REDIS
 redis:
@@ -118,7 +120,7 @@ rbac:
   enabled: false
 
 oxshibboleth:
-  enabled: false
+  enabled: true
 
 nfs: 
   enabled: true 
@@ -133,4 +135,4 @@ cr-rotate:
   enabled: false 
 
 radius:
-  enabled: false
+  enabled: true
