@@ -9,5 +9,5 @@ spec:
   - port: {{ .Values.ports.containerPort }}
     name: {{ .Values.global.oxAuthServiceName }}
   selector:
-    app: {{ .Values.global.oxAuthServiceName }}
+    app: {{ .Values.global.oxAuthServiceName }} #oxauth
     

@@ -4,14 +4,14 @@ metadata:
   name: {{ include "oxauth.fullname" . }}
   annotations:
     storageclass.beta.kubernetes.io/is-default-class: "false"
-provisioner: {{ .Values.global.provisioner }}
+provisioner: {{ .Values.global.cloud.provisioner }}
 parameters:
-  {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
+  {{- if eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   encrypted: "true"
-  {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
+  {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}
-  {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
+  {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
   {{- else }}

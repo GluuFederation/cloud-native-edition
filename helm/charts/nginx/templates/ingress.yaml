@@ -6,7 +6,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-base
   labels:
-    service: oxtrust
+    app: oxtrust
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/app-root: "/identity"
@@ -44,7 +44,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-openid-config
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -82,7 +82,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-uma2-config
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -120,7 +120,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-webfinger
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -159,7 +159,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-webdiscovery
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -198,7 +198,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-scim-config
   labels: 
-    service: oxtrust
+    app: oxtrust
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -237,7 +237,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-u2f-config
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -276,7 +276,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "oxauth"
@@ -313,7 +313,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
   labels: 
-    service: oxauth
+    app: oxauth
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "oxtrust"

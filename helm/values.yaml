@@ -4,16 +4,16 @@ global:
   cloud:
     enabled: true
     provisioner: kubernetes.io/gce-pd # k8s.io/minikube-hostpath
-  # values used to define the StorageClass template
+    # values used to define the StorageClass template
   provisioner: kubernetes.io/gce-pd # 
   encrypted: true
-  reclaimPolicy: Retain
   pool: default
   fsType: ext4
   awsZone: us-west-2a
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Shared
+  reclaimPolicy: Retain
 
   namespace: default
   nginxNamespace: ingress
@@ -21,10 +21,11 @@ global:
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   # nginx config
-  nginxIp: 34.70.112.93 # 192.168.99.100
-  domain: demo.gluu-helm-example.tk # demoexample.gluu.org
+  nginxIp: 34.70.112.93 # 192.16
+  domain: demo.gluu-helm-example.tk 
   gluuLdapUrl: opendj:1636
-  gluuMaxRamPercent: 75.0
+  gluuOxtrustBackend: oxtrust:8080
+  gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
   #persistence types and options
@@ -42,6 +43,16 @@ nginx-ingress:
   controller:
     service:
       loadBalancerIP: 34.70.112.93 # ""
+    
+    ## If controller.stats.enabled = true and controller.metrics.enabled = true, Prometheus metrics will be exported
+    ##
+    metrics:
+      service:
+        loadBalancerIP: 34.70.112.93
+
+  ## default 404 backend
+    service:
+      loadBalancerIP: 34.70.112.93
 
       ## Set external traffic policy to: "Local" to preserve source IP on
       ## providers supporting it

@@ -8,4 +8,5 @@ data:
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
+  GLUU_OXTRUST_BACKEND: {{ .Values.global.gluuOxtrustBackend | quote }}
   
