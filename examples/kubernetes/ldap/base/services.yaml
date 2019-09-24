@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opendj
+spec:
+  ports:
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+    protocol: TCP
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+    protocol: TCP
+  - port: 8989
+    name: replication
+    targetPort: 8989
+    protocol: TCP
+  - port: 4444
+    name: admin
+    targetPort: 4444
+    protocol: TCP
+  clusterIP: None
+  selector:
+    app: opendj

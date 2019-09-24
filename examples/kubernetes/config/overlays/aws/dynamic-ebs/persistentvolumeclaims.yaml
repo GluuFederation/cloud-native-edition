@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: config-pvc
+spec:
+  storageClassName: config-gluu-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGECONFIG

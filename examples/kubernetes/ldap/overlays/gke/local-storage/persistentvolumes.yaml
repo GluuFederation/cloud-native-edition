@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: opendj-pv
+  labels:
+    type: opendj
+spec:
+  capacity:
+    storage: STORAGELDAP
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "HOME_DIR/opendj"
+    type: DirectoryOrCreate

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oxtrust
+  labels:
+    APP_NAME: oxtrust
+spec:
+  serviceName: oxtrust
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oxtrust
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: failure-domain.beta.kubernetes.io/zone
+                operator: In
+                values:
+                # change this to same zone your volume was created at
+                - SCOXTRUSTZONE
+      containers:
+      - name: oxtrust
+        imagePullPolicy: Always
+        image: gluufederation/oxtrust:4.0.0_dev
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
+        volumeMounts:
+          - mountPath: /scripts
+            name: update-lb-ip
+      volumes:
+      - name: update-lb-ip
+        configMap:
+          name: updatelbip

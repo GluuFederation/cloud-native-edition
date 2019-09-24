@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oxauth-pv
+  labels:
+      type: oxauth
+spec:
+  capacity:
+    storage: STORAGEOXAUTH
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/oxauth"
+    type: DirectoryOrCreate

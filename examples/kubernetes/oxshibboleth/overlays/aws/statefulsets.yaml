@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oxshibboleth
+spec:
+  serviceName: oxshibboleth
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oxshibboleth
+  template:
+    spec:
+      containers:
+      - name: oxshibboleth
+        imagePullPolicy: Always
+        image: gluufederation/oxshibboleth:4.0.0_dev
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
+        volumeMounts:
+          - mountPath: /scripts
+            name: update-lb-ip
+      volumes:
+      - name: update-lb-ip
+        configMap:
+          name: updatelbip

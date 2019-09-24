@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: config-init-load
+resources:
+  - jobs.yaml
+  - roles.yaml
+images:
+  - name: gluufederation/config-init
+    newTag: 4.0.0_dev
+configMapGenerator:
+  - name: config-cm
+    literals:
+      - GLUU_CONFIG_ADAPTER="kubernetes"
+      - GLUU_SECRET_ADAPTER="kubernetes"
+  - name: config-generate-params
+    files:
+      - generate.json

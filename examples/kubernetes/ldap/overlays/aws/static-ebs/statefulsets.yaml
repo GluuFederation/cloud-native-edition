@@ -1,0 +1,32 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: opendj
+spec:
+  serviceName: opendj
+  selector:
+    matchLabels:
+      app: opendj
+  volumeClaimTemplates:
+    - metadata:
+        name: opendj-pvc
+      spec:
+        volumeName: opendj-pv
+        storageClassName: ""
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: STORAGELDAP
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: failure-domain.beta.kubernetes.io/zone
+                operator: In
+                values:
+                # change this to same zone your volume was created at
+                - SCLDAPZONE

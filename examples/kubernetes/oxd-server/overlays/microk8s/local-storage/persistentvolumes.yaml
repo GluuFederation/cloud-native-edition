@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oxd-server-pv
+  labels:
+      type: oxd-server
+spec:
+  capacity:
+    storage: STORAGEOXDSERVER
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/oxd-server/conf"
+    type: DirectoryOrCreate

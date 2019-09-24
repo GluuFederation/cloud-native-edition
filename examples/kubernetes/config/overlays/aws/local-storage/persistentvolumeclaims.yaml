@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: config-pvc
+spec:
+  storageClassName: ""
+  volumeName: config-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGECONFIG
+  selector:
+    matchLabels:
+      config-init: config

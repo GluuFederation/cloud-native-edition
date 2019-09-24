@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oxd-server-pvc
+spec:
+  storageClassName: oxd-server-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGEOXDSERVER

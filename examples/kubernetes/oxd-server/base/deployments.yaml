@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oxd-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oxd-server
+  template:
+    spec:
+      volumes:
+        - name: oxd-server
+          persistentVolumeClaim:
+            claimName: oxd-server-pvc
+      containers:
+      - name: oxd-server
+        imagePullPolicy: Always
+        image: gluufederation/oxd-server:4.0.0_dev
+        volumeMounts:
+          - mountPath: /opt/oxd-server/conf
+            name: oxd-server
+            subPath: conf
+        resources:
+          requests:
+            memory: "500Mi"
+          limits:
+            memory: "1536Mi"
+        ports:
+        - containerPort: 8443
+        - containerPort: 8444
+        envFrom:
+        - configMapRef:
+            name: oxd-server-cm

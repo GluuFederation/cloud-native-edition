@@ -1,0 +1,30 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: oxshibboleth
+resources:
+  - statefulsets.yaml
+  - services.yaml
+images:
+  - name: gluufederation/oxshibboleth
+    newTag: 4.0.0_dev
+configMapGenerator:
+  - name: oxshibboleth-cm
+    literals:
+      - LB_ADDR=LBADDR
+      - GLUU_CONFIG_ADAPTER="kubernetes"
+      - GLUU_SECRET_ADAPTER="kubernetes"
+      - GLUU_OXTRUST_BACKEND="oxtrust:8080"
+      - DOMAIN=FQDN
+      -  GLUU_MAX_RAM_PERCENTAGE="75.0"
+      # options: ldap/couchbase/hybrid
+      - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE
+      # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+      - GLUU_PERSISTENCE_LDAP_MAPPING=LDAPMAPPING
+      # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+      - GLUU_LDAP_URL="opendj:1636"
+      # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+      - GLUU_COUCHBASE_URL=COUCHBASEURL
+      - GLUU_COUCHBASE_USER=CBUSER
+      - GLUU_COUCHBASE_CERT_FILE="/etc/certs/couchbase.crt"
+      - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"

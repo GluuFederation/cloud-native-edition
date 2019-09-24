@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oxauth-pvc
+spec:
+  storageClassName: ""
+  volumeName: oxauth-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100M
+  selector:
+    matchLabels:
+      type: oxauth

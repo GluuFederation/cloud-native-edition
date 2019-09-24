@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: radius-pv
+  labels:
+      type: radius
+spec:
+  capacity:
+    storage: STORAGERADIUS
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/radius"
+    type: DirectoryOrCreate

@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oxtrust-pvc
+spec:
+  storageClassName: oxtrust-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGEOXTRUST
