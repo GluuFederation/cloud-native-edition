@@ -25,6 +25,7 @@ global:
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
+  
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes

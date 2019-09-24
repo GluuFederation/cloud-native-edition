@@ -37,17 +37,22 @@ spec:
         volumeMounts:
           - mountPath: /opt/gluu/radius/logs
             name: radius-logs
-        # livenessProbe:
-        #   httpGet:
-        #     path: /radius
-        #     port: radius-auth
-        #   initialDelaySeconds: 40
-        #   periodDelaySeconds: 40 
-        # readinessProbe:
-        #   httpGet:
-        #     path: /radius
-        #     port: radius-auth
-        #   initialDelaySeconds: 25
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/gluu-radius-health
+          initialDelaySeconds: 30
+          periodDelaySeconds: 30 
+          failureThreshold: 20
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /etc/gluu-radius-health
+          initialDelaySeconds: 25
+          periodDelaySeconds: 25
+          failureThreshold: 20
       hostAliases:
         - ip: {{ .Values.global.nginxIp }}
           hostname:

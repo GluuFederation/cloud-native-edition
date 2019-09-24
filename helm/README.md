@@ -15,14 +15,26 @@ It also packages other components/services that makeup Gluu Server.
 
 - Kubernetes 1.3+ 
 - PV provisioner support in the underlying infrastructure
+- Helm 
 
-## installing the chart
+### Instructions to set up Helm in a kubernetes cluster.
+1. To install kubernetes follow the official guide found at [kubernetes](https://kubernetes.io/docs/setup/).  
+2. After that, install Helm by following the guide [here](https://helm.sh/docs/using_helm/)  
+3. Once one has access to a cluster, and installed Helm. Next step is to initialize Helm.   
+`$ helm init `
+
+
+## General instructions on installing the chart
 
 To install the chart with the release name `my-release`:
 
 `$ helm install --name my-release`
 
-The command deploys Gluu Server on Kubernetes cluster using the default configurations. The [configuration](https://github.com/mirr_254/gluu-server-helm/tree/medit-charts#configuration) section lists the parameters that can be configured during installation.
+The command deploys Gluu Server on Kubernetes cluster using the default configurations. The [Configuration](#configuration) section lists the parameters that can be configured during installation.
+
+To install the chart on different platforms follow individual instructions.  
+ - [GCP](#GCE)
+ - [Minikube](#minikube)
 
 ## Uninstalling the Chart
 
@@ -49,6 +61,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
 | `global.gluuPersistenceType`  | Which database backend to use ( Used by radius and wrends service )            | `ldap`          |
+| `nginx-ingress.controller.service.loadBalancerIP` | This is used if cloud deployment is used. It is the IP address associated with the FQDN `global.domain` to be used | `34.70.112.93` |
+| `nginx-ingress.metrics.service.loadBalancerIP`    | As described above                     | `34.70.112.93`                      |
+| `nginx-ingress.service.loadBalancerIP`            | As described above                     | `34.70.112.93`                      |
 | `config.enabled`              | Either to install config chart or not.                     | `true`                              |   
 | `config.orgName`              | Organisation Name                                          | `Gluu`                              |
 | `config.email`                | Email to be registered with ssl                            | `support@gluu.org`                  |
@@ -72,51 +87,70 @@ If during installation the release was not defined, release name is checked by r
 | `radius.enabled`              | Enabled radius installation                                | `false`                             |
 | `rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
 
-## Instructions on how to install different services
 
 ### Deployments are of 2 types 
-- `cloud`
-- `local` or `minikube`
+- `Cloud`
+- `Local` 
 
-For both deployments, different configurations needs to be changed as described below.
-
-1. ### cloud.
-  - Enabling RBAC before deploying the chart. This has to be done first.  
-    To do this deploy the `tiller.yaml` file   
-    `kubectl apply -f tiller.yaml`
-  - Enable cloud deployment in `values.yaml`. 
-    Set `global.cloud.enabled` to `true`
-  - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
-  - Update `loadBalancerIP` in the `nginx-ingress` values.
-  - Install chart and other required services as described below.
-
-2. ### local or minikube
-  - Most of the default args are meant to install the chart to a local environment.
-  - One should not forget to add the domain to local machine in `/etc/hosts` file pointing to the minikube IP as shown below.
-  ```
-  ~ cat /etc/hosts
-  ##
-  # Host Database
-  #
-  # localhost is used to configure the loopback interface
-  # when the system is booting.  Do not change this entry.
-  ##
-  192.168.99.100	demoexample.gluu.org #minikube IP and example domain
-  127.0.0.1	localhost
-  255.255.255.255	broadcasthost
-  ::1             localhost
-  ```
-
+For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
 
 The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
 
-`helm install --name release-name -f values.yaml .`
+`helm install --name <release-name> -f values.yaml .`  
 
-Tip! The default [values.yaml](values.yaml) can be found here.
+`< . >` means that this command is run in the root directory of the helm directory.
+
+
+Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
+
+## Deployments
+
+1. ## Cloud deployments.
+
+   ### GCE
+    - Enabling RBAC before deploying the chart. This has to be done first.  
+      To do this deploy the `tiller.yaml` file   
+      `$ kubectl apply -f tiller.yaml`
+    - Enable cloud deployment in `values.yaml`. 
+      Set `global.cloud.enabled` to `true`
+    - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
+    - Update `loadBalancerIP` value in `values.yaml` file.  
+          - `nginx-ingress.controller.service.loadBalancerIP`  
+          - `nginx-ingress.metrics.service.loadBalancerIP`   
+          - `nginx-ingress.service.loadBalancerIP`  
+    - Also the value `global.nginxIp` is updated with the same IP address.
+    - Install chart `helm install --name <release-name> -f values.yaml .`
+
+    Note! The above method assumes one has FQDN and its associated IP address which is being used as the `loadBalancerIP`. This is just one option to have the LB working.  
+    The other option is to use an empty string in `loadBalancerIP`, provision the server and then get the `loadBalancerIP` from the services by running the following command. `$~ kubectl get svc` Because it takes some time to provision one will have to wait.
+    ```
+           NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+       ingress-nginx          LoadBalancer   10.11.254.183   <pending>     80:30306/TCP,443:30247/TCP   50s
+    ```
+    
+2. ## Local deployments
+    ### minikube
+    - Most of the default args are meant to install the chart to a local environment.
+    - One should not forget to add the domain to local machine in `/etc/hosts` file pointing to the minikube IP as shown below.
+    ```
+    ~ cat /etc/hosts
+    ##
+    # Host Database
+    #
+    # localhost is used to configure the loopback interface
+    # when the system is booting.  Do not change this entry.
+    ##
+    192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+    127.0.0.1	localhost
+    255.255.255.255	broadcasthost
+    ::1             localhost
+    ```
+
+## Instructions on how to install different services
 
 ### Passport
 
-Because by default `oxpassport` is disabled and needs to configured before it can be used. There are 2 different ways to enable oxpassport.
+Because by default `oxpassport` is disabled and needs to be configured before it can be used. There are 2 different ways to enable oxpassport.
 - Method 1: Setting `oxpassport.enabled` to `true` before installation, then configuring it on the UI. Kubernetes will restart the pod until the it detects that passport has been enabled. To enable it on the UI follow these instructions.
 
 1. Login to the UI and navigate to `Configuration` -> `Organization Configuration` -> `System Configuration` and check `Scim Support` and `Passport Support` then click `Update` button on the bottom left.
@@ -143,16 +177,13 @@ opendj:
 redis:
   enabled: true
 
-tags:
-  redis: true
 ```
 
-Note: `redis.enabled` will always override the value in `tags.redis`
 
 ### Other optional services
 
-Other optional services like `key-rotation`, `cr-rotation` ... are enabled by setting their corresponding values to true.  
-For example, to enable `cr-rotate` use  
+Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values - more like the previous 2 - to true.  
+For example, to enable `cr-rotate` set
 ```
 cr-rotate:
   enabled: true
