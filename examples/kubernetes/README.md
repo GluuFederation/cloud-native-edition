@@ -5,7 +5,10 @@
     * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
     * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
     * [Azure - AKS](#azure---aks) ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
+    
+-   If deploying locally make sure to take a look at the specific notes bellow before continuing.
     * [Minikube](#minikube)
+    * [MicroK8s](#microk8s)
 
 - Get the source code:
 
@@ -106,4 +109,4 @@
 
 ## Requirements
 
-1. Install [MicroK8s] (https://microk8s.io/)
+1. Install [MicroK8s](https://microk8s.io/)
