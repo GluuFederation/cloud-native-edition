@@ -28,6 +28,32 @@
 
 - Couchbase URL base , user, and password will be needed for installation when running `create.sh`
 
+## Scaling pods
+
+> **_NOTE:_** When using Mircok8s substitute  `kubectl` with `microk8s.kubectl` in the below commands.
+
+To scale pods, run the following command:
+
+```
+kubectl scale --replicas=<number> <resource> <name>
+```
+
+In this case, `<resource>` could be Deployment or Statefulset and `<name>` is the resource name.
+
+Examples:
+
+-   Scaling oxAuth:
+
+    ```
+    kubectl scale --replicas=2 deployment oxauth
+    ```
+
+-   Scaling oxTrust:
+
+    ```
+    kubectl scale --replicas=2 statefulset oxtrust
+    ```
+
 # Amazon Web Services (AWS) - EKS
 
 ## Setup Cluster
@@ -104,6 +130,7 @@
 4.  Configure `kubectl` to use the cluster:
 
         kubectl config use-context minikube
+
 	
 # MicroK8s
 
