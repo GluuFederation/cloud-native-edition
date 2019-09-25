@@ -5,6 +5,7 @@
     * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
     * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
     * [Azure - AKS](#azure---aks) ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
+    * [Minikube](#minikube)
 
 - Get the source code:
 
@@ -84,3 +85,19 @@
 -   Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-aks-cluster) to create the AKS cluster
 
 -   Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#connect-to-the-cluster) to connect to the AKS cluster
+
+# Minikube
+
+## Requirements
+
+1.  Install [minikube](https://github.com/kubernetes/minikube/releases).
+
+2.  Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+3.  Create cluster:
+
+        minikube start
+
+4.  Configure `kubectl` to use the cluster:
+
+        kubectl config use-context minikube
