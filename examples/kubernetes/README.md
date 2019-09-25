@@ -101,3 +101,9 @@
 4.  Configure `kubectl` to use the cluster:
 
         kubectl config use-context minikube
+	
+# MicroK8s
+
+## Requirements
+
+1. Install [MicroK8s] (https://microk8s.io/)
