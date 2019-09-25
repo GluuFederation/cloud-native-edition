@@ -110,3 +110,7 @@
 ## Requirements
 
 1. Install [MicroK8s](https://microk8s.io/)
+
+1. Start microk8s `microk8s.start`
+
+1. Make sure all ports are open for [microk8s](https://microk8s.io/docs/)
