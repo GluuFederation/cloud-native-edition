@@ -1,10 +1,10 @@
-# Multi-host Deployment using Docker Swarm ![CDNJS](https://img.shields.io/badge/UNDERCONSTRUCTION-red.svg?style=for-the-badge)
+# Gluu Deployment using Docker Swarm ![CDNJS](https://img.shields.io/badge/UNDERCONSTRUCTION-red.svg?style=for-the-badge)
 
-This is an example of how to deploy Gluu Server Enterprise Edition on multi-host setup.
+This is an example of how to deploy Gluu Server Enterprise Edition using docker swarm.
 
 For futher reading, please see the [Gluu Server Enterprise Edition Documentation](https://gluu.org/docs/de/4.0.0).
 
-Are you using **Openstack** take a look at [these](https://github.com/GluuFederation/enterprise-edition/blob/4.0.0/examples/multi-hosts/README.md#notes-on-deploying-multi-hosts-gluu-example-on-openstack) notes before moving forward.
+Are you using **Openstack** take a look at [these](https://github.com/GluuFederation/enterprise-edition/blob/4.0.0/examples/swarm/README.md#notes-on-deploying-gluu-example-on-openstack) notes before moving forward.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Are you using **Openstack** take a look at [these](https://github.com/GluuFedera
 
         wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.0.zip
         unzip 4.0.0.zip
-        cd enterprise-edition-4.0.0/examples/multi-hosts/
+        cd enterprise-edition-4.0.0/examples/swarm/
 
 ## Provisioning Cluster Nodes
 
@@ -213,7 +213,7 @@ To enable key rotation for oxAuth keys (useful when we have RP) and cr-rotate (t
 
     docker stack deploy -c utils.yml gluu
 
-# Notes on deploying multi-hosts gluu example on openstack
+# Notes on deploying gluu example on openstack
 
 **By using this software you are automatically acknowledging that use of Gluu Server Enterprise Edition is subject to the Gluu Support License**
 
