@@ -12,14 +12,17 @@ local_minikube_folder="overlays/minikube/local-storage/"
 local_microk8s_folder="overlays/microk8s/local-storage/"
 static_gke_folder="overlays/gke/static-pd/"
 local_azure_folder="overlays/azure/local-storage/"
+dynamic_azure_folder="overlays/azure/dynamic-dn/"
 emp_output(){
     echo "" > /dev/null 
 }
 
 delete_all(){
     kubectl=kubectl
+	$kubectl delete -f localazureyamls --grace-period=0 --force || emp_output
     $kubectl delete -f localawsyamls || emp_output
 	$kubectl delete -f dynamicawsyamls || emp_output
+	$kubectl delete -f dynamicazureyamls || emp_output
 	$kubectl delete -f localgkeyamls || emp_output
     $kubectl delete -f dynamicgkeyamls || emp_output
     $kubectl delete -f staticgkeyamls || emp_output
@@ -35,6 +38,8 @@ delete_all(){
 	for OUTPUT in $($kubectl get nodes -o template --template='{{range.items}}{{range.status.addresses}}{{if eq .type "ExternalIP"}}{{.address}}{{end}}{{end}} {{end}}' || echo "")
 	do
 	ssh -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa  ec2-user@"$OUTPUT" sudo rm -rf /data || emp_output
+	ssh -oStrictHostKeyChecking=no -i ~/.ssh/id_rsa  opc@"$OUTPUT" sudo rm -rf /data || emp_output
+
 	done
 	rm -rf /data || emp_output
 }
@@ -49,15 +54,34 @@ create_dynamic_gke(){
 		rm $dynamicgkefolder/deployments.yaml || emp_output 
 		if [[ $service == "oxtrust" ]]; then
 		    rm $dynamicgkefolder/statefulsets.yaml || emp_output
-	        cat $dynamicgkefolder/kustomization.yaml | sed '/- statefulsets.yaml/d' | sed '/patchesStrategicMerge:/d' > $dynamicgkefolder/kustomization.yaml || emp_output
+	        cat $dynamicgkefolder/kustomization.yaml | sed '/- statefulsets.yaml/d' | sed '/patchesStrategicMerge:/d' > tmpfile && mv tmpfile $dynamicgkefolder/kustomization.yaml || emp_output
 		fi
         if [[ $service == "oxauth" || $service == "radius"  ]]; then
-        cat $dynamicgkefolder/kustomization.yaml | sed '/- deployments.yaml/d' | sed '/patchesStrategicMerge:/d' > $dynamicgkefolder/kustomization.yaml || emp_output
+        cat $dynamicgkefolder/kustomization.yaml | sed '/- deployments.yaml/d' | sed '/patchesStrategicMerge:/d' > tmpfile && mv tmpfile $dynamicgkefolder/kustomization.yaml || emp_output
 		fi
 	done
     #Config
 	cp config/overlays/gke/local-storage/cluster-role-bindings.yaml config/overlays/gke/dynamic-pd
     printf  "\n  - cluster-role-bindings.yaml" >> config/overlays/gke/dynamic-pd/kustomization.yaml
+}
+
+create_dynamic_azure(){
+	mkdir dynamicazureyamls || emp_output
+	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
+	do
+	    dynamicazurefolder="$service/overlays/azure/dynamic-dn"
+		mkdir -p $service/overlays/azure && cp -r $service/overlays/aws/dynamic-ebs $service/overlays/azure/dynamic-dn
+	    cat $dynamicazurefolder/storageclasses.yaml | sed -s "s@type@storageaccounttype@g" | sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/azure-disk@g" | sed '/zones/d' | sed '/encrypted/d' > tmpfile && mv tmpfile $dynamicazurefolder/storageclasses.yaml || emp_output
+		printf  "  kind: managed" >> $dynamicazurefolder/storageclasses.yaml
+		rm $dynamicazurefolder/deployments.yaml || emp_output 
+		if [[ $service == "oxtrust" ]]; then
+		    rm $dynamicazurefolder/statefulsets.yaml || emp_output
+	        cat $dynamicazurefolder/kustomization.yaml | sed '/- statefulsets.yaml/d' | sed '/patchesStrategicMerge:/d' > tmpfile && mv tmpfile $dynamicazurefolder/kustomization.yaml || emp_output
+		fi
+        if [[ $service == "oxauth" || $service == "radius"  ]]; then
+        cat $dynamicazurefolder/kustomization.yaml | sed '/- deployments.yaml/d' | sed '/patchesStrategicMerge:/d' > tmpfile && mv tmpfile $dynamicazurefolder/kustomization.yaml || emp_output
+		fi
+	done
 }
 
 create_local_minikube(){
@@ -77,10 +101,12 @@ create_local_azure(){
 	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
 	do
 	    localazurefolder="$service/overlays/azure"
-		mkdir -p $localazurefolder && cp -r $service/overlays/aws/local-storage "$_"
+		mkdir -p $localazurefolder && cp -r $service/overlays/gke/local-storage "$_"
 	done
-    cp -r oxpassport/overlays/aws oxpassport/overlays/azure
-	cp -r oxshibboleth/overlays/aws oxshibboleth/overlays/azure
+    cp -r oxpassport/overlays/gke oxpassport/overlays/azure
+	cp -r oxshibboleth/overlays/gke oxshibboleth/overlays/azure
+	rm config/overlays/azure/local-storage/cluster-role-bindings.yaml
+	cat config/overlays/azure/local-storage/kustomization.yaml | sed '/- cluster-role-bindings.yaml/d' > tmpfile && mv tmpfile config/overlays/azure/local-storage/kustomization.yaml
 }
 create_static_gke(){
 	mkdir staticgkeyamls || emp_output
@@ -270,16 +296,17 @@ confirm_ip() {
 
 prepare_config() {
     choiceDeploy=6
-	echo "[0] Exit"
-	echo "[1] AWS      | Volumes on host"
-	echo "[2] AWS      | EBS volumes dynamically provisioned"
-	echo "[3] GKE      | Volumes on host"
-	echo "[4] AWS      | EBS volumes statically provisioned"
-	echo "[5] Minikube | Volumes on host"
-	echo "[6] Microk8s | Volumes on host"
-	echo "[7] GKE      | Persistent Disk volumes dynamically provisioned"
-	echo "[8] GKE      | Persistent Disk volumes statically provisioned"
-	echo "[9] Azure    | Volumes on host"
+	echo "[0]  Exit"
+	echo "[1]  AWS      | Volumes on host"
+	echo "[2]  AWS      | EBS volumes dynamically provisioned"
+	echo "[3]  GKE      | Volumes on host"
+	echo "[4]  AWS      | EBS volumes statically provisioned"
+	echo "[5]  Minikube | Volumes on host"
+	echo "[6]  Microk8s | Volumes on host"
+	echo "[7]  GKE      | Persistent Disk volumes dynamically provisioned"
+	echo "[8]  GKE      | Persistent Disk volumes statically provisioned"
+	echo "[9]  Azure    | Volumes on host"
+	echo "[10] Azure    | Persistent Disk volumes dynamically provisioned"
 	echo "Any other option will default to choice 6 "
 	choiceCR="N"
 	choiceKeyRotate="N"
@@ -445,7 +472,7 @@ prompt_zones(){
 	# Radius server
 	read -rp "Radius storage class zone:                               " SC_RADIUS_ZONE
 	fi
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7  ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10  ]]; then
 	    read -rp "Shared-Shib storage class zone:                          " SC_SHAREDSHIB_ZONE
     fi
 }
@@ -461,7 +488,7 @@ prompt_storage(){
 	# Radius Volume storage
     read -rp "Size of Radius volume storage [Cloud min 1Gi]:             " STORAGE_RADIUS
 	fi
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 ]]; then
 	    read -p "Size of Shared-Shib volume storage [Cloud min 1Gi]:        " STORAGE_SHAREDSHIB
 	fi
 	if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
@@ -573,6 +600,17 @@ generate_yamls() {
 		output_yamls=localazureyamls
 	    yaml_folder=$local_azure_folder
 		prompt_nfs
+	elif [[ $choiceDeploy -eq 10 ]]; then
+	    echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+        read -rp "Please enter the volume type for the persistent disk Options are ['Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS']. Example:UltraSSD_LRS,    : " VOLUME_TYPE
+		echo "Outputing available zones used : "
+		$kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'		
+	    read -rp "Please enter valid Zone name used this might be set to 0:   " ZONE
+		SC_LDAP_ZONE=$ZONE
+		create_dynamic_azure
+		output_yamls=dynamicazureyamls
+	    yaml_folder=$dynamic_azure_folder
+		prompt_nfs
     else
 	    mkdir localmicrok8syamls || emp_output
 	    output_yamls=localmicrok8syamls
@@ -581,7 +619,7 @@ generate_yamls() {
 	fi
     # Get prams for the yamls
     prompt_storage
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 ]]; then
 	    $kustomize shared-shib/$shared_shib_child_folder/ | replace_all  > $output_yamls/shared-shib.yaml
 	fi	
 
@@ -650,7 +688,7 @@ deploy_nginx(){
     #AWS
 	lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
 	hostname="'${lbhostname}'" || emp_output 
-	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 ]]; then
+	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 ]]; then
 	    $kubectl apply -f nginx/cloud-generic.yaml
 		$kubectl apply -f nfs/base/services.yaml
 	    ip=""
@@ -700,7 +738,7 @@ deploy_persistence(){
 	done
 }
 deploy_shared_shib(){
-	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 ]]; then
+	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 ]]; then
 		NFS_IP=""
 	    while true; do
 	    if [[ $NFS_IP ]] ; then

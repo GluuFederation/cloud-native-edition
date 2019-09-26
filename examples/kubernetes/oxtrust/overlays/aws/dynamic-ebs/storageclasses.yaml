@@ -6,11 +6,11 @@ metadata:
     storageclass.beta.kubernetes.io/is-default-class: "false"
 provisioner: kubernetes.io/aws-ebs
 allowVolumeExpansion: true
+reclaimPolicy: Retain
+mountOptions:
+- debug
 parameters:
   type: VOLUMETYPE
   encrypted: "true"
   # us-west-2a
   zones: SCOXTRUSTZONE
-reclaimPolicy: Retain
-mountOptions:
-- debug
