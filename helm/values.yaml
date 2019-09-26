@@ -1,9 +1,9 @@
 #global values to be used across charts
 global:
-  # StorageClass values 
+  # cloud.enabled creates the nginx-ingress chart
   cloud:
-    enabled: true
-    provisioner: kubernetes.io/gce-pd # k8s.io/minikube-hostpath
+    enabled: false
+    provisioner: kubernetes.io/gce-pd 
     # values used to define the StorageClass template
   encrypted: true
   pool: default
@@ -13,6 +13,7 @@ global:
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Shared
   reclaimPolicy: Retain
+  provisioner: k8s.io/minikube-hostpath
 
   namespace: default
   nginxNamespace: ingress
@@ -20,8 +21,8 @@ global:
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   # Networking configs
-  nginxIp: 34.70.112.93 # 192.16
-  domain: demo.gluu-helm-example.tk 
+  nginxIp: 192.168.99.100 # SHOULD BE CHANGED FOR CLOUD
+  domain: demoexample.gluu.org 
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
@@ -43,17 +44,17 @@ global:
 nginx-ingress:
   controller:
     service:
-      loadBalancerIP: 34.70.112.93 # ""
+      loadBalancerIP: ""
     
     ## If controller.stats.enabled = true and controller.metrics.enabled = true, Prometheus metrics will be exported
     ##
     metrics:
       service:
-        loadBalancerIP: 34.70.112.93
+        loadBalancerIP: ""
 
   ## default 404 backend
     service:
-      loadBalancerIP: 34.70.112.93
+      loadBalancerIP: ""
 
       ## Set external traffic policy to: "Local" to preserve source IP on
       ## providers supporting it
@@ -78,7 +79,9 @@ config:
 
 oxauth:
   enabled: true
-  dynamicStorage: true
+
+oxtrust:
+  enabled: true
 
 opendj:
   enabled: true
@@ -95,9 +98,6 @@ redis:
   enabled: false
 
 shared-shib:
-  enabled: false
-
-oxtrust:
   enabled: true
 
 nginx:
@@ -114,7 +114,7 @@ nginx:
         - demo.gluu-helm-example.tk
 
 rbac:
-  enabled: false
+  enabled: true
 
 oxshibboleth:
   enabled: true
@@ -123,13 +123,13 @@ nfs:
   enabled: true 
 
 oxpassport:
-  enabled: false
+  enabled: true
 
 key-rotation:
-  enabled: false
+  enabled: true
 
 cr-rotate:
-  enabled: false 
+  enabled: true 
 
 radius:
   enabled: true

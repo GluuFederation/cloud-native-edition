@@ -114,19 +114,38 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
     - Enable cloud deployment in `values.yaml`. 
       Set `global.cloud.enabled` to `true`
     - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
+
+    2 Options from here.
+    1. ### Domain Name not mapped to an IP
+    #### Important
+    - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
+      ```
+        config:
+          enabled: false 
+      ```
+      - Install the chart by running   
+      `helm install --name <release-name> -f values.yaml .`  
+
+      This will help in getting the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
+      `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+
+    - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
     - Update `loadBalancerIP` value in `values.yaml` file.  
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
           - `nginx-ingress.service.loadBalancerIP`  
-    - Also the value `global.nginxIp` is updated with the same IP address.
-    - Install chart `helm install --name <release-name> -f values.yaml .`
-
-    Note! The above method assumes one has FQDN and its associated IP address which is being used as the `loadBalancerIP`. This is just one option to have the LB working.  
-    The other option is to use an empty string in `loadBalancerIP`, provision the server and then get the `loadBalancerIP` from the services by running the following command. `$~ kubectl get svc` Because it takes some time to provision one will have to wait.
-    ```
-           NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-       ingress-nginx          LoadBalancer   10.11.254.183   <pending>     80:30306/TCP,443:30247/TCP   50s
-    ```
+          - `global.nginxIp` 
+    - Enable all the required services.
+    - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .`
+    2. ### Domain already mapped to an IP address  
+    - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
+          - `nginx-ingress.controller.service.loadBalancerIP`  
+          - `nginx-ingress.metrics.service.loadBalancerIP`   
+          - `nginx-ingress.service.loadBalancerIP`  
+          - `global.nginxIp` 
+    - Disable the services that are not required then install the chart by running
+    `helm install --name <release-name> -f values.yaml . `
+    
     
 2. ## Local deployments
     ### minikube
