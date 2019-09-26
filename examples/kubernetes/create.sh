@@ -21,6 +21,8 @@ delete_all(){
     $kubectl delete -f localawsyamls || emp_output
 	$kubectl delete -f dynamicawsyamls || emp_output
 	$kubectl delete -f localgkeyamls || emp_output
+    $kubectl delete -f dynamicgkeyamls || emp_output
+    $kubectl delete -f staticgkeyamls || emp_output
 	$kubectl delete -f staticawsyamls || emp_output
 	$kubectl delete -f localminikubeyamls || emp_output
     $kubectl delete -f localmicrok8syamls || emp_output
@@ -28,7 +30,6 @@ delete_all(){
 	$kubectl delete --namespace default --all pv,pvc,cm || emp_output
     $kubectl delete secret gluu tls-certificate cb-pass cb-crt || emp_output
     $kubectl delete -f nginx/ || emp_output
-	$kubectl delete -f dynamicgkeyamls || emp_output
 	echo "Trying to delete folders created at other nodes. This assumes your ssh is ~/.ssh/id_rsa "
 	# Loops through the IPs of the nodes and delets /data
 	for OUTPUT in $($kubectl get nodes -o template --template='{{range.items}}{{range.status.addresses}}{{if eq .type "ExternalIP"}}{{.address}}{{end}}{{end}} {{end}}' || echo "")
@@ -43,7 +44,7 @@ create_dynamic_gke(){
 	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
 	do
 	    dynamicgkefolder="$service/overlays/gke/dynamic-pd"
-	    cp -r $service/overlays/aws/dynamic-ebs $service/overlays/gke/dynamic-pd
+	    cp -r $service/overlays/aws/dynamic-ebs $dynamicgkefolder
 	    cat $dynamicgkefolder/storageclasses.yaml | sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" | sed '/zones/d' | sed '/encrypted/d' > tmpfile && mv tmpfile $dynamicgkefolder/storageclasses.yaml || emp_output
 		rm $dynamicgkefolder/deployments.yaml || emp_output 
 		if [[ $service == "oxtrust" ]]; then
@@ -59,6 +60,16 @@ create_dynamic_gke(){
     printf  "\n  - cluster-role-bindings.yaml" >> config/overlays/gke/dynamic-pd/kustomization.yaml
 }
 
+create_minikube(){
+	mkdir localminikubeyamls || emp_output
+	for service in "config" "ldap" "oxauth" "oxd-server" "oxpassport" "oxshibboleth" "oxtrust" "radius"
+	do
+	    localminikubefolder="$service/overlays/minikube"
+	    cp -r $service/overlays/microk8s $localminikubefolder
+	done
+    #shared-shib
+	cp -r shared-shib/microk8s shared-shib/minikube
+}
 create_static_gke(){
 	mkdir staticgkeyamls || emp_output
 	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
@@ -523,7 +534,7 @@ generate_yamls() {
 		prompt_volumes_identitfier
 		shared_shib_child_folder="aws"
     elif [[ $choiceDeploy -eq 5 ]]; then
-	    mkdir localminikubeyamls || emp_output
+	    create_minikube
 	    output_yamls=localminikubeyamls
 	    yaml_folder=$local_minikube_folder
 		shared_shib_child_folder="minikube"

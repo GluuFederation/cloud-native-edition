@@ -9,7 +9,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100M
+      storage: STORAGEOXAUTH
   selector:
     matchLabels:
       type: oxauth

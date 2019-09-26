@@ -6,7 +6,7 @@ metadata:
       type: oxauth
 spec:
   capacity:
-    storage: 100M
+    storage: STORAGEOXAUTH
   accessModes:
     - ReadWriteOnce
   hostPath:
