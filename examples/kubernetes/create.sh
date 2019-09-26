@@ -11,7 +11,7 @@ local_gke_folder="overlays/gke/local-storage/"
 local_minikube_folder="overlays/minikube/local-storage/"
 local_microk8s_folder="overlays/microk8s/local-storage/"
 static_gke_folder="overlays/gke/static-pd/"
-
+local_azure_folder="overlays/azure/local-storage/"
 emp_output(){
     echo "" > /dev/null 
 }
@@ -60,15 +60,27 @@ create_dynamic_gke(){
     printf  "\n  - cluster-role-bindings.yaml" >> config/overlays/gke/dynamic-pd/kustomization.yaml
 }
 
-create_minikube(){
+create_local_minikube(){
 	mkdir localminikubeyamls || emp_output
-	for service in "config" "ldap" "oxauth" "oxd-server" "oxpassport" "oxshibboleth" "oxtrust" "radius"
+	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
 	do
 	    localminikubefolder="$service/overlays/minikube"
-	    cp -r $service/overlays/microk8s $localminikubefolder
+		mkdir -p $localminikubefolder && cp -r $service/overlays/microk8s/local-storage "$_"
 	done
+	cp -r oxpassport/overlays/microk8s oxpassport/overlays/minikube
+	cp -r oxshibboleth/overlays/microk8s oxshibboleth/overlays/minikube
     #shared-shib
 	cp -r shared-shib/microk8s shared-shib/minikube
+}
+create_local_azure(){
+	mkdir localazureyamls || emp_output
+	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
+	do
+	    localazurefolder="$service/overlays/azure"
+		mkdir -p $localazurefolder && cp -r $service/overlays/aws/local-storage "$_"
+	done
+    cp -r oxpassport/overlays/aws oxpassport/overlays/azure
+	cp -r oxshibboleth/overlays/aws oxshibboleth/overlays/azure
 }
 create_static_gke(){
 	mkdir staticgkeyamls || emp_output
@@ -267,7 +279,8 @@ prepare_config() {
 	echo "[6] Microk8s | Volumes on host"
 	echo "[7] GKE      | Persistent Disk volumes dynamically provisioned"
 	echo "[8] GKE      | Persistent Disk volumes statically provisioned"
-	echo  "Any other option will default to choice 6 "
+	echo "[9] Azure    | Volumes on host"
+	echo "Any other option will default to choice 6 "
 	choiceCR="N"
 	choiceKeyRotate="N"
 	choiceOXD="N"
@@ -448,7 +461,7 @@ prompt_storage(){
 	# Radius Volume storage
     read -rp "Size of Radius volume storage [Cloud min 1Gi]:             " STORAGE_RADIUS
 	fi
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 ]]; then
 	    read -p "Size of Shared-Shib volume storage [Cloud min 1Gi]:        " STORAGE_SHAREDSHIB
 	fi
 	if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
@@ -470,10 +483,13 @@ gke_prompts() {
 		echo "This occurs when your compute instance has PermitRootLogin set to  no in it's SSHD config. Trying to login using user"
 		HOME_DIR=$(gcloud compute ssh user@$NODE --zone $ZONE --command='echo $HOME')
 	fi
+	prompt_nfs
+}
+
+prompt_nfs() {
 	$kustomize nfs/base/ > $output_yamls/nfs.yaml
 	read -rp "NFS storage volume:           " STORAGE_NFS
 }
-
 prompt_volumes_identitfier() {
 	read -rp "Please enter $static_volume_prompt for Config:                             " CONFIG_VOLUMEID
 	if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
@@ -534,7 +550,7 @@ generate_yamls() {
 		prompt_volumes_identitfier
 		shared_shib_child_folder="aws"
     elif [[ $choiceDeploy -eq 5 ]]; then
-	    create_minikube
+	    create_local_minikube
 	    output_yamls=localminikubeyamls
 	    yaml_folder=$local_minikube_folder
 		shared_shib_child_folder="minikube"
@@ -552,6 +568,11 @@ generate_yamls() {
 		prompt_volumes_identitfier
 	    yaml_folder=$static_gke_folder
 		gke_prompts
+	elif [[ $choiceDeploy -eq 9 ]]; then
+	    create_local_azure
+		output_yamls=localazureyamls
+	    yaml_folder=$local_azure_folder
+		prompt_nfs
     else
 	    mkdir localmicrok8syamls || emp_output
 	    output_yamls=localmicrok8syamls
@@ -560,7 +581,7 @@ generate_yamls() {
 	fi
     # Get prams for the yamls
     prompt_storage
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 ]]; then
 	    $kustomize shared-shib/$shared_shib_child_folder/ | replace_all  > $output_yamls/shared-shib.yaml
 	fi	
 
@@ -629,7 +650,7 @@ deploy_nginx(){
     #AWS
 	lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
 	hostname="'${lbhostname}'" || emp_output 
-	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 ]]; then
+	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 ]]; then
 	    $kubectl apply -f nginx/cloud-generic.yaml
 		$kubectl apply -f nfs/base/services.yaml
 	    ip=""
@@ -679,7 +700,7 @@ deploy_persistence(){
 	done
 }
 deploy_shared_shib(){
-	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 ]]; then
+	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 ]]; then
 		NFS_IP=""
 	    while true; do
 	    if [[ $NFS_IP ]] ; then
