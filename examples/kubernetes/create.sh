@@ -13,6 +13,8 @@ local_microk8s_folder="overlays/microk8s/local-storage/"
 static_gke_folder="overlays/gke/static-pd/"
 local_azure_folder="overlays/azure/local-storage/"
 dynamic_azure_folder="overlays/azure/dynamic-dn/"
+static_azure_folder="overlays/azure/static-dn/"
+
 emp_output(){
     echo "" > /dev/null 
 }
@@ -20,6 +22,7 @@ emp_output(){
 delete_all(){
     kubectl=kubectl
 	$kubectl delete -f localazureyamls --grace-period=0 --force || emp_output
+	$kubectl delete -f staticazureyamls || emp_output
     $kubectl delete -f localawsyamls || emp_output
 	$kubectl delete -f dynamicawsyamls || emp_output
 	$kubectl delete -f dynamicazureyamls || emp_output
@@ -72,7 +75,7 @@ create_dynamic_azure(){
 	    dynamicazurefolder="$service/overlays/azure/dynamic-dn"
 		mkdir -p $service/overlays/azure && cp -r $service/overlays/aws/dynamic-ebs $service/overlays/azure/dynamic-dn
 	    cat $dynamicazurefolder/storageclasses.yaml | sed -s "s@type@storageaccounttype@g" | sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/azure-disk@g" | sed '/zones/d' | sed '/encrypted/d' > tmpfile && mv tmpfile $dynamicazurefolder/storageclasses.yaml || emp_output
-		printf  "  kind: managed" >> $dynamicazurefolder/storageclasses.yaml
+		printf  "  kind: Managed" >> $dynamicazurefolder/storageclasses.yaml
 		rm $dynamicazurefolder/deployments.yaml || emp_output 
 		if [[ $service == "oxtrust" ]]; then
 		    rm $dynamicazurefolder/statefulsets.yaml || emp_output
@@ -121,7 +124,22 @@ create_static_gke(){
         printf  "\n    fsType: ext4" >> $staticgkefolder/persistentvolumes.yaml
 	done
 }
-
+create_static_azure(){
+	mkdir staticazureyamls || emp_output
+	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
+	do
+	    staticazurefolder="$service/overlays/azure/static-dn"
+		service_name=$(echo "${service^^}VOLUMEID" | tr --delete -)
+		disk_uri=$(echo "${service^^}DISKURI" | tr --delete -)
+		mkdir -p $service/overlays/azure && cp -r $service/overlays/aws/local-storage $service/overlays/azure/static-dn
+	    cat $staticazurefolder/persistentvolumes.yaml | sed '/hostPath/d' | sed '/path/d' | sed '/type/d' > tmpfile && mv tmpfile $staticazurefolder/persistentvolumes.yaml || emp_output
+        printf  "  azureDisk:" >> $staticazurefolder/persistentvolumes.yaml
+        printf  "\n    diskName: $service_name" >> $staticazurefolder/persistentvolumes.yaml
+        printf  "\n    diskURI: $disk_uri" >> $staticazurefolder/persistentvolumes.yaml		
+        printf  "\n    fsType: ext4" >> $staticazurefolder/persistentvolumes.yaml
+		printf  "\n    kind: Managed" >> $staticazurefolder/persistentvolumes.yaml
+	done
+}
 replace_all(){
 	 sed "s/\<PERSISTENCETYPE\>/$PERSISTENCE_TYPE/" \
 	 | sed "s/\<LDAPMAPPING\>/$LDAP_MAPPING/" \
@@ -150,6 +168,12 @@ replace_all(){
 	 | sed -s "s@RADIUSVOLUMEID@$RADIUS_VOLUMEID@g" \
 	 | sed -s "s@STORAGERADIUS@$STORAGE_RADIUS@g" \
 	 | sed -s "s@SCRADIUSZONE@$SC_RADIUS_ZONE@g" \
+	 | sed -s "s@CONFIGDISKURI@$CONFIG_DISKURI@g" \
+	 | sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
+	 | sed -s "s@OXAUTHDISKURI@$OXAUTH_DISKURI@g" \
+	 | sed -s "s@OXDSERVERDISKURI@$OXDSERVER_DISKURI@g" \
+	 | sed -s "s@OXTRUSTDISKURI@$OXTRUST_DISKURI@g" \
+	 | sed -s "s@RADIUSDISKURI@$RADIUS_DISKURI@g" \
 	 | sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g"
 }
 
@@ -307,6 +331,7 @@ prepare_config() {
 	echo "[8]  GKE      | Persistent Disk volumes statically provisioned"
 	echo "[9]  Azure    | Volumes on host"
 	echo "[10] Azure    | Persistent Disk volumes dynamically provisioned"
+	echo "[11] Azure    | Persistent Disk volumes statically provisioned"
 	echo "Any other option will default to choice 6 "
 	choiceCR="N"
 	choiceKeyRotate="N"
@@ -472,7 +497,7 @@ prompt_zones(){
 	# Radius server
 	read -rp "Radius storage class zone:                               " SC_RADIUS_ZONE
 	fi
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10  ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 && $choiceDeploy -ne 11 ]]; then
 	    read -rp "Shared-Shib storage class zone:                          " SC_SHAREDSHIB_ZONE
     fi
 }
@@ -488,7 +513,7 @@ prompt_storage(){
 	# Radius Volume storage
     read -rp "Size of Radius volume storage [Cloud min 1Gi]:             " STORAGE_RADIUS
 	fi
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 && $choiceDeploy -ne 11 ]]; then
 	    read -p "Size of Shared-Shib volume storage [Cloud min 1Gi]:        " STORAGE_SHAREDSHIB
 	fi
 	if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
@@ -515,7 +540,7 @@ gke_prompts() {
 
 prompt_nfs() {
 	$kustomize nfs/base/ > $output_yamls/nfs.yaml
-	read -rp "NFS storage volume:           " STORAGE_NFS
+	read -rp "NFS storage volume:                                        " STORAGE_NFS
 }
 prompt_volumes_identitfier() {
 	read -rp "Please enter $static_volume_prompt for Config:                             " CONFIG_VOLUMEID
@@ -531,6 +556,22 @@ prompt_volumes_identitfier() {
 	if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
 		# Radius server
 		read -rp "Please enter $static_volume_prompt for Radius:                             " RADIUS_VOLUMEID
+	fi
+}
+prompt_disk_uris() {
+	read -rp "Please enter the disk uri for Config:                             " CONFIG_DISKURI
+	if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+		read -rp "Please enter the disk uri for LDAP:                               " LDAP_DISKURI
+	fi		
+	read -rp "Please enter the disk uri for oxAuth:                             " OXAUTH_DISKURI
+	if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+		# OXD server
+		read -rp "Please enter the disk uri for OXD-server:                     " OXDSERVER_DISKURI
+	fi
+	read -rp "Please enter the disk uri for oxTrust:                            " OXTRUST_DISKURI
+	if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+		# Radius server
+		read -rp "Please enter the disk uri for Radius:                             " RADIUS_DISKURI
 	fi
 }
 generate_yamls() {
@@ -605,11 +646,25 @@ generate_yamls() {
         read -rp "Please enter the volume type for the persistent disk Options are ['Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS']. Example:UltraSSD_LRS,    : " VOLUME_TYPE
 		echo "Outputing available zones used : "
 		$kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'		
-	    read -rp "Please enter valid Zone name used this might be set to 0:   " ZONE
+	    read -rp "Please enter a valid Zone name used this might be set to 0:   " ZONE
 		SC_LDAP_ZONE=$ZONE
 		create_dynamic_azure
 		output_yamls=dynamicazureyamls
 	    yaml_folder=$dynamic_azure_folder
+		prompt_nfs
+	elif [[ $choiceDeploy -eq 11 ]]; then
+	    echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+        read -rp "Please enter the volume type for the persistent disk Options are ['Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS']. Example:UltraSSD_LRS,    : " VOLUME_TYPE
+		echo "Outputing available zones used : "
+		$kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'		
+	    read -rp "Please enter a valid Zone name used for LDAP this might be set to 0:   " ZONE
+		SC_LDAP_ZONE=$ZONE
+		create_static_azure
+		static_volume_prompt="Persistent Disk Name"
+		prompt_volumes_identitfier
+		prompt_disk_uris
+		output_yamls=staticazureyamls
+	    yaml_folder=$static_azure_folder
 		prompt_nfs
     else
 	    mkdir localmicrok8syamls || emp_output
@@ -619,7 +674,7 @@ generate_yamls() {
 	fi
     # Get prams for the yamls
     prompt_storage
-	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 ]]; then
+	if [[ $choiceDeploy -ne 3 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 && $choiceDeploy -ne 11 ]]; then
 	    $kustomize shared-shib/$shared_shib_child_folder/ | replace_all  > $output_yamls/shared-shib.yaml
 	fi	
 
@@ -688,7 +743,7 @@ deploy_nginx(){
     #AWS
 	lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
 	hostname="'${lbhostname}'" || emp_output 
-	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 ]]; then
+	if [[ $choiceDeploy -eq 3  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 || $choiceDeploy -eq 11 ]]; then
 	    $kubectl apply -f nginx/cloud-generic.yaml
 		$kubectl apply -f nfs/base/services.yaml
 	    ip=""
@@ -697,7 +752,7 @@ deploy_nginx(){
 	    if [[ $ip ]]; then
 		    break
 	    fi
-		#GKE get external IP
+		#GKE and Azure get external IP
 	    ip=$($kubectl -n ingress-nginx get svc ingress-nginx --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
 	    sleep 20
 	    done
@@ -730,7 +785,6 @@ deploy_persistence(){
 	is_pod_complete "app=persistence-load"
 	while true; do
 	  persistencelog=$($kubectl logs -l app=persistence-load || emp_output)
-	  # Use the below when you want the output not to contain some string
 	  if [[ $persistencelog =~ "Importing o_metric.ldif file" ]]; then
 		break
 	  fi
@@ -738,7 +792,7 @@ deploy_persistence(){
 	done
 }
 deploy_shared_shib(){
-	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 ]]; then
+	if [[ $choiceDeploy -eq 3 || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 || $choiceDeploy -eq 11 ]]; then
 		NFS_IP=""
 	    while true; do
 	    if [[ $NFS_IP ]] ; then
