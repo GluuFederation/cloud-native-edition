@@ -11,7 +11,7 @@ global:
   awsZone: us-west-2a
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
-  azureStorageKind: Shared
+  azureStorageKind: Managed
   reclaimPolicy: Retain
   provisioner: k8s.io/minikube-hostpath
 
