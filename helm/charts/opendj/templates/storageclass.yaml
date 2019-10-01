@@ -10,17 +10,17 @@ provisioner: {{ .Values.global.cloud.provisioner }}
 parameters:
   {{- if eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
-  encrypted: {{ .Values.persistence.encrypted }}
+  encrypted: {{ .Values.global.encrypted }}
   {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/gce-pd" }}
-  type: {{ .Values.persistence.gcePdStorageType }}
+  type: {{ .Values.global.gcePdStorageType }}
   {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/azure-disk" }}
-  storageAccountType: {{ .Values.persistence.azureStorageAccountType }}
-  kind: {{ .Values.persistence.azureStorageKind }}
+  storageAccountType: {{ .Values.global.azureStorageAccountType }}
+  kind: {{ .Values.global.azureStorageKind }}
   {{- else }}
-  pool: {{ .Values.persistence.pool }}
-  fsType: {{ .Values.persistence.fsType }}
+  pool: {{ .Values.global.pool }}
+  fsType: {{ .Values.global.fsType }}
   {{- end }}
 allowVolumeExpansion: true
-reclaimPolicy: {{ .Values.persistence.reclaimPolicy }}
+reclaimPolicy: {{ .Values.global.reclaimPolicy }}
 mountOptions:
   - debug

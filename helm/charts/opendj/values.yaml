@@ -36,17 +36,6 @@ persistence:
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
   dbStorageSize: 5Gi
-  # StorageClass values
-  # values used to define the StorageClass template
-  encrypted: true
-  reclaimPolicy: Retain
-  pool: default
-  description: gluu-config-init-volume
-  fsType: ext4
-  provisioner: k8s.io/minikube-hostpath
-  gcePdStorageType: pd-standard
-  azureStorageAccountType: Standard_LRS
-  azureStorageKind: Shared
 
 #servicePorts values used in StatefulSet container
 ports:
