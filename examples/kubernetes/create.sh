@@ -118,7 +118,7 @@ create_static_gke(){
 	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
 	do
 	    staticgkefolder="$service/overlays/gke/static-pd"
-		service_name=$(echo "${service^^}VOLUMEID" | tr --delete -)
+		service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
 	    cp -r $service/overlays/eks/local-storage $service/overlays/gke/static-pd
 	    cat $staticgkefolder/persistentvolumes.yaml | sed '/hostPath/d' | sed '/path/d' | sed '/type/d' > tmpfile && mv tmpfile $staticgkefolder/persistentvolumes.yaml || emp_output
         printf  "  gcePersistentDisk:" >> $staticgkefolder/persistentvolumes.yaml
@@ -131,8 +131,8 @@ create_static_azure(){
 	for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"
 	do
 	    staticazurefolder="$service/overlays/azure/static-dn"
-		service_name=$(echo "${service^^}VOLUMEID" | tr --delete -)
-		disk_uri=$(echo "${service^^}DISKURI" | tr --delete -)
+		service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
+		disk_uri=$(echo "${service^^}DISKURI" | tr -d -)
 		mkdir -p $service/overlays/azure && cp -r $service/overlays/eks/local-storage $service/overlays/azure/static-dn
 	    cat $staticazurefolder/persistentvolumes.yaml | sed '/hostPath/d' | sed '/path/d' | sed '/type/d' > tmpfile && mv tmpfile $staticazurefolder/persistentvolumes.yaml || emp_output
         printf  "  azureDisk:" >> $staticazurefolder/persistentvolumes.yaml
@@ -215,7 +215,7 @@ is_pod_ready() {
 check_k8version() {
     kustomize="$kubectl kustomize"
     kubectl_version=$("$kubectl" version -o json | jq -r '.clientVersion.minor')
-	kubectl_version=$(echo "$kubectl_version" | tr --delete +)
+	kubectl_version=$(echo "$kubectl_version" | tr -d +)
 	echo "[I] kubectl detected version 1.$kubectl_version"
     # version < V1.14
     if [[ $kubectl_version -lt 14 ]]; then
@@ -420,9 +420,9 @@ prepare_config() {
 		echo "$CB_PW" > couchbase_password
 	fi
 	if [[ $choiceDeploy -eq 1 ]]; then
-	kubectl=microk8s.kubectl
+	    kubectl=microk8s.kubectl || emp_output
 	else
-	    kubectl=kubectl
+	    kubectl=kubectl || emp_output
 	fi
 	check_k8version
 	if [[ $choiceDeploy -eq 2 ]] || [[ $choiceDeploy -eq 1 ]]; then
