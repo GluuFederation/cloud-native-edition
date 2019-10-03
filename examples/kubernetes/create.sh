@@ -34,6 +34,8 @@ delete_all() {
     $kubectl delete -f dynamiceksyamls || emp_output
   elif [ -d "dynamicazureyamls" ];then
     $kubectl delete -f dynamicazureyamls || emp_output
+    $kubectl delete po oxtrust-0 --force --grace-period=0
+    $kubectl delete po oxshibboleth-0 --force --grace-period=0
   elif [ -d "localgkeyamls" ];then
     $kubectl delete -f localgkeyamls || emp_output
   elif [ -d "dynamicgkeyamls" ];then
@@ -223,6 +225,7 @@ replace_all() {
     | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
     | $sed -s "s@STORAGECONFIG@$STORAGE_CONFIG@g" \
     | $sed "s#ACCOUNT#$ACCOUNT#g" \
+    | $sed "s/\<GLUUCACHETYPE\>/$GLUU_CACHE_TYPE/" \
     | $sed -s "s@SCCONFIGZONE@$SC_CONFIG_ZONE@g" \
     | $sed -s "s@LDAPVOLUMEID@$LDAP_VOLUMEID@g" \
     | $sed -s "s@STORAGELDAP@$STORAGE_LDAP@g" \
@@ -437,6 +440,20 @@ prepare_config() {
   choiceOXD="N"
   choiceRadius="N"
   choicePassport="N"
+  echo "|-----------------------------------------------------------------|"
+  echo "|                     Cache layer                                 |"
+  echo "|-----------------------------------------------------------------|"
+  echo "| [0] NATIVE_PERSISTENCE [default]                                |"
+  echo "| [1] IN_MEMORY                                                   |"
+  echo "| [2] REDIS                                                       |"
+  echo "|-----------------------------------------------------------------|"	
+  read -rp "Cache layer?                                                         " choiceCache
+  case "$choiceCache" in
+    1 ) GLUU_CACHE_TYPE="IN_MEMORY"  ;;
+    2 ) GLUU_CACHE_TYPE="REDIS" ;;
+    * ) GLUU_CACHE_TYPE="NATIVE_PERSISTENCE"  ;;
+  esac  
+  GLUU_CACHE_TYPE="'${GLUU_CACHE_TYPE}'"
   echo "|-----------------------------------------------------------------|"
   echo "|                     Persistence layer                           |"
   echo "|-----------------------------------------------------------------|"
@@ -834,7 +851,10 @@ generate_yamls() {
   if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
     # Radius server
     $kustomize radius/$yaml_folder | replace_all > $output_yamls/radius.yaml
-  fi	
+  fi
+  if [[ $choiceCache == 2 ]];then
+    $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
+  fi  
   if [[ $FQDN_CHOICE != "y" && $FQDN_CHOICE != "Y" ]]; then
     $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   else
@@ -918,6 +938,12 @@ deploy_nginx() {
       echo "IP: $ip"
   fi
   cat nginx/nginx.yaml | $sed "s/\<FQDN\>/$FQDN/" | $kubectl apply -f -    
+}
+
+deploy_redis() {
+  # Redis
+  cat $output_yamls/redis.yaml | $kubectl apply -f -
+  is_pod_ready "app=redis"
 }
 
 deploy_config() {
@@ -1065,6 +1091,9 @@ deploy() {
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
   deploy_config
   setup_tls
+  if [[ $choiceCache == 2 ]];then
+    deploy_redis
+  fi 
   # If hybrid or just ldap
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     deploy_ldap
@@ -1076,13 +1105,23 @@ deploy() {
   if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
     deploy_oxd
   fi
+
   deploy_shared_shib
   deploy_oxtrust
   deploy_oxshibboleth
-  deploy_oxpassport
-  deploy_key_rotation
-  deploy_cr_rotate
-  deploy_radius
+  if [[ $choicePassport != "n" && $choicePassport != "N" ]]; then
+    deploy_oxpassport
+  fi
+  if [[ $choiceCR != "n" && $choiceCR != "N" ]]; then
+    deploy_cr_rotate
+  fi
+  if [[ $choiceRotate != "n" && $choiceRotate != "N" ]]; then
+    deploy_key_rotation
+  fi
+  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+    # Radius server
+    deploy_radius
+  fi
 }
 
 # ==========

@@ -17,7 +17,9 @@ configMapGenerator:
       - GLUU_LDAP_INIT_HOST="opendj"
       - GLUU_LDAP_INIT_PORT="1636"
       - GLUU_OXTRUST_CONFIG_GENERATION="true"
-      - GLUU_CACHE_TYPE="NATIVE_PERSISTENCE"
+      - GLUU_CACHE_TYPE=GLUUCACHETYPE
+      - GLUU_REDIS_TYPE="STANDALONE"
+      - GLUU_REDIS_URL="redis:6379"
       - GLUU_CERT_ALT_NAME="opendj"
       # options: ldap/couchbase/hybrid     
       - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE

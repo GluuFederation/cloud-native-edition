@@ -12,7 +12,7 @@ configMapGenerator:
   - name: oxd-server-cm
     literals:
       - USE_CLIENT_AUTHENTICATION_FOR_PAT="true"
-      - TRUST_ALL_CERTS="false"
+      - TRUST_ALL_CERTS="true"
       - TRUST_STORE_PATH=""
       - TRUST_STORE_PASSWORD=""
       - CRYPT_PROVIDER_KEY_STORE_PATH=""
