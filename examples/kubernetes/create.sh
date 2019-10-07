@@ -835,11 +835,11 @@ generate_yamls() {
     # oxPassport
     $kustomize oxpassport/$oxpassport_oxshibboleth_folder | replace_all  > $output_yamls/oxpassport.yaml
   fi
-  if [[ $choiceCR != "n" && $choiceCR != "N" ]]; then
+  if [[ $choiceRotate != "n" && $choiceRotate != "N" ]]; then
     # Key Rotationls
     $kustomize key-rotation/base | replace_all > $output_yamls/key-rotation.yaml
   fi
-  if [[ $choiceRotate != "n" && $choiceRotate != "N" ]]; then
+  if [[ $choiceCR != "n" && $choiceCR != "N" ]]; then
     # Cache Refresh rotating IP registry
     $kustomize cr-rotate/base | replace_all > $output_yamls/cr-rotate.yaml
   fi
