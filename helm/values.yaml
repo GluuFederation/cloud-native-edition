@@ -15,6 +15,7 @@ global:
   reclaimPolicy: Retain
   provisioner: k8s.io/minikube-hostpath
 
+  lbAddr: LBADDR
   namespace: default
   nginxNamespace: ingress
   serviceName: opendj

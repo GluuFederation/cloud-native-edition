@@ -9,3 +9,4 @@ data:
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.gluuOxauthBackend | quote }}
+  LB_ADDR: {{ .Values.global.lbAddr }}
