@@ -2,8 +2,8 @@
 global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
-    enabled: false
-    provisioner: kubernetes.io/gce-pd 
+    enabled: true
+    provisioner: kubernetes.io/aws-ebs 
     # values used to define the StorageClass template
   encrypted: true
   pool: default
@@ -99,7 +99,7 @@ redis:
   enabled: false
 
 shared-shib:
-  enabled: true
+  enabled: false
 
 nginx:
   enabled: true
@@ -115,7 +115,7 @@ nginx:
         - demo.gluu-helm-example.tk
 
 rbac:
-  enabled: true
+  enabled: false
 
 oxshibboleth:
   enabled: true
@@ -124,13 +124,13 @@ nfs:
   enabled: true 
 
 oxpassport:
-  enabled: true
+  enabled: false
 
 key-rotation:
-  enabled: true
+  enabled: false
 
 cr-rotate:
-  enabled: true 
+  enabled: false 
 
 radius:
-  enabled: true
+  enabled: false
