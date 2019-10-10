@@ -18,17 +18,17 @@ spec:
         imagePullPolicy: Always
         image: gluufederation/oxd-server:4.0.0_dev
         volumeMounts:
-          - mountPath: /opt/oxd-server/conf
+          - mountPath: /opt/oxd-server/conf/oxd-server.keystore
             name: oxd-server
-            subPath: conf
+            subPath: oxd-server.keystore
+        ports:
+        - containerPort: 8443
+        - containerPort: 8444
         resources:
           requests:
             memory: "500Mi"
           limits:
             memory: "1536Mi"
-        ports:
-        - containerPort: 8443
-        - containerPort: 8444
         envFrom:
         - configMapRef:
             name: oxd-server-cm

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: casa
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: failure-domain.beta.kubernetes.io/zone
+                operator: In
+                values:
+                # change this to same zone your volume was created at
+                - SCCASAZONE
+      containers:
+      - name: casa
+        imagePullPolicy: Always
+        image: gluufederation/casa:4.0.0_dev
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
+        volumeMounts:
+          - mountPath: /scripts
+            name: update-lb-ip
+      volumes:
+      - name: update-lb-ip
+        configMap:
+          name: updatelbip

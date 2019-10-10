@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: casa-pvc
+spec:
+  storageClassName: casa-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGECASA

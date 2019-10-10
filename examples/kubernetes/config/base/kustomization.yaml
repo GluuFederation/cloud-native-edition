@@ -13,6 +13,7 @@ configMapGenerator:
     literals:
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"
+      - GLUU_CACHE_TYPE=GLUUCACHETYPE
   - name: config-generate-params
     files:
       - generate.json

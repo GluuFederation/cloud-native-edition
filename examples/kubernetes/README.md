@@ -10,6 +10,8 @@
     * [Minikube](#minikube)
     * [MicroK8s](#microk8s)
 
+-   If deploying with Couchbase as the persistence layer on AWS EKS take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
+
 - Get the source code:
 
         wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.0.zip
@@ -17,6 +19,22 @@
         cd enterprise-edition-4.0.0/examples/kubernetes
 
 - Run `bash create.sh` to initialize the installation. Prompts will ask for the rest of the information needed. An optional choice to generate the manifests (yamls) and continue to deployment or just generate the  manifests (yamls) is available during the execution of `create.sh`.
+
+
+# Use Couchbase soley as the persistence layer
+![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
+## Requirements
+  - An m5.xlarge EKS cluster with 3 nodes at the minimum
+- [Install couchbase kubernetes](https://www.couchbase.com/downloadsl) and place the tar.gz file inside the same directory as the `create.sh`.
+
+- Please modify the file `couchbase/couchbase-cluster.yaml` to fit your instituional needs. Currently the file is setup with an example setup of a total of 6 nodes as seen in `spec.servers`. Each set of services is replicating in two different zones. According to your setup these zones might be different and hence should be changed. Do not change the labels of these services such as `couchbase_services: index` the setup requires these labels to track the status of the couchbase setup.Do not change the buckets as they are required for Gluu setup. More information on the properties of this file is found [here](https://docs.couchbase.com/operator/1.1/couchbase-cluster-config.html). 
+
+> **_NOTE:_** Please note the `couchbase/couchbase-cluster.yaml` file must include at least three defined `spec.servers` with the labels `couchbase_services: index`, `couchbase_services: data` and `couchbase_services: analytics`
+
+**If you wish to get started fast just change the values of `spec.servers.name` and `spec.servers.serverGroups` inside `couchbase/couchbase-cluster.yaml` to the zones of your EKS nodes and continue.**
+
+- Run `create.sh` and follow the prompts to install couchbase soley with Gluu.
+
 
 # Use remote Couchbase as the persistence layer
 

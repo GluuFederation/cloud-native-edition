@@ -23,6 +23,8 @@ emp_output() {
 
 delete_all() {
   kubectl=kubectl
+  echo "If couchbase has not been installed on this cluster simple press Enter to the following command."
+  read -rp "Please enter the namespace that couchbase cluster was deployed in:                 " namespace
   cloud=true
   if [ -d "localazureyamls" ];then
     $kubectl delete -f localazureyamls || emp_output
@@ -58,7 +60,7 @@ delete_all() {
   $kubectl delete secret gluu tls-certificate cb-pass cb-crt \
     || emp_output
   $kubectl delete -f nginx/ || emp_output
-  $kubectl delete pvc opendj-pvc-opendj-0
+  $kubectl delete pvc opendj-pvc-opendj-0 || emp_output
   if [[ $cloud == "true" ]]; then
     echo "Trying to delete folders created at other nodes. 
       This assumes your ssh is ~/.ssh/id_rsa "
@@ -70,11 +72,25 @@ delete_all() {
         opc@"$OUTPUT" sudo rm -rf /data || emp_output
     done
   fi
+  $kubectl delete couchbasecluster.couchbase.com/cbgluu \
+    storageclass.storage.k8s.io/couchbase-sc secret/cb-auth \
+	deployment.apps/couchbase-operator \
+	rolebinding.rbac.authorization.k8s.io/couchbase-operator \
+	serviceaccount/couchbase-operator \
+	role.rbac.authorization.k8s.io/couchbase-operator \
+	customresourcedefinition.apiextensions.k8s.io/couchbaseclusters.couchbase.com \
+	validatingwebhookconfiguration.admissionregistration.k8s.io/couchbase-operator-admission \
+	mutatingwebhookconfiguration.admissionregistration.k8s.io/couchbase-operator-admission \
+	service/couchbase-operator-admission deployment.apps/couchbase-operator-admission \
+	clusterrolebinding.rbac.authorization.k8s.io/couchbase-operator-admission \
+	clusterrole.rbac.authorization.k8s.io/couchbase-operator-admission \
+	serviceaccount/couchbase-operator-admission secret/couchbase-operator-admission \
+	secret/couchbase-operator-tls secret/couchbase-server-tls -n $namespace || emp_output
 }
 
 create_dynamic_gke() {
   mkdir dynamicgkeyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     dynamicgkefolder="$service/overlays/gke/dynamic-pd"
     cp -r $service/overlays/eks/dynamic-ebs $dynamicgkefolder
     cat $dynamicgkefolder/storageclasses.yaml \
@@ -91,7 +107,7 @@ create_dynamic_gke() {
         && mv tmpfile $dynamicgkefolder/kustomization.yaml \
         || emp_output
     fi
-    if [[ $service == "oxauth" || $service == "radius"  ]]; then
+    if [[ $service == "oxauth" || $service == "radius" || $service == "casa" ]]; then
     cat $dynamicgkefolder/kustomization.yaml \
       | $sed '/- deployments.yaml/d' \
       | $sed '/patchesStrategicMerge:/d' > tmpfile \
@@ -108,7 +124,7 @@ create_dynamic_gke() {
 
 create_dynamic_azure() {
   mkdir dynamicazureyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     dynamicazurefolder="$service/overlays/azure/dynamic-dn"
     mkdir -p $service/overlays/azure \
       && cp -r $service/overlays/eks/dynamic-ebs $service/overlays/azure/dynamic-dn
@@ -129,7 +145,7 @@ create_dynamic_azure() {
         && mv tmpfile $dynamicazurefolder/kustomization.yaml \
         || emp_output
     fi
-    if [[ $service == "oxauth" || $service == "radius"  ]]; then
+    if [[ $service == "oxauth" || $service == "radius" || $service == "casa" ]]; then
       cat $dynamicazurefolder/kustomization.yaml \
         | $sed '/- deployments.yaml/d' \
         | $sed '/patchesStrategicMerge:/d' > tmpfile \
@@ -139,9 +155,76 @@ create_dynamic_azure() {
   done
 }
 
+deploy_cb_cluster() {
+  if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
+    tar xvzf couchbase-autonomous-operator-kubernetes_*.tar.gz --overwrite || emp_output
+    cbinstalldir=$(echo couchbase-autonomous-operator-kubernetes_*/)
+    $kubectl create namespace $namespace || emp_output
+    rm -rf easy-rsa pki || emp_output
+    git clone http://github.com/OpenVPN/easy-rsa
+	easyrsa=easy-rsa/easyrsa3
+    $easyrsa/easyrsa init-pki
+    $easyrsa/easyrsa build-ca
+    $easyrsa/easyrsa --subject-alt-name="DNS:*.$clustername.$namespace.svc,DNS:*.$namespace.svc,\
+      DNS:*.$clustername.$FQDN" build-server-full couchbase-server nopass
+    cp pki/private/couchbase-server.key $easyrsa/pkey.key
+    openssl rsa -in $easyrsa/pkey.key -out $easyrsa/pkey.key.der -outform DER
+    openssl rsa -in $easyrsa/pkey.key.der -inform DER -out $easyrsa/pkey.key -outform PEM
+    cp pki/issued/couchbase-server.crt $easyrsa/chain.pem
+    cp $easyrsa/chain.pem $easyrsa/tls-cert-file
+    cp $easyrsa/pkey.key $easyrsa/tls-private-key-file
+	cp pki/ca.crt couchbase.crt
+    $kubectl create secret generic couchbase-server-tls --from-file $easyrsa/chain.pem \
+      --from-file $easyrsa/pkey.key --namespace $namespace || emp_output
+    $kubectl create secret generic couchbase-operator-tls --from-file pki/ca.crt \
+      --namespace $namespace || emp_output
+    $kubectl create secret generic couchbase-operator-admission --from-file $easyrsa/tls-cert-file \
+      --from-file $easyrsa/tls-private-key-file --namespace $namespace || emp_output
+    tlscertfilebase64=$(base64 -i $easyrsa/tls-cert-file | tr -d '\040\011\012\015')
+    $sed -i "$cbinstalldir"admission.yaml -re '49,58d'
+    $sed -i '/caBundle/c\    caBundle: TLSCERTFILEBASE64' "$cbinstalldir"admission.yaml
+    cat "$cbinstalldir"admission.yaml \
+      | $sed -s "s@default@$namespace@g" \
+      | $sed -s "s@TLSCERTFILEBASE64@$tlscertfilebase64@g" > tmpfile \
+      && mv tmpfile "$cbinstalldir"admission.yaml \
+      || emp_output
+
+    $kubectl apply -f "$cbinstalldir"admission.yaml --namespace $namespace || emp_output
+    $kubectl apply -f "$cbinstalldir"crd.yaml --namespace $namespace || emp_output
+    $kubectl apply -f "$cbinstalldir"operator-role.yaml --namespace $namespace || emp_output
+    $kubectl create  serviceaccount couchbase-operator --namespace $namespace || emp_output
+    $kubectl create  rolebinding couchbase-operator --role couchbase-operator \
+      --serviceaccount $namespace:couchbase-operator --namespace $namespace || emp_output
+    $kubectl apply -f "$cbinstalldir"operator-deployment.yaml --namespace $namespace || emp_output
+    is_pod_ready "app=couchbase-operator"
+    $kubectl create secret generic cb-auth --from-literal=username=$CB_USER --from-literal=password=$CB_PW --namespace $namespace || emp_output
+    cat couchbase/storageclasses.yaml \
+      | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g" > tmpfile \
+      && mv tmpfile couchbase/storageclasses.yaml \
+      || emp_output
+    $kubectl apply -f couchbase/storageclasses.yaml --namespace $namespace || emp_output
+    cat couchbase/couchbase-cluster.yaml \
+      | $sed -s "s@CLUSTERNAME@$clustername@g" > tmpfile \
+      && mv tmpfile couchbase/couchbase-cluster.yaml \
+      || emp_output
+    $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace || emp_output
+    is_pod_ready "couchbase_services=analytics" 
+	is_pod_ready "couchbase_services=data"
+	is_pod_ready "couchbase_services=index"
+	rm -rf $cbinstalldir | emp_output
+  else
+    echo "Error: Couchbase package not found."
+    echo "Please download the couchbase kubernetes package and place it inside
+      the same directory containing the create.sh script.
+      https://www.couchbase.com/downloads"
+    exit 1
+  fi
+
+}
+
 create_local_minikube() {
   mkdir localminikubeyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     localminikubefolder="$service/overlays/minikube"
     mkdir -p $localminikubefolder \
 	  && cp -r $service/overlays/microk8s/local-storage "$_"
@@ -154,7 +237,7 @@ create_local_minikube() {
 
 create_local_azure() {
   mkdir localazureyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     localazurefolder="$service/overlays/azure"
     mkdir -p $localazurefolder \
       && cp -r $service/overlays/gke/local-storage "$_"
@@ -169,7 +252,7 @@ create_local_azure() {
 
 create_static_gke() {
   mkdir staticgkeyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     staticgkefolder="$service/overlays/gke/static-pd"
     service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
     cp -r $service/overlays/eks/local-storage $service/overlays/gke/static-pd
@@ -190,7 +273,7 @@ create_static_gke() {
 
 create_static_azure() {
   mkdir staticazureyamls || emp_output
-  for service in "config" "ldap" "oxauth" "oxd-server" "oxtrust" "radius"; do
+  for service in "config" "ldap" "oxauth" "casa" "oxd-server" "oxtrust" "radius"; do
     staticazurefolder="$service/overlays/azure/static-dn"
     service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
     disk_uri=$(echo "${service^^}DISKURI" | tr -d -)
@@ -218,37 +301,40 @@ create_static_azure() {
 replace_all() {
   $sed "s/\<PERSISTENCETYPE\>/$PERSISTENCE_TYPE/" \
     | $sed "s/\<LDAPMAPPING\>/$LDAP_MAPPING/" \
-    | $sed "s/\<COUCHBASEURL\>/$COUCHBASE_URL/" \
-    | $sed "s/\<CBUSER\>/$CB_USER/" \
-    | $sed -s "s@STORAGESHAREDSHIB@$STORAGE_SHAREDSHIB@g" \
-    | $sed -s "s@CONFIGVOLUMEID@$CONFIG_VOLUMEID@g" \
-    | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
-    | $sed -s "s@STORAGECONFIG@$STORAGE_CONFIG@g" \
-    | $sed "s#ACCOUNT#$ACCOUNT#g" \
-    | $sed "s/\<GLUUCACHETYPE\>/$GLUU_CACHE_TYPE/" \
-    | $sed -s "s@SCCONFIGZONE@$SC_CONFIG_ZONE@g" \
     | $sed -s "s@LDAPVOLUMEID@$LDAP_VOLUMEID@g" \
     | $sed -s "s@STORAGELDAP@$STORAGE_LDAP@g" \
     | $sed -s "s@SCLDAPZONE@$SC_LDAP_ZONE@g" \
-    | $sed "s/\<FQDN\>/$FQDN/" \
+    | $sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
+    | $sed -s "s@STORAGESHAREDSHIB@$STORAGE_SHAREDSHIB@g" \
+    | $sed -s "s@CONFIGVOLUMEID@$CONFIG_VOLUMEID@g" \
+    | $sed -s "s@STORAGECONFIG@$STORAGE_CONFIG@g" \
+    | $sed -s "s@SCCONFIGZONE@$SC_CONFIG_ZONE@g" \
+    | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
     | $sed -s "s@OXAUTHVOLUMEID@$OXAUTH_VOLUMEID@g" \
     | $sed -s "s@STORAGEOXAUTH@$STORAGE_OXAUTH@g" \
     | $sed -s "s@SCOXAUTHZONE@$SC_OXAUTH_ZONE@g" \
+    | $sed -s "s@OXAUTHDISKURI@$OXAUTH_DISKURI@g" \
     | $sed -s "s@OXTRUSTVOLUMEID@$OXTRUST_VOLUMEID@g" \
     | $sed -s "s@STORAGEOXTRUST@$STORAGE_OXTRUST@g" \
     | $sed -s "s@SCOXTRUSTZONE@$SC_OXTRUST_ZONE@g" \
+    | $sed -s "s@OXTRUSTDISKURI@$OXTRUST_DISKURI@g" \
     | $sed -s "s@OXDSERVERVOLUMEID@$OXDSERVER_VOLUMEID@g" \
     | $sed -s "s@STORAGEOXDSERVER@$STORAGE_OXDSERVER@g" \
     | $sed -s "s@SCOXDSERVERZONE@$SC_OXDSERVER_ZONE@g" \
+    | $sed -s "s@OXDSERVERDISKURI@$OXDSERVER_DISKURI@g" \
     | $sed -s "s@RADIUSVOLUMEID@$RADIUS_VOLUMEID@g" \
     | $sed -s "s@STORAGERADIUS@$STORAGE_RADIUS@g" \
     | $sed -s "s@SCRADIUSZONE@$SC_RADIUS_ZONE@g" \
-    | $sed -s "s@CONFIGDISKURI@$CONFIG_DISKURI@g" \
-    | $sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
-    | $sed -s "s@OXAUTHDISKURI@$OXAUTH_DISKURI@g" \
-    | $sed -s "s@OXDSERVERDISKURI@$OXDSERVER_DISKURI@g" \
-    | $sed -s "s@OXTRUSTDISKURI@$OXTRUST_DISKURI@g" \
     | $sed -s "s@RADIUSDISKURI@$RADIUS_DISKURI@g" \
+    | $sed -s "s@CASAVOLUMEID@$CASA_VOLUMEID@g" \
+    | $sed -s "s@STORAGECASA@$STORAGE_CASA@g" \
+    | $sed -s "s@SCCASAZONE@$SC_CASA_ZONE@g" \
+    | $sed -s "s@CASADISKURI@$CASA_DISKURI@g" \
+    | $sed "s/\<COUCHBASEURL\>/$COUCHBASE_URL/" \
+    | $sed "s/\<CBUSER\>/$CB_USER/" \
+    | $sed "s/\<FQDN\>/$FQDN/" \
+    | $sed "s#ACCOUNT#$ACCOUNT#g" \
+    | $sed "s/\<GLUUCACHETYPE\>/$GLUU_CACHE_TYPE/" \
     | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g"
 }
 
@@ -280,11 +366,17 @@ is_pod_ready() {
       || [[ "$1" == "app=persistence-load" ]]; then
       pod_status="$($kubectl get pods -l "$1" \
       -o 'jsonpath={..status.conditions[].reason}' || true)"
+	elif [[ "$1" == "app=couchbase-operator" ]] \
+      || [[ "$1" == "couchbase_services=analytics" ]] \
+      || [[ "$1" == "couchbase_services=data" ]] \
+      || [[ "$1" == "couchbase_services=index" ]]; then
+      pod_status="$($kubectl get pods -l "$1"  \
+        -n $namespace -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'|| true)"      
 	else
       pod_status="$($kubectl get pods -l "$1" \
         -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'|| true)"
     fi
-    if [[ $pod_status == "PodCompleted" ]] || [[ $pod_status == "True" ]]; then
+    if [[ $pod_status == "PodCompleted" ]] || [[ $pod_status =~ "True" ]]; then
       break
     fi
   done
@@ -401,6 +493,20 @@ confirm_ip() {
   esac
 }
 
+prompt_cb(){
+ if [[ $choicePersistence -ge 1 ]]; then
+    if [[ $installCB != "n" || $installCB != "N" ]]; then
+      echo "ONLY TESTED ON AWS. Couchbase will begin installation..."
+      deploy_cb_cluster
+    fi
+    if [ ! -f couchbase.crt ] || [ ! -s couchbase.crt ]; then
+      echo "There is no crt inside couchbase.crt for couchbase. 
+	    Please create a file named couchbase.crt and past the certification 
+	    found in your couchbase UI Security > Root Certificate inside it."
+	  exit 1
+    fi
+  fi
+}
 prepare_config() {
   sed=sed || emp_output
   choiceDeploy=1
@@ -435,11 +541,6 @@ prepare_config() {
   echo "|- Any other option will default to choice 1                      |"
   echo "|-----------------------------------------------------------------|"
   read -rp "What type of deployment?                                              " choiceDeploy
-  choiceCR="N"
-  choiceKeyRotate="N"
-  choiceOXD="N"
-  choiceRadius="N"
-  choicePassport="N"
   echo "|-----------------------------------------------------------------|"
   echo "|                     Cache layer                                 |"
   echo "|-----------------------------------------------------------------|"
@@ -491,31 +592,6 @@ prepare_config() {
       * ) LDAP_MAPPING="default"  ;;
     esac
   fi
-  if [[ $choicePersistence -ge 1 ]]; then
-    if [ ! -f couchbase.crt ] || [ ! -s couchbase.crt ]; then
-      echo "There is no crt inside couchbase.crt for couchbase. 
-	    Please create a file named couchbase.crt and past the certification 
-	    found in your couchbase UI Security > Root Certificate inside it."
-	  exit 1
-    fi
-    read -rp "Please enter remote couchbase username                                " CB_USER
-    read -rp "Please enter remote couchbase URL base name, couchbase.gluu.org       " COUCHBASE_URL
-    #TODO: Add test CB connection
-    while true; do
-      echo "Enter remote couchbase Password:"
-      mask_password
-      CB_PW=$password
-      echo "Confirm remote couchbase Password:"
-      mask_password
-      CB_PW_CM=$password
-      [ "$CB_PW" = "$CB_PW_CM" ] && break || echo "Please try again"
-    done
-    case "$CB_PW" in
-      * ) ;;
-      "") echo "Password cannot be empty"; exit 1;
-    esac
-    echo "$CB_PW" > couchbase_password
-  fi
   if [[ $choiceDeploy -eq 1 ]]; then
     kubectl=microk8s.kubectl || emp_output
   else
@@ -527,14 +603,64 @@ prepare_config() {
     until confirm_ip; do : ; done
     ip=$HOST_IP	    
   else
-    # Assign random IP. IP will be changed by either the update ip script or by GKE external ip
+    # Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
     ip=22.22.22.22
   fi
+  if [[ $choiceDeploy -eq 3 ]] || [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+    echo "|-----------------------------------------------------------------|"
+    echo "|                     AWS Loadbalancer type                       |"
+    echo "|-----------------------------------------------------------------|"
+    echo "| [0] Classic Load Balancer (CLB) [default]                       |"
+    echo "| [1] Network Load Balancer (NLB) -- Static IP                    |"
+    echo "|-----------------------------------------------------------------|"
+    read -rp "Loadbalancer type ?                                                     " lbChoicenumber
+    case "$lbChoicenumber" in
+      0 ) lbChoice="clb"  ;;
+      1 ) lbChoice="nlb"  ;;
+      * ) lbChoice="clb"  ;;
+    esac
+  fi
+  if [[ $choicePersistence -ge 1 ]]; then
+    COUCHBASE_URL=""
+    echo "For the following prompt  if placed [N] the couchbase 
+      is assumed to be installed or remotely provisioned"
+    read -rp "Install Couchbase[Y][Y/N] ?                                              " installCB
+    if [[ $installCB != "n" || $installCB != "N" ]]; then
+      read -rp "Please enter the volume type for EBS. Recommended : io1    :           " VOLUME_TYPE
+      read -rp "Please enter a namespace for CB objects.[4 lowercase letters]               " namespace
+      read -rp "Please enter a cluster name.[6 lowercase letters]                     " clustername
+	  COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
+    fi
+    if [ -z "$COUCHBASE_URL" ];then
+      read -rp "Please enter remote couchbase URL base name, couchbase.gluu.org       " COUCHBASE_URL
+    fi
+    read -rp "Please enter couchbase username                                       " CB_USER
+    #TODO: Add test CB connection
+    while true; do
+      echo "Enter couchbase password: [Min 6 letters]"
+      mask_password
+      CB_PW=$password
+      echo "Confirm couchbase password: [Min 6 letters]"
+      mask_password
+      CB_PW_CM=$password
+      [ "$CB_PW" = "$CB_PW_CM" ] && break || echo "Please try again"
+    done
+    case "$CB_PW" in
+      * ) ;;
+      "") echo "Password cannot be empty"; exit 1;
+    esac
+    echo "$CB_PW" > couchbase_password
+  fi
   read -rp "Deploy Cr-Rotate[N]?[Y/N]                                             " choiceCR
-  read -rp "Deploy Key-Rotation{N]?[Y/N]                                          " choiceKeyRotate
+  read -rp "Deploy Key-Rotation[N]?[Y/N]                                          " choiceKeyRotate
   read -rp "Deploy Radius[N]?[Y/N]                                                " choiceRadius
   read -rp "Deploy Passport[N]?[Y/N]                                              " choicePassport
-  read -rp "Deploy OXD-Server[N]?[Y/N]                                            " choiceOXD
+  read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                                  " choiceCasa
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    choiceOXD="Y"
+  else
+    read -rp "Deploy OXD-Server[N]?[Y/N]                                            " choiceOXD
+  fi
   generate=0
   echo "[I] Preparing cluster-wide config and secrets"
   echo "[I] Checking existing config parameters configmap"
@@ -609,14 +735,17 @@ prompt_zones() {
     read -rp "Ldap storage class zone:                                              " SC_LDAP_ZONE
   fi
   read -rp "oxAuth storage class zone:                                            " SC_OXAUTH_ZONE
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
-    # OXD server
+  # OXD server (activate below line if volumes are added)
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     read -rp "oxdServer storage class zone:                                         " SC_OXDSERVER_ZONE
   fi
   read -rp "oxTrust storage class zone:                                           " SC_OXTRUST_ZONE
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
     read -rp "Radius storage class zone:                                            " SC_RADIUS_ZONE
+  fi
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    read -rp "Casa storage class zone:                                            " SC_CASA_ZONE
   fi
 }
 
@@ -627,16 +756,19 @@ prompt_storage() {
   fi
   read -rp "Size of oxAuth volume storage [Cloud min 1Gi]:                        " STORAGE_OXAUTH
   read -rp "Size of oxTrust volume storage [Cloud min 1Gi]:                       " STORAGE_OXTRUST
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius Volume storage
     read -rp "Size of Radius volume storage [Cloud min 1Gi]:                        " STORAGE_RADIUS
   fi
   if [[ $choiceDeploy -ne 6 && $choiceDeploy -ne 7 && $choiceDeploy -ne 8 && $choiceDeploy -ne 9 && $choiceDeploy -ne 10 && $choiceDeploy -ne 11 ]]; then
     read -p "Size of Shared-Shib volume storage [Cloud min 1Gi]:                   " STORAGE_SHAREDSHIB
   fi
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     # OXD server
     read -rp "Size of oxdServer volume storage [Cloud min 1Gi]:                     " STORAGE_OXDSERVER
+  fi
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    read -rp "Size of Casa      volume storage [Cloud min 1Gi]:                     " STORAGE_CASA
   fi
 }
 
@@ -668,15 +800,19 @@ prompt_volumes_identitfier() {
     read -rp "Please enter $static_volume_prompt for LDAP:                          " LDAP_VOLUMEID
   fi		
   read -rp "Please enter $static_volume_prompt for oxAuth:                        " OXAUTH_VOLUMEID
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     # OXD server
     read -rp "Please enter $static_volume_prompt for OXD-server:                    " OXDSERVER_VOLUMEID
   fi
   read -rp "Please enter $static_volume_prompt for oxTrust:                       " OXTRUST_VOLUMEID
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
     read -rp "Please enter $static_volume_prompt for Radius:                        " RADIUS_VOLUMEID
   fi
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    # Radius server
+    read -rp "Please enter $static_volume_prompt for Casa:                         " CASA_VOLUMEID
+  fi  
 }
 
 prompt_disk_uris() {
@@ -685,21 +821,23 @@ prompt_disk_uris() {
     read -rp "Please enter the disk uri for LDAP:                                   " LDAP_DISKURI
   fi		
   read -rp "Please enter the disk uri for oxAuth:                                 " OXAUTH_DISKURI
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     # OXD server
     read -rp "Please enter the disk uri for OXD-server:                             " OXDSERVER_DISKURI
   fi
   read -rp "Please enter the disk uri for oxTrust:                                " OXTRUST_DISKURI
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
     read -rp "Please enter the disk uri for Radius:                                 " RADIUS_DISKURI
   fi
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    read -rp "Please enter the disk uri for Casa:                                 " CASA_DISKURI
+  fi  
 }
 
 generate_yamls() {
-  FQDN_CHOICE="Y"
-  read -rp "Are you using a globally resolvable FQDN [Y] [Y/N]:                   " FQDN_CHOICE
-  if [[ $FQDN_CHOICE != "n" && $FQDN_CHOICE != "N" ]]; then
+  read -rp "Are you using a globally resolvable FQDN [N] [Y/N]:                   " FQDN_CHOICE
+  if [[ $FQDN_CHOICE == "y" || $FQDN_CHOICE == "Y" ]]; then
   echo "Please place your FQDN certification and key inside 
     ingress.crt and ingress.key respectivley."
     if [ ! -f ingress.crt ] || [ ! -s ingress.crt ] || [ ! -f ingress.key ] || [ ! -s ingress.key ]; then
@@ -831,31 +969,35 @@ generate_yamls() {
   $kustomize oxtrust/$yaml_folder | replace_all > $output_yamls/oxtrust.yaml
   # oxShibboleth
   $kustomize oxshibboleth/$oxpassport_oxshibboleth_folder | replace_all  > $output_yamls/oxshibboleth.yaml
-  if [[ $choicePassport != "n" && $choicePassport != "N" ]]; then
+  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
     # oxPassport
     $kustomize oxpassport/$oxpassport_oxshibboleth_folder | replace_all  > $output_yamls/oxpassport.yaml
   fi
-  if [[ $choiceRotate != "n" && $choiceRotate != "N" ]]; then
+  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
     # Key Rotationls
     $kustomize key-rotation/base | replace_all > $output_yamls/key-rotation.yaml
   fi
-  if [[ $choiceCR != "n" && $choiceCR != "N" ]]; then
+  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
     # Cache Refresh rotating IP registry
     $kustomize cr-rotate/base | replace_all > $output_yamls/cr-rotate.yaml
   fi
     # OXD-Server
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     $kustomize oxd-server/$yaml_folder | replace_all > $output_yamls/oxd-server.yaml
   fi
+    # Casa
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    $kustomize casa/$yaml_folder | replace_all > $output_yamls/casa.yaml
+  fi  
   # Radius
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
     $kustomize radius/$yaml_folder | replace_all > $output_yamls/radius.yaml
   fi
   if [[ $choiceCache == 2 ]];then
     $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
   fi  
-  if [[ $FQDN_CHOICE != "y" && $FQDN_CHOICE != "Y" ]]; then
+  if [[ $FQDN_CHOICE != "y" || $FQDN_CHOICE != "Y" ]]; then
     $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   else
     # Remove hostAliases object from yamls
@@ -899,6 +1041,14 @@ generate_yamls() {
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/radius.yaml \
       || emp_output
+    cat $output_yamls/casa.yaml \
+      | $sed '/LB_ADDR: LBADDR/d' \
+      | $sed '/hostAliases:/d' \
+      | $sed '/- hostnames:/d' \
+      | $sed "/$FQDN/d" \
+      | $sed '/ip: NGINX_IP/d' > tmpfile \
+      && mv tmpfile $output_yamls/casa.yaml \
+      || emp_output
   fi
     echo " all yamls have been generated in $output_yamls folder"
 }
@@ -911,16 +1061,21 @@ deploy_nginx() {
   # Nginx	
   $kubectl apply -f nginx/mandatory.yaml
   if [[ $choiceDeploy -eq 3 ]] || [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
-    $kubectl apply -f nginx/service-l4.yaml 
-    $kubectl apply -f nginx/patch-configmap-l4.yaml
+    if [[ $lbChoice == "nlb" ]];then
+      $kubectl apply -f nginx/nlb-service.yaml
+	  sleep 30
+	else
+      $kubectl apply -f nginx/service-l4.yaml 
+      $kubectl apply -f nginx/patch-configmap-l4.yaml
+	fi
+	 echo "Waiting for loadbalancer address.."
     #AWS
-    echo "Waiting for loadbalancer address.."
-    sleep 30
+    lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
+      --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
+    hostname="'${lbhostname}'" || emp_output 	
+    #AWS
   fi
-  #AWS
-  lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
-    --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
-  hostname="'${lbhostname}'" || emp_output 
+
   if [[ $choiceDeploy -eq 6  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 || $choiceDeploy -eq 11 ]]; then
     $kubectl apply -f nginx/cloud-generic.yaml
     $kubectl apply -f nfs/base/services.yaml
@@ -1025,6 +1180,15 @@ deploy_oxd() {
   is_pod_ready "app=oxd-server"
 }
 
+deploy_casa() {
+  # Casa
+  cat $output_yamls/casa.yaml \
+    | $sed -s "s@NGINX_IP@$ip@g" \
+    | $sed "s/\<LBADDR\>/$hostname/" \
+    | $kubectl apply -f -
+  is_pod_ready "app=casa"
+}
+
 deploy_oxtrust() {
   cat $output_yamls/oxtrust.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
@@ -1087,6 +1251,7 @@ deploy() {
     n|N ) exit 1 ;;
     * )   ;;
   esac
+  prompt_cb
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
   deploy_config
@@ -1102,23 +1267,26 @@ deploy() {
   deploy_persistence
   deploy_update_lb_ip
   deploy_oxauth
-  if [[ $choiceOXD != "n" && $choiceOXD != "N" ]]; then
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     deploy_oxd
   fi
-
+    # Casa
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    deploy_casa
+  fi  
   deploy_shared_shib
   deploy_oxtrust
   deploy_oxshibboleth
-  if [[ $choicePassport != "n" && $choicePassport != "N" ]]; then
+  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
     deploy_oxpassport
   fi
-  if [[ $choiceCR != "n" && $choiceCR != "N" ]]; then
+  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
     deploy_cr_rotate
   fi
-  if [[ $choiceRotate != "n" && $choiceRotate != "N" ]]; then
+  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
     deploy_key_rotation
   fi
-  if [[ $choiceRadius != "n" && $choiceRadius != "N" ]]; then
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
     deploy_radius
   fi

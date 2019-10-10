@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: oxd-server-pv
+  name: casa-pv
   labels:
-    type: oxd-server
+      type: casa
 spec:
   capacity:
-    storage: STORAGEOXDSERVER
+    storage: STORAGECASA
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "HOME_DIR/oxd-server"
+    path: "/data/casa"
     type: DirectoryOrCreate
