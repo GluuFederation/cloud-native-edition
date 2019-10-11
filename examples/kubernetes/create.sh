@@ -86,6 +86,7 @@ delete_all() {
 	clusterrole.rbac.authorization.k8s.io/couchbase-operator-admission \
 	serviceaccount/couchbase-operator-admission secret/couchbase-operator-admission \
 	secret/couchbase-operator-tls secret/couchbase-server-tls -n $namespace || emp_output
+	rm -rf pki easy-rsa || emp_output
 }
 
 create_dynamic_gke() {
