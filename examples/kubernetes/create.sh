@@ -626,10 +626,19 @@ prepare_config() {
       is assumed to be installed or remotely provisioned"
     read -rp "Install Couchbase[Y][Y/N] ?                                              " installCB
     if [[ $installCB != "n" || $installCB != "N" ]]; then
-      read -rp "Please enter the volume type for EBS. Recommended : io1    :           " VOLUME_TYPE
-      read -rp "Please enter a namespace for CB objects.[4 lowercase letters]               " namespace
-      read -rp "Please enter a cluster name.[6 lowercase letters]                     " clustername
-	  COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
+      if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
+        read -rp "Please enter the volume type for EBS. Recommended : io1    :           " VOLUME_TYPE
+        read -rp "Please enter a namespace for CB objects.[4 lowercase letters]               " namespace
+        read -rp "Please enter a cluster name.[6 lowercase letters]                     " clustername
+	    COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
+      else
+        echo "Error: Couchbase package not found."
+        echo "Please download the couchbase kubernetes package and place it inside
+          the same directory containing the create.sh script.
+          https://www.couchbase.com/downloads"
+    exit 1
+  fi
+
     fi
     if [ -z "$COUCHBASE_URL" ];then
       read -rp "Please enter remote couchbase URL base name, couchbase.gluu.org       " COUCHBASE_URL
@@ -1054,10 +1063,14 @@ generate_yamls() {
 }
 
 deploy_nginx() {
-  # If microk8s ingress
-  microk8s.enable ingress dns || emp_output
-  # If minikube ingress
-  minikube addons enable ingress || emp_output
+  if [[ $choiceDeploy -eq 1 ]]; then
+    # If microk8s ingress
+    microk8s.enable ingress dns || emp_output
+  fi
+  if [[ $choiceDeploy -eq 2 ]]; then
+    # If minikube ingress
+    minikube addons enable ingress || emp_output
+  fi
   # Nginx	
   $kubectl apply -f nginx/mandatory.yaml
   if [[ $choiceDeploy -eq 3 ]] || [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
