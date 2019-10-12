@@ -1077,17 +1077,21 @@ deploy_nginx() {
   if [[ $choiceDeploy -eq 3 ]] || [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
     if [[ $lbChoice == "nlb" ]];then
       $kubectl apply -f nginx/nlb-service.yaml
-	  sleep 30
 	else
       $kubectl apply -f nginx/service-l4.yaml 
       $kubectl apply -f nginx/patch-configmap-l4.yaml
 	fi
-	 echo "Waiting for loadbalancer address.."
-    #AWS
-    lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
-      --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
-    hostname="'${lbhostname}'" || emp_output 	
-    #AWS
+	lbhostname=""
+    while true; do
+	  echo "Waiting for loadbalancer address.."
+      if [[ $lbhostname ]]; then
+        break
+      fi
+      lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
+        --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
+      hostname="'${lbhostname}'" || emp_output 
+      sleep 20	  
+      done
   fi
 
   if [[ $choiceDeploy -eq 6  || $choiceDeploy -eq 7 || $choiceDeploy -eq 8 || $choiceDeploy -eq 9 || $choiceDeploy -eq 10 || $choiceDeploy -eq 11 ]]; then
