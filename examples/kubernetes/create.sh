@@ -993,7 +993,7 @@ generate_yamls() {
   fi
     # OXD-Server
   if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    $kustomize oxd-server/$yaml_folder | replace_all > $output_yamls/oxd-server.yaml
+    $kustomize oxd-server/novolume | replace_all > $output_yamls/oxd-server.yaml
   fi
     # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
