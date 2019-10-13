@@ -102,7 +102,7 @@ shared-shib:
   enabled: false
 
 nginx:
-  enabled: true
+  enabled: false
   # ingress resources
   ingress:
     enabled: true

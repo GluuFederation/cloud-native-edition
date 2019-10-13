@@ -48,7 +48,7 @@ spec:
           - name: {{ .Release.Name }}-shared-shib
             mountPath: "/opt/shared-shibboleth-idp"
         {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-          - name: updatelbip
+          - name: {{ include "oxtrust.fullname" .}}-updatelbip
             mountPath: /scripts
         {{- end }}
         {{- range $key, $value := .Values.volumeMounts}}
