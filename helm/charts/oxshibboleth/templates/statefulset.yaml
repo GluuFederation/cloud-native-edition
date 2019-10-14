@@ -43,7 +43,7 @@ spec:
           - name: shared-shib
             mountPath: "/opt/shared-shibboleth-idp"
           {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-          - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
+          - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
         livenessProbe:
@@ -71,7 +71,7 @@ spec:
           claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- end }}
       {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-      - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
+      - name: {{ include "oxshibboleth.name" .}}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip
       {{- end }}

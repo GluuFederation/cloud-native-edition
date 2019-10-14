@@ -6,6 +6,7 @@ data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
+  LB_ADDR: {{ .Values.global.ldAddr }}
   GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   

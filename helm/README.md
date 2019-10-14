@@ -34,6 +34,7 @@ The command deploys Gluu Server on Kubernetes cluster using the default configur
 
 To install the chart on different platforms follow individual instructions.  
  - [GCP](#GCE)
+ - [AWS](#AWS)
  - [Minikube](#minikube)
 
 ## Uninstalling the Chart
@@ -107,7 +108,7 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
 
 1. ## Cloud deployments.
 
-   ### GCE
+   ### Common instructions on all Cloud providers
     - Enabling RBAC before deploying the chart. This has to be done first.  
       To do this deploy the `tiller.yaml` file   
       `$ kubectl apply -f tiller.yaml`
@@ -115,9 +116,6 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
       Set `global.cloud.enabled` to `true`
     - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
 
-    2 Options from here.
-    1. ### Domain Name not mapped to an IP
-    #### Important
     - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
       ```
         config:
@@ -126,7 +124,13 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
       - Install the chart by running   
       `helm install --name <release-name> -f values.yaml .`  
 
-      This will help in getting the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
+   ### GCE
+
+    2 Options from here.
+    1. ### Domain Name not mapped to an IP
+    #### Important
+
+      Get the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
       `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 
     - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
@@ -143,6 +147,38 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
           - `nginx-ingress.metrics.service.loadBalancerIP`   
           - `nginx-ingress.service.loadBalancerIP`  
           - `global.nginxIp` 
+    - Disable the services that are not required then install the chart by running
+    `helm install --name <release-name> -f values.yaml . `
+
+  ### AWS
+   - Get the `loadBalancer` DNS hostname provisioned by the Nginx Ingress e.g
+   ```
+    $ kubectl get svc | grep ingress-controller
+flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com   80:32489/TCP,443:30276/TCP     82m
+   ```
+   - Create a `CNAME` that points to the ELB hostname (which won't change ).  
+    i.e `gluu.mycompany.com -> a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com`   
+    This would allow integration of the scalable Gluu server behind the ELB with your domain.
+   - Update `loadBalancerIP` value in `values.yaml` file with IP that is now mapped to a domain. 
+          - `nginx-ingress.controller.service.loadBalancerIP`  
+          - `nginx-ingress.metrics.service.loadBalancerIP`   
+          - `nginx-ingress.service.loadBalancerIP`  
+          - `global.nginxIp` 
+    - Update the value of domain name in `global.domain` and also in `nginx` section as shown below
+      ```
+      nginx:
+        enabled: true
+        # ingress resources
+        ingress:
+          enabled: true
+          path: /
+          hosts:
+            - demo.gluu-helm-example.tk # REPLACE THIS
+          tls: 
+          - secretName: tls-certificate
+            hosts:
+              - demo.gluu-helm-example.tk #REPLACE THIS
+      ```
     - Disable the services that are not required then install the chart by running
     `helm install --name <release-name> -f values.yaml . `
     

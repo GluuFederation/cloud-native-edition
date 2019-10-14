@@ -40,8 +40,6 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
 
-  appVersion: 4.0.0_dev
-
 nginx-ingress:
   controller:
     service:
@@ -99,10 +97,10 @@ redis:
   enabled: false
 
 shared-shib:
-  enabled: false
+  enabled: true
 
 nginx:
-  enabled: false
+  enabled: true
   # ingress resources
   ingress:
     enabled: true
@@ -115,13 +113,13 @@ nginx:
         - demo.gluu-helm-example.tk
 
 rbac:
-  enabled: false
-
-oxshibboleth:
   enabled: true
 
+oxshibboleth:
+  enabled: false
+
 nfs: 
-  enabled: true 
+  enabled: false 
 
 oxpassport:
   enabled: false
