@@ -10,7 +10,7 @@ provisioner: {{ .Values.global.cloud.provisioner }}
 parameters:
   {{- if eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
-  encrypted: "true"
+  fsType: {{ .Values.global.fsType }}
   {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}
   {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/azure-disk" }}
