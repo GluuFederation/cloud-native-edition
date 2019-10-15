@@ -9,14 +9,16 @@ spec:
       app: oxd-server
   template:
     spec:
-      volumes:
-        - name: oxd-server
-          persistentVolumeClaim:
-            claimName: oxd-server-pvc
       containers:
       - name: oxd-server
         imagePullPolicy: Always
         image: gluufederation/oxd-server:4.0.0_dev
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
         ports:
         - containerPort: 8443
         - containerPort: 8444
@@ -28,3 +30,20 @@ spec:
         envFrom:
         - configMapRef:
             name: oxd-server-cm
+        volumeMounts:
+          - mountPath: /opt/oxd-server/conf/oxd-server.keystore
+            name: oxd-keystore-file
+            subPath: oxd-server.keystore
+          - mountPath: /scripts
+            name: update-lb-ip
+      volumes:
+      - name: oxd-keystore-file
+        secret:
+          secretName: oxdkeystorecm
+      - name: update-lb-ip
+        configMap:
+          name: updatelbip
+      hostAliases:
+      - ip: NGINX_IP
+        hostnames:
+        - FQDN

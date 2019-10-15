@@ -52,3 +52,4 @@ configMapGenerator:
       - DEFAULT_SITE_CONFIG_UI_LOCALES="['en']"
       - DEFAULT_SITE_CONFIG_CLAIMS_LOCALES="['en']"
       - DEFAULT_SITE_CONFIG_CONTACTS="[]"
+      - LB_ADDR=LBADDR
