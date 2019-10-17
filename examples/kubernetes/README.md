@@ -23,6 +23,9 @@
 
 # Use Couchbase soley as the persistence layer
 ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
+
+    ![image](../../img/gluu_cb_installation.gif)
+
 ## Requirements
   - An m5.xlarge EKS cluster with 3 nodes at the minimum
 - [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `create.sh`.
