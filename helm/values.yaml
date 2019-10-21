@@ -21,9 +21,9 @@ global:
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
   # Networking configs
-  lbAddr: ""
-  nginxIp: 192.168.99.100 # SHOULD BE CHANGED FOR CLOUD
-  domain: demoexample.gluu.org 
+  lbAddr: a61e34bcdf4c811e9ade00a26314cd24-1097727752.us-west-2.elb.amazonaws.com
+  nginxIp: 34.102.208.248 # SHOULD BE CHANGED FOR CLOUD
+  domain: aws.testinghelm.tk 
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
@@ -39,6 +39,21 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
+
+#efs-provisioner used for creating shared file system in AWS
+efs-provisioner:
+  enabled: true
+  efsProvisioner:
+    # If specified, use this DNS or IP to connect the EFS
+    # dnsName: "my-custom-efs-dns.com"
+    dnsName: fs-a23f2e09.efs.us-west-2.amazonaws.com # fs-xxxxxx.efs.us-east-1.amazonaws.com
+    efsFileSystemId: fs-a23f2e09
+    awsRegion: us-west-2
+    path: /opt/shared-shibboleth-idp
+    provisionerName: example.com/aws-efs
+    storageClass:
+      name: aws-efs
+      isDefault: false
 
 nginx-ingress:
   controller:
@@ -63,7 +78,7 @@ nginx-ingress:
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
 config:
-  enabled: true
+  enabled: false
   orgName: Gluu
   # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
@@ -77,13 +92,13 @@ config:
   ldapType: opendj
 
 oxauth:
-  enabled: true
+  enabled: false
 
 oxtrust:
-  enabled: true
+  enabled: false
 
 opendj:
-  enabled: true
+  enabled: false
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
@@ -97,23 +112,23 @@ redis:
   enabled: false
 
 shared-shib:
-  enabled: true
+  enabled: false
 
 nginx:
-  enabled: true
+  enabled: false
   # ingress resources
   ingress:
-    enabled: true
+    enabled: false
     path: /
     hosts:
-      - demo.gluu-helm-example.tk
+      - aws.testinghelm.tk
     tls: 
     - secretName: tls-certificate # DON'T change 
       hosts:
-        - demo.gluu-helm-example.tk
+        - aws.testinghelm.tk
 
 rbac:
-  enabled: true
+  enabled: false
 
 oxshibboleth:
   enabled: false

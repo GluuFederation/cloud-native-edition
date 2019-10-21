@@ -40,7 +40,7 @@ spec:
         - configMapRef:
             name: {{ include "oxshibboleth.fullname" . }}
         volumeMounts:
-          - name: shared-shib
+          - name: {{ .Release.Name }}-shared-shib
             mountPath: "/opt/shared-shibboleth-idp"
           {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
@@ -63,10 +63,12 @@ spec:
         hostnames:
         - {{ .Values.global.domain }}
       volumes:
-      - name: shared-shib
+      - name: {{ .Release.Name }}-shared-shib
         persistentVolumeClaim: 
           {{- if .Values.global.cloud.enabled }}
           claimName: nfs
+          {{- else if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+          claimName: efs
           {{- else }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- end }}

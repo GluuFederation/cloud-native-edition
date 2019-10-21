@@ -156,8 +156,9 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
     $ kubectl get svc | grep ingress-controller
 flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com   80:32489/TCP,443:30276/TCP     82m
    ```
-   - Update the value of `global.lbAddr` with the DNS name from the loadBalancer. i.e
-    ```
+   - Update the value of `global.lbAddr` with the DNS name from the loadBalancer. i.e  
+   
+    ```   
       global:
         ;
         ;
