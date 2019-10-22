@@ -19,6 +19,7 @@ static_azure_folder="overlays/azure/static-dn/"
 
 emp_output() {
   echo "" > /dev/null
+  echo "Skipping command..."
 }
 
 delete_all() {
@@ -59,7 +60,7 @@ delete_all() {
   fi
   $timeout 10 $kubectl delete po oxtrust-0 --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete po oxshibboleth-0 --force --grace-period=0 --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete cm gluu casacm --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret oxdkeystorecm --ignore-not-found || emp_output
@@ -197,7 +198,7 @@ deploy_cb_cluster() {
     easyrsa=easy-rsa/easyrsa3
     $easyrsa/easyrsa init-pki
     $easyrsa/easyrsa build-ca
-    subject_alt_name="DNS:*.$clustername.$namespace.svc,DNS:*.$namespace.svc,DNS:*.$clustername.$FQDN"
+    subject_alt_name="DNS:*.$clustername.$namespace.svc,DNS:*.$namespace.svc,DNS:*.$clustername.$CB_FQDN"
     $easyrsa/easyrsa --subject-alt-name=$subject_alt_name \
       build-server-full couchbase-server nopass
     cp pki/private/couchbase-server.key $easyrsa/pkey.key
@@ -458,12 +459,30 @@ set_default() {
       "CITY" ) CITY="$2"  ;;
       "EMAIL" ) EMAIL="$2"  ;;
       "ORG_NAME" ) ORG_NAME="$2" ;;
+      "CB_FQDN" ) CB_FQDN="$2" ;;
     esac
   fi
 }
 
 check_k8version() {
   kustomize="$kubectl kustomize"
+  linux_flavor=$(cat /etc/*-release) || emp_output
+  if [[ $linux_flavor =~ "CentOS" ]]; then
+    yum update -y || emp_output
+    yum install epel-release -y
+    yum install jq -y
+    yum install java-1.8.0-openjdk-devel -y
+    yum install git -y
+    yum install bind-utils -y
+    yum install bc -y
+  else
+    apt-get update -y
+    apt-get install jq -y
+    apt-get install openjdk-8-jdk -y
+    apt-get install git -y
+    apt-get install dnsutils -y
+    apt-get install bc -y
+  fi
   kubectl_version=$("$kubectl" version -o json | jq -r '.clientVersion.minor')
   kubectl_version=$(echo "$kubectl_version" | tr -d +)
   echo "[I] kubectl detected version 1.$kubectl_version"
@@ -696,7 +715,7 @@ prepare_config() {
     echo "|                     AWS Loadbalancer type                       |"
     echo "|-----------------------------------------------------------------|"
     echo "| [0] Classic Load Balancer (CLB) [default]                       |"
-    echo "| [1] Network Load Balancer (NLB) -- Static IP                    |"
+    echo "| [1] Network Load Balancer (NLB - Alpha) -- Static IP            |"
     echo "|-----------------------------------------------------------------|"
     read -rp "Loadbalancer type ?                                               " lbChoicenumber
     case "$lbChoicenumber" in
@@ -704,6 +723,12 @@ prepare_config() {
       1 ) lbChoice="nlb"  ;;
       * ) lbChoice="clb"  ;;
     esac
+    read -rp "Are you terminating SSL traffic at LB and using certificate from \
+       AWS [N][Y/N]   : " UseARN
+    if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
+      read -rp 'Enter aws-load-balancer-ssl-cert arn quoted \
+        ("arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX"): ' ARN
+    fi
   fi
   if [[ $choicePersistence -ge 1 ]]; then
     COUCHBASE_URL=""
@@ -721,6 +746,9 @@ prepare_config() {
           Confine to 6 lowercase letter only.[cbgluu] \
           " clustername && set_default "$clustername" "cbgluu" "clustername"
         COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
+        read -rp "Please enter a couchbase domain for SAN. \
+          Confine to a shorthand domain.[cb.gluu.org] \
+          " CB_FQDN && set_default "$CB_FQDN" "cb.gluu.org" "CB_FQDN"
       else
         echo "Error: Couchbase package not found."
         echo "Please download the couchbase kubernetes package and place it inside
@@ -771,10 +799,6 @@ prepare_config() {
     read -rp "Deploy OXD-Server[N]?[Y/N]                                       " choiceOXD
   fi
   if [[ $choiceOXD == "Y" || $choiceOXD == "y" ]]; then
-    if [[ $machine == Linux ]]; then
-      apt-get update -y
-      apt-get install openjdk-8-jdk -y
-    fi
     keytool -genkey -noprompt \
       -alias oxd-server \
       -dname "CN=oxd-server, OU=ID, O=Gluu, L=Gluu, S=TX, C=US" \
@@ -1011,15 +1035,14 @@ prompt_disk_uris() {
 generate_yamls() {
   read -rp "Are you using a globally resolvable FQDN [N] [Y/N]:                " FQDN_CHOICE
   if [[ $FQDN_CHOICE == "y" || $FQDN_CHOICE == "Y" ]]; then
-  echo "Please place your FQDN certification and key inside 
-    ingress.crt and ingress.key respectivley."
+  echo "You can mount your FQDN certification and key by placing them inside 
+    ingress.crt and ingress.key respectivley "
     if [ ! -f ingress.crt ] \
       || [ ! -s ingress.crt ] \
       || [ ! -f ingress.key ] \
       || [ ! -s ingress.key ]; then
       echo "Check that  ingress.crt and ingress.key are not empty 
         and contain the right information for your FQDN. "
-      exit 1
     fi
   fi  
   oxpassport_oxshibboleth_folder="overlays/eks"
@@ -1190,15 +1213,15 @@ generate_yamls() {
   if [[ $choiceCache == 2 ]];then
     $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
   fi  
-  if [[ $FQDN_CHOICE != "y" || $FQDN_CHOICE != "Y" ]]; then
-    $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
-  else
+  if [[ $FQDN_CHOICE == "y" ]] || [[ $FQDN_CHOICE == "Y" ]]; then
     # Remove hostAliases object from yamls
     cat $output_yamls/oxauth.yaml \
       | $sed '/LB_ADDR: LBADDR/d' \
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/oxauth.yaml \
       || emp_output
@@ -1207,6 +1230,8 @@ generate_yamls() {
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/oxpassport.yaml \
       || emp_output
@@ -1215,6 +1240,8 @@ generate_yamls() {
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/oxshibboleth.yaml \
       || emp_output
@@ -1223,6 +1250,8 @@ generate_yamls() {
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/oxtrust.yaml \
       || emp_output
@@ -1231,6 +1260,8 @@ generate_yamls() {
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/radius.yaml \
       || emp_output
@@ -1239,9 +1270,25 @@ generate_yamls() {
       | $sed '/hostAliases:/d' \
       | $sed '/- hostnames:/d' \
       | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
       && mv tmpfile $output_yamls/casa.yaml \
       || emp_output
+    cat $output_yamls/oxd-server.yaml \
+      | $sed '/LB_ADDR: LBADDR/d' \
+      | $sed '/hostAliases:/d' \
+      | $sed '/- hostnames:/d' \
+      | $sed "/$FQDN/d" \
+      | $sed '/- command:/,/entrypoint.sh/d' \
+      | $sed -s "s@  envFrom@- envFrom@g" \
+      | $sed '/ip: NGINX_IP/d' > tmpfile \
+      && mv tmpfile $output_yamls/casa.yaml \
+      || emp_output
+    # Create dummy updatelbip
+    $kubectl create configmap updatelbip --from-literal=demo=empty || emp_output
+  else
+    $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   fi
     echo " all yamls have been generated in $output_yamls folder"
 }
@@ -1260,13 +1307,31 @@ deploy_nginx() {
   if [[ $choiceDeploy -eq 3 ]] \
     || [[ $choiceDeploy -eq 4 ]] \
     || [[ $choiceDeploy -eq 5 ]]; then
+    lbhostname=""
     if [[ $lbChoice == "nlb" ]];then
       $kubectl apply -f nginx/nlb-service.yaml
+      while true; do
+        lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
+          --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
+        hostname="'${lbhostname}'" || emp_output 
+        ip_static=$(dig +short "$lbhostname" || echo "")
+        echo "Waiting for LB to recieve an ip assignment from AWS"
+        if [[ $ip_static ]]; then
+          break
+        fi
+        sleep 20
+      done
     else
-      $kubectl apply -f nginx/service-l4.yaml 
-      $kubectl apply -f nginx/patch-configmap-l4.yaml
+      if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
+        cat nginx/service-l7.yaml \
+          | $sed -s "s@ARN@$ARN@g" \
+          | $kubectl apply -f -
+        $kubectl apply -f nginx/patch-configmap-l7.yaml
+      else
+        $kubectl apply -f nginx/service-l4.yaml 
+        $kubectl apply -f nginx/patch-configmap-l4.yaml
+      fi
     fi
-    lbhostname=""
     while true; do
       echo "Waiting for loadbalancer address.."
       if [[ $lbhostname ]]; then
@@ -1474,7 +1539,7 @@ deploy_cr_rotate() {
 
 deploy() {
   ls $output_yamls || true
-  read -rp "Deploy the generated yamls? [Y/n]                                  " choiceContDeploy
+  read -rp "Deploy the generated yamls? [Y][Y/n]                                  " choiceContDeploy
   case "$choiceContDeploy" in
     y|Y ) ;;
     n|N ) exit 1 ;;
