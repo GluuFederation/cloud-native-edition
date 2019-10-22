@@ -13,7 +13,7 @@ spec:
       containers:
       - name: oxshibboleth
         imagePullPolicy: Always
-        image: gluufederation/oxshibboleth:4.0.0_dev
+        image: gluufederation/oxshibboleth:4.0.0_01
         command:
           - /bin/sh
           - -c

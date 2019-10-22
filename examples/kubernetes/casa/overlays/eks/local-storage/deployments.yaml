@@ -12,7 +12,7 @@ spec:
       containers:
       - name: casa
         imagePullPolicy: Always
-        image: gluufederation/casa:4.0.0_dev
+        image: gluufederation/casa:4.0.0_01
         command:
           - /bin/sh
           - -c
