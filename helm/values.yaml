@@ -2,13 +2,13 @@
 global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
-    enabled: true
-    provisioner: kubernetes.io/aws-ebs 
+    enabled: false
+    provisioner: kubernetes.io/gce-pd 
     # values used to define the StorageClass template
   encrypted: true
   pool: default
   fsType: ext4
-  awsZone: us-west-2a
+  gcpZone: us-west-2a
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
@@ -22,8 +22,8 @@ global:
   oxTrustSeriveName: oxtrust
   # Networking configs
   lbAddr: a61e34bcdf4c811e9ade00a26314cd24-1097727752.us-west-2.elb.amazonaws.com
-  nginxIp: 34.102.208.248 # SHOULD BE CHANGED FOR CLOUD
-  domain: aws.testinghelm.tk 
+  nginxIp: 192.168.99.100 # SHOULD BE CHANGED FOR CLOUD
+  domain: demoexample.gluu.org 
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
@@ -40,20 +40,22 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: couchbase
 
-#efs-provisioner used for creating shared file system in AWS
+#efs-provisioner used for creating shared file system in gcp
 efs-provisioner:
-  enabled: true
+  enabled: false
   efsProvisioner:
     # If specified, use this DNS or IP to connect the EFS
-    # dnsName: "my-custom-efs-dns.com"
-    dnsName: fs-a23f2e09.efs.us-west-2.amazonaws.com # fs-xxxxxx.efs.us-east-1.amazonaws.com
-    efsFileSystemId: fs-a23f2e09
+    dnsName: "" # fs-xxxxxx.efs.us-east-1.amazonaws.com
+    efsFileSystemId: ""
     awsRegion: us-west-2
     path: /opt/shared-shibboleth-idp
-    provisionerName: example.com/aws-efs
+    provisionerName: example.com/gcp-efs
     storageClass:
-      name: aws-efs
+      name: gcp-efs
       isDefault: false
+    persistentVolume:
+      accessModes: ReadWriteMany
+      storage: 5Gi
 
 nginx-ingress:
   controller:
@@ -78,7 +80,7 @@ nginx-ingress:
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
 config:
-  enabled: false
+  enabled: true
   orgName: Gluu
   # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
@@ -92,13 +94,13 @@ config:
   ldapType: opendj
 
 oxauth:
-  enabled: false
+  enabled: true
 
 oxtrust:
-  enabled: false
+  enabled: true
 
 opendj:
-  enabled: false
+  enabled: true
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
@@ -111,30 +113,30 @@ opendj:
 redis:
   enabled: false
 
-shared-shib:
-  enabled: false
-
 nginx:
-  enabled: false
+  enabled: true
   # ingress resources
   ingress:
-    enabled: false
+    enabled: true
     path: /
     hosts:
-      - aws.testinghelm.tk
+      - demoexample.gluu.org
     tls: 
     - secretName: tls-certificate # DON'T change 
       hosts:
-        - aws.testinghelm.tk
-
-rbac:
-  enabled: false
-
-oxshibboleth:
-  enabled: false
+        - demoexample.gluu.org
 
 nfs: 
   enabled: false 
+
+shared-shib:
+  enabled: true
+
+rbac:
+  enabled: true
+
+oxshibboleth:
+  enabled: false
 
 oxpassport:
   enabled: false

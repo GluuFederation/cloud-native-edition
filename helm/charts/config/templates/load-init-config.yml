@@ -21,7 +21,7 @@ spec:
             name: {{ include "config.fullname" . }}-tls-script
       containers:
       - name: {{ template "gluu.name" . }}-load
-        image: gluufederation/config-init:4.0.0_dev
+        image: gluufederation/config-init:4.0.0_01
         volumeMounts:
           - mountPath: /opt/config-init/db/
             name: {{ template "gluu.name" . }}-config

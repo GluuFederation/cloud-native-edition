@@ -62,6 +62,10 @@ If during installation the release was not defined, release name is checked by r
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
 | `global.gluuPersistenceType`  | Which database backend to use ( Used by radius and wrends service )            | `ldap`          |
+| `efs-provisioner.enabled`     | Enable EFS provisioning for AWS deployments ONLY           | `false`                             |
+| `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
+| `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
+| `efs-provisioner.efsProvisioner.awsRegion`        | AWS region which the deployment is taking place | `us-west-2`                |
 | `nginx-ingress.controller.service.loadBalancerIP` | This is used if cloud deployment is used. It is the IP address associated with the FQDN `global.domain` to be used | `34.70.112.93` |
 | `nginx-ingress.metrics.service.loadBalancerIP`    | As described above                     | `34.70.112.93`                      |
 | `nginx-ingress.service.loadBalancerIP`            | As described above                     | `34.70.112.93`                      |
@@ -80,7 +84,9 @@ If during installation the release was not defined, release name is checked by r
 | `redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
 | `shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
 | `oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
-| `nginx.enabled`               | Allow installation of nginx. Should be allowed unless another nginx is being deployed                |  `true`                            |
+| `nginx.enabled`               | Allow installation of nginx. Should be allowed unless another nginx is being deployed   |  `true`|
+| `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
+| `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
 | `oxshibboleth.enabled`        | Allow oxshibboleth installation                            | `false`                             |
 | `oxpassport.enabled`          | Allow oxpassport installation                              | `false`                             |
 | `key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
@@ -108,13 +114,15 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
 
 1. ## Cloud deployments.
 
-   ### Common instructions on all Cloud providers
+   ### Common instructions on all Cloud providers (Both AWS and GKE)
+    - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
     - Enabling RBAC before deploying the chart. This has to be done first.  
       To do this deploy the `tiller.yaml` file   
       `$ kubectl apply -f tiller.yaml`
     - Enable cloud deployment in `values.yaml`. 
       Set `global.cloud.enabled` to `true`
-    - Disable `RBAC` sub-chart installation. Instructions can be found in the config table above.
+    - Disable `rbac` sub-chart installation. Instructions can be found in the config table above.  
+      `rbac.enabled: false`
 
     - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
       ```
@@ -140,21 +148,23 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
           - `nginx-ingress.service.loadBalancerIP`  
           - `global.nginxIp` 
     - Enable all the required services.
-    - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .`
+    - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .` 
+
     2. ### Domain already mapped to an IP address  
     - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
           - `nginx-ingress.service.loadBalancerIP`  
           - `global.nginxIp` 
-    - Disable the services that are not required then install the chart by running
-    `helm install --name <release-name> -f values.yaml . `
+    - Enable the services that are required then install the chart by running
+    `helm upgrade --install <release-name> -f values.yaml . `
 
-  ### AWS
-   - Get the `loadBalancer` DNS hostname provisioned by the Nginx Ingress e.g
+  ### AWS   
+   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.cloud.provisioner`
+   - Get the `loadBalancer` DNS hostname provisioned by the `nginx-ingress` e.g
    ```
     $ kubectl get svc | grep ingress-controller
-flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com   80:32489/TCP,443:30276/TCP     82m
+        flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com   80:32489/TCP,443:30276/TCP     82m
    ```
    - Update the value of `global.lbAddr` with the DNS name from the loadBalancer. i.e  
    
@@ -162,16 +172,14 @@ flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a
       global:
         ;
         ;
-        lbAddr: a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com
+        lbAddr: a96e6e325ee7d11e9xxxxx49691a220-752226592.us-west-2.elb.amazonaws.com
     ```
    - Create a `CNAME` that points to the ELB hostname (which won't change ).  
-    i.e `gluu.mycompany.com -> a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com`   
+    i.e `aws.gluu.org -> a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com`   
     This would allow integration of the scalable Gluu server behind the ELB with your domain.
-   - Update `loadBalancerIP` value in `values.yaml` file with IP that is now mapped to a domain. 
-          - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.metrics.service.loadBalancerIP`   
-          - `nginx-ingress.service.loadBalancerIP`  
+   - Update `nginxIp` in `values.yaml` file with IP that is now mapped to your domain and also the domain.      
           - `global.nginxIp` 
+          - `global.domain`
     - Update the value of domain name in `global.domain` and also in `nginx` section as shown below
       ```
       nginx:
@@ -181,14 +189,33 @@ flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a
           enabled: true
           path: /
           hosts:
-            - demo.gluu-helm-example.tk # REPLACE THIS
+            - demoexample.gluu.org # REPLACE THIS
           tls: 
           - secretName: tls-certificate
             hosts:
-              - demo.gluu-helm-example.tk #REPLACE THIS
+              - demoexample.gluu.org #REPLACE THIS
       ```
-    - Disable the services that are not required then install the chart by running
-    `helm install --name <release-name> -f values.yaml . `
+    - Because this chart is going to use `EFS-Provisioner` there are some preparations that are NEEDED before deploying as  described 
+      [here](https://github.com/helm/charts/tree/master/stable/efs-provisioner).
+      Some notes on the same to keep in mind.
+        - To be able to use a DNS name of the efs in the mount command, the following must be true:
+
+        - The connecting EC2 instance must be inside a VPC and must be configured to use the DNS server provided by Amazon. ✅
+
+        - The VPC of the connecting EC2 instance must have both DNS Resolution and DNS Hostnames enabled. ✅
+
+        - The connecting EC2 instance must be inside the same VPC as the EFS file system. ✅ 
+
+        - Mount targets must include the security groups that allow EFS to be connected ✅
+
+    - After creating efs file system, update `efs-provisioner.efsProvisioner.dnsName` with the efs DNS name.
+    - Enable `efs-provisioner` chart to be installed by setting `enabled` to `true` 
+      ```
+        efs-provisioner:
+           enabled: true    -----> changed from false to true
+      ```
+    - Enable the services that are required then install the chart by running
+    `helm upgrade --install <release-name> -f values.yaml . `
     
     
 2. ## Local deployments
