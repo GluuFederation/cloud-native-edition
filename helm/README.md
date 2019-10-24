@@ -115,15 +115,12 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
 1. ## Cloud deployments.
 
    ### Common instructions on all Cloud providers (Both AWS and GKE)
-    - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
-    - Enabling RBAC before deploying the chart. This has to be done first.  
+    - Enabling RBAC in the cluster before deploying the chart. This has to be done first.  
       To do this deploy the `tiller.yaml` file   
       `$ kubectl apply -f tiller.yaml`
-    - Enable cloud deployment in `values.yaml`. 
-      Set `global.cloud.enabled` to `true`
+    - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
     - Disable `rbac` sub-chart installation. Instructions can be found in the config table above.  
       `rbac.enabled: false`
-
     - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
       ```
         config:
