@@ -194,7 +194,10 @@ deploy_cb_cluster() {
       || emp_output
     cbinstalldir=$(echo couchbase-autonomous-operator-kubernetes_*/)
     $kubectl create namespace $namespace || emp_output
-    git clone http://github.com/OpenVPN/easy-rsa
+    wget https://github.com/OpenVPN/easy-rsa/archive/master.zip -O easyrsa.zip
+    unzip easyrsa.zip
+    mv easy-rsa-master/ easy-rsa
+    #git clone http://github.com/OpenVPN/easy-rsa
     easyrsa=easy-rsa/easyrsa3
     $easyrsa/easyrsa init-pki
     $easyrsa/easyrsa build-ca
@@ -467,21 +470,24 @@ set_default() {
 check_k8version() {
   kustomize="$kubectl kustomize"
   linux_flavor=$(cat /etc/*-release) || emp_output
-  if [[ $linux_flavor =~ "CentOS" ]]; then
+  if [[ $linux_flavor =~ "CentOS" ]] || [[ $linux_flavor =~ "Amazon Linux" ]]; then
     yum update -y || emp_output
     yum install epel-release -y
     yum install jq -y
     yum install java-1.8.0-openjdk-devel -y
-    yum install git -y
     yum install bind-utils -y
     yum install bc -y
-  else
+  elif [[ $linux_flavor =~ "Ubuntu" ]]; then
     apt-get update -y
     apt-get install jq -y
     apt-get install openjdk-8-jdk -y
-    apt-get install git -y
     apt-get install dnsutils -y
     apt-get install bc -y
+  else
+    echo "Please install the follwing packages before you continue"
+    echo "jq, openjdk 8, unzip, bc, and wget."
+    echo "Exit immediatly if these packages are not installed. Otherwise, setup will continue"
+    sleep 10
   fi
   kubectl_version=$("$kubectl" version -o json | jq -r '.clientVersion.minor')
   kubectl_version=$(echo "$kubectl_version" | tr -d +)
@@ -735,7 +741,7 @@ prepare_config() {
     echo "For the following prompt  if placed [N] the couchbase 
       is assumed to be installed or remotely provisioned"
     read -rp "Install Couchbase[Y][Y/N] ?                                       " installCB
-    if [[ $installCB != "n" || $installCB != "N" ]]; then
+    if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
       if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
         read -rp "Please enter the volume type for EBS.[io1]    :           \
           " VOLUME_TYPE && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
@@ -747,16 +753,14 @@ prepare_config() {
           " clustername && set_default "$clustername" "cbgluu" "clustername"
         COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
         read -rp "Please enter a couchbase domain for SAN. \
-          Confine to a shorthand domain.[cb.gluu.org] \
           " CB_FQDN && set_default "$CB_FQDN" "cb.gluu.org" "CB_FQDN"
       else
         echo "Error: Couchbase package not found."
         echo "Please download the couchbase kubernetes package and place it inside
           the same directory containing the create.sh script.
           https://www.couchbase.com/downloads"
-    exit 1
-  fi
-
+        exit 1
+      fi
     fi
     if [ -z "$COUCHBASE_URL" ];then
       read -rp "Please enter remote couchbase URL base name, 
@@ -1545,7 +1549,9 @@ deploy() {
     n|N ) exit 1 ;;
     * )   ;;
   esac
-  prompt_cb
+  if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
+    prompt_cb
+  fi
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
   deploy_config
