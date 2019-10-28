@@ -515,13 +515,14 @@ kustomize_install() {
     echo "Couldn't determine system OS"
   fi
   #Install kustomize
-  curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest \
+  curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases \
   | grep browser_download \
   | grep $opsys \
   | cut -d '"' -f 4 \
+  | grep /kustomize/v \
+  | sort | tail -n 1 \
   | xargs curl -O -L
-  mv kustomize_*_${opsys}_amd64 kustomize
-  chmod u+x kustomize
+  tar xzf ./kustomize_v*_${opsys}_amd64.tar.gz
 }
 
 mask_password() {
@@ -602,7 +603,7 @@ confirm_ip() {
 
 prompt_cb() {
  if [[ $choicePersistence -ge 1 ]]; then
-    if [[ $installCB != "n" || $installCB != "N" ]]; then
+    if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
       echo "ONLY TESTED ON AWS. Couchbase will begin installation..."
       deploy_cb_cluster
     fi
@@ -729,7 +730,7 @@ prepare_config() {
       1 ) lbChoice="nlb"  ;;
       * ) lbChoice="clb"  ;;
     esac
-    read -rp "Are you terminating SSL traffic at LB and using certificate from \
+    read -rp "Are you terminating SSL traffic at LB and using certificate from 
        AWS [N][Y/N]   : " UseARN
     if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
       read -rp 'Enter aws-load-balancer-ssl-cert arn quoted \
@@ -1287,7 +1288,7 @@ generate_yamls() {
       | $sed '/- command:/,/entrypoint.sh/d' \
       | $sed -s "s@  envFrom@- envFrom@g" \
       | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/casa.yaml \
+      && mv tmpfile $output_yamls/oxd-server.yaml \
       || emp_output
     # Create dummy updatelbip
     $kubectl create configmap updatelbip --from-literal=demo=empty || emp_output
@@ -1549,9 +1550,7 @@ deploy() {
     n|N ) exit 1 ;;
     * )   ;;
   esac
-  if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
-    prompt_cb
-  fi
+  prompt_cb
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
   deploy_config
