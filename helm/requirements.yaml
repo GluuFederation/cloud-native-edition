@@ -74,4 +74,8 @@ dependencies:
   - name: efs-provisioner
     condition: efs-provisioner.enabled
     version: 0.7.0
+
+  - name: couchbase
+    condition: couchbase.enabled
+    version: 1.0.0
     

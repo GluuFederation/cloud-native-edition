@@ -38,7 +38,8 @@ global:
   gluuPersistenceLdapMapping: default
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  gluuCouchBaseUrl: couchbase
+  gluuCouchBaseUrl: cb.demo.gluu # CHANGE THIS
+  gluuCouchBaseUser: cb_user # CHANGE THIS
 
 #efs-provisioner used for creating shared file system in gcp
 efs-provisioner:
@@ -118,6 +119,9 @@ nginx:
     - secretName: tls-certificate # DON'T change 
       hosts:
         - demoexample.gluu.org
+
+couchbase:
+  enabled: false
 
 nfs: 
   enabled: false 

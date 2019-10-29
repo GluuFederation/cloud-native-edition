@@ -4,8 +4,6 @@
 
 ## TL;DR;
 
-`helm install beta/gluu`
-
 ## Introduction
 
 This chart bootstraps a Gluu Server deployment on a Kubernetes cluster using Helm package manager.  
@@ -24,11 +22,22 @@ It also packages other components/services that makeup Gluu Server.
 `$ helm init `
 
 
-## General instructions on installing the chart
+## Instructions on installing the chart
 
-To install the chart with the release name `my-release`:
+### Deployments are of 2 types 
+- `Cloud`
+- `Local` 
 
-`$ helm install --name my-release`
+For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
+
+The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
+
+`helm install --name <release-name> -f values.yaml .`  
+
+`< . >` means that this command is run in the root directory of the helm directory.
+
+
+Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
 
 The command deploys Gluu Server on Kubernetes cluster using the default configurations. The [Configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -61,7 +70,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
-| `global.gluuPersistenceType`  | Which database backend to use ( Used by radius and wrends service )            | `ldap`          |
+| `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
+| `global.gluuCouchBaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
+| `global.gluuCouchBaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
 | `efs-provisioner.enabled`     | Enable EFS provisioning for AWS deployments ONLY           | `false`                             |
 | `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
@@ -94,21 +105,6 @@ If during installation the release was not defined, release name is checked by r
 | `radius.enabled`              | Enabled radius installation                                | `false`                             |
 | `rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
 
-
-### Deployments are of 2 types 
-- `Cloud`
-- `Local` 
-
-For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
-
-The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
-
-`helm install --name <release-name> -f values.yaml .`  
-
-`< . >` means that this command is run in the root directory of the helm directory.
-
-
-Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
 
 ## Deployments
 
