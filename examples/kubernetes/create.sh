@@ -8,6 +8,7 @@ local_microk8s_folder="overlays/microk8s/local-storage/"
 local_eks_folder="overlays/eks/local-storage/"
 dynamic_eks_folder="overlays/eks/dynamic-ebs/"
 static_eks_folder="overlays/eks/static-ebs/"
+efs_eks_folder="overlays/eks/efs/"
 #GCE
 local_gke_folder="overlays/gke/local-storage/"
 dynamic_gke_folder="overlays/gke/dynamic-pd/"
@@ -36,6 +37,8 @@ delete_all() {
     $timeout 40 $kubectl delete -f localazureyamls --ignore-not-found || emp_output
   elif [ -d "staticazureyamls" ];then
     $timeout 40 $kubectl delete -f staticazureyamls --ignore-not-found || emp_output
+  elif [ -d "efseksyamls" ];then
+    $timeout 40 $kubectl delete -f efseksyamls --ignore-not-found || emp_output
   elif [ -d "localeksyamls" ];then
     $timeout 40 $kubectl delete -f localeksyamls --ignore-not-found || emp_output
   elif [ -d "dynamiceksyamls" ];then
@@ -63,6 +66,7 @@ delete_all() {
   $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete -f efs/ --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret oxdkeystorecm --ignore-not-found || emp_output
   rm oxd-server.keystore || emp_output
   if [ -d "localazureyamls" ] \
@@ -182,6 +186,54 @@ create_dynamic_azure() {
         | $sed '/patchesStrategicMerge:/d' > tmpfile \
         && mv tmpfile $dynamicazurefolder/kustomization.yaml \
         || emp_output
+    fi
+  done
+}
+
+create_efs_aws() {
+  mkdir efseksyamls || emp_output
+  cat shared-shib/eks/persistentvolumeclaims.yaml \
+    | $sed '/storageClassName/d' \
+    | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
+    | $sed '/volumeName/d' \
+    | $sed -n '/selector/q;p' \
+    | $sed '/^metadata:/a \ \ annotations:' \
+    | $sed '/^\ \ annotations:/a \   \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
+    && mv tmpfile shared-shib/eks/persistentvolumeclaims.yaml \
+    || emp_output
+    cat shared-shib/eks/kustomization.yaml \
+        | $sed '/persistentvolumes.yaml/d' > tmpfile \
+        && mv tmpfile shared-shib/eks/kustomization.yaml \
+        || emp_output
+  services="config ldap oxauth casa oxd-server oxtrust radius"
+  for service in $services; do
+    efseksyamls="$service/overlays/eks/efs"
+    mkdir -p $service/overlays/eks/efs \
+      && cp -r $service/overlays/eks/dynamic-ebs/* \
+      $service/overlays/eks/efs
+    rm -rf $efseksyamls/storageclasses.yaml \
+      || emp_output
+    cat $efseksyamls/kustomization.yaml \
+        | $sed '/- storageclasses.yaml/d' > tmpfile \
+        && mv tmpfile $efseksyamls/kustomization.yaml \
+        || emp_output
+    if [[ $service == "ldap" ]]; then
+      cat $efseksyamls/statefulsets.yaml \
+        | $sed -n '/template/q;p' \
+        | $sed '/storageClassName/d' \
+        | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
+        | $sed '/^\   \ - metadata:/a \       \ annotations:' \
+        | $sed '/^\       \ annotations:/a \         \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
+        && mv tmpfile $efseksyamls/statefulsets.yaml \
+        || emp_output
+    else
+      cat $efseksyamls/persistentvolumeclaims.yaml \
+          | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
+          | $sed '/storageClassName/d' \
+          | $sed '/^metadata:/a \ \ annotations:' \
+          | $sed '/^\ \ annotations:/a \   \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
+          && mv tmpfile $efseksyamls/persistentvolumeclaims.yaml \
+          || emp_output
     fi
   done
 }
@@ -629,27 +681,37 @@ prepare_config() {
   echo "|-----------------------------------------------------------------|"
   echo "|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)    |"
   echo "|-----------------------------------------------------------------|"
-  echo "| [3]  EKS      | Volumes on host                                 |"
-  echo "| [4]  EKS      | EBS volumes dynamically provisioned             |"
-  echo "| [5]  EKS      | EBS volumes statically provisioned              |"
+  echo "| [6]  EKS      | Volumes on host                                 |"
+  echo "| [7]  EKS      | EBS volumes dynamically provisioned             |"
+  echo "| [8]  EKS      | EBS volumes statically provisioned              |"
+  echo "| [9]  EKS      | EFS volume Multi AZ Support                     |"
   echo "|-----------------------------------------------------------------|"
   echo "|Google Cloud Engine - Google Kubernetes Engine                   |"
   echo "|-----------------------------------------------------------------|"
-  echo "| [6]  GKE      | Volumes on host                                 |"
-  echo "| [7]  GKE      | Persistent Disk volumes dynamically provisioned |"
-  echo "| [8]  GKE      | Persistent Disk volumes statically provisioned  |"
+  echo "| [11]  GKE      | Volumes on host                                 |"
+  echo "| [12]  GKE      | Persistent Disk volumes dynamically provisioned |"
+  echo "| [13]  GKE      | Persistent Disk volumes statically provisioned  |"
   echo "|-----------------------------------------------------------------|"
   echo "|Microsoft Azure                                                  |"
   echo "|-----------------------------------------------------------------|"
-  echo "| [9]  Azure    | Volumes on host                                 |"
-  echo "| [10] Azure    | Persistent Disk volumes dynamically provisioned |"
-  echo "| [11] Azure    | Persistent Disk volumes statically provisioned  |"
+  echo "| [16]  Azure    | Volumes on host                                 |"
+  echo "| [17] Azure    | Persistent Disk volumes dynamically provisioned |"
+  echo "| [18] Azure    | Persistent Disk volumes statically provisioned  |"
   echo "|-----------------------------------------------------------------|"
   echo "|                            Notes                                |"
   echo "|-----------------------------------------------------------------|"
   echo "|- Any other option will default to choice 1                      |"
   echo "|-----------------------------------------------------------------|"
   read -rp "What type of deployment?                                            " choiceDeploy
+  if [[ $choiceDeploy -eq 9 ]];then
+    read -rp "EFS created [Y]" efsNote
+    read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
+    read -rp "VPC of EKS and EFS are the same [Y]" efsNote
+    read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
+    if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
+      exit 1
+    fi
+  fi
   echo "|-----------------------------------------------------------------|"
   echo "|                     Cache layer                                 |"
   echo "|-----------------------------------------------------------------|"
@@ -715,9 +777,10 @@ prepare_config() {
     # Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
     ip=22.22.22.22
   fi
-  if [[ $choiceDeploy -eq 3 ]] \
-    || [[ $choiceDeploy -eq 4 ]] \
-    || [[ $choiceDeploy -eq 5 ]]; then
+  if [[ $choiceDeploy -eq 6 ]] \
+    || [[ $choiceDeploy -eq 7 ]] \
+    || [[ $choiceDeploy -eq 8 ]] \
+    || [[ $choiceDeploy -eq 9 ]]; then
     echo "|-----------------------------------------------------------------|"
     echo "|                     AWS Loadbalancer type                       |"
     echo "|-----------------------------------------------------------------|"
@@ -950,12 +1013,12 @@ prompt_storage() {
     read -rp "Size of Radius volume storage [4Gi]:                             " STORAGE_RADIUS \
       && set_default "$STORAGE_RADIUS" "4Gi" "STORAGE_RADIUS"
   fi
-  if [[ $choiceDeploy -ne 6 ]] \
-    && [[ $choiceDeploy -ne 7 ]] \
-    && [[ $choiceDeploy -ne 8 ]] \
-    && [[ $choiceDeploy -ne 9 ]] \
-    && [[ $choiceDeploy -ne 10 ]] \
-    && [[ $choiceDeploy -ne 11 ]]; then
+  if [[ $choiceDeploy -ne 11 ]] \
+    && [[ $choiceDeploy -ne 12 ]] \
+    && [[ $choiceDeploy -ne 13 ]] \
+    && [[ $choiceDeploy -ne 16 ]] \
+    && [[ $choiceDeploy -ne 17 ]] \
+    && [[ $choiceDeploy -ne 18 ]]; then
     read -p "Size of Shared-Shib volume storage [4Gi]:                         " STORAGE_SHAREDSHIB \
       && set_default "$STORAGE_SHAREDSHIB" "4Gi" "STORAGE_SHAREDSHIB"
   fi
@@ -1055,14 +1118,14 @@ generate_yamls() {
   if [[ $choiceDeploy -eq 0 ]]; then
     exit 1
 
-  elif [[ $choiceDeploy -eq 3 ]]; then
+  elif [[ $choiceDeploy -eq 6 ]]; then
     mkdir localeksyamls || emp_output
     output_yamls=localeksyamls
     yaml_folder=$local_eks_folder
     # Shared-Shib
     shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 4 ]]; then
+  elif [[ $choiceDeploy -eq 7 ]]; then
     echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
     echo "Follow the doc above to help you choose 
       which volume type to use.Options are [gp2,io1,st1,and sc1]"
@@ -1074,13 +1137,13 @@ generate_yamls() {
     prompt_zones
     shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 6 ]]; then
+  elif [[ $choiceDeploy -eq 11 ]]; then
     mkdir localgkeyamls || emp_output
     output_yamls=localgkeyamls
     yaml_folder=$local_gke_folder
     gke_prompts
 
-  elif [[ $choiceDeploy -eq 5 ]]; then
+  elif [[ $choiceDeploy -eq 8 ]]; then
     mkdir staticeksyamls || emp_output
     output_yamls=staticeksyamls
     yaml_folder=$static_eks_folder
@@ -1090,13 +1153,22 @@ generate_yamls() {
     prompt_volumes_identitfier
     shared_shib_child_folder="eks"
 
+  elif [[ $choiceDeploy -eq 9 ]]; then
+    create_efs_aws
+    output_yamls=efseksyamls
+    yaml_folder=$efs_eks_folder
+    read -rp "Enter FileSystemID (fs-xxx):                                      " fileSystemID
+    read -rp "Enter AWS region (us-west-2):                                     " awsRegion
+    read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):              " efsDNS
+    shared_shib_child_folder="eks"
+
   elif [[ $choiceDeploy -eq 2 ]]; then
     create_local_minikube
     output_yamls=localminikubeyamls
     yaml_folder=$local_minikube_folder
     shared_shib_child_folder="minikube"
 
-  elif [[ $choiceDeploy -eq 7 ]]; then
+  elif [[ $choiceDeploy -eq 12 ]]; then
     echo "Please enter the volume type for the persistent disk."
     read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
       && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
@@ -1105,7 +1177,7 @@ generate_yamls() {
     yaml_folder=$dynamic_gke_folder
     gke_prompts
 
-  elif [[ $choiceDeploy -eq 8 ]]; then
+  elif [[ $choiceDeploy -eq 13 ]]; then
     create_static_gke
     output_yamls=staticgkeyamls
     static_volume_prompt="Persistent Disk Name"
@@ -1115,13 +1187,13 @@ generate_yamls() {
     yaml_folder=$static_gke_folder
     gke_prompts
 
-  elif [[ $choiceDeploy -eq 9 ]]; then
+  elif [[ $choiceDeploy -eq 16 ]]; then
     create_local_azure
     output_yamls=localazureyamls
     yaml_folder=$local_azure_folder
     prompt_nfs
 
-  elif [[ $choiceDeploy -eq 10 ]]; then
+  elif [[ $choiceDeploy -eq 17 ]]; then
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
@@ -1138,7 +1210,7 @@ generate_yamls() {
     yaml_folder=$dynamic_azure_folder
     prompt_nfs
 
-  elif [[ $choiceDeploy -eq 11 ]]; then
+  elif [[ $choiceDeploy -eq 18 ]]; then
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
@@ -1165,12 +1237,12 @@ generate_yamls() {
   fi
   # Get prams for the yamls
   prompt_storage
-  if [[ $choiceDeploy -ne 6 ]] \
-    && [[ $choiceDeploy -ne 7 ]] \
-    && [[ $choiceDeploy -ne 8 ]] \
-    && [[ $choiceDeploy -ne 9 ]] \
-    && [[ $choiceDeploy -ne 10 ]] \
-    && [[ $choiceDeploy -ne 11 ]]; then
+  if [[ $choiceDeploy -ne 11 ]] \
+    && [[ $choiceDeploy -ne 12 ]] \
+    && [[ $choiceDeploy -ne 13 ]] \
+    && [[ $choiceDeploy -ne 16 ]] \
+    && [[ $choiceDeploy -ne 17 ]] \
+    && [[ $choiceDeploy -ne 18 ]]; then
     $kustomize shared-shib/$shared_shib_child_folder/ \
       | replace_all  > $output_yamls/shared-shib.yaml
   fi
@@ -1309,9 +1381,10 @@ deploy_nginx() {
   fi
   # Nginx
   $kubectl apply -f nginx/mandatory.yaml
-  if [[ $choiceDeploy -eq 3 ]] \
-    || [[ $choiceDeploy -eq 4 ]] \
-    || [[ $choiceDeploy -eq 5 ]]; then
+  if [[ $choiceDeploy -eq 6 ]] \
+    || [[ $choiceDeploy -eq 7 ]] \
+    || [[ $choiceDeploy -eq 8 ]] \
+    || [[ $choiceDeploy -eq 9 ]]; then
     lbhostname=""
     if [[ $lbChoice == "nlb" ]];then
       $kubectl apply -f nginx/nlb-service.yaml
@@ -1349,12 +1422,12 @@ deploy_nginx() {
       done
   fi
 
-  if [[ $choiceDeploy -eq 6 ]] \
-    || [[ $choiceDeploy -eq 7 ]] \
-    || [[ $choiceDeploy -eq 8 ]] \
-    || [[ $choiceDeploy -eq 9 ]] \
-    || [[ $choiceDeploy -eq 10 ]] \
-    || [[ $choiceDeploy -eq 11 ]]; then
+  if [[ $choiceDeploy -eq 11 ]] \
+    || [[ $choiceDeploy -eq 12 ]] \
+    || [[ $choiceDeploy -eq 13 ]] \
+    || [[ $choiceDeploy -eq 16 ]] \
+    || [[ $choiceDeploy -eq 17 ]] \
+    || [[ $choiceDeploy -eq 18 ]]; then
     $kubectl apply -f nginx/cloud-generic.yaml
     $kubectl apply -f nfs/base/services.yaml
     ip=""
@@ -1414,12 +1487,12 @@ deploy_persistence() {
 }
 
 deploy_shared_shib() {
-  if [[ $choiceDeploy -eq 6 ]] \
-    || [[ $choiceDeploy -eq 7 ]] \
-    || [[ $choiceDeploy -eq 8 ]] \
-    || [[ $choiceDeploy -eq 9 ]] \
-    || [[ $choiceDeploy -eq 10 ]] \
-    || [[ $choiceDeploy -eq 11 ]]; then
+  if [[ $choiceDeploy -eq 11 ]] \
+    || [[ $choiceDeploy -eq 12 ]] \
+    || [[ $choiceDeploy -eq 13 ]] \
+    || [[ $choiceDeploy -eq 16 ]] \
+    || [[ $choiceDeploy -eq 17 ]] \
+    || [[ $choiceDeploy -eq 18 ]]; then
     NFS_IP=""
     while true; do
       if [[ $NFS_IP ]] ; then
@@ -1542,6 +1615,19 @@ deploy_cr_rotate() {
   $kubectl apply -f  $output_yamls/cr-rotate.yaml || emp_output
 }
 
+deploy_efs() {
+  cat efs/deployment.yaml \
+    | $sed -s "s@FILESYSTEMID@$fileSystemID@g" \
+    | $sed -s "s@AWSREGION@$awsRegion@g" \
+    | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
+    | $kubectl apply -f - \
+    || emp_output
+  $kubectl apply -f efs/serviceaccount.yaml
+  $kubectl apply -f efs/roles.yaml
+  $kubectl apply -f efs/storageclasses.yaml
+  is_pod_ready "app=efs-provisioner"
+}
+
 deploy() {
   ls $output_yamls || true
   read -rp "Deploy the generated yamls? [Y][Y/n]                                  " choiceContDeploy
@@ -1550,6 +1636,9 @@ deploy() {
     n|N ) exit 1 ;;
     * )   ;;
   esac
+  if [[ $choiceDeploy -eq 9 ]]; then
+    deploy_efs
+  fi
   prompt_cb
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
