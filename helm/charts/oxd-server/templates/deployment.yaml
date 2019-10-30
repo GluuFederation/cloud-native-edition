@@ -27,12 +27,14 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
           command:
             - /bin/sh
             - -c 
             - |
                 /usr/bin/python /scripts/update-lb-ip.py &
                 /app/scripts/entrypoint.sh
+          {{- end }}
           ports:
             - containerPort: 8444
             - containerPort: 8443   
@@ -43,21 +45,23 @@ spec:
             - name: oxd-keystore-file
               mountPath: /opt/oxd-server/conf/oxd-server.keystore    
               subPath: oxd-server.keystore
-            - name: {{ include "oxd-server.name" .}}-updatelbip
-              mountPath: /scripts
-          volumes:
-            - name: oxd-keystore-file
-              secret:
-                secretName: {{ include "oxd-server.fullname" . }}
             {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-            - name: {{ include "oxd-server.name" .}}-updatelbip
-              configMap:
-                name: {{ .Release.Name }}-updatelbip
+            - name: {{ include "oxd-server.name" . }}-updatelbip
+              mountPath: /scripts
             {{- end }}
-          hostAliases:
-            - ip: {{ .Values.global.nginxIp }}
-              hostnames:
-               - {{ .Values.global.domain }}
+      volumes:
+        - name: oxd-keystore-file
+          secret:
+            secretName: {{ include "oxd-server.fullname" . }}
+        {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "oxd-server.name" . }}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+        {{- end }}
+      hostAliases:
+        - ip: {{ .Values.global.nginxIp }}
+          hostnames:
+            - {{ .Values.global.domain }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
