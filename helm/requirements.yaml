@@ -75,7 +75,7 @@ dependencies:
     condition: efs-provisioner.enabled
     version: 0.7.0
 
-  - name: couchbase
-    condition: couchbase.enabled
+  - name: oxd-server
+    condition: oxd-server.enabled
     version: 1.0.0
     

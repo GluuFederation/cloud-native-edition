@@ -92,6 +92,8 @@ If during installation the release was not defined, release name is checked by r
 | `opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
 | `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE`                |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
+| `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
+| `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
 | `redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
 | `shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
 | `oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
@@ -230,6 +232,17 @@ If during installation the release was not defined, release name is checked by r
     ```
 
 ## Instructions on how to install different services
+
+### OXD-server
+
+NOTE: When installing `oxd-server` chart/service, the user should change the value of 
+```
+oxd-server:
+  secret:
+    keystore: nkjnjnkjJBJBKndjBHNJ..
+```
+
+If one doesn't have a key store it must be generated and place to the variable mentioned above. To generate, find the instructions [here](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore)
 
 ### Passport
 
