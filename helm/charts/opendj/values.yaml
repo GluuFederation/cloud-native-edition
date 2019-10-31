@@ -4,13 +4,18 @@ gluuLdapInit: true
 gluuLdapInitHost: localhost
 gluuLdapInitPort: 1636
 gluuOxtrustConfigGeneration: true
-gluuCacheType: NATIVE_PERSISTENCE
 gluuCertAltName: opendj
 # gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
 gluuRedisEnabled: false
 gluuRedisCacheType: REDIS
 gluuRedisUrl: redis:6379
 gluuRedisType: STANDALONE
+# couchbase
+gluuCacheType: NATIVE_PERSISTENCE
+gluuCouchbaseCertFile: /etc/certs/couchbase.crt
+gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
+gluuCbUrl: # TODO: update this
+
 
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
@@ -28,7 +33,7 @@ image:
     tag: 4.0.0_01
   statefulset:
     repository: gluufederation/wrends
-    tag: 4.0.0_dev
+    tag: 4.0.0
     pullPolicy: Always
 
 persistence:

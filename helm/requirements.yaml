@@ -74,4 +74,8 @@ dependencies:
   - name: efs-provisioner
     condition: efs-provisioner.enabled
     version: 0.7.0
+
+  - name: oxd-server
+    condition: oxd-server.enabled
+    version: 1.0.0
     

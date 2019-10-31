@@ -39,5 +39,8 @@ data:
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchBaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchBaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: "/etc/certs/couchbase.crt"
+  GLUU_COUCHBASE_PASSWORD_FILE: "/etc/gluu/conf/couchbase_password"
   {{- end }}
   

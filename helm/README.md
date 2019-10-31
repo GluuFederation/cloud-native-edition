@@ -4,8 +4,6 @@
 
 ## TL;DR;
 
-`helm install beta/gluu`
-
 ## Introduction
 
 This chart bootstraps a Gluu Server deployment on a Kubernetes cluster using Helm package manager.  
@@ -24,11 +22,22 @@ It also packages other components/services that makeup Gluu Server.
 `$ helm init `
 
 
-## General instructions on installing the chart
+## Instructions on installing the chart
 
-To install the chart with the release name `my-release`:
+### Deployments are of 2 types 
+- `Cloud`
+- `Local` 
 
-`$ helm install --name my-release`
+For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
+
+The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
+
+`helm install --name <release-name> -f values.yaml .`  
+
+`< . >` means that this command is run in the root directory of the helm directory.
+
+
+Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
 
 The command deploys Gluu Server on Kubernetes cluster using the default configurations. The [Configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -61,7 +70,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
-| `global.gluuPersistenceType`  | Which database backend to use ( Used by radius and wrends service )            | `ldap`          |
+| `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
+| `global.gluuCouchBaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
+| `global.gluuCouchBaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
 | `efs-provisioner.enabled`     | Enable EFS provisioning for AWS deployments ONLY           | `false`                             |
 | `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
@@ -81,6 +92,8 @@ If during installation the release was not defined, release name is checked by r
 | `opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
 | `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE`                |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
+| `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
+| `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
 | `redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
 | `shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
 | `oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
@@ -94,21 +107,6 @@ If during installation the release was not defined, release name is checked by r
 | `radius.enabled`              | Enabled radius installation                                | `false`                             |
 | `rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
 
-
-### Deployments are of 2 types 
-- `Cloud`
-- `Local` 
-
-For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
-
-The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
-
-`helm install --name <release-name> -f values.yaml .`  
-
-`< . >` means that this command is run in the root directory of the helm directory.
-
-
-Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
 
 ## Deployments
 
@@ -234,6 +232,17 @@ Tip! One can use the default [values.yaml](values.yaml) for installation and cha
     ```
 
 ## Instructions on how to install different services
+
+### OXD-server
+
+NOTE: When installing `oxd-server` chart/service, the user should change the value of 
+```
+oxd-server:
+  secret:
+    keystore: nkjnjnkjJBJBKndjBHNJ..
+```
+
+If one doesn't have a key store it must be generated and place to the variable mentioned above. To generate, find the instructions [here](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore)
 
 ### Passport
 
