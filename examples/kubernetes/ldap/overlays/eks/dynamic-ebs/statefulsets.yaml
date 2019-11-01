@@ -3,11 +3,6 @@ kind: StatefulSet
 metadata:
   name: opendj
 spec:
-  serviceName: opendj
-  replicas: 1
-  selector:
-    matchLabels:
-      app: opendj
   volumeClaimTemplates:
     - metadata:
         name: opendj-pvc
@@ -18,15 +13,3 @@ spec:
         resources:
           requests:
             storage: STORAGELDAP
-  template:
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: failure-domain.beta.kubernetes.io/zone
-                operator: In
-                values:
-                # change this to same zone your volume was created at
-                - SCLDAPZONE

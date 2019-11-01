@@ -1,0 +1,31 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: shared-shib-pvc
+spec:
+  storageClassName: ""
+  volumeName: shared-shib-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: STORAGESHAREDSHIB
+  selector:
+    matchLabels:
+      type: shared-shib
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: casa-pvc
+spec:
+  storageClassName: ""
+  volumeName: casa-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: STORAGECASA
+  selector:
+    matchLabels:
+      type: casa

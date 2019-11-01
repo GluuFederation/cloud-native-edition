@@ -7,9 +7,6 @@ spec:
     spec:
       restartPolicy: Never
       volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: config-pvc
         - name: config-generate-params
           configMap:
             name: config-generate-params
@@ -17,8 +14,6 @@ spec:
         - name: config-init-load
           image: gluufederation/config-init:4.0.0
           volumeMounts:
-            - mountPath: /opt/config-init/db/
-              name: config
             - mountPath: /opt/config-init/db/generate.json
               name: config-generate-params
               subPath: generate.json

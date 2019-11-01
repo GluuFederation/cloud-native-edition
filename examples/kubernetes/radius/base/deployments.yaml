@@ -12,7 +12,7 @@ spec:
       containers:
       - name: radius
         imagePullPolicy: Always
-        image: gluufederation/radius:4.0.0
+        image: gluufederation/radius:4.0.0_01
         resources:
           requests:
             memory: "1000Mi"
@@ -26,8 +26,6 @@ spec:
         - configMapRef:
             name: radius-cm
         volumeMounts:
-          - mountPath: /opt/gluu/radius/logs
-            name: radius
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
@@ -53,9 +51,6 @@ spec:
         hostnames:
         - FQDN
       volumes:
-      - name: radius
-        persistentVolumeClaim:
-          claimName: radius-pvc
       - name: cb-pass
         secret:
           secretName: cb-pass

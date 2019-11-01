@@ -1,9 +1,0 @@
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-bases:
-  - ../../../base
-resources:
-  - storageclasses.yaml
-  - persistentvolumeclaims.yaml
-patchesStrategicMerge:
-  - deployments.yaml

@@ -13,6 +13,12 @@ spec:
       - name: oxauth
         imagePullPolicy: Always
         image: gluufederation/oxauth:4.0.0
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
         resources:
           requests:
             memory: "1000Mi"
@@ -33,6 +39,8 @@ spec:
           - name: casa
             mountPath: "/etc/gluu/conf/casa.json"
             subPath: casa.json
+          - mountPath: /scripts
+            name: update-lb-ip
         livenessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
@@ -59,3 +67,6 @@ spec:
       - name: casa
         configMap:
           name: casacm
+      - name: update-lb-ip
+        configMap:
+          name: updatelbip

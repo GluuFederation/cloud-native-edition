@@ -32,46 +32,36 @@ delete_all() {
   fi
   echo "Deleting Gluu objects. Please wait..."
   kubectl=kubectl
-  $timeout 10 $kubectl delete pvc opendj-pvc-opendj-0 --ignore-not-found || emp_output
-  if [ -d "localazureyamls" ];then
-    $timeout 40 $kubectl delete -f localazureyamls --ignore-not-found || emp_output
-  elif [ -d "staticazureyamls" ];then
-    $timeout 40 $kubectl delete -f staticazureyamls --ignore-not-found || emp_output
-  elif [ -d "efseksyamls" ];then
-    $timeout 40 $kubectl delete -f efseksyamls --ignore-not-found || emp_output
-  elif [ -d "localeksyamls" ];then
-    $timeout 40 $kubectl delete -f localeksyamls --ignore-not-found || emp_output
-  elif [ -d "dynamiceksyamls" ];then
-    $timeout 40 $kubectl delete -f dynamiceksyamls --ignore-not-found || emp_output
-  elif [ -d "dynamicazureyamls" ];then
-    $timeout 40 $kubectl delete -f dynamicazureyamls --ignore-not-found || emp_output
-  elif [ -d "localgkeyamls" ];then
-    $timeout 40 $kubectl delete -f localgkeyamls --ignore-not-found || emp_output
-  elif [ -d "dynamicgkeyamls" ];then
-    $timeout 40 $kubectl delete -f dynamicgkeyamls --ignore-not-found || emp_output
-  elif [ -d "staticgkeyamls" ];then
-    $timeout 40 $kubectl delete -f staticgkeyamls --ignore-not-found || emp_output
-  elif [ -d "staticeksyamls" ];then
-    $timeout 40 $kubectl delete -f staticeksyamls --ignore-not-found || emp_output
-  elif [ -d "localminikubeyamls" ];then
-    $timeout 40 $kubectl delete -f localminikubeyamls --ignore-not-found || emp_output
-    rm -rf /data
+  $timeout 10 $kubectl delete pvc -l app=opendj --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete pv -l type=opendj --force --grace-period=0 --ignore-not-found || emp_output
+  if [ -d "gluuminikubeyamls" ];then
+    $timeout 40 $kubectl delete -f gluuminikubeyamls --ignore-not-found || emp_output
+    manifestsfolder=gluuminikubeyamls
+  elif [ -d "gluueksyamls" ];then
+    $timeout 40 $kubectl delete -f gluueksyamls --ignore-not-found || emp_output
+    manifestsfolder=gluueksyamls
+  elif [ -d "gluugkeyamls" ];then
+    $timeout 40 $kubectl delete -f gluugkeyamls --ignore-not-found || emp_output
+    manifestsfolder=gluugkeyamls
+  elif [ -d "gluuaksyamls" ];then
+    $timeout 40 $kubectl delete -f gluuaksyamls --ignore-not-found || emp_output
+    manifestsfolder=gluuaksyamls
   else
     kubectl=microk8s.kubectl
-    $timeout 10 $kubectl delete -f localmicrok8syamls --ignore-not-found || emp_output
-    rm -rf /data
+    $timeout 10 $kubectl delete -f gluumicrok8yamls --ignore-not-found || emp_output
+    manifestsfolder=gluumicrok8yamls
+    rm -rf /data || emp_output
   fi
   $timeout 10 $kubectl delete po oxtrust-0 --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete po oxshibboleth-0 --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete -f efs/ --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret oxdkeystorecm --ignore-not-found || emp_output
   rm oxd-server.keystore || emp_output
-  if [ -d "localazureyamls" ] \
-    || [ -d "localeksyamls" ] \
-    || [ -d "localgkeyamls" ]; then
+  if [ -d "gluueksyamls" ] \
+    || [ -d "gluugkeyamls" ] \
+    || [ -d "gluuaksyamls" ]; then
     read -rp "Please enter the ssh key path to login
     into the nodes created[~/.ssh/id_rsa ]:                 " sshKey \
      && set_default "$sshKey" "~/.ssh/id_rsa" "sshKey"
@@ -88,6 +78,8 @@ delete_all() {
         opc@"$node_ip" sudo rm -rf /data || emp_output
     done
   fi
+  rm -rf old$manifestsfolder || emp_output
+  mv -f $manifestsfolder old$manifestsfolder || emp_output
   delete_cb
 }
 
@@ -117,45 +109,24 @@ delete_cb() {
 }
 
 create_dynamic_gke() {
-  mkdir dynamicgkeyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
+  services="ldap"
   for service in $services; do
     dynamicgkefolder="$service/overlays/gke/dynamic-pd"
     cp -r $service/overlays/eks/dynamic-ebs $dynamicgkefolder
     cat $dynamicgkefolder/storageclasses.yaml \
-      | $$sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
+      | $sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
       | $sed '/zones/d' | $sed '/encrypted/d' > tmpfile \
       && mv tmpfile $dynamicgkefolder/storageclasses.yaml \
       || emp_output
     rm $dynamicgkefolder/deployments.yaml || emp_output 
-    if [[ $service == "oxtrust" ]]; then
-      rm $dynamicgkefolder/statefulsets.yaml || emp_output
-      cat $dynamicgkefolder/kustomization.yaml \
-        | $sed '/- statefulsets.yaml/d' \
-        | $sed '/patchesStrategicMerge:/d' > tmpfile \
-        && mv tmpfile $dynamicgkefolder/kustomization.yaml \
-        || emp_output
-    fi
-    if [[ $service == "oxauth" ]] \
-      || [[ $service == "radius" ]] \
-      || [[ $service == "casa" ]]; then
-    cat $dynamicgkefolder/kustomization.yaml \
-      | $sed '/- deployments.yaml/d' \
-      | $sed '/patchesStrategicMerge:/d' > tmpfile \
-      && mv tmpfile $dynamicgkefolder/kustomization.yaml \
-      || emp_output
-    fi
   done
   #Config
-  cp config/overlays/gke/local-storage/cluster-role-bindings.yaml \
-    config/overlays/gke/dynamic-pd
   printf  "\n  - cluster-role-bindings.yaml" \
-    >> config/overlays/gke/dynamic-pd/kustomization.yaml
+    >> config/base/kustomization.yaml
 }
 
 create_dynamic_azure() {
-  mkdir dynamicazureyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
+  services="ldap"
   for service in $services; do
     dynamicazurefolder="$service/overlays/azure/dynamic-dn"
     mkdir -p $service/overlays/azure \
@@ -170,42 +141,11 @@ create_dynamic_azure() {
       || emp_output
     printf  "  kind: Managed" >> $dynamicazurefolder/storageclasses.yaml
     rm $dynamicazurefolder/deployments.yaml || emp_output 
-    if [[ $service == "oxtrust" ]]; then
-      rm $dynamicazurefolder/statefulsets.yaml || emp_output
-      cat $dynamicazurefolder/kustomization.yaml \
-        | $sed '/- statefulsets.yaml/d' \
-        | $sed '/patchesStrategicMerge:/d' > tmpfile \
-        && mv tmpfile $dynamicazurefolder/kustomization.yaml \
-        || emp_output
-    fi
-    if [[ $service == "oxauth" ]] \
-      || [[ $service == "radius" ]] \
-      || [[ $service == "casa" ]]; then
-      cat $dynamicazurefolder/kustomization.yaml \
-        | $sed '/- deployments.yaml/d' \
-        | $sed '/patchesStrategicMerge:/d' > tmpfile \
-        && mv tmpfile $dynamicazurefolder/kustomization.yaml \
-        || emp_output
-    fi
   done
 }
 
 create_efs_aws() {
-  mkdir efseksyamls || emp_output
-  cat shared-shib/eks/persistentvolumeclaims.yaml \
-    | $sed '/storageClassName/d' \
-    | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
-    | $sed '/volumeName/d' \
-    | $sed -n '/selector/q;p' \
-    | $sed '/^metadata:/a \ \ annotations:' \
-    | $sed '/^\ \ annotations:/a \   \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
-    && mv tmpfile shared-shib/eks/persistentvolumeclaims.yaml \
-    || emp_output
-    cat shared-shib/eks/kustomization.yaml \
-        | $sed '/persistentvolumes.yaml/d' > tmpfile \
-        && mv tmpfile shared-shib/eks/kustomization.yaml \
-        || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
+  services="ldap"
   for service in $services; do
     efseksyamls="$service/overlays/eks/efs"
     mkdir -p $service/overlays/eks/efs \
@@ -217,24 +157,84 @@ create_efs_aws() {
         | $sed '/- storageclasses.yaml/d' > tmpfile \
         && mv tmpfile $efseksyamls/kustomization.yaml \
         || emp_output
-    if [[ $service == "ldap" ]]; then
-      cat $efseksyamls/statefulsets.yaml \
-        | $sed -n '/template/q;p' \
-        | $sed '/storageClassName/d' \
-        | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
-        | $sed '/^\   \ - metadata:/a \       \ annotations:' \
-        | $sed '/^\       \ annotations:/a \         \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
-        && mv tmpfile $efseksyamls/statefulsets.yaml \
-        || emp_output
-    else
-      cat $efseksyamls/persistentvolumeclaims.yaml \
-          | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
-          | $sed '/storageClassName/d' \
-          | $sed '/^metadata:/a \ \ annotations:' \
-          | $sed '/^\ \ annotations:/a \   \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
-          && mv tmpfile $efseksyamls/persistentvolumeclaims.yaml \
-          || emp_output
-    fi
+    cat $efseksyamls/statefulsets.yaml \
+      | $sed -n '/template/q;p' \
+      | $sed '/storageClassName/d' \
+      | $sed -s "s@ReadWriteOnce@ReadWriteMany@g" \
+      | $sed '/^\   \ - metadata:/a \       \ annotations:' \
+      | $sed '/^\       \ annotations:/a \         \ volume.beta.kubernetes.io/storage-class: "aws-efs"' > tmpfile \
+      && mv tmpfile $efseksyamls/statefulsets.yaml \
+      || emp_output
+  done
+}
+
+create_local_minikube() {
+  services="ldap"
+  for service in $services; do
+    localminikubefolder="$service/overlays/minikube"
+    mkdir -p $localminikubefolder \
+      && cp -r $service/overlays/microk8s/local-storage "$_"
+  done
+}
+
+create_local_azure() {
+  services="ldap"
+  for service in $services; do
+    localazurefolder="$service/overlays/azure"
+    mkdir -p $localazurefolder \
+      && cp -r $service/overlays/gke/local-storage "$_"
+  done
+  cat config/base/kustomization.yaml \
+    | $sed '/- cluster-role-bindings.yaml/d' > tmpfile \
+    && mv tmpfile config/base/kustomization.yaml
+}
+
+create_static_gke() {
+  services="ldap"
+  for service in $services; do
+    staticgkefolder="$service/overlays/gke/static-pd"
+    service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
+    cp -r $service/overlays/eks/local-storage $service/overlays/gke/static-pd
+    cat $staticgkefolder/persistentvolumes.yaml \
+      | $sed '/hostPath/d' \
+      | $sed '/path/d' \
+      | $sed '/type/d' > tmpfile \
+      && mv tmpfile $staticgkefolder/persistentvolumes.yaml \
+      || emp_output
+    printf  "  gcePersistentDisk:" \
+      >> $staticgkefolder/persistentvolumes.yaml
+    printf  "\n    pdName: $service_name" \
+      >> $staticgkefolder/persistentvolumes.yaml
+    printf  "\n    fsType: ext4" \
+      >> $staticgkefolder/persistentvolumes.yaml
+  done
+}
+
+create_static_azure() {
+  services="ldap"
+  for service in $services; do
+    staticazurefolder="$service/overlays/azure/static-dn"
+    service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
+    disk_uri=$(echo "${service^^}DISKURI" | tr -d -)
+    mkdir -p $service/overlays/azure \
+      && cp -r $service/overlays/eks/local-storage \
+      $service/overlays/azure/static-dn
+    cat $staticazurefolder/persistentvolumes.yaml \
+      | $sed '/hostPath/d' \
+      | $sed '/path/d' \
+      | $sed '/type/d' > tmpfile \
+      && mv tmpfile $staticazurefolder/persistentvolumes.yaml \
+      || emp_output
+    printf  "  azureDisk:" \
+      >> $staticazurefolder/persistentvolumes.yaml
+    printf  "\n    diskName: $service_name" \
+      >> $staticazurefolder/persistentvolumes.yaml
+    printf  "\n    diskURI: $disk_uri" \
+      >> $staticazurefolder/persistentvolumes.yaml
+    printf  "\n    fsType: ext4" \
+      >> $staticazurefolder/persistentvolumes.yaml
+    printf  "\n    kind: Managed" \
+      >> $staticazurefolder/persistentvolumes.yaml
   done
 }
 
@@ -316,87 +316,6 @@ deploy_cb_cluster() {
 
 }
 
-create_local_minikube() {
-  mkdir localminikubeyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
-  for service in $services; do
-    localminikubefolder="$service/overlays/minikube"
-    mkdir -p $localminikubefolder \
-      && cp -r $service/overlays/microk8s/local-storage "$_"
-  done
-  cp -r oxpassport/overlays/microk8s oxpassport/overlays/minikube
-  cp -r oxshibboleth/overlays/microk8s oxshibboleth/overlays/minikube
-  #shared-shib
-  cp -r shared-shib/microk8s shared-shib/minikube
-}
-
-create_local_azure() {
-  mkdir localazureyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
-  for service in $services; do
-    localazurefolder="$service/overlays/azure"
-    mkdir -p $localazurefolder \
-      && cp -r $service/overlays/gke/local-storage "$_"
-  done
-  cp -r oxpassport/overlays/gke oxpassport/overlays/azure
-  cp -r oxshibboleth/overlays/gke oxshibboleth/overlays/azure
-  rm config/overlays/azure/local-storage/cluster-role-bindings.yaml
-  cat config/overlays/azure/local-storage/kustomization.yaml \
-    | $sed '/- cluster-role-bindings.yaml/d' > tmpfile \
-    && mv tmpfile config/overlays/azure/local-storage/kustomization.yaml
-}
-
-create_static_gke() {
-  mkdir staticgkeyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
-  for service in $services; do
-    staticgkefolder="$service/overlays/gke/static-pd"
-    service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
-    cp -r $service/overlays/eks/local-storage $service/overlays/gke/static-pd
-    cat $staticgkefolder/persistentvolumes.yaml \
-      | $sed '/hostPath/d' \
-      | $sed '/path/d' \
-      | $sed '/type/d' > tmpfile \
-      && mv tmpfile $staticgkefolder/persistentvolumes.yaml \
-      || emp_output
-    printf  "  gcePersistentDisk:" \
-      >> $staticgkefolder/persistentvolumes.yaml
-    printf  "\n    pdName: $service_name" \
-      >> $staticgkefolder/persistentvolumes.yaml
-    printf  "\n    fsType: ext4" \
-      >> $staticgkefolder/persistentvolumes.yaml
-  done
-}
-
-create_static_azure() {
-  mkdir staticazureyamls || emp_output
-  services="config ldap oxauth casa oxd-server oxtrust radius"
-  for service in $services; do
-    staticazurefolder="$service/overlays/azure/static-dn"
-    service_name=$(echo "${service^^}VOLUMEID" | tr -d -)
-    disk_uri=$(echo "${service^^}DISKURI" | tr -d -)
-    mkdir -p $service/overlays/azure \
-      && cp -r $service/overlays/eks/local-storage \
-      $service/overlays/azure/static-dn
-    cat $staticazurefolder/persistentvolumes.yaml \
-      | $sed '/hostPath/d' \
-      | $sed '/path/d' \
-      | $sed '/type/d' > tmpfile \
-      && mv tmpfile $staticazurefolder/persistentvolumes.yaml \
-      || emp_output
-    printf  "  azureDisk:" \
-      >> $staticazurefolder/persistentvolumes.yaml
-    printf  "\n    diskName: $service_name" \
-      >> $staticazurefolder/persistentvolumes.yaml
-    printf  "\n    diskURI: $disk_uri" \
-      >> $staticazurefolder/persistentvolumes.yaml
-    printf  "\n    fsType: ext4" \
-      >> $staticazurefolder/persistentvolumes.yaml
-    printf  "\n    kind: Managed" \
-      >> $staticazurefolder/persistentvolumes.yaml
-  done
-}
-
 replace_all() {
   $sed "s/\<PERSISTENCETYPE\>/$PERSISTENCE_TYPE/" \
     | $sed "s/\<LDAPMAPPING\>/$LDAP_MAPPING/" \
@@ -405,36 +324,18 @@ replace_all() {
     | $sed -s "s@SCLDAPZONE@$SC_LDAP_ZONE@g" \
     | $sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
     | $sed -s "s@STORAGESHAREDSHIB@$STORAGE_SHAREDSHIB@g" \
-    | $sed -s "s@CONFIGVOLUMEID@$CONFIG_VOLUMEID@g" \
-    | $sed -s "s@STORAGECONFIG@$STORAGE_CONFIG@g" \
-    | $sed -s "s@SCCONFIGZONE@$SC_CONFIG_ZONE@g" \
-    | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
-    | $sed -s "s@OXAUTHVOLUMEID@$OXAUTH_VOLUMEID@g" \
-    | $sed -s "s@STORAGEOXAUTH@$STORAGE_OXAUTH@g" \
-    | $sed -s "s@SCOXAUTHZONE@$SC_OXAUTH_ZONE@g" \
-    | $sed -s "s@OXAUTHDISKURI@$OXAUTH_DISKURI@g" \
-    | $sed -s "s@OXTRUSTVOLUMEID@$OXTRUST_VOLUMEID@g" \
-    | $sed -s "s@STORAGEOXTRUST@$STORAGE_OXTRUST@g" \
-    | $sed -s "s@SCOXTRUSTZONE@$SC_OXTRUST_ZONE@g" \
-    | $sed -s "s@OXTRUSTDISKURI@$OXTRUST_DISKURI@g" \
-    | $sed -s "s@OXDSERVERVOLUMEID@$OXDSERVER_VOLUMEID@g" \
-    | $sed -s "s@STORAGEOXDSERVER@$STORAGE_OXDSERVER@g" \
-    | $sed -s "s@SCOXDSERVERZONE@$SC_OXDSERVER_ZONE@g" \
-    | $sed -s "s@OXDSERVERDISKURI@$OXDSERVER_DISKURI@g" \
-    | $sed -s "s@RADIUSVOLUMEID@$RADIUS_VOLUMEID@g" \
-    | $sed -s "s@STORAGERADIUS@$STORAGE_RADIUS@g" \
-    | $sed -s "s@SCRADIUSZONE@$SC_RADIUS_ZONE@g" \
-    | $sed -s "s@RADIUSDISKURI@$RADIUS_DISKURI@g" \
-    | $sed -s "s@CASAVOLUMEID@$CASA_VOLUMEID@g" \
     | $sed -s "s@STORAGECASA@$STORAGE_CASA@g" \
-    | $sed -s "s@SCCASAZONE@$SC_CASA_ZONE@g" \
-    | $sed -s "s@CASADISKURI@$CASA_DISKURI@g" \
+    | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
     | $sed "s/\<COUCHBASEURL\>/$COUCHBASE_URL/" \
     | $sed "s/\<CBUSER\>/$CB_USER/" \
     | $sed "s/\<FQDN\>/$FQDN/" \
     | $sed "s#ACCOUNT#$ACCOUNT#g" \
     | $sed "s/\<GLUUCACHETYPE\>/$GLUU_CACHE_TYPE/" \
-    | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g"
+    | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g" \
+    | $sed -s "s@FILESYSTEMID@$fileSystemID@g" \
+    | $sed -s "s@AWSREGION@$awsRegion@g" \
+    | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
+    | $sed -s "s@NFSIP@$NFS_IP@g" 
 }
 
 setup_tls() {
@@ -485,21 +386,9 @@ is_pod_ready() {
 set_default() {
   if [[ ! "$1" ]]; then
     case "$3" in
-      "SC_CONFIG_ZONE" ) SC_CONFIG_ZONE="$2"  ;;
       "SC_LDAP_ZONE" ) SC_LDAP_ZONE="$2"  ;;
-      "SC_OXAUTH_ZONE" ) SC_OXAUTH_ZONE="$2" ;;
-      "SC_OXDSERVER_ZONE" ) SC_OXDSERVER_ZONE="$2"  ;;
-      "SC_OXTRUST_ZONE" ) SC_OXTRUST_ZONE="$2"  ;;
-      "SC_RADIUS_ZONE" ) SC_RADIUS_ZONE="$2"  ;;
-      "SC_CASA_ZONE" ) SC_CASA_ZONE="$2" ;;
-      "STORAGE_CONFIG" ) STORAGE_CONFIG="$2"  ;;
       "STORAGE_LDAP" ) STORAGE_LDAP="$2"  ;;
-      "STORAGE_OXAUTH" ) STORAGE_OXAUTH="$2" ;;
-      "STORAGE_OXTRUST" ) STORAGE_OXTRUST="$2"  ;;
-      "STORAGE_RADIUS" ) STORAGE_RADIUS="$2"  ;;
       "STORAGE_SHAREDSHIB" ) STORAGE_SHAREDSHIB="$2"  ;;
-      "STORAGE_OXDSERVER" ) STORAGE_OXDSERVER="$2" ;;
-      "STORAGE_CASA" ) STORAGE_CASA="$2"  ;;
       "STORAGE_NFS" ) STORAGE_NFS="$2"  ;;
       "EMAIL" ) EMAIL="$2"  ;;
       "ORG_NAME" ) ORG_NAME="$2" ;;
@@ -515,6 +404,15 @@ set_default() {
       "EMAIL" ) EMAIL="$2"  ;;
       "ORG_NAME" ) ORG_NAME="$2" ;;
       "CB_FQDN" ) CB_FQDN="$2" ;;
+      "REPLICA_OXAUTH" ) REPLICA_OXAUTH="$2" ;;
+      "REPLICA_OXTRUST" ) REPLICA_OXTRUST="$2" ;;
+      "REPLICA_LDAP" ) REPLICA_LDAP="$2" ;;
+      "REPLICA_SHIB" ) REPLICA_SHIB="$2" ;;
+      "REPLICA_PASSPORT" ) REPLICA_PASSPORT="$2" ;;
+      "REPLICA_OXD" ) REPLICA_OXD="$2" ;;
+      "REPLICA_CASA" ) REPLICA_CASA="$2" ;;
+      "REPLICA_RADIUS" ) REPLICA_RADIUS="$2" ;;
+      "STORAGE_CASA" ) STORAGE_CASA="$2" ;;
     esac
   fi
 }
@@ -528,13 +426,11 @@ check_k8version() {
     yum install jq -y
     yum install java-1.8.0-openjdk-devel -y
     yum install bind-utils -y
-    yum install bc -y
   elif [[ $linux_flavor =~ "Ubuntu" ]]; then
     apt-get update -y
     apt-get install jq -y
     apt-get install openjdk-8-jdk -y
     apt-get install dnsutils -y
-    apt-get install bc -y
   else
     echo "Please install the follwing packages before you continue"
     echo "jq, openjdk 8, unzip, bc, and wget."
@@ -670,46 +566,74 @@ prompt_cb() {
 
 prepare_config() {
   sed=sed || emp_output
-  choiceDeploy=1
+  echo "|---------------------------------------------------------------- -|"
+  echo "|                     Local Deployments                            |"
+  echo "|---------------------------------------------------------------- -|"
+  echo "| [1]  Microk8s [default]                                          |"
+  echo "| [2]  Minikube                                                    |"
+  echo "|---------------------------------------------------------------- -|"
+  echo "|                     Cloud Deployments                            |"
+  echo "|----------------------------------------------------------------- |"
+  echo "| [3] Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)|"
+  echo "| [4] Google Cloud Engine - Google Kubernetes Engine (GKE)         |"
+  echo "| [5] Microsoft Azure (AKS)                                        |"
+  echo "|------------------------------------------------- ----------------|"
+  read -rp "Deploy using?                                                   " choiceDeploy
   echo "|-----------------------------------------------------------------|"
-  echo "|                     Local Deployments                           |"
+  echo "|                     Persistence layer                           |"
   echo "|-----------------------------------------------------------------|"
-  echo "| [1]  Microk8s | Volumes on host                                 |"
-  echo "| [2]  Minikube | Volumes on host                                 |"
+  echo "| [0] WrenDS [default]                                            |"
+  echo "| [1] Couchbase [Testing Phase]                                   |"
+  echo "| [2] Hybrid(WrenDS + Couchbase)[Testing Phase]                   |"
   echo "|-----------------------------------------------------------------|"
-  echo "|                     Cloud Deployments                           |"
-  echo "|-----------------------------------------------------------------|"
-  echo "|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)    |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [6]  EKS      | Volumes on host                                 |"
-  echo "| [7]  EKS      | EBS volumes dynamically provisioned             |"
-  echo "| [8]  EKS      | EBS volumes statically provisioned              |"
-  echo "| [9]  EKS      | EFS volume Multi AZ Support                     |"
-  echo "|-----------------------------------------------------------------|"
-  echo "|Google Cloud Engine - Google Kubernetes Engine                   |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [11]  GKE     | Volumes on host                                 |"
-  echo "| [12]  GKE     | Persistent Disk volumes dynamically provisioned |"
-  echo "| [13]  GKE     | Persistent Disk volumes statically provisioned  |"
-  echo "|-----------------------------------------------------------------|"
-  echo "|Microsoft Azure                                                  |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [16] Azure    | Volumes on host                                 |"
-  echo "| [17] Azure    | Persistent Disk volumes dynamically provisioned |"
-  echo "| [18] Azure    | Persistent Disk volumes statically provisioned  |"
-  echo "|-----------------------------------------------------------------|"
-  echo "|                            Notes                                |"
-  echo "|-----------------------------------------------------------------|"
-  echo "|- Any other option will default to choice 1                      |"
-  echo "|-----------------------------------------------------------------|"
-  read -rp "What type of deployment?                                            " choiceDeploy
-  if [[ $choiceDeploy -eq 9 ]];then
-    read -rp "EFS created [Y]" efsNote
-    read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
-    read -rp "VPC of EKS and EFS are the same [Y]" efsNote
-    read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
-    if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
-      exit 1
+  read -rp "Persistence layer?                                                  " choicePersistence
+  case "$choicePersistence" in
+    1 ) PERSISTENCE_TYPE="couchbase"  ;;
+    2 ) PERSISTENCE_TYPE="hybrid"  ;;
+    * ) PERSISTENCE_TYPE="ldap"  ;;
+  esac
+  if [[ $choicePersistence -ne 1 ]]; then
+    echo "|-----------------------------------------------------------------|"
+    echo "|                     Local Deployments                           |"
+    echo "|-----------------------------------------------------------------|"
+    echo "| [1]  Microk8s | LDAP volumes on host                            |"
+    echo "| [2]  Minikube | LDAP volumes on host                            |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|                     Cloud Deployments                           |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)    |"
+    echo "|                    MultiAZ - Supported                          |"
+    echo "|-----------------------------------------------------------------|"
+    echo "| [6]  EKS      | LDAP volumes on host                            |"
+    echo "| [7]  EKS      | LDAP EBS volumes dynamically provisioned        |"
+    echo "| [8]  EKS      | LDAP EBS volumes statically provisioned         |"
+    echo "| [9]  EKS      | LDAP EFS volume                                 |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|Google Cloud Engine - Google Kubernetes Engine                   |"
+    echo "|-----------------------------------------------------------------|"
+    echo "| [11]  GKE     | LDAP volumes on host                            |"
+    echo "| [12]  GKE     | LDAP Persistent Disk  dynamically provisioned   |"
+    echo "| [13]  GKE     | LDAP Persistent Disk  statically provisioned    |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|Microsoft Azure                                                  |"
+    echo "|-----------------------------------------------------------------|"
+    echo "| [16] Azure    | LDAP volumes on host                            |"
+    echo "| [17] Azure    | LDAP Persistent Disk  dynamically provisioned   |"
+    echo "| [18] Azure    | LDAP Persistent Disk  statically provisioned    |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|                            Notes                                |"
+    echo "|-----------------------------------------------------------------|"
+    echo "|- Any other option will default to choice 1                      |"
+    echo "|-----------------------------------------------------------------|"
+    read -rp "What type of deployment?                                          " choiceLDAPDeploy
+    if [[ $choiceLDAPDeploy -eq 9 ]];then
+      read -rp "EFS created [Y]" efsNote
+      read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
+      read -rp "VPC of EKS and EFS are the same [Y]" efsNote
+      read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
+      if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
+        exit 1
+      fi
     fi
   fi
   echo "|-----------------------------------------------------------------|"
@@ -725,25 +649,11 @@ prepare_config() {
     2 ) GLUU_CACHE_TYPE="REDIS" ;;
     * ) GLUU_CACHE_TYPE="NATIVE_PERSISTENCE"  ;;
   esac  
-  GLUU_CACHE_TYPE="'${GLUU_CACHE_TYPE}'"
-  echo "|-----------------------------------------------------------------|"
-  echo "|                     Persistence layer                           |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [0] WrenDS [default]                                            |"
-  echo "| [1] Couchbase [Testing Phase]                                   |"
-  echo "| [2] Hybrid(WrenDS + Couchbase)[Testing Phase]                   |"
-  echo "|-----------------------------------------------------------------|"
-  read -rp "Persistence layer?                                                  " choicePersistence
-  case "$choicePersistence" in
-    1 ) PERSISTENCE_TYPE="couchbase"  ;;
-    2 ) PERSISTENCE_TYPE="hybrid"  ;;
-    * ) PERSISTENCE_TYPE="ldap"  ;;
-  esac
-  #COUCHBASE
-  CB_PW=""
-  CB_USER="admin"
-  COUCHBASE_URL="couchbase"
   LDAP_MAPPING="default"
+  GLUU_CACHE_TYPE="'${GLUU_CACHE_TYPE}'"
+  #COUCHBASE
+  COUCHBASE_URL="couchbase"
+  CB_USER="admin"
   if [[ $choicePersistence -eq 2 ]]; then
     echo "|-----------------------------------------------------------------|"
     echo "|                     Hybrid [WrendDS + Couchbase]                |"
@@ -777,10 +687,7 @@ prepare_config() {
     # Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
     ip=22.22.22.22
   fi
-  if [[ $choiceDeploy -eq 6 ]] \
-    || [[ $choiceDeploy -eq 7 ]] \
-    || [[ $choiceDeploy -eq 8 ]] \
-    || [[ $choiceDeploy -eq 9 ]]; then
+  if [[ $choiceDeploy -eq 3 ]]; then
     echo "|-----------------------------------------------------------------|"
     echo "|                     AWS Loadbalancer type                       |"
     echo "|-----------------------------------------------------------------|"
@@ -860,7 +767,28 @@ prepare_config() {
   read -rp "Deploy Key-Rotation[N]?[Y/N]                                       " choiceKeyRotate
   read -rp "Deploy Radius[N]?[Y/N]                                             " choiceRadius
   read -rp "Deploy Passport[N]?[Y/N]                                           " choicePassport
+  read -rp "Deploy Shibboleth SAML IDP[N]?[Y/N]                                " choiceShibboleth
   read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                               " choiceCasa
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    if [[ $choiceDeploy  -eq 3 ]];then
+      echo "|-----------------------------------------------------------------|"
+      echo "|                     Shared Shibboleth Volume                    |"
+      echo "|-----------------------------------------------------------------|"
+      echo "| [0] local storage [default]                                     |"
+      echo "| [1] EFS - Required for production                               |"
+      echo "|-----------------------------------------------------------------|"
+      read -rp "Type of Shibboleth volume                                      " choiceVolumeShibboleth
+      if [[ choiceVolumeShibboleth -eq 1 ]]; then
+        read -rp "EFS created [Y]" efsNote
+        read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
+        read -rp "VPC of EKS and EFS are the same [Y]" efsNote
+        read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
+        if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
+          exit 1
+        fi
+      fi
+    fi
+  fi
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     choiceOXD="Y"
   else
@@ -961,80 +889,84 @@ prompt_zones() {
   zones=$($kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]')
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
-  echo "You will be asked to enter a zone for each service.
-    Please confine the zones to where your nodes zones are which are the following: "
+  zonesstring=""
+  num=$numberofzones
+  echo "There are $numberofzones nodes deployed in these zones:"
   echo $zones
-  read -rp "Config storage class zone [Auto-Assign]:                           " SC_CONFIG_ZONE \
-    && set_default "$SC_CONFIG_ZONE" "${arrzones[$arrspot]}" "SC_CONFIG_ZONE" 
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
+  if [[ -f ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml ]]; then
+    cp ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml ldap/overlays/eks/dynamic-ebs/storageclasses.yaml
+  fi
+  cp ldap/overlays/eks/dynamic-ebs/storageclasses.yaml ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml
+  while true;do
+    num=$(($num - 1))
+    singlezone="${arrzones[$num]}"
+    singlezone=$(echo $singlezone | tr -d '\"')
+    printf  "\n    - $singlezone" \
+      >> ldap/overlays/eks/dynamic-ebs/storageclasses.yaml
+    if [[ $num -eq 0 ]];then
+      break
+    fi
+  done
+}
+
+prompt_replicas() {
+  read -rp "Number of oxAuth replicas [1]:                                     " REPLICA_OXAUTH \
+    && set_default "$REPLICA_OXAUTH" "1" "REPLICA_OXAUTH"
+
+  read -rp "Number of oxTrust replicas [1]:                                    " REPLICA_OXTRUST \
+    && set_default "$REPLICA_OXAUTH" "1" "REPLICA_OXAUTH"
+
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    read -rp "Ldap storage class zone [Auto-Assign]:                           " SC_LDAP_ZONE \
-      && set_default "$SC_LDAP_ZONE" "${arrzones[$arrspot]}" "SC_LDAP_ZONE"
+    read -rp "Number of LDAP replicas [1]:                                     " REPLICA_LDAP \
+      && set_default "$REPLICA_LDAP" "1" "REPLICA_LDAP"
   fi
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
-  read -rp "oxAuth storage class zone [Auto-Assign]:                           " SC_OXAUTH_ZONE \
-    && set_default "$SC_OXAUTH_ZONE" "${arrzones[$arrspot]}" "SC_OXAUTH_ZONE"
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
-  # OXD server (activate below line if volumes are added)
+  
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    # oxShibboleth
+    read -rp "Number of oxShibboleth replicas [1]:                             " REPLICA_SHIB \
+      && set_default "$REPLICA_SHIB" "1" "REPLICA_SHIB"
+  fi
+
+  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+    # oxPassport
+    read -rp "Number of oxPassport replicas [1]:                               " REPLICA_PASSPORT \
+      && set_default "$REPLICA_PASSPORT" "1" "REPLICA_PASSPORT"
+  fi
+    # OXD-Server
   if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    read -rp "oxdServer storage class zone [Auto-Assign]:                      " SC_OXDSERVER_ZONE \
-      && set_default "$SC_OXDSERVER_ZONE" "${arrzones[$arrspot]}" "SC_OXDSERVER_ZONE"
+    read -rp "Number of oxd-server replicas [1]:                               " REPLICA_OXD \
+      && set_default "$REPLICA_OXD" "1" "REPLICA_OXD"
   fi
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
-  read -rp "oxTrust storage class zone: [Auto-Assign]                          " SC_OXTRUST_ZONE \
-    && set_default "$SC_OXTRUST_ZONE" "${arrzones[$arrspot]}" "SC_OXTRUST_ZONE"
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
+    # Casa
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    read -rp "Number of casa replicas [1]:                                     " REPLICA_CASA \
+      && set_default "$REPLICA_CASA" "1" "REPLICA_CASA"
+  fi  
+  # Radius
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
-    read -rp "Radius storage class zone: [Auto-Assign]                         " SC_RADIUS_ZONE \
-      && set_default "$SC_RADIUS_ZONE" "${arrzones[$arrspot]}" "SC_RADIUS_ZONE"
-  fi
-  arrspot="$(echo $RANDOM % $numberofzones + 0 | bc)"
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -rp "Casa storage class zone:  [Auto-Assign]                          " SC_CASA_ZONE \
-      && set_default "$SC_CASA_ZONE" "${arrzones[$arrspot]}" "SC_CASA_ZONE"
+    read -rp "Number of Radius replicas [1]:                                     " REPLICA_RADIUS \
+      && set_default "$REPLICA_RADIUS" "1" "REPLICA_RADIUS"
   fi
 }
 
 prompt_storage() {
-  read -rp "Size of config volume storage [4Gi]:                               " STORAGE_CONFIG \
-    && set_default "$STORAGE_CONFIG" "4Gi" "STORAGE_CONFIG"
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Size of ldap volume storage [4Gi]:                               " STORAGE_LDAP \
       && set_default "$STORAGE_LDAP" "4Gi" "STORAGE_LDAP"
   fi
-  read -rp "Size of oxAuth volume storage [4Gi]:                               " STORAGE_OXAUTH \
-    && set_default "$STORAGE_OXAUTH" "4Gi" "STORAGE_OXAUTH"
-  read -rp "Size of oxTrust volume storage [4Gi]:                              " STORAGE_OXTRUST \
-    && set_default "$STORAGE_OXTRUST" "4Gi" "STORAGE_OXTRUST"
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
-    # Radius Volume storage
-    read -rp "Size of Radius volume storage [4Gi]:                             " STORAGE_RADIUS \
-      && set_default "$STORAGE_RADIUS" "4Gi" "STORAGE_RADIUS"
-  fi
-  if [[ $choiceDeploy -ne 11 ]] \
-    && [[ $choiceDeploy -ne 12 ]] \
-    && [[ $choiceDeploy -ne 13 ]] \
-    && [[ $choiceDeploy -ne 16 ]] \
-    && [[ $choiceDeploy -ne 17 ]] \
-    && [[ $choiceDeploy -ne 18 ]]; then
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
     read -p "Size of Shared-Shib volume storage [4Gi]:                         " STORAGE_SHAREDSHIB \
       && set_default "$STORAGE_SHAREDSHIB" "4Gi" "STORAGE_SHAREDSHIB"
   fi
-  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    # OXD server
-    read -rp "Size of oxdServer volume storage [4Gi]:                          " STORAGE_OXDSERVER \
-      && set_default "$STORAGE_OXDSERVER" "4Gi" "STORAGE_OXDSERVER"
-  fi
+      # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -rp "Size of Casa      volume storage [4Gi]:                          " STORAGE_CASA \
+    read -p "Size of Casa volume storage [4Gi]:                                 " STORAGE_CASA \
       && set_default "$STORAGE_CASA" "4Gi" "STORAGE_CASA"
   fi
 }
 
 gke_prompts() {
-  oxpassport_oxshibboleth_folder="overlays/gke"
   read -rp "Please enter valid email for Google Cloud account:                 " ACCOUNT
   read -rp "Please enter valid Zone name used when creating the cluster:       " ZONE
   SC_LDAP_ZONE=$ZONE
@@ -1050,54 +982,24 @@ gke_prompts() {
       Trying to login using user"
     HOME_DIR=$(gcloud compute ssh user@$NODE --zone $ZONE --command='echo $HOME')
   fi
-  prompt_nfs
+  generate_nfs
 }
 
-prompt_nfs() {
-  $kustomize nfs/base/ > $output_yamls/nfs.yaml
-   read -rp "NFS storage volume [4Gi]:                                         " STORAGE_NFS \
-     && set_default "$STORAGE_NFS" "4Gi" "STORAGE_NFS"
+generate_nfs() {
+  $kustomize shared-shib/nfs > $output_yamls/nfs.yaml
+  STORAGE_NFS=$STORAGE_SHAREDSHIB
 }
 
 prompt_volumes_identitfier() {
-  read -rp "Please enter $static_volume_prompt for Config:                     " CONFIG_VOLUMEID
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Please enter $static_volume_prompt for LDAP:                     " LDAP_VOLUMEID
-  fi
-  read -rp "Please enter $static_volume_prompt for oxAuth:                     " OXAUTH_VOLUMEID
-  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    # OXD server
-    read -rp "Please enter $static_volume_prompt for OXD-server                " OXDSERVER_VOLUMEID
-  fi
-  read -rp "Please enter $static_volume_prompt for oxTrust:                    " OXTRUST_VOLUMEID
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
-    # Radius server
-    read -rp "Please enter $static_volume_prompt for Radius:                   " RADIUS_VOLUMEID
-  fi
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    # Radius server
-    read -rp "Please enter $static_volume_prompt for Casa:                     " CASA_VOLUMEID
   fi  
 }
 
 prompt_disk_uris() {
-  read -rp "Please enter the disk uri for Config:                              " CONFIG_DISKURI
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Please enter the disk uri for LDAP:                              " LDAP_DISKURI
   fi
-  read -rp "Please enter the disk uri for oxAuth:                              " OXAUTH_DISKURI
-  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    # OXD server
-    read -rp "Please enter the disk uri for OXD-server:                        " OXDSERVER_DISKURI
-  fi
-  read -rp "Please enter the disk uri for oxTrust:                             " OXTRUST_DISKURI
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
-    # Radius server
-    read -rp "Please enter the disk uri for Radius:                            " RADIUS_DISKURI
-  fi
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -rp "Please enter the disk uri for Casa:                              " CASA_DISKURI
-  fi  
 }
 
 generate_yamls() {
@@ -1112,74 +1014,68 @@ generate_yamls() {
       echo "Check that  ingress.crt and ingress.key are not empty 
         and contain the right information for your FQDN. "
     fi
-  fi  
-  oxpassport_oxshibboleth_folder="overlays/eks"
+  fi
+  if [[ $choiceDeploy -eq 2 ]]; then
+    mkdir gluuminikubeyamls || emp_output
+    output_yamls=gluuminikubeyamls
+  elif [[ $choiceDeploy -eq 3 ]]; then
+    mkdir gluueksyamls || emp_output
+    output_yamls=gluueksyamls
+  elif [[ $choiceDeploy -eq 4 ]]; then
+    mkdir gluugkeyamls || emp_output
+    output_yamls=gluugkeyamls
+  elif [[ $choiceDeploy -eq 5 ]]; then
+    mkdir gluuaksyamls || emp_output
+    output_yamls=gluuaksyamls
+  else
+    mkdir gluumicrok8yamls || emp_output
+    output_yamls=gluumicrok8yamls
+  fi
   
-  if [[ $choiceDeploy -eq 0 ]]; then
-    exit 1
+  if [[ $choiceLDAPDeploy -eq 2 ]]; then
+    create_local_minikube
+    yaml_folder=$local_minikube_folder
 
-  elif [[ $choiceDeploy -eq 6 ]]; then
-    mkdir localeksyamls || emp_output
-    output_yamls=localeksyamls
+  elif [[ $choiceLDAPDeploy -eq 6 ]]; then
     yaml_folder=$local_eks_folder
-    # Shared-Shib
-    shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 7 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 7 ]]; then
     echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
     echo "Follow the doc above to help you choose 
       which volume type to use.Options are [gp2,io1,st1,and sc1]"
     read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
       && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
-    mkdir dynamiceksyamls || emp_output
-    output_yamls=dynamiceksyamls
     yaml_folder=$dynamic_eks_folder
     prompt_zones
-    shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 11 ]]; then
-    mkdir localgkeyamls || emp_output
-    output_yamls=localgkeyamls
-    yaml_folder=$local_gke_folder
-    gke_prompts
-
-  elif [[ $choiceDeploy -eq 8 ]]; then
-    mkdir staticeksyamls || emp_output
-    output_yamls=staticeksyamls
+  elif [[ $choiceLDAPDeploy -eq 8 ]]; then
     yaml_folder=$static_eks_folder
     echo "Zones of your volumes are required to match the deployments to the volume zone"
     prompt_zones
     static_volume_prompt="EBS Volume ID"
     prompt_volumes_identitfier
-    shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 9 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 9 ]]; then
     create_efs_aws
-    output_yamls=efseksyamls
     yaml_folder=$efs_eks_folder
     read -rp "Enter FileSystemID (fs-xxx):                                      " fileSystemID
     read -rp "Enter AWS region (us-west-2):                                     " awsRegion
     read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):              " efsDNS
-    shared_shib_child_folder="eks"
 
-  elif [[ $choiceDeploy -eq 2 ]]; then
-    create_local_minikube
-    output_yamls=localminikubeyamls
-    yaml_folder=$local_minikube_folder
-    shared_shib_child_folder="minikube"
+  elif [[ $choiceLDAPDeploy -eq 11 ]]; then
+    yaml_folder=$local_gke_folder
+    gke_prompts
 
-  elif [[ $choiceDeploy -eq 12 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 12 ]]; then
     echo "Please enter the volume type for the persistent disk."
     read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
       && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
     create_dynamic_gke
-    output_yamls=dynamicgkeyamls
     yaml_folder=$dynamic_gke_folder
     gke_prompts
 
-  elif [[ $choiceDeploy -eq 13 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 13 ]]; then
     create_static_gke
-    output_yamls=staticgkeyamls
     static_volume_prompt="Persistent Disk Name"
     echo 'Place the name of your persistent disks between two quotes as such 
       "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
@@ -1187,13 +1083,12 @@ generate_yamls() {
     yaml_folder=$static_gke_folder
     gke_prompts
 
-  elif [[ $choiceDeploy -eq 16 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 16 ]]; then
     create_local_azure
-    output_yamls=localazureyamls
     yaml_folder=$local_azure_folder
-    prompt_nfs
+    generate_nfs
 
-  elif [[ $choiceDeploy -eq 17 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 17 ]]; then
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
@@ -1206,11 +1101,10 @@ generate_yamls() {
       && set_default "$ZONE" "0" "ZONE"
     SC_LDAP_ZONE=$ZONE
     create_dynamic_azure
-    output_yamls=dynamicazureyamls
     yaml_folder=$dynamic_azure_folder
-    prompt_nfs
+    generate_nfs
 
-  elif [[ $choiceDeploy -eq 18 ]]; then
+  elif [[ $choiceLDAPDeploy -eq 18 ]]; then
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
@@ -1225,29 +1119,29 @@ generate_yamls() {
     static_volume_prompt="Persistent Disk Name"
     prompt_volumes_identitfier
     prompt_disk_uris
-    output_yamls=staticazureyamls
     yaml_folder=$static_azure_folder
-    prompt_nfs
+    generate_nfs
 
   else
     mkdir localmicrok8syamls || emp_output
-    output_yamls=localmicrok8syamls
     yaml_folder=$local_microk8s_folder
-    shared_shib_child_folder="microk8s"
   fi
   # Get prams for the yamls
   prompt_storage
-  if [[ $choiceDeploy -ne 11 ]] \
-    && [[ $choiceDeploy -ne 12 ]] \
-    && [[ $choiceDeploy -ne 13 ]] \
-    && [[ $choiceDeploy -ne 16 ]] \
-    && [[ $choiceDeploy -ne 17 ]] \
-    && [[ $choiceDeploy -ne 18 ]]; then
-    $kustomize shared-shib/$shared_shib_child_folder/ \
+  prompt_replicas
+  if [[ $choiceDeploy -eq 3 ]] \
+    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+    $kustomize shared-shib/efs \
+      | replace_all  > $output_yamls/shared-shib.yaml
+  elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+    $kustomize shared-shib/nfs \
+      | replace_all  > $output_yamls/shared-shib.yaml
+  else
+    $kustomize shared-shib/localstorage \
       | replace_all  > $output_yamls/shared-shib.yaml
   fi
   # Config
-  $kustomize config/$yaml_folder | replace_all > $output_yamls/config.yaml
+  $kustomize config/base | replace_all > $output_yamls/config.yaml
   # WrenDS
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     $kustomize ldap/$yaml_folder | replace_all > $output_yamls/ldap.yaml
@@ -1255,15 +1149,18 @@ generate_yamls() {
   # Persistence
   $kustomize persistence/base | replace_all > $output_yamls/persistence.yaml
   # oxAuth
-  $kustomize oxauth/$yaml_folder | replace_all > $output_yamls/oxauth.yaml
+  $kustomize oxauth/base | replace_all > $output_yamls/oxauth.yaml
   # oxTrust
-  $kustomize oxtrust/$yaml_folder | replace_all > $output_yamls/oxtrust.yaml
-  # oxShibboleth
-  $kustomize oxshibboleth/$oxpassport_oxshibboleth_folder \
-    | replace_all  > $output_yamls/oxshibboleth.yaml
+  $kustomize oxtrust/base | replace_all > $output_yamls/oxtrust.yaml
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    # oxShibboleth
+    $kustomize oxshibboleth/base \
+      | replace_all  > $output_yamls/oxshibboleth.yaml
+  fi
+
   if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
     # oxPassport
-    $kustomize oxpassport/$oxpassport_oxshibboleth_folder \
+    $kustomize oxpassport/base \
       | replace_all  > $output_yamls/oxpassport.yaml
   fi
   if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
@@ -1276,101 +1173,59 @@ generate_yamls() {
   fi
     # OXD-Server
   if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    $kustomize oxd-server/novolume | replace_all > $output_yamls/oxd-server.yaml
+    $kustomize oxd-server/base | replace_all > $output_yamls/oxd-server.yaml
   fi
     # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    $kustomize casa/$yaml_folder | replace_all > $output_yamls/casa.yaml
+    $kustomize casa/base | replace_all > $output_yamls/casa.yaml
   fi  
   # Radius
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
-    $kustomize radius/$yaml_folder | replace_all > $output_yamls/radius.yaml
+    $kustomize radius/base | replace_all > $output_yamls/radius.yaml
   fi
   if [[ $choiceCache == 2 ]];then
     $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
   fi  
   if [[ $FQDN_CHOICE == "y" ]] || [[ $FQDN_CHOICE == "Y" ]]; then
-    # Remove hostAliases object from yamls
-    cat $output_yamls/oxauth.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/oxauth.yaml \
-      || emp_output
-    cat $output_yamls/oxpassport.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/oxpassport.yaml \
-      || emp_output
-    cat $output_yamls/oxshibboleth.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/oxshibboleth.yaml \
-      || emp_output
-    cat $output_yamls/oxtrust.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/oxtrust.yaml \
-      || emp_output
-    cat $output_yamls/radius.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/radius.yaml \
-      || emp_output
-    cat $output_yamls/casa.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/casa.yaml \
-      || emp_output
-    cat $output_yamls/oxd-server.yaml \
-      | $sed '/LB_ADDR: LBADDR/d' \
-      | $sed '/hostAliases:/d' \
-      | $sed '/- hostnames:/d' \
-      | $sed "/$FQDN/d" \
-      | $sed '/- command:/,/entrypoint.sh/d' \
-      | $sed -s "s@  envFrom@- envFrom@g" \
-      | $sed '/ip: NGINX_IP/d' > tmpfile \
-      && mv tmpfile $output_yamls/oxd-server.yaml \
-      || emp_output
+    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
+    for service in $services; do
+      # Remove hostAliases object from yamls
+      cat $output_yamls/$service.yaml \
+        | $sed '/LB_ADDR: LBADDR/d' \
+        | $sed '/hostAliases:/d' \
+        | $sed '/- hostnames:/d' \
+        | $sed "/$FQDN/d" \
+        | $sed '/- command:/,/entrypoint.sh/d' \
+        | $sed -s "s@  envFrom@- envFrom@g" \
+        | $sed '/ip: NGINX_IP/d'> tmpfile \
+        && mv tmpfile $output_yamls/$service.yaml \
+        || emp_output
+      # Incase user has used updatelbip and switched kustmixation source file
+      cat $service/base/kustomization.yaml \
+        | $sed -s "s@deployments-patch.yaml@deployments.yaml@g" \
+        | $sed -s "s@statefulsets-patch.yaml@statefulsets.yaml@g" > tmpfile \
+        && mv tmpfile $service/base/kustomization.yaml \
+        || emp_output
+    done
     # Create dummy updatelbip
     $kubectl create configmap updatelbip --from-literal=demo=empty || emp_output
   else
+    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
+    for service in $services; do
+      cat $service/base/kustomization.yaml \
+        | $sed -s "s@deployments.yaml@deployments-patch.yaml@g" \
+        | $sed -s "s@statefulsets.yaml@statefulsets-patch.yaml@g" > tmpfile \
+        && mv tmpfile $service/base/kustomization.yaml \
+        || emp_output
+    done
     $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   fi
     echo " all yamls have been generated in $output_yamls folder"
 }
 
 deploy_nginx() {
+  cp -rf nginx $output_yamls
   if [[ $choiceDeploy -eq 1 ]]; then
     # If microk8s ingress
     microk8s.enable ingress dns || emp_output
@@ -1380,14 +1235,11 @@ deploy_nginx() {
     minikube addons enable ingress || emp_output
   fi
   # Nginx
-  $kubectl apply -f nginx/mandatory.yaml
-  if [[ $choiceDeploy -eq 6 ]] \
-    || [[ $choiceDeploy -eq 7 ]] \
-    || [[ $choiceDeploy -eq 8 ]] \
-    || [[ $choiceDeploy -eq 9 ]]; then
+  $kubectl apply -f $output_yamls/nginx/mandatory.yaml
+  if [[ $choiceDeploy -eq 3 ]]; then
     lbhostname=""
     if [[ $lbChoice == "nlb" ]];then
-      $kubectl apply -f nginx/nlb-service.yaml
+      $kubectl apply -f $output_yamls/nginx/nlb-service.yaml
       while true; do
         lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
           --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
@@ -1401,13 +1253,15 @@ deploy_nginx() {
       done
     else
       if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
-        cat nginx/service-l7.yaml \
-          | $sed -s "s@ARN@$ARN@g" \
-          | $kubectl apply -f -
-        $kubectl apply -f nginx/patch-configmap-l7.yaml
+        cat $output_yamls/nginx/service-l7.yaml \
+          | $sed -s "s@ARN@$ARN@g" > tmpfile \
+          && mv tmpfile $output_yamls/nginx/service-l7.yaml \
+          || emp_output
+        $kubectl apply -f $output_yamls/nginx/service-l7.yaml
+        $kubectl apply -f $output_yamls/nginx/patch-configmap-l7.yaml
       else
-        $kubectl apply -f nginx/service-l4.yaml 
-        $kubectl apply -f nginx/patch-configmap-l4.yaml
+        $kubectl apply -f $output_yamls/nginx/service-l4.yaml 
+        $kubectl apply -f $output_yamls/nginx/patch-configmap-l4.yaml
       fi
     fi
     while true; do
@@ -1418,18 +1272,12 @@ deploy_nginx() {
       lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
         --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
       hostname="'${lbhostname}'" || emp_output 
-      sleep 20	  
+      sleep 20
       done
   fi
 
-  if [[ $choiceDeploy -eq 11 ]] \
-    || [[ $choiceDeploy -eq 12 ]] \
-    || [[ $choiceDeploy -eq 13 ]] \
-    || [[ $choiceDeploy -eq 16 ]] \
-    || [[ $choiceDeploy -eq 17 ]] \
-    || [[ $choiceDeploy -eq 18 ]]; then
-    $kubectl apply -f nginx/cloud-generic.yaml
-    $kubectl apply -f nfs/base/services.yaml
+  if [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+    $kubectl apply -f $output_yamls/nginx/cloud-generic.yaml
     ip=""
     echo "Waiting for the ip of the Loadbalancer"
     while true; do
@@ -1443,7 +1291,10 @@ deploy_nginx() {
       done
       echo "IP: $ip"
   fi
-  cat nginx/nginx.yaml | $sed "s/\<FQDN\>/$FQDN/" | $kubectl apply -f -
+  cat $output_yamls/nginx/nginx.yaml | $sed "s/\<FQDN\>/$FQDN/" > tmpfile \
+    && mv tmpfile $output_yamls/nginx/nginx.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/nginx/nginx.yaml
 }
 
 deploy_redis() {
@@ -1461,15 +1312,19 @@ deploy_config() {
 deploy_ldap() {
   # LDAP
   cat $output_yamls/ldap.yaml | $kubectl apply -f -
-  is_pod_ready "app=opendj"
-  echo "[I] Deploying LDAP ..."
+  
+  echo "[I] Deploying LDAP.Please wait.."
   while true; do
+    #Wait for conatiner to be created
+    sleep 30
     ldaplog=$($kubectl logs -l app=opendj || emp_output)
     if [[ $ldaplog =~ "The Directory Server has started successfully" ]]; then
       break
     fi
     sleep 20
   done
+  $kubectl scale statefulset opendj --replicas=$REPLICA_LDAP
+  is_pod_ready "app=opendj"
 }
 
 deploy_persistence() {
@@ -1487,12 +1342,8 @@ deploy_persistence() {
 }
 
 deploy_shared_shib() {
-  if [[ $choiceDeploy -eq 11 ]] \
-    || [[ $choiceDeploy -eq 12 ]] \
-    || [[ $choiceDeploy -eq 13 ]] \
-    || [[ $choiceDeploy -eq 16 ]] \
-    || [[ $choiceDeploy -eq 17 ]] \
-    || [[ $choiceDeploy -eq 18 ]]; then
+  if [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+    $kubectl apply -f nfs/base/services.yaml
     NFS_IP=""
     while true; do
       if [[ $NFS_IP ]] ; then
@@ -1503,13 +1354,22 @@ deploy_shared_shib() {
     done
     # setup NFS
     cat $output_yamls/nfs.yaml \
-      | $sed -s "s@STORAGENFS@$STORAGE_NFS@g" \
-      | $sed -s "s@NFSIP@$NFS_IP@g" \
-      | $kubectl apply -f -
+      | replace_all > tmpfile \
+      && mv tmpfile $output_yamls/nfs.yaml \
+      || emp_output
+    $kubectl apply -f $output_yamls/nfs.yaml
     is_pod_ready "role=nfs-server"
     $kubectl exec -ti $($kubectl get pods -l role=nfs-server \
       -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
       -- mkdir -p /exports/opt/shared-shibboleth-idp
+  elif [[ $choiceDeploy -eq 3 ]] \
+    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+    cat $output_yamls/shared-shib.yaml \
+      | replace_all > tmpfile \
+      && mv tmpfile $output_yamls/shared-shib.yaml \
+      || emp_output
+    $kubectl apply -f $output_yamls/shared-shib.yaml
+    is_pod_ready "app=efs-provisioner"
   else
     cat $output_yamls/shared-shib.yaml  | $kubectl apply -f - || emp_output
   fi
@@ -1525,8 +1385,12 @@ deploy_oxauth() {
   $kubectl apply -f casacm.yaml
   cat $output_yamls/oxauth.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/oxauth.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/oxauth.yaml
+  is_pod_ready "app=oxauth"
+  $kubectl scale deployment oxauth --replicas=$REPLICA_OXAUTH
   is_pod_ready "app=oxauth"
 }
 
@@ -1535,46 +1399,61 @@ deploy_oxd() {
   $kubectl create secret generic oxdkeystorecm --from-file=oxd-server.keystore
   cat $output_yamls/oxd-server.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/oxd-server.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/oxd-server.yaml
   is_pod_ready "app=oxd-server"
+  $kubectl scale deployment oxd-server --replicas=$REPLICA_OXD
+  is_pod_ready "app=oxd-server"
+
 }
 
 deploy_casa() {
   # Casa
   cat $output_yamls/casa.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/casa.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/casa.yaml
   is_pod_ready "app=casa"
+  #Wait some time for casa.json to be created in casa app correctly
+  sleep 15
   podname_template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
   casapodname=$($kubectl get pod -l=app=casa -o template --template="$podname_template" \
     || echo "")
   $kubectl cp $casapodname:etc/gluu/conf/casa.json ./casa.json
   rm casacm.yaml
   $kubectl create configmap casacm --from-file=casa.json -o yaml --dry-run > casacm.yaml
-  $kubectl apply -f casacm.yaml
+  $kubectl apply -f casacm.yaml || emp_output
   rm casacm.yaml
   # restart oxauth 
   $kubectl scale deployment oxauth --replicas=0
   sleep 5
-  $kubectl scale deployment oxauth --replicas=1
+  $kubectl scale deployment oxauth --replicas=$REPLICA_OXAUTH
 }
 
 deploy_oxtrust() {
   cat $output_yamls/oxtrust.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/oxtrust.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/oxtrust.yaml || emp_output
   is_pod_ready "app=oxtrust"
+  $kubectl scale statefulset oxtrust --replicas=$REPLICA_OXTRUST
 }
 
 deploy_oxshibboleth() {
   cat $output_yamls/oxshibboleth.yaml \
     | $sed -s "s@NGINX_IP@$ip@g"  \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/oxshibboleth.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/oxshibboleth.yaml || emp_output
   is_pod_ready "app=oxshibboleth"
+  $kubectl scale statefulset oxshibboleth --replicas=$REPLICA_SHIB
 }
 
 deploy_oxpassport() {
@@ -1585,12 +1464,14 @@ deploy_oxpassport() {
   echo "Configuration > Manage Custom Scripts > Person Authentication > passport_social > Check Enabled and press update"
   echo "Configuration > Manage Custom Scripts > UMA RPT Policies > scim_access_policy > Check Enabled and press update"
   echo "---------------------------------------------------------------------------------------------------------------"
-
   cat $output_yamls/oxpassport.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f -
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/oxpassport.yaml \
+    || emp_output
+  $kubectl apply -f $output_yamls/oxpassport.yaml || emp_output
   is_pod_ready "app=oxpassport"
+  $kubectl scale deployment oxpassport --replicas=$REPLICA_PASSPORT
 }
 
 deploy_key_rotation() {
@@ -1605,27 +1486,17 @@ deploy_radius() {
   echo "---------------------------------------------------------------------------------------------------------------"
   cat $output_yamls/radius.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
-    | $sed "s/\<LBADDR\>/$hostname/" \
-    | $kubectl apply -f - \
+    | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
+    && mv tmpfile $output_yamls/radius.yaml \
     || emp_output
+  $kubectl apply -f $output_yamls/radius.yaml || emp_output
   is_pod_ready "app=radius"
+  $kubectl scale deployment radius --replicas=$REPLICA_RADIUS
+
 }
 
 deploy_cr_rotate() {
   $kubectl apply -f  $output_yamls/cr-rotate.yaml || emp_output
-}
-
-deploy_efs() {
-  cat efs/deployment.yaml \
-    | $sed -s "s@FILESYSTEMID@$fileSystemID@g" \
-    | $sed -s "s@AWSREGION@$awsRegion@g" \
-    | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
-    | $kubectl apply -f - \
-    || emp_output
-  $kubectl apply -f efs/serviceaccount.yaml
-  $kubectl apply -f efs/roles.yaml
-  $kubectl apply -f efs/storageclasses.yaml
-  is_pod_ready "app=efs-provisioner"
 }
 
 deploy() {
@@ -1636,10 +1507,8 @@ deploy() {
     n|N ) exit 1 ;;
     * )   ;;
   esac
-  if [[ $choiceDeploy -eq 9 ]]; then
-    deploy_efs
-  fi
   prompt_cb
+  deploy_shared_shib
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
   deploy_config
@@ -1653,7 +1522,9 @@ deploy() {
   fi
   deploy_nginx
   deploy_persistence
-  deploy_update_lb_ip
+  if [[ $FQDN_CHOICE != "y" ]] && [[ $FQDN_CHOICE != "Y" ]]; then
+    deploy_update_lb_ip
+  fi
   deploy_oxauth
   if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     deploy_oxd
@@ -1661,10 +1532,15 @@ deploy() {
     # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     deploy_casa
+  else
+    $timeout 10 $kubectl delete pvc -l type=casa --ignore-not-found || emp_output
+    $timeout 10 $kubectl delete pv -l type=casa --ignore-not-found || emp_output
   fi
-  deploy_shared_shib
   deploy_oxtrust
-  deploy_oxshibboleth
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    # oxShibboleth
+    deploy_oxshibboleth
+  fi
   if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
     deploy_oxpassport
   fi

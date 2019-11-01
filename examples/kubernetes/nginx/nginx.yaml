@@ -246,6 +246,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "casa"
+    nginx.ingress.kubernetes.io/rewrite-target: /casa
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 spec:
   tls:

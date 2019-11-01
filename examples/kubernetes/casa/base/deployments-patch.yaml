@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: casa
+  template:
+    spec:
+      hostAliases:
+      - ip: NGINX_IP
+        hostnames:
+        - FQDN
+      volumes:
+        - name: casa
+          persistentVolumeClaim:
+            claimName: casa-pvc
+        - name: cb-pass
+          secret:
+            secretName: cb-pass
+        - name: cb-crt
+          secret:
+            secretName: cb-crt
+        - name: update-lb-ip
+          configMap:
+            name: updatelbip
+      containers:
+      - name: casa
+        imagePullPolicy: Always
+        image: gluufederation/casa:4.0.0_01
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/update-lb-ip.py &
+              /app/scripts/entrypoint.sh
+        volumeMounts:
+          - mountPath: /etc/gluu/conf
+            name: casa
+            subPath: casa.json
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
+          - mountPath: /scripts
+            name: update-lb-ip
+        livenessProbe:
+          httpGet:
+            path: /casa
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /casa
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 25
+        resources:
+          requests:
+            memory: "1000Mi"
+          limits:
+            memory: "1536Mi"
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: casa-cm

@@ -7,10 +7,13 @@ metadata:
 provisioner: kubernetes.io/aws-ebs
 allowVolumeExpansion: true
 reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
 mountOptions:
 - debug
 parameters:
   type: VOLUMETYPE
   encrypted: "true"
-  #Example: us-west-2a
-  zones: SCLDAPZONE
+allowedTopologies:
+- matchLabelExpressions:
+  - key: failure-domain.beta.kubernetes.io/zone
+    values:
