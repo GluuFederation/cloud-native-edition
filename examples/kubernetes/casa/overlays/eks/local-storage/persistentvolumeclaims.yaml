@@ -6,7 +6,7 @@ spec:
   storageClassName: ""
   volumeName: casa-pv
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: STORAGECASA

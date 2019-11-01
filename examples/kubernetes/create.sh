@@ -916,7 +916,7 @@ prepare_config() {
     echo "$CB_PW" > couchbase_password
     while true; do
       ADMIN_PW_RAND="$(cat /dev/urandom \
-       | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!"#$' \
+       | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!#$' \
        | fold -w 6 | head -c 6)"GlU4%
       ADMIN_PW_RAND_OUT=${ADMIN_PW_RAND::3}
       ADMIN_PW_RAND_OUT="$ADMIN_PW_RAND_OUT***"
