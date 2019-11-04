@@ -32,8 +32,12 @@ delete_all() {
   fi
   echo "Deleting Gluu objects. Please wait..."
   kubectl=kubectl
+  #TODO Delete according to resource using labels
   $timeout 10 $kubectl delete pvc -l app=opendj --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete pv -l type=opendj --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete cm,job -l app=config-init-load --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete service,rc,pv,pvc -l role=nfs-server --ignore-not-found || emp_output
+
   if [ -d "gluuminikubeyamls" ];then
     $timeout 40 $kubectl delete -f gluuminikubeyamls --ignore-not-found || emp_output
     manifestsfolder=gluuminikubeyamls
@@ -80,6 +84,8 @@ delete_all() {
   fi
   rm -rf old$manifestsfolder || emp_output
   mv -f $manifestsfolder old$manifestsfolder || emp_output
+  mv ingress.crt previous-ingress.crt || emp_output
+  mv ingress.key previous-ingress.key
   delete_cb
 }
 
@@ -118,11 +124,13 @@ create_dynamic_gke() {
       | $sed '/zones/d' | $sed '/encrypted/d' > tmpfile \
       && mv tmpfile $dynamicgkefolder/storageclasses.yaml \
       || emp_output
-    rm $dynamicgkefolder/deployments.yaml || emp_output 
   done
   #Config
-  printf  "\n  - cluster-role-bindings.yaml" \
-    >> config/base/kustomization.yaml
+  cat config/base/kustomization.yaml \
+    | $sed '/- cluster-role-bindings.yaml/d' \
+    | $sed '/^resources:/a \ \ - cluster-role-bindings.yaml' > tmpfile \
+    && mv tmpfile config/base/kustomization.yaml \
+    || emp_output
 }
 
 create_dynamic_azure() {
@@ -321,7 +329,6 @@ replace_all() {
     | $sed "s/\<LDAPMAPPING\>/$LDAP_MAPPING/" \
     | $sed -s "s@LDAPVOLUMEID@$LDAP_VOLUMEID@g" \
     | $sed -s "s@STORAGELDAP@$STORAGE_LDAP@g" \
-    | $sed -s "s@SCLDAPZONE@$SC_LDAP_ZONE@g" \
     | $sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
     | $sed -s "s@STORAGESHAREDSHIB@$STORAGE_SHAREDSHIB@g" \
     | $sed -s "s@STORAGECASA@$STORAGE_CASA@g" \
@@ -386,7 +393,6 @@ is_pod_ready() {
 set_default() {
   if [[ ! "$1" ]]; then
     case "$3" in
-      "SC_LDAP_ZONE" ) SC_LDAP_ZONE="$2"  ;;
       "STORAGE_LDAP" ) STORAGE_LDAP="$2"  ;;
       "STORAGE_SHAREDSHIB" ) STORAGE_SHAREDSHIB="$2"  ;;
       "STORAGE_NFS" ) STORAGE_NFS="$2"  ;;
@@ -413,6 +419,7 @@ set_default() {
       "REPLICA_CASA" ) REPLICA_CASA="$2" ;;
       "REPLICA_RADIUS" ) REPLICA_RADIUS="$2" ;;
       "STORAGE_CASA" ) STORAGE_CASA="$2" ;;
+      "ZONE" ) ZONE="$2" ;;
     esac
   fi
 }
@@ -889,20 +896,26 @@ prompt_zones() {
   zones=$($kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]')
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
-  zonesstring=""
-  num=$numberofzones
   echo "There are $numberofzones nodes deployed in these zones:"
+  zones=($(echo "${zones[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
   echo $zones
-  if [[ -f ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml ]]; then
-    cp ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml ldap/overlays/eks/dynamic-ebs/storageclasses.yaml
+  arrzones=($zones)
+  numberofzones="${#arrzones[@]}"
+  num=$numberofzones
+  if [[ $num -eq 1 ]];then
+    google_azure_zone="${arrzones[0]}"
+    google_azure_zone=$(echo $google_azure_zone | tr -d '\"')
   fi
-  cp ldap/overlays/eks/dynamic-ebs/storageclasses.yaml ldap/overlays/eks/dynamic-ebs/storageclasses_copy.yaml
+  if [[ -f ldap/$yaml_folder/storageclasses_copy.yaml ]]; then
+    cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
+  fi
+  cp ldap/$yaml_folder/storageclasses.yaml ldap/$yaml_folder/storageclasses_copy.yaml
   while true;do
     num=$(($num - 1))
     singlezone="${arrzones[$num]}"
     singlezone=$(echo $singlezone | tr -d '\"')
     printf  "\n    - $singlezone" \
-      >> ldap/overlays/eks/dynamic-ebs/storageclasses.yaml
+      >> ldap/$yaml_folder/storageclasses.yaml
     if [[ $num -eq 0 ]];then
       break
     fi
@@ -914,7 +927,7 @@ prompt_replicas() {
     && set_default "$REPLICA_OXAUTH" "1" "REPLICA_OXAUTH"
 
   read -rp "Number of oxTrust replicas [1]:                                    " REPLICA_OXTRUST \
-    && set_default "$REPLICA_OXAUTH" "1" "REPLICA_OXAUTH"
+    && set_default "$REPLICA_OXTRUST" "1" "REPLICA_OXTRUST"
 
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Number of LDAP replicas [1]:                                     " REPLICA_LDAP \
@@ -968,8 +981,8 @@ prompt_storage() {
 
 gke_prompts() {
   read -rp "Please enter valid email for Google Cloud account:                 " ACCOUNT
-  read -rp "Please enter valid Zone name used when creating the cluster:       " ZONE
-  SC_LDAP_ZONE=$ZONE
+  read -rp "Please enter valid Zone name used when creating the cluster:[$google_azure_zone]" ZONE \
+      && set_default "$ZONE" "$google_azure_zone" "ZONE"
   echo "Trying to login user"
   NODE=$(kubectl get no \
     -o go-template='{{range .items}}{{.metadata.name}} {{end}}' \
@@ -1064,6 +1077,7 @@ generate_yamls() {
 
   elif [[ $choiceLDAPDeploy -eq 11 ]]; then
     yaml_folder=$local_gke_folder
+    prompt_zones
     gke_prompts
 
   elif [[ $choiceLDAPDeploy -eq 12 ]]; then
@@ -1072,6 +1086,7 @@ generate_yamls() {
       && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
     create_dynamic_gke
     yaml_folder=$dynamic_gke_folder
+    prompt_zones
     gke_prompts
 
   elif [[ $choiceLDAPDeploy -eq 13 ]]; then
@@ -1081,6 +1096,7 @@ generate_yamls() {
       "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
     prompt_volumes_identitfier
     yaml_folder=$static_gke_folder
+    prompt_zones
     gke_prompts
 
   elif [[ $choiceLDAPDeploy -eq 16 ]]; then
@@ -1092,14 +1108,14 @@ generate_yamls() {
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+    prompt_zones
     read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
       && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
     echo "Outputing available zones used : "
     $kubectl get nodes -o json \
       | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-    read -rp "Please enter a valid Zone name used this might be set to 0:      " ZONE \
-      && set_default "$ZONE" "0" "ZONE"
-    SC_LDAP_ZONE=$ZONE
+    read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
+      && set_default "$ZONE" "$google_azure_zone" "ZONE"
     create_dynamic_azure
     yaml_folder=$dynamic_azure_folder
     generate_nfs
@@ -1108,13 +1124,13 @@ generate_yamls() {
     echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
     echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
     echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+    prompt_zones
     read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
       && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
     echo "Outputing available zones used : "
     $kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-    read -rp "Please enter a valid Zone name used this might be set to 0:      " ZONE \
-      && set_default "$ZONE" "0" "ZONE"
-    SC_LDAP_ZONE=$ZONE
+    read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
+      && set_default "$ZONE" "$google_azure_zone" "ZONE"
     create_static_azure
     static_volume_prompt="Persistent Disk Name"
     prompt_volumes_identitfier
@@ -1201,7 +1217,7 @@ generate_yamls() {
         | $sed '/ip: NGINX_IP/d'> tmpfile \
         && mv tmpfile $output_yamls/$service.yaml \
         || emp_output
-      # Incase user has used updatelbip and switched kustmixation source file
+      # Incase user has used updatelbip and switched kustmization source file
       cat $service/base/kustomization.yaml \
         | $sed -s "s@deployments-patch.yaml@deployments.yaml@g" \
         | $sed -s "s@statefulsets-patch.yaml@statefulsets.yaml@g" > tmpfile \
@@ -1213,6 +1229,14 @@ generate_yamls() {
   else
     services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
+      if [[ choiceDeploy -eq 4 ]] || [[ choiceDeploy -eq 5 ]]; then
+        cat $output_yamls/$service.yaml \
+          | $sed '/LB_ADDR: LBADDR/d' \
+          | $sed '/- command:/,/entrypoint.sh/d' \
+          | $sed -s "s@  envFrom@- envFrom@g" > tmpfile \
+          && mv tmpfile $output_yamls/$service.yaml \
+          || emp_output
+      fi
       cat $service/base/kustomization.yaml \
         | $sed -s "s@deployments.yaml@deployments-patch.yaml@g" \
         | $sed -s "s@statefulsets.yaml@statefulsets-patch.yaml@g" > tmpfile \
@@ -1314,17 +1338,14 @@ deploy_ldap() {
   cat $output_yamls/ldap.yaml | $kubectl apply -f -
   
   echo "[I] Deploying LDAP.Please wait.."
+  sleep 40
   while true; do
-    #Wait for conatiner to be created
-    sleep 30
     ldaplog=$($kubectl logs -l app=opendj || emp_output)
     if [[ $ldaplog =~ "The Directory Server has started successfully" ]]; then
       break
     fi
     sleep 20
   done
-  $kubectl scale statefulset opendj --replicas=$REPLICA_LDAP
-  is_pod_ready "app=opendj"
 }
 
 deploy_persistence() {
@@ -1339,11 +1360,16 @@ deploy_persistence() {
     fi
     sleep 30
   done
+  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+    $kubectl scale statefulset opendj --replicas=$REPLICA_LDAP
+    is_pod_ready "app=opendj"
+  fi
+
 }
 
 deploy_shared_shib() {
   if [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
-    $kubectl apply -f nfs/base/services.yaml
+    $kubectl apply -f shared-shib/nfs/services.yaml
     NFS_IP=""
     while true; do
       if [[ $NFS_IP ]] ; then
@@ -1362,6 +1388,9 @@ deploy_shared_shib() {
     $kubectl exec -ti $($kubectl get pods -l role=nfs-server \
       -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
       -- mkdir -p /exports/opt/shared-shibboleth-idp
+    $kubectl exec -ti $($kubectl get pods -l role=nfs-server \
+      -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
+      -- mkdir -p /exports/data/casa
   elif [[ $choiceDeploy -eq 3 ]] \
     && [[ $choiceVolumeShibboleth -eq 1 ]]; then
     cat $output_yamls/shared-shib.yaml \
@@ -1501,7 +1530,7 @@ deploy_cr_rotate() {
 
 deploy() {
   ls $output_yamls || true
-  read -rp "Deploy the generated yamls? [Y][Y/n]                                  " choiceContDeploy
+  read -rp "Deploy the generated yamls? [Y][Y/n]                                " choiceContDeploy
   case "$choiceContDeploy" in
     y|Y ) ;;
     n|N ) exit 1 ;;
