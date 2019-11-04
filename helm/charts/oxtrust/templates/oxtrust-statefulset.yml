@@ -86,6 +86,7 @@ spec:
         - name: oxtrust
           persistentVolumeClaim:
             claimName: {{ include "oxtrust.fullname" . }}
+      {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
         hostnames:

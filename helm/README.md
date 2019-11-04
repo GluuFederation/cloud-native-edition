@@ -66,6 +66,7 @@ If during installation the release was not defined, release name is checked by r
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
 | `global.oxTrustSeriveName`    | `oxtrust` service name - should not be changed             | `oxtrust`                           |
 | `global.domain`               | DNS domain name                                            | `demoexample.gluu.org`              |
+| `global.isDomainRegostered`   | Whether the domain to be used is registered or not         | `false`                             |
 | `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed |  `opendj:1636` |
 | `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
