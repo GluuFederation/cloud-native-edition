@@ -14,9 +14,9 @@
 
 - Get the source code:
 
-        wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.0.zip
-        unzip 4.0.0.zip
-        cd enterprise-edition-4.0.0/examples/kubernetes
+        wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.zip
+        unzip 4.0.zip
+        cd enterprise-edition-4.0/examples/kubernetes
 
 - Run `bash create.sh` to initialize the installation. Prompts will ask for the rest of the information needed. An optional choice to generate the manifests (yamls) and continue to deployment or just generate the  manifests (yamls) is available during the execution of `create.sh`.
 
