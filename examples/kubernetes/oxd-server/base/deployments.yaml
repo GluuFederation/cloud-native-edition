@@ -12,7 +12,7 @@ spec:
       containers:
       - name: oxd-server
         imagePullPolicy: Always
-        image: gluufederation/oxd-server:4.0.0_01
+        image: gluufederation/oxd-server:4.0.1_01
         ports:
         - containerPort: 8443
         - containerPort: 8444

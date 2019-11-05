@@ -8,7 +8,7 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/cr-rotate
-    newTag: 4.0.0_01
+    newTag: 4.0.1_01
 configMapGenerator:
   - name: cr-rotate-cm
     literals:

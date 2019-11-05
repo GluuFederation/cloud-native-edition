@@ -11,4 +11,4 @@ spec:
     - name: rpcbind
       port: 111
   selector:
-    role: nfs-server
+    app: nfs-server

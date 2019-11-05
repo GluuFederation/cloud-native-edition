@@ -13,7 +13,7 @@ spec:
       containers:
       - name: oxpassport
         imagePullPolicy: Always
-        image: gluufederation/oxpassport:4.0.0_01
+        image: gluufederation/oxpassport:4.0.1_01
         command:
           - /bin/sh
           - -c

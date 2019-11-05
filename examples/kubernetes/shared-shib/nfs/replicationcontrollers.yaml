@@ -5,11 +5,11 @@ metadata:
 spec:
   replicas: 1
   selector:
-    role: nfs-server
+    app: nfs-server
   template:
     metadata:
       labels:
-        role: nfs-server
+        app: nfs-server
     spec:
       containers:
       - name: nfs-server
@@ -25,8 +25,8 @@ spec:
           privileged: true
         volumeMounts:
           - mountPath: /exports
-            name: mypvc
+            name: nfs
       volumes:
-        - name: mypvc
+        - name: nfs
           persistentVolumeClaim:
-            claimName: nfs-pv-provisioning-demo
+            claimName: nfs-pvc

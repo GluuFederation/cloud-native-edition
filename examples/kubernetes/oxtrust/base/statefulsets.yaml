@@ -16,7 +16,7 @@ spec:
       containers:
       - name: oxtrust
         imagePullPolicy: Always
-        image: gluufederation/oxtrust:4.0.0_01
+        image: gluufederation/oxtrust:4.0.1_01
         resources:
           requests:
             memory: "1000Mi"
@@ -37,7 +37,7 @@ spec:
             subPath: couchbase_password
           - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
-            subPath: couchbase.crt
+            subPath: couchbase.crt           
         livenessProbe:
           httpGet:
             path: /identity/restv1/scim-configuration
@@ -63,4 +63,4 @@ spec:
           secretName: cb-pass
       - name: cb-crt
         secret:
-          secretName: cb-crt
+          secretName: cb-crt       

@@ -21,3 +21,15 @@ spec:
   resources:
     requests:
       storage: STORAGECASA
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+  labels:
+    app: nfs-pvc
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 50Gi

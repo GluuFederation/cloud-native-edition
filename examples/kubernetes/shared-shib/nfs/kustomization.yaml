@@ -1,7 +1,7 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 commonLabels:
-  role: nfs-server
+  app: nfs-server
 images:
   - name: k8s.gcr.io/volume-nfs
     newTag: "0.8"

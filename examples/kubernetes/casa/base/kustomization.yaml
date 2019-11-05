@@ -7,7 +7,7 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/casa
-    newTag: 4.0.0_01
+    newTag: 4.0.0_dev
 configMapGenerator:
   - name: casa-cm
     literals:

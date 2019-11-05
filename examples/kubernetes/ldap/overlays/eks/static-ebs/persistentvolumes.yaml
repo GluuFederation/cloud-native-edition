@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: opendj-pv
   labels:
-    opendj: config
+    app: opendj
 spec:
   capacity:
     storage: STORAGELDAP

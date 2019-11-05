@@ -33,10 +33,22 @@ delete_all() {
   echo "Deleting Gluu objects. Please wait..."
   kubectl=kubectl
   #TODO Delete according to resource using labels
-  $timeout 10 $kubectl delete pvc -l app=opendj --force --grace-period=0 --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete pv -l type=opendj --force --grace-period=0 --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete cm,job -l app=config-init-load --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete service,rc,pv,pvc -l role=nfs-server --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete deploy,pvc,pv,cm,secrets,svc -l app=casa --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete ClusterRoleBinding,Job,RoleBinding,Role,cm -l app=config-init-load --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete DaemonSet,svc,ClusterRoleBinding,Role,cm -l app=cr-rotate --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete Deployment,svc,cm -l app=key-rotation --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete StatefulSet,svc,cm,StorageClass,PersistentVolume,pvc -l app=opendj --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete deploy,pvc,pv,cm,secrets,svc -l app=oxauth --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete deploy,pvc,pv,cm,secrets,svc -l app=oxd-server --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete deploy,pvc,pv,cm,secrets,svc -l app=oxpassport --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete StatefulSet,pvc,pv,cm,secrets,svc -l app=oxshibboleth --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete StatefulSet,pvc,pv,cm,secrets,svc -l app=oxtrust --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete ClusterRoleBinding,Job,RoleBinding,Role,cm -l app=persistence-load --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete Deployment,svc,cm -l app=radius --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete Deployment,svc,cm -l app=redis --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete pvc,pv,svc,cm -l app=shared-shib --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete Role,RoleBinding,ClusterRole,ClusterRoleBinding,ServiceAccount,StorageClass,PersistentVolumeClaim,Deployment,svc -l app=efs-provisioner --force --grace-period=0 --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete pvc,pv,ReplicationController,svc,cm,secrets -l app=nfs-server --force --grace-period=0 --ignore-not-found || emp_output
 
   if [ -d "gluuminikubeyamls" ];then
     $timeout 40 $kubectl delete -f gluuminikubeyamls --ignore-not-found || emp_output
@@ -56,12 +68,11 @@ delete_all() {
     manifestsfolder=gluumicrok8yamls
     rm -rf /data || emp_output
   fi
-  $timeout 10 $kubectl delete po oxtrust-0 --force --grace-period=0 --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete po oxshibboleth-0 --force --grace-period=0 --ignore-not-found || emp_output
+  #$timeout 10 $kubectl delete po oxtrust-0 --force --grace-period=0 --ignore-not-found || emp_output
+  #$timeout 10 $kubectl delete po oxshibboleth-0 --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete secret gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
+  $timeout 10 $kubectl delete secret oxdkeystorecm gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
-  $timeout 10 $kubectl delete secret oxdkeystorecm --ignore-not-found || emp_output
   rm oxd-server.keystore || emp_output
   if [ -d "gluueksyamls" ] \
     || [ -d "gluugkeyamls" ] \
@@ -892,28 +903,25 @@ Please save your password securely and delete file gluu_admin_password"
 }
 
 prompt_zones() {
+  google_azure_zone=""
   #output the zones out to the user
   zones=$($kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]')
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
   echo "There are $numberofzones nodes deployed in these zones:"
-  zones=($(echo "${zones[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+  zones=$(echo "${zones[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ' | tr -d '\"')
   echo $zones
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
   num=$numberofzones
-  if [[ $num -eq 1 ]];then
-    google_azure_zone="${arrzones[0]}"
-    google_azure_zone=$(echo $google_azure_zone | tr -d '\"')
-  fi
   if [[ -f ldap/$yaml_folder/storageclasses_copy.yaml ]]; then
     cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
   fi
   cp ldap/$yaml_folder/storageclasses.yaml ldap/$yaml_folder/storageclasses_copy.yaml
   while true;do
     num=$(($num - 1))
+	google_azure_zone="${arrzones[$num]}"
     singlezone="${arrzones[$num]}"
-    singlezone=$(echo $singlezone | tr -d '\"')
     printf  "\n    - $singlezone" \
       >> ldap/$yaml_folder/storageclasses.yaml
     if [[ $num -eq 0 ]];then
@@ -958,7 +966,7 @@ prompt_replicas() {
   # Radius
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
-    read -rp "Number of Radius replicas [1]:                                     " REPLICA_RADIUS \
+    read -rp "Number of Radius replicas [1]:                                   " REPLICA_RADIUS \
       && set_default "$REPLICA_RADIUS" "1" "REPLICA_RADIUS"
   fi
 }
