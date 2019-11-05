@@ -32,7 +32,19 @@ delete_all() {
   fi
   echo "Deleting Gluu objects. Please wait..."
   kubectl=kubectl
-  #TODO Delete according to resource using labels
+  if [ -d "gluuminikubeyamls" ];then
+    manifestsfolder=gluuminikubeyamls
+  elif [ -d "gluueksyamls" ];then
+    manifestsfolder=gluueksyamls
+  elif [ -d "gluugkeyamls" ];then
+    manifestsfolder=gluugkeyamls
+  elif [ -d "gluuaksyamls" ];then
+    manifestsfolder=gluuaksyamls
+  else
+    kubectl=microk8s.kubectl
+    manifestsfolder=gluumicrok8yamls
+    rm -rf /data || emp_output
+  fi
   $timeout 10 $kubectl delete deploy,pvc,pv,cm,secrets,svc -l app=casa --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete ClusterRoleBinding,Job,RoleBinding,Role,cm -l app=config-init-load --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete DaemonSet,svc,ClusterRoleBinding,Role,cm -l app=cr-rotate --force --grace-period=0 --ignore-not-found || emp_output
@@ -49,27 +61,6 @@ delete_all() {
   $timeout 10 $kubectl delete pvc,pv,svc,cm -l app=shared-shib --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete Role,RoleBinding,ClusterRole,ClusterRoleBinding,ServiceAccount,StorageClass,PersistentVolumeClaim,Deployment,svc -l app=efs-provisioner --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete pvc,pv,ReplicationController,svc,cm,secrets -l app=nfs-server --force --grace-period=0 --ignore-not-found || emp_output
-
-  if [ -d "gluuminikubeyamls" ];then
-    $timeout 40 $kubectl delete -f gluuminikubeyamls --ignore-not-found || emp_output
-    manifestsfolder=gluuminikubeyamls
-  elif [ -d "gluueksyamls" ];then
-    $timeout 40 $kubectl delete -f gluueksyamls --ignore-not-found || emp_output
-    manifestsfolder=gluueksyamls
-  elif [ -d "gluugkeyamls" ];then
-    $timeout 40 $kubectl delete -f gluugkeyamls --ignore-not-found || emp_output
-    manifestsfolder=gluugkeyamls
-  elif [ -d "gluuaksyamls" ];then
-    $timeout 40 $kubectl delete -f gluuaksyamls --ignore-not-found || emp_output
-    manifestsfolder=gluuaksyamls
-  else
-    kubectl=microk8s.kubectl
-    $timeout 10 $kubectl delete -f gluumicrok8yamls --ignore-not-found || emp_output
-    manifestsfolder=gluumicrok8yamls
-    rm -rf /data || emp_output
-  fi
-  #$timeout 10 $kubectl delete po oxtrust-0 --force --grace-period=0 --ignore-not-found || emp_output
-  #$timeout 10 $kubectl delete po oxshibboleth-0 --force --grace-period=0 --ignore-not-found || emp_output
   $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret oxdkeystorecm gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
@@ -96,7 +87,7 @@ delete_all() {
   rm -rf old$manifestsfolder || emp_output
   mv -f $manifestsfolder old$manifestsfolder || emp_output
   mv ingress.crt previous-ingress.crt || emp_output
-  mv ingress.key previous-ingress.key
+  mv ingress.key previous-ingress.key || emp_output
   delete_cb
 }
 
@@ -259,6 +250,14 @@ create_static_azure() {
 
 deploy_cb_cluster() {
   if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
+    if [[ $choiceDeploy -eq 4 ]]; then
+      cat couchbase/storageclasses.yaml \
+        | $sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
+        | $sed -s "s@io1@pd-ssd@g" \
+        | $sed '/encrypted:/d' > tmpfile \
+        && mv tmpfile couchbase/storageclasses.yaml \
+        || emp_output
+    fi
     delete_cb
     echo "Installing Couchbase. Please follow the prompts.."
     tar xvzf couchbase-autonomous-operator-kubernetes_*.tar.gz --overwrite \
@@ -529,7 +528,7 @@ gather_ip() {
     sed=gsed || emp_output
   else
     echo "Cannot determine IP address."
-    read -rp "Please input the hosts external IP Address:                       " HOST_IP
+    read -rp "Please input the hosts external IP Address:                      " HOST_IP
   fi
 }
 
@@ -545,13 +544,13 @@ valid_ip() {
 }
 
 confirm_ip() {
-  read -rp "Is this the correct external IP Address: ${HOST_IP} [Y/n]?          " cont
+  read -rp "Is this the correct external IP Address: ${HOST_IP} [Y/n]?         " cont
   case "$cont" in
     y|Y)
       return 0
     ;;
     n|N)
-      read -rp "Please input the hosts external IP Address:                     " HOST_IP
+      read -rp "Please input the hosts external IP Address:                    " HOST_IP
       if valid_ip "$HOST_IP"; then
         return 0
       else
@@ -595,55 +594,55 @@ prepare_config() {
   echo "| [3] Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)|"
   echo "| [4] Google Cloud Engine - Google Kubernetes Engine (GKE)         |"
   echo "| [5] Microsoft Azure (AKS)                                        |"
-  echo "|------------------------------------------------- ----------------|"
-  read -rp "Deploy using?                                                   " choiceDeploy
-  echo "|-----------------------------------------------------------------|"
-  echo "|                     Persistence layer                           |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [0] WrenDS [default]                                            |"
-  echo "| [1] Couchbase [Testing Phase]                                   |"
-  echo "| [2] Hybrid(WrenDS + Couchbase)[Testing Phase]                   |"
-  echo "|-----------------------------------------------------------------|"
-  read -rp "Persistence layer?                                                  " choicePersistence
+  echo "|------------------------------------------------------------------|"
+  read -rp "Deploy using?                                                      " choiceDeploy
+  echo "|------------------------------------------------------------------|"
+  echo "|                     Persistence layer                            |"
+  echo "|------------------------------------------------------------------|"
+  echo "| [0] WrenDS [default]                                             |"
+  echo "| [1] Couchbase [Testing Phase]                                    |"
+  echo "| [2] Hybrid(WrenDS + Couchbase)[Testing Phase]                    |"
+  echo "|------------------------------------------------------------------|"
+  read -rp "Persistence layer?                                                 " choicePersistence
   case "$choicePersistence" in
     1 ) PERSISTENCE_TYPE="couchbase"  ;;
     2 ) PERSISTENCE_TYPE="hybrid"  ;;
     * ) PERSISTENCE_TYPE="ldap"  ;;
   esac
   if [[ $choicePersistence -ne 1 ]]; then
-    echo "|-----------------------------------------------------------------|"
-    echo "|                     Local Deployments                           |"
-    echo "|-----------------------------------------------------------------|"
-    echo "| [1]  Microk8s | LDAP volumes on host                            |"
-    echo "| [2]  Minikube | LDAP volumes on host                            |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|                     Cloud Deployments                           |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)    |"
-    echo "|                    MultiAZ - Supported                          |"
-    echo "|-----------------------------------------------------------------|"
-    echo "| [6]  EKS      | LDAP volumes on host                            |"
-    echo "| [7]  EKS      | LDAP EBS volumes dynamically provisioned        |"
-    echo "| [8]  EKS      | LDAP EBS volumes statically provisioned         |"
-    echo "| [9]  EKS      | LDAP EFS volume                                 |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|Google Cloud Engine - Google Kubernetes Engine                   |"
-    echo "|-----------------------------------------------------------------|"
-    echo "| [11]  GKE     | LDAP volumes on host                            |"
-    echo "| [12]  GKE     | LDAP Persistent Disk  dynamically provisioned   |"
-    echo "| [13]  GKE     | LDAP Persistent Disk  statically provisioned    |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|Microsoft Azure                                                  |"
-    echo "|-----------------------------------------------------------------|"
-    echo "| [16] Azure    | LDAP volumes on host                            |"
-    echo "| [17] Azure    | LDAP Persistent Disk  dynamically provisioned   |"
-    echo "| [18] Azure    | LDAP Persistent Disk  statically provisioned    |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|                            Notes                                |"
-    echo "|-----------------------------------------------------------------|"
-    echo "|- Any other option will default to choice 1                      |"
-    echo "|-----------------------------------------------------------------|"
-    read -rp "What type of deployment?                                          " choiceLDAPDeploy
+    echo "|------------------------------------------------------------------|"
+    echo "|                     Local Deployments                            |"
+    echo "|------------------------------------------------------------------|"
+    echo "| [1]  Microk8s | LDAP volumes on host                             |"
+    echo "| [2]  Minikube | LDAP volumes on host                             |"
+    echo "|------------------------------------------------------------------|"
+    echo "|                     Cloud Deployments                            |"
+    echo "|------------------------------------------------------------------|"
+    echo "|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |"
+    echo "|                    MultiAZ - Supported                           |"
+    echo "|------------------------------------------------------------------|"
+    echo "| [6]  EKS      | LDAP volumes on host                             |"
+    echo "| [7]  EKS      | LDAP EBS volumes dynamically provisioned         |"
+    echo "| [8]  EKS      | LDAP EBS volumes statically provisioned          |"
+    echo "| [9]  EKS      | LDAP EFS volume                                  |"
+    echo "|------------------------------------------------------------------|"
+    echo "|Google Cloud Engine - Google Kubernetes Engine                    |"
+    echo "|------------------------------------------------------------------|"
+    echo "| [11]  GKE     | LDAP volumes on host                             |"
+    echo "| [12]  GKE     | LDAP Persistent Disk  dynamically provisioned    |"
+    echo "| [13]  GKE     | LDAP Persistent Disk  statically provisioned     |"
+    echo "|------------------------------------------------------------------|"
+    echo "|Microsoft Azure                                                   |"
+    echo "|------------------------------------------------------------------|"
+    echo "| [16] Azure    | LDAP volumes on host                             |"
+    echo "| [17] Azure    | LDAP Persistent Disk  dynamically provisioned    |"
+    echo "| [18] Azure    | LDAP Persistent Disk  statically provisioned     |"
+    echo "|------------------------------------------------------------------|"
+    echo "|                            Notes                                 |"
+    echo "|------------------------------------------------------------------|"
+    echo "|- Any other option will default to choice 1                       |"
+    echo "|------------------------------------------------------------------|"
+    read -rp "What type of deployment?                                         " choiceLDAPDeploy
     if [[ $choiceLDAPDeploy -eq 9 ]];then
       read -rp "EFS created [Y]" efsNote
       read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
@@ -654,14 +653,14 @@ prepare_config() {
       fi
     fi
   fi
-  echo "|-----------------------------------------------------------------|"
-  echo "|                     Cache layer                                 |"
-  echo "|-----------------------------------------------------------------|"
-  echo "| [0] NATIVE_PERSISTENCE [default]                                |"
-  echo "| [1] IN_MEMORY                                                   |"
-  echo "| [2] REDIS                                                       |"
-  echo "|-----------------------------------------------------------------|"
-  read -rp "Cache layer?                                                        " choiceCache
+  echo "|------------------------------------------------------------------|"
+  echo "|                     Cache layer                                  |"
+  echo "|------------------------------------------------------------------|"
+  echo "| [0] NATIVE_PERSISTENCE [default]                                 |"
+  echo "| [1] IN_MEMORY                                                    |"
+  echo "| [2] REDIS                                                        |"
+  echo "|------------------------------------------------------------------|"
+  read -rp "Cache layer?                                                       " choiceCache
   case "$choiceCache" in
     1 ) GLUU_CACHE_TYPE="IN_MEMORY"  ;;
     2 ) GLUU_CACHE_TYPE="REDIS" ;;
@@ -682,7 +681,7 @@ prepare_config() {
     echo "| [3] Cache                                                       |"
     echo "| [4] Token                                                       |"
     echo "|-----------------------------------------------------------------|"
-    read -rp "Persistence type?                                                 " choiceHybrid
+    read -rp "Persistence type?                                                " choiceHybrid
     case "$choiceHybrid" in
       1 ) LDAP_MAPPING="user"  ;;
       2 ) LDAP_MAPPING="site"  ;;
@@ -712,7 +711,7 @@ prepare_config() {
     echo "| [0] Classic Load Balancer (CLB) [default]                       |"
     echo "| [1] Network Load Balancer (NLB - Alpha) -- Static IP            |"
     echo "|-----------------------------------------------------------------|"
-    read -rp "Loadbalancer type ?                                               " lbChoicenumber
+    read -rp "Loadbalancer type ?                                              " lbChoicenumber
     case "$lbChoicenumber" in
       0 ) lbChoice="clb"  ;;
       1 ) lbChoice="nlb"  ;;
@@ -729,7 +728,7 @@ prepare_config() {
     COUCHBASE_URL=""
     echo "For the following prompt  if placed [N] the couchbase 
       is assumed to be installed or remotely provisioned"
-    read -rp "Install Couchbase[Y][Y/N] ?                                       " installCB
+    read -rp "Install Couchbase[Y][Y/N] ?                                      " installCB
     if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
       if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
         read -rp "Please enter the volume type for EBS.[io1]    :           \
@@ -1392,11 +1391,11 @@ deploy_shared_shib() {
       && mv tmpfile $output_yamls/nfs.yaml \
       || emp_output
     $kubectl apply -f $output_yamls/nfs.yaml
-    is_pod_ready "role=nfs-server"
-    $kubectl exec -ti $($kubectl get pods -l role=nfs-server \
+    is_pod_ready "app=nfs-server"
+    $kubectl exec -ti $($kubectl get pods -l app=nfs-server \
       -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
       -- mkdir -p /exports/opt/shared-shibboleth-idp
-    $kubectl exec -ti $($kubectl get pods -l role=nfs-server \
+    $kubectl exec -ti $($kubectl get pods -l app=nfs-server \
       -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
       -- mkdir -p /exports/data/casa
   elif [[ $choiceDeploy -eq 3 ]] \

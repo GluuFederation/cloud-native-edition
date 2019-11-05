@@ -2,6 +2,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: nfs-server
+  labels:
+    app: nfs-server
 spec:
   ports:
     - name: nfs
