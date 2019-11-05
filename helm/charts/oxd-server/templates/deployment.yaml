@@ -58,10 +58,12 @@ spec:
           configMap:
             name: {{ .Release.Name }}-updatelbip
         {{- end }}
+      {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
         - ip: {{ .Values.global.nginxIp }}
           hostnames:
             - {{ .Values.global.domain }}
+      {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

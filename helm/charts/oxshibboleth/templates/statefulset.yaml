@@ -58,10 +58,12 @@ spec:
             port: http
           initialDelaySeconds: 25
           periodSeconds: 25
+      {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
         hostnames:
         - {{ .Values.global.domain }}
+      {{- end }}
       volumes:
       - name: {{ .Release.Name }}-shared-shib
         persistentVolumeClaim: 
