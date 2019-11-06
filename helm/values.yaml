@@ -2,10 +2,11 @@
 global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
-    enabled: false
-    provisioner: k8s.io/minikube-hostpath #kubernetes.io/gce-pd 
-    # values used to define the StorageClass template
-  provisioner: k8s.io/minikube-hostpath
+    enabled: true
+    # provisioner: kubernetes.io/aws-ebs
+
+  # values used to define the StorageClass template
+  provisioner: kubernetes.io/aws-ebs # k8s.io/minikube-hostpath
   encrypted: true
   pool: default
   fsType: ext4
@@ -25,7 +26,7 @@ global:
   nginxIp: 192.168.99.100 # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
-  isDomainRegistered: false #true or false
+  isDomainRegistered: "false" # "true" or "false"
 
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
 
