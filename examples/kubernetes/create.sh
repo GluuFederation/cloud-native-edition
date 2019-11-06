@@ -324,6 +324,10 @@ deploy_cb_cluster() {
     is_pod_ready "couchbase_services=data"
     is_pod_ready "couchbase_services=index"
     rm -rf $cbinstalldir || emp_output
+	if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
+	  echo "Setup XDCR between the running gluu couchbase cluster and this one"
+      read -rp "Press enter  when XDCR is ready?                               "
+    fi
   else
     echo "Error: Couchbase package not found."
     echo "Please download the couchbase kubernetes package and place it inside
@@ -609,6 +613,16 @@ prepare_config() {
     2 ) PERSISTENCE_TYPE="hybrid"  ;;
     * ) PERSISTENCE_TYPE="ldap"  ;;
   esac
+  echo "|------------------------------------------------------------------|"
+  echo "|            Is this a multi-cloud/region setup[N] ?[Y/N]          |"
+  echo "|------------------------------------------------------------------|"
+  echo "|                            Notes                                 |"
+  echo "|------------------------------------------------------------------|"
+  echo "|- If you are planning for a multi-cloud/region setup and this     |"
+  echo "|  is the first cluster answer N or leave blank. You will answer Y |"
+  echo "|  for the second and more cluster setup                           |"
+  echo "|------------------------------------------------------------------|"
+  read -rp "Is this a multi-cloud/region setup[N]                              " multiCluster
   if [[ $choicePersistence -ne 1 ]]; then
     echo "|------------------------------------------------------------------|"
     echo "|                     Local Deployments                            |"
@@ -800,6 +814,9 @@ prepare_config() {
         read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
         read -rp "VPC of EKS and EFS are the same [Y]" efsNote
         read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
+        read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
+        read -rp "Enter AWS region (us-west-2):                                    " awsRegion
+        read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
         if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
           exit 1
         fi
@@ -981,7 +998,7 @@ prompt_storage() {
   fi
       # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -p "Size of Casa volume storage [4Gi]:                                 " STORAGE_CASA \
+    read -p "Size of Casa volume storage [4Gi]:                                " STORAGE_CASA \
       && set_default "$STORAGE_CASA" "4Gi" "STORAGE_CASA"
   fi
 }
@@ -1078,9 +1095,9 @@ generate_yamls() {
   elif [[ $choiceLDAPDeploy -eq 9 ]]; then
     create_efs_aws
     yaml_folder=$efs_eks_folder
-    read -rp "Enter FileSystemID (fs-xxx):                                      " fileSystemID
-    read -rp "Enter AWS region (us-west-2):                                     " awsRegion
-    read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):              " efsDNS
+    read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
+    read -rp "Enter AWS region (us-west-2):                                    " awsRegion
+    read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
 
   elif [[ $choiceLDAPDeploy -eq 11 ]]; then
     yaml_folder=$local_gke_folder
@@ -1547,7 +1564,9 @@ deploy() {
   deploy_shared_shib
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
-  deploy_config
+  if [[ $multiCluster != "Y" && $multiCluster != "y" ]]; then
+    deploy_config
+  fi
   setup_tls
   if [[ $choiceCache == 2 ]];then
     deploy_redis
@@ -1557,7 +1576,9 @@ deploy() {
     deploy_ldap
   fi
   deploy_nginx
-  deploy_persistence
+  if [[ $multiCluster != "Y" && $multiCluster != "y" ]]; then
+    deploy_persistence
+  fi
   if [[ $FQDN_CHOICE != "y" ]] && [[ $FQDN_CHOICE != "Y" ]]; then
     deploy_update_lb_ip
   fi
