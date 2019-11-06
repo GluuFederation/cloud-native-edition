@@ -996,6 +996,7 @@ prompt_storage() {
     read -p "Size of Shared-Shib volume storage [4Gi]:                         " STORAGE_SHAREDSHIB \
       && set_default "$STORAGE_SHAREDSHIB" "4Gi" "STORAGE_SHAREDSHIB"
   fi
+  STORAGE_CASA=$STORAGE_SHAREDSHIB
       # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     read -p "Size of Casa volume storage [4Gi]:                                " STORAGE_CASA \
