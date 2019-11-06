@@ -6,14 +6,14 @@ metadata:
     app: {{ include "radius.name" . }}
   annotations:
     storageclass.beta.kubernetes.io/is-default-class: "false"
-provisioner: {{ .Values.global.cloud.provisioner }}
+provisioner: {{ .Values.global.provisioner }}
 parameters:
-  {{- if eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs" }}
+  {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
   type: gp2
   fsType: {{ .Values.global.fsType }}
-  {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/gce-pd" }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}
-  {{- else if eq .Values.global.cloud.provisioner "kubernetes.io/azure-disk" }}
+  {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
   {{- else }}

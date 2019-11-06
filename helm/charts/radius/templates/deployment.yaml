@@ -53,10 +53,12 @@ spec:
           initialDelaySeconds: 25
           periodDelaySeconds: 25
           failureThreshold: 20
+      {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
         - ip: {{ .Values.global.nginxIp }}
           hostname:
             - {{ .Values.global.domain }} 
+      {{- end }}
       volumes:
       - name: radius-logs
         persistentVolumeClaim:

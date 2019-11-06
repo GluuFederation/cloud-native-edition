@@ -18,7 +18,7 @@ spec:
       - name: {{ template "gluu.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs")}}
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         command:
           - /bin/sh
           - -c
@@ -37,7 +37,7 @@ spec:
         - configMapRef:
             name: {{ template "oxauth.fullname" . }}-cm
         volumeMounts:
-        {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxauth.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
@@ -68,7 +68,7 @@ spec:
       - name: oxauth-volume
         persistentVolumeClaim:
           claimName: {{ include "oxauth.fullname" . }}
-      {{- if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       - name: {{ include "oxauth.fullname" . }}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip
