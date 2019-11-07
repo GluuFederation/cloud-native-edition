@@ -59,7 +59,7 @@ If during installation the release was not defined, release name is checked by r
 |       Parameter               |      Description                                           |    Default                          |
 |:------------------------------|:-----------------------------------------------------------|:------------------------------------|
 | `global.cloud.enabled`        | Whether to enable cloud provisioning.                      | `false`                             |
-| `global.cloud.provisioner`    | Which cloud provisioner to use when deploying              | `k8s.io/minikube-hostpath`          |
+| `global.provisioner`          | Which cloud provisioner to use when deploying              | `k8s.io/minikube-hostpath`          |
 | `global.namespace`            | namespace in which to deploy the server                    | `default`                           |
 | `global.serviceName`          | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | IP address to be used with a FQDN                          | `192.168.99.100` (for minikube)     |
@@ -128,10 +128,10 @@ If during installation the release was not defined, release name is checked by r
       - Install the chart by running   
       `helm install --name <release-name> -f values.yaml .`  
 
-   ### GCE
+  ### GCE
 
     2 Options from here.
-    1. ### Domain Name not mapped to an IP
+    1. ### Domain Name not registred 
     #### Important
 
       Get the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
@@ -146,17 +146,18 @@ If during installation the release was not defined, release name is checked by r
     - Enable all the required services.
     - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .` 
 
-    2. ### Domain already mapped to an IP address  
+    2. ### Mapped/registered FQDN
     - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
-          - `nginx-ingress.service.loadBalancerIP`  
-          - `global.nginxIp` 
+          - `nginx-ingress.service.loadBalancerIP` 
     - Enable the services that are required then install the chart by running
     `helm upgrade --install <release-name> -f values.yaml . `
 
   ### AWS   
-   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.cloud.provisioner`
+    ### Domain Name not registered   
+
+   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.provisioner`
    - Get the `loadBalancer` DNS hostname provisioned by the `nginx-ingress` e.g
    ```
     $ kubectl get svc | grep ingress-controller
@@ -170,30 +171,36 @@ If during installation the release was not defined, release name is checked by r
         ;
         lbAddr: a96e6e325ee7d11e9xxxxx49691a220-752226592.us-west-2.elb.amazonaws.com
     ```
+
    - Create a `CNAME` that points to the ELB hostname (which won't change ).  
     i.e `aws.gluu.org -> a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com`   
     This would allow integration of the scalable Gluu server behind the ELB with your domain.
+
    - Update `nginxIp` in `values.yaml` file with IP that is now mapped to your domain and also the domain.      
           - `global.nginxIp` 
           - `global.domain`
-    - Update the value of domain name in `global.domain` and also in `nginx` section as shown below
+
+    ### Mapped/Registered FQDN   
+
+   - Update the value of domain name in `nginx` section as shown below   
       ```
-      nginx:
-        enabled: true
-        # ingress resources
-        ingress:
-          enabled: true
-          path: /
-          hosts:
-            - demoexample.gluu.org # REPLACE THIS
-          tls: 
-          - secretName: tls-certificate
-            hosts:
-              - demoexample.gluu.org #REPLACE THIS
+          nginx:
+            enabled: true
+            # ingress resources
+            ingress:
+              enabled: true
+              path: /
+              hosts:
+                - demoexample.gluu.org # REPLACE THIS
+              tls: 
+                - secretName: tls-certificate
+                  hosts:
+                    - demoexample.gluu.org # REPLACE THIS
+        
       ```
-    - Because this chart is going to use `EFS-Provisioner` there are some preparations that are NEEDED before deploying as  described 
-      [here](https://github.com/helm/charts/tree/master/stable/efs-provisioner).
-      Some notes on the same to keep in mind.
+   - Because this chart is going to use `EFS-Provisioner` there are some preparations that are NEEDED before deploying as  described
+     [here](https://github.com/helm/charts/tree/master/stable/efs-provisioner).
+     Some notes on the same to keep in mind.
         - To be able to use a DNS name of the efs in the mount command, the following must be true:
 
         - The connecting EC2 instance must be inside a VPC and must be configured to use the DNS server provided by Amazon. ✅
@@ -204,13 +211,13 @@ If during installation the release was not defined, release name is checked by r
 
         - Mount targets must include the security groups that allow EFS to be connected ✅
 
-    - After creating efs file system, update `efs-provisioner.efsProvisioner.dnsName` with the efs DNS name.
-    - Enable `efs-provisioner` chart to be installed by setting `enabled` to `true` 
+   - After creating efs file system, update `efs-provisioner.efsProvisioner.dnsName` with the efs DNS name.
+   - Enable `efs-provisioner` chart to be installed by setting `enabled` to `true` 
       ```
         efs-provisioner:
-           enabled: true    -----> changed from false to true
+           enabled: false    -----> changed from false to true
       ```
-    - Enable the services that are required then install the chart by running
+   - Enable the services that are required then install the chart by running
     `helm upgrade --install <release-name> -f values.yaml . `
     
     
