@@ -2,11 +2,11 @@
 global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
-    enabled: true
+    enabled: false
     # provisioner: kubernetes.io/aws-ebs
 
   # values used to define the StorageClass template
-  provisioner: kubernetes.io/aws-ebs # k8s.io/minikube-hostpath
+  provisioner: k8s.io/minikube-hostpath # kubernetes.io/aws-ebs 
   encrypted: true
   pool: default
   fsType: ext4
