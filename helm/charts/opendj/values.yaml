@@ -33,7 +33,7 @@ image:
     tag: 4.0.0_01
   statefulset:
     repository: gluufederation/wrends
-    tag: 4.0.0
+    tag: 4.0.0_beta4
     pullPolicy: Always
 
 persistence:

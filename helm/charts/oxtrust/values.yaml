@@ -6,8 +6,8 @@ replicas: 1
 dynamicStorage: true
 
 image:
-  repository: nginx
-  tag: stable
+  repository: gluufederation/oxtrust
+  tag: 4.0.1_01
   pullPolicy: Always
 
 service:

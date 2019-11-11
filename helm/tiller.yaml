@@ -46,7 +46,7 @@ spec:
         - name: TILLER_HISTORY_MAX
           value: "0"
         name: tiller
-        image: gcr.io/kubernetes-helm/tiller:v2.15.0
+        image: gcr.io/kubernetes-helm/tiller:v2.16.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 44134
