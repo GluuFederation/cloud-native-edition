@@ -243,11 +243,13 @@ If during installation the release was not defined, release name is checked by r
 
 ### OXD-server
 
-NOTE: When installing `oxd-server` chart/service, the user should change the value of 
+NOTE: When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
+NOTE!! If these two are not provided `oxd-server` will fail to start.
 ```
 oxd-server:
   secret:
-    keystore: nkjnjnkjJBJBKndjBHNJ..
+    keystore: nkjnjnkjJBJBKndjBHNJxxxx
+    keystorePassword: "example-pass"
 ```
 
 If one doesn't have a key store it must be generated and place to the variable mentioned above. To generate, find the instructions [here](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore)
