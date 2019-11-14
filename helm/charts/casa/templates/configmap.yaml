@@ -8,6 +8,7 @@ data:
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
+  GLUU_OXD_SERVER_URL: {{ .Values.global.gluuOxdServerUrl | quote }}
   LB_ADDR: {{ .Values.global.lbAddr | quote }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if eq .Values.global.gluuPersistenceType "hybrid" }}

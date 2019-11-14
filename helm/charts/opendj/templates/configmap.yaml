@@ -5,7 +5,7 @@ metadata:
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.global.serviceName }} #{{ template "gluu.fullname" . }}-service
+  GLUU_LDAP_INIT_HOST: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
   GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
   GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
@@ -17,7 +17,7 @@ data:
   GLUU_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
   {{- end }}
   # must the same as the opendj service name
-  GLUU_CERT_ALT_NAME: {{ .Values.global.serviceName }} #{{ template "gluu.fullname" . }}-service
+  GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
 
 ---
 

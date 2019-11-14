@@ -61,7 +61,7 @@ If during installation the release was not defined, release name is checked by r
 | `global.cloud.enabled`        | Whether to enable cloud provisioning.                      | `false`                             |
 | `global.provisioner`          | Which cloud provisioner to use when deploying              | `k8s.io/minikube-hostpath`          |
 | `global.namespace`            | namespace in which to deploy the server                    | `default`                           |
-| `global.serviceName`          | ldap service name. Used to connect other services to ldap  | `opendj`                            |
+| `global.ldapServiceName`      | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | IP address to be used with a FQDN                          | `192.168.99.100` (for minikube)     |
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
 | `global.oxTrustSeriveName`    | `oxtrust` service name - should not be changed             | `oxtrust`                           |

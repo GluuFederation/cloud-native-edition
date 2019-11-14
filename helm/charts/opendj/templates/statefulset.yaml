@@ -5,13 +5,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.global.serviceName }} # has to match .spec.template.metadata.labels
-  serviceName: {{ .Values.global.serviceName }}
+      app: {{ .Values.global.ldapServiceName }} # has to match .spec.template.metadata.labels
+  serviceName: {{ .Values.global.ldapServiceName }}
   replicas: {{ .Values.replicas }} # by default is 1
   template:
     metadata:
       labels:
-        app: {{ .Values.global.serviceName }} # has to match .spec.selector.matchLabels
+        app: {{ .Values.global.ldapServiceName }} # has to match .spec.selector.matchLabels
     spec:
       containers:
       - name: {{ include "opendj.fullname" . }}

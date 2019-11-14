@@ -18,9 +18,11 @@ global:
 
   namespace: default
   nginxNamespace: ingress
-  serviceName: opendj
+  
+  #service names to be used globally/by other charts
   oxAuthServiceName: oxauth
   oxTrustSeriveName: oxtrust
+  ldapServiceName: opendj
 
   # Networking configs
   nginxIp: 192.168.64.5 # SHOULD BE CHANGED FOR CLOUD
@@ -33,6 +35,7 @@ global:
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
   gluuOxauthBackend: oxauth:8080
+  gluuOxdServerUrl: oxd-server:8443
   
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
