@@ -47,6 +47,8 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}          
           volumeMounts:
             - name: {{ include "casa.name" . }}
               mountPath: /etc/gluu/conf
@@ -59,7 +61,8 @@ spec:
               subPath: couchbase.crt 
       volumes:
         - name: {{ include "casa.name" . }}
-          persistentVolumeClaim: {{ include "casa.fullname" . }}
+          persistentVolumeClaim: 
+            claimName: {{ include "casa.fullname" . }}
         - name: {{ include "casa.name" . }}-pass
           secret:
             secretName: {{ include "casa.name" . }}-pass
@@ -72,17 +75,3 @@ spec:
          hostnames:
          - {{ .Values.global.domain }}
       {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}

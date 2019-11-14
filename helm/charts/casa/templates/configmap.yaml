@@ -7,7 +7,7 @@ data:
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
-  GLUU_OXAUTH_BACKEND: {{ .Values.gluuOxauthBackend | quote }}
+  GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
   LB_ADDR: {{ .Values.global.lbAddr | quote }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if eq .Values.global.gluuPersistenceType "hybrid" }}
