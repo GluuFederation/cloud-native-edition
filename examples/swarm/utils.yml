@@ -6,7 +6,7 @@ networks:
 
 services:
   key_rotation:
-    image: gluufederation/key-rotation:4.0.1_02
+    image: gluufederation/key-rotation:4.0.1_03
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul.server
       - GLUU_SECRET_VAULT_HOST=vault.server
