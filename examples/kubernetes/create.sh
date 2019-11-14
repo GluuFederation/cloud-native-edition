@@ -1069,103 +1069,104 @@ generate_yamls() {
     mkdir gluumicrok8yamls || emp_output
     output_yamls=gluumicrok8yamls
   fi
-  
-  if [[ $choiceLDAPDeploy -eq 2 ]]; then
-    create_local_minikube
-    yaml_folder=$local_minikube_folder
+  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+    if [[ $choiceLDAPDeploy -eq 2 ]]; then
+      create_local_minikube
+      yaml_folder=$local_minikube_folder
 
-  elif [[ $choiceLDAPDeploy -eq 6 ]]; then
-    yaml_folder=$local_eks_folder
+    elif [[ $choiceLDAPDeploy -eq 6 ]]; then
+      yaml_folder=$local_eks_folder
 
-  elif [[ $choiceLDAPDeploy -eq 7 ]]; then
-    echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
-    echo "Follow the doc above to help you choose 
-      which volume type to use.Options are [gp2,io1,st1,and sc1]"
-    read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
-      && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
-    yaml_folder=$dynamic_eks_folder
-    prompt_zones
+    elif [[ $choiceLDAPDeploy -eq 7 ]]; then
+      echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
+      echo "Follow the doc above to help you choose 
+        which volume type to use.Options are [gp2,io1,st1,and sc1]"
+      read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
+        && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
+      yaml_folder=$dynamic_eks_folder
+      prompt_zones
 
-  elif [[ $choiceLDAPDeploy -eq 8 ]]; then
-    yaml_folder=$static_eks_folder
-    echo "Zones of your volumes are required to match the deployments to the volume zone"
-    prompt_zones
-    static_volume_prompt="EBS Volume ID"
-    prompt_volumes_identitfier
+    elif [[ $choiceLDAPDeploy -eq 8 ]]; then
+      yaml_folder=$static_eks_folder
+      echo "Zones of your volumes are required to match the deployments to the volume zone"
+      prompt_zones
+      static_volume_prompt="EBS Volume ID"
+      prompt_volumes_identitfier
 
-  elif [[ $choiceLDAPDeploy -eq 9 ]]; then
-    create_efs_aws
-    yaml_folder=$efs_eks_folder
-    read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
-    read -rp "Enter AWS region (us-west-2):                                    " awsRegion
-    read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
+    elif [[ $choiceLDAPDeploy -eq 9 ]]; then
+      create_efs_aws
+      yaml_folder=$efs_eks_folder
+      read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
+      read -rp "Enter AWS region (us-west-2):                                    " awsRegion
+      read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
 
-  elif [[ $choiceLDAPDeploy -eq 11 ]]; then
-    yaml_folder=$local_gke_folder
-    prompt_zones
-    gke_prompts
+    elif [[ $choiceLDAPDeploy -eq 11 ]]; then
+      yaml_folder=$local_gke_folder
+      prompt_zones
+      gke_prompts
 
-  elif [[ $choiceLDAPDeploy -eq 12 ]]; then
-    echo "Please enter the volume type for the persistent disk."
-    read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
-      && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
-    create_dynamic_gke
-    yaml_folder=$dynamic_gke_folder
-    prompt_zones
-    gke_prompts
+    elif [[ $choiceLDAPDeploy -eq 12 ]]; then
+      echo "Please enter the volume type for the persistent disk."
+      read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
+        && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
+      create_dynamic_gke
+      yaml_folder=$dynamic_gke_folder
+      prompt_zones
+      gke_prompts
 
-  elif [[ $choiceLDAPDeploy -eq 13 ]]; then
-    create_static_gke
-    static_volume_prompt="Persistent Disk Name"
-    echo 'Place the name of your persistent disks between two quotes as such 
-      "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
-    prompt_volumes_identitfier
-    yaml_folder=$static_gke_folder
-    prompt_zones
-    gke_prompts
+    elif [[ $choiceLDAPDeploy -eq 13 ]]; then
+      create_static_gke
+      static_volume_prompt="Persistent Disk Name"
+      echo 'Place the name of your persistent disks between two quotes as such 
+        "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
+      prompt_volumes_identitfier
+      yaml_folder=$static_gke_folder
+      prompt_zones
+      gke_prompts
 
-  elif [[ $choiceLDAPDeploy -eq 16 ]]; then
-    create_local_azure
-    yaml_folder=$local_azure_folder
-    generate_nfs
+    elif [[ $choiceLDAPDeploy -eq 16 ]]; then
+      create_local_azure
+      yaml_folder=$local_azure_folder
+      generate_nfs
 
-  elif [[ $choiceLDAPDeploy -eq 17 ]]; then
-    echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
-    echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
-    echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-    prompt_zones
-    read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
-      && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
-    echo "Outputing available zones used : "
-    $kubectl get nodes -o json \
-      | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-    read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
-      && set_default "$ZONE" "$google_azure_zone" "ZONE"
-    create_dynamic_azure
-    yaml_folder=$dynamic_azure_folder
-    generate_nfs
+    elif [[ $choiceLDAPDeploy -eq 17 ]]; then
+      echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+      echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
+      echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+      prompt_zones
+      read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
+        && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+      echo "Outputing available zones used : "
+      $kubectl get nodes -o json \
+        | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
+      read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
+        && set_default "$ZONE" "$google_azure_zone" "ZONE"
+      create_dynamic_azure
+      yaml_folder=$dynamic_azure_folder
+      generate_nfs
 
-  elif [[ $choiceLDAPDeploy -eq 18 ]]; then
-    echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
-    echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
-    echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-    prompt_zones
-    read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
-      && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
-    echo "Outputing available zones used : "
-    $kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-    read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
-      && set_default "$ZONE" "$google_azure_zone" "ZONE"
-    create_static_azure
-    static_volume_prompt="Persistent Disk Name"
-    prompt_volumes_identitfier
-    prompt_disk_uris
-    yaml_folder=$static_azure_folder
-    generate_nfs
+    elif [[ $choiceLDAPDeploy -eq 18 ]]; then
+      echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+      echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
+      echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+      prompt_zones
+      read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
+        && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+      echo "Outputing available zones used : "
+      $kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
+      read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
+        && set_default "$ZONE" "$google_azure_zone" "ZONE"
+      create_static_azure
+      static_volume_prompt="Persistent Disk Name"
+      prompt_volumes_identitfier
+      prompt_disk_uris
+      yaml_folder=$static_azure_folder
+      generate_nfs
 
-  else
-    mkdir localmicrok8syamls || emp_output
-    yaml_folder=$local_microk8s_folder
+    else
+      mkdir localmicrok8syamls || emp_output
+      yaml_folder=$local_microk8s_folder
+    fi
   fi
   # Get prams for the yamls
   prompt_storage
@@ -1577,9 +1578,7 @@ deploy() {
     deploy_ldap
   fi
   deploy_nginx
-  if [[ $multiCluster != "Y" && $multiCluster != "y" ]]; then
-    deploy_persistence
-  fi
+  deploy_persistence
   if [[ $FQDN_CHOICE != "y" ]] && [[ $FQDN_CHOICE != "Y" ]]; then
     deploy_update_lb_ip
   fi
@@ -1617,7 +1616,7 @@ deploy() {
 # ==========
 # entrypoint
 # ==========
-
+ 
 case $1 in
   "install"|"")
     touch couchbase.crt
