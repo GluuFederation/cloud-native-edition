@@ -7,7 +7,7 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/key-rotation
-    newTag: 4.0.1_01
+    newTag: 4.0.1_02
 configMapGenerator:
   - name: key-rotation-cm
     literals:

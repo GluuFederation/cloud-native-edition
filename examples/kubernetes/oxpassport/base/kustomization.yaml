@@ -7,7 +7,7 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/oxpassport
-    newTag: 4.0.1_01
+    newTag: 4.0.1_02
 configMapGenerator:
   - name: oxpassport-cm
     literals:
