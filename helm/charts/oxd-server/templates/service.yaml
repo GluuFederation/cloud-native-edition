@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "oxd-server.fullname" . }}
+  name: {{ include "oxd-server.name" . }}
   labels:
     app: {{ include "oxd-server.name" . }}
     chart: {{ include "oxd-server.chart" . }}
