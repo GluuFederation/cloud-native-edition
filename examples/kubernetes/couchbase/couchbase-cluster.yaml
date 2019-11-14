@@ -164,6 +164,30 @@ spec:
         volumeMounts:
           default: pvc-general
           index: pvc-index
+    - name: query-us-west-2a
+      size: 1
+      services:
+        - query
+      serverGroups:
+       - us-west-2a
+      pod:
+        labels:
+          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+        volumeMounts:
+          default: pvc-general
+          query: pvc-query
+    - name: query-us-west-2c
+      size: 1
+      services:
+        - query
+      serverGroups:
+       - us-west-2c
+      pod:
+        labels:
+          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+        volumeMounts:
+          default: pvc-general
+          query: pvc-query
   securityContext:
     fsGroup: 1000
   volumeClaimTemplates:
@@ -183,6 +207,13 @@ spec:
             storage: 100Gi
     - metadata:
         name: pvc-index
+      spec:
+        storageClassName: couchbase-sc
+        resources:
+          requests:
+            storage: 60Gi
+    - metadata:
+        name: pvc-query
       spec:
         storageClassName: couchbase-sc
         resources:
