@@ -78,4 +78,8 @@ dependencies:
   - name: oxd-server
     condition: oxd-server.enabled
     version: 1.0.0
+  
+  - name: casa
+    condtion: casa.enabled
+    version: 1.0.0
     

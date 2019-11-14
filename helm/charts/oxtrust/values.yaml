@@ -28,8 +28,6 @@ requests:
 #containerPOrt ot connect the container with
 containerPort: 8080
 
-gluuOxauthBackend: oxauth:8080
-
 #VolumeMounts
 volumeMounts:
   logs:

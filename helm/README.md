@@ -95,6 +95,9 @@ If during installation the release was not defined, release name is checked by r
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
 | `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
 | `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
+| `oxd-server.secret.keyStorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                   |
+| `casa.enabled`                | Whether to enable installation of casa service chart       | `false`                             |
+| `casa.persistence.size`       | Storage size to be used                                    | `5Gi`                               |
 | `redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
 | `shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
 | `oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |

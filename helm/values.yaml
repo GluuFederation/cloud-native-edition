@@ -32,6 +32,7 @@ global:
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
+  gluuOxauthBackend: oxauth:8080
   
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
@@ -45,6 +46,8 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   gluuCouchBaseUrl: cb.demo.gluu # CHANGE THIS
   gluuCouchBaseUser: cb_user # CHANGE THIS
+  gluuCouchBasePass: c3VwZXJtYW46c3VwZXJwb3dlcg== # CHANGE THIS
+  gluuCouchBaseCert: c3VwZXJtYW46c3VqbmNqcw== # CHANGE THIS
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -127,6 +130,11 @@ oxd-server:
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
+casa:
+  enabled: true
+  # storage declarations
+  persistence:
+    size: 5Gi
 
 # redis should be enabled only when cacheType is REDIS
 redis:
