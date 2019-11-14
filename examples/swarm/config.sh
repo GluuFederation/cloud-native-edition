@@ -56,7 +56,7 @@ bootstrap_config() {
                         -v /opt/vault/vault_secret_id.txt:/etc/certs/vault_secret_id \
                         -e GLUU_CONFIG_CONSUL_HOST=consul.server \
                         -e GLUU_SECRET_VAULT_HOST=vault.server \
-                        gluufederation/config-init:4.0.1_01 load
+                        gluufederation/config-init:4.0.1_02 load
                 fi
             fi
         fi
@@ -129,7 +129,7 @@ EOL
             -v /opt/vault/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -e GLUU_CONFIG_CONSUL_HOST=consul.server \
             -e GLUU_SECRET_VAULT_HOST=vault.server \
-            gluufederation/config-init:4.0.1_01 load
+            gluufederation/config-init:4.0.1_02 load
 
         docker-machine scp manager:/opt/config-init/db/config.json $saved_config
         docker-machine scp manager:/opt/config-init/db/secret.json $saved_secret

@@ -9,7 +9,7 @@ services:
   # due to limitation in docker networking, container is not reachable by its hostname and there's no templating support
   # in networks definition
   ldap_manager:
-    image: gluufederation/wrends:4.0.1_01
+    image: gluufederation/wrends:4.0.1_02
     hostname: "ldap.{{.Node.Hostname}}"
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul.server
@@ -53,7 +53,7 @@ services:
         target: /etc/certs/vault_secret_id
 
   ldap_worker_1:
-    image: gluufederation/wrends:4.0.1_01
+    image: gluufederation/wrends:4.0.1_02
     hostname: "ldap.{{.Node.Hostname}}"
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul.server
@@ -97,7 +97,7 @@ services:
         target: /etc/certs/vault_secret_id
 
   ldap_worker_2:
-    image: gluufederation/wrends:4.0.1_01
+    image: gluufederation/wrends:4.0.1_02
     hostname: "ldap.{{.Node.Hostname}}"
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul.server
