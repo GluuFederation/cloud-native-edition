@@ -1,0 +1,25 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ template "casa.fullname" . }}
+data:
+  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
+  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
+  GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
+  DOMAIN: {{ .Values.global.domain | quote }}
+  GLUU_OXAUTH_BACKEND: {{ .Values.gluuOxauthBackend | quote }}
+  LB_ADDR: {{ .Values.global.lbAddr | quote }}
+    # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
+  {{- if eq .Values.global.gluuPersistenceType "hybrid" }}
+  GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}
+  {{- end }}
+  {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
+  {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+  #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchBaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchBaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: "/etc/certs/couchbase.crt"
+  GLUU_COUCHBASE_PASSWORD_FILE: "/etc/gluu/conf/couchbase_password"
+  {{- end }}
