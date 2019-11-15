@@ -97,8 +97,8 @@ delete_cb() {
   namespaces=$($kubectl get ns -o template --template="$namespace_template" \
     || echo "")
   for ns in $namespaces; do
-    $kubectl delete couchbasecluster.couchbase.com/cbgluu \
-      storageclass.storage.k8s.io/couchbase-sc secret/cb-auth \
+    $kubectl delete couchbasecluster.couchbase.com/cbgluu --ignore-not-found -n $ns || emp_output
+    $kubectl storageclass.storage.k8s.io/couchbase-sc secret/cb-auth \
       deployment.apps/couchbase-operator \
       rolebinding.rbac.authorization.k8s.io/couchbase-operator \
       serviceaccount/couchbase-operator \
