@@ -32,7 +32,7 @@ bootstrap_db() {
         -e GLUU_PERSISTENCE_TYPE=ldap \
         -e GLUU_PERSISTENCE_LDAP_MAPPING=default \
         -e GLUU_LDAP_URL=ldap.server:1636 \
-        gluufederation/persistence:4.0.1_02
+        gluufederation/persistence:4.0.1_03
 }
 
 copy_vault_role_secret() {
