@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/key-rotation
-  tag: 4.0.0_01
+  tag: 4.0.0_04
   pullPolicy: Always
 
 nameOverride: ""

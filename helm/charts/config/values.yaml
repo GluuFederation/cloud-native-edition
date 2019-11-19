@@ -15,6 +15,10 @@ fullNameOverride: ""
 volumeClaim:
   storage: 1Gi
 
+image:
+  repository: gluufederation/config-init
+  tag: 4.0.0_04
+
 persistence:
   size: 1Gi
   accessModes: ReadWriteOnce
