@@ -1,4 +1,4 @@
-appVersion: 0.17.1
+appVersion: 0.26.1
 description: An nginx Ingress controller that uses ConfigMap to store the nginx configuration.
 engine: gotpl
 home: https://github.com/kubernetes/ingress-nginx
@@ -16,4 +16,4 @@ maintainers:
 name: nginx-ingress
 sources:
 - https://github.com/kubernetes/ingress-nginx
-version: 0.25.1
+version: 1.25.0

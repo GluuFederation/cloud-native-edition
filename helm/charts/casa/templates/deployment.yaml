@@ -27,6 +27,14 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+                /usr/bin/python /scripts/updatelbip.py &
+                /app/scripts/entrypoint.sh
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

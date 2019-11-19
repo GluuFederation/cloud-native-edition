@@ -18,8 +18,8 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - demo.gluu-helm-example.tk
+    - demoexample.gluu.org
   tls: 
    - secretName: tls-certificate
      hosts:
-       - demo.gluu-helm-example.tk
+       - demoexample.gluu.org

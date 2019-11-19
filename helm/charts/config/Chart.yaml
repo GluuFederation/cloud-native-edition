@@ -1,5 +1,5 @@
 apiVersion: v1
-appVersion: 4.0.0_dev
+appVersion: "4.0.0_04"
 home: https://www.gluu.org/de
 maintainers:
 - name: gluu

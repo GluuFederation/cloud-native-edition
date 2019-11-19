@@ -128,19 +128,20 @@ If during installation the release was not defined, release name is checked by r
         config:
           enabled: false 
       ```
-      - Install the chart by running   
-      `helm install --name <release-name> -f values.yaml .`  
+        NOTE! If FQDN is registered, no need to disable these services
+    - Install the chart by running   
+    `helm install --name <release-name> -f values.yaml .`  
 
   ### GCE
+  Two options from here.
+  1. #### Domain Name not registred
 
-    2 Options from here.
-    1. ### Domain Name not registred 
-    #### Important
+  #### Important
 
-      Get the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
+  Get the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
       `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 
-    - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
+  - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
     - Update `loadBalancerIP` value in `values.yaml` file.  
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
@@ -149,7 +150,7 @@ If during installation the release was not defined, release name is checked by r
     - Enable all the required services.
     - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .` 
 
-    2. ### Mapped/registered FQDN
+2. #### Mapped/registered FQDN
     - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
@@ -157,8 +158,9 @@ If during installation the release was not defined, release name is checked by r
     - Enable the services that are required then install the chart by running
     `helm upgrade --install <release-name> -f values.yaml . `
 
+
   ### AWS   
-    ### Domain Name not registered   
+  #### Domain Name not registered   
 
    - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.provisioner`
    - Get the `loadBalancer` DNS hostname provisioned by the `nginx-ingress` e.g
@@ -183,7 +185,7 @@ If during installation the release was not defined, release name is checked by r
           - `global.nginxIp` 
           - `global.domain`
 
-    ### Mapped/Registered FQDN   
+  #### Mapped/Registered FQDN   
 
    - Update the value of domain name in `nginx` section as shown below   
       ```
