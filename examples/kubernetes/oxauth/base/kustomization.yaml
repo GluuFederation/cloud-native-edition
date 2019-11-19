@@ -7,7 +7,7 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/oxauth
-    newTag: 4.0.1_03
+    newTag: 4.0.1_04
 configMapGenerator:
   - name: oxauth-cm
     literals:
