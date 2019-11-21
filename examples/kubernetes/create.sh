@@ -930,20 +930,24 @@ prompt_zones() {
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
   num=$numberofzones
-  if [[ -f ldap/$yaml_folder/storageclasses_copy.yaml ]]; then
-    cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
-  fi
-  cp ldap/$yaml_folder/storageclasses.yaml ldap/$yaml_folder/storageclasses_copy.yaml
-  while true;do
-    num=$(($num - 1))
-	google_azure_zone="${arrzones[$num]}"
-    singlezone="${arrzones[$num]}"
-    printf  "\n    - $singlezone" \
-      >> ldap/$yaml_folder/storageclasses.yaml
-    if [[ $num -eq 0 ]];then
-      break
+  if [[ $choiceLDAPDeploy -eq 7 ]] \
+    || [[ $choiceLDAPDeploy -eq 12 ]] \
+    || [[ $choiceLDAPDeploy -eq 17 ]]; then
+    if [[ -f ldap/$yaml_folder/storageclasses_copy.yaml ]]; then
+      cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
     fi
-  done
+    cp ldap/$yaml_folder/storageclasses.yaml ldap/$yaml_folder/storageclasses_copy.yaml
+    while true;do
+      num=$(($num - 1))
+      google_azure_zone="${arrzones[$num]}"
+      singlezone="${arrzones[$num]}"
+      printf  "\n    - $singlezone" \
+        >> ldap/$yaml_folder/storageclasses.yaml
+      if [[ $num -eq 0 ]];then
+        break
+      fi
+    done
+  fi
 }
 
 prompt_replicas() {
@@ -1038,6 +1042,68 @@ prompt_disk_uris() {
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Please enter the disk uri for LDAP:                              " LDAP_DISKURI
   fi
+}
+output_inital_yamls() {
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    if [[ $choiceDeploy -eq 3 ]] \
+      && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+      $kustomize shared-shib/efs \
+        | replace_all  > $output_yamls/shared-shib.yaml
+    elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+      $kustomize shared-shib/nfs \
+        | replace_all  > $output_yamls/shared-shib.yaml
+    else
+      $kustomize shared-shib/localstorage \
+        | replace_all  > $output_yamls/shared-shib.yaml
+    fi
+  fi
+  # Config
+  $kustomize config/base | replace_all > $output_yamls/config.yaml
+  # WrenDS
+  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+    $kustomize ldap/$yaml_folder | replace_all > $output_yamls/ldap.yaml
+  fi
+  # Persistence
+  $kustomize persistence/base | replace_all > $output_yamls/persistence.yaml
+  # oxAuth
+  $kustomize oxauth/base | replace_all > $output_yamls/oxauth.yaml
+  # oxTrust
+  $kustomize oxtrust/base | replace_all > $output_yamls/oxtrust.yaml
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    # oxShibboleth
+    $kustomize oxshibboleth/base \
+      | replace_all  > $output_yamls/oxshibboleth.yaml
+  fi
+
+  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+    # oxPassport
+    $kustomize oxpassport/base \
+      | replace_all  > $output_yamls/oxpassport.yaml
+  fi
+  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
+    # Key Rotationls
+    $kustomize key-rotation/base | replace_all > $output_yamls/key-rotation.yaml
+  fi
+  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
+    # Cache Refresh rotating IP registry
+    $kustomize cr-rotate/base | replace_all > $output_yamls/cr-rotate.yaml
+  fi
+    # OXD-Server
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
+    $kustomize oxd-server/base | replace_all > $output_yamls/oxd-server.yaml
+  fi
+    # Casa
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    $kustomize casa/base | replace_all > $output_yamls/casa.yaml
+  fi  
+  # Radius
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
+    # Radius server
+    $kustomize radius/base | replace_all > $output_yamls/radius.yaml
+  fi
+  if [[ $choiceCache == 2 ]];then
+    $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
+  fi 
 }
 
 generate_yamls() {
@@ -1171,64 +1237,7 @@ generate_yamls() {
   # Get prams for the yamls
   prompt_storage
   prompt_replicas
-  if [[ $choiceDeploy -eq 3 ]] \
-    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
-    $kustomize shared-shib/efs \
-      | replace_all  > $output_yamls/shared-shib.yaml
-  elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
-    $kustomize shared-shib/nfs \
-      | replace_all  > $output_yamls/shared-shib.yaml
-  else
-    $kustomize shared-shib/localstorage \
-      | replace_all  > $output_yamls/shared-shib.yaml
-  fi
-  # Config
-  $kustomize config/base | replace_all > $output_yamls/config.yaml
-  # WrenDS
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    $kustomize ldap/$yaml_folder | replace_all > $output_yamls/ldap.yaml
-  fi
-  # Persistence
-  $kustomize persistence/base | replace_all > $output_yamls/persistence.yaml
-  # oxAuth
-  $kustomize oxauth/base | replace_all > $output_yamls/oxauth.yaml
-  # oxTrust
-  $kustomize oxtrust/base | replace_all > $output_yamls/oxtrust.yaml
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
-    # oxShibboleth
-    $kustomize oxshibboleth/base \
-      | replace_all  > $output_yamls/oxshibboleth.yaml
-  fi
-
-  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
-    # oxPassport
-    $kustomize oxpassport/base \
-      | replace_all  > $output_yamls/oxpassport.yaml
-  fi
-  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
-    # Key Rotationls
-    $kustomize key-rotation/base | replace_all > $output_yamls/key-rotation.yaml
-  fi
-  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
-    # Cache Refresh rotating IP registry
-    $kustomize cr-rotate/base | replace_all > $output_yamls/cr-rotate.yaml
-  fi
-    # OXD-Server
-  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    $kustomize oxd-server/base | replace_all > $output_yamls/oxd-server.yaml
-  fi
-    # Casa
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    $kustomize casa/base | replace_all > $output_yamls/casa.yaml
-  fi  
-  # Radius
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
-    # Radius server
-    $kustomize radius/base | replace_all > $output_yamls/radius.yaml
-  fi
-  if [[ $choiceCache == 2 ]];then
-    $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
-  fi  
+  output_inital_yamls
   if [[ $FQDN_CHOICE == "y" ]] || [[ $FQDN_CHOICE == "Y" ]]; then
     services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
@@ -1271,7 +1280,8 @@ generate_yamls() {
     done
     $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   fi
-    echo " all yamls have been generated in $output_yamls folder"
+  output_inital_yamls
+  echo " all yamls have been generated in $output_yamls folder"
 }
 
 deploy_nginx() {
