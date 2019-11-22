@@ -78,10 +78,16 @@ delete_all() {
       || echo "")
     # Loops through the IPs of the nodes and deletes /data
     for node_ip in $node_ips; do
-      ssh -oStrictHostKeyChecking=no -i $sshKey \
-        ec2-user@"$node_ip" sudo rm -rf /data || emp_output
-      ssh -oStrictHostKeyChecking=no -i $sshKey \
-        opc@"$node_ip" sudo rm -rf /data || emp_output
+      if [ -d "gluueksyamls" ];then
+        ssh -oStrictHostKeyChecking=no -i $sshKey \
+          ec2-user@"$node_ip" sudo rm -rf /data || emp_output
+      elif [ -d "gluugkeyamls" ];then
+        ssh -oStrictHostKeyChecking=no -i $sshKey \
+          user@"$node_ip" sudo rm -rf /opendj || emp_output
+      elif [ -d "gluuaksyamls" ];then
+        ssh -oStrictHostKeyChecking=no -i $sshKey \
+          opc@"$node_ip" sudo rm -rf /data || emp_output
+      fi
     done
   fi
   rm -rf old$manifestsfolder || emp_output
@@ -433,7 +439,6 @@ set_default() {
       "REPLICA_CASA" ) REPLICA_CASA="$2" ;;
       "REPLICA_RADIUS" ) REPLICA_RADIUS="$2" ;;
       "STORAGE_CASA" ) STORAGE_CASA="$2" ;;
-      "ZONE" ) ZONE="$2" ;;
     esac
   fi
 }
@@ -1014,19 +1019,21 @@ prompt_storage() {
 
 gke_prompts() {
   read -rp "Please enter valid email for Google Cloud account:                 " ACCOUNT
-  read -rp "Please enter valid Zone name used when creating the cluster:[$google_azure_zone]" ZONE \
-      && set_default "$ZONE" "$google_azure_zone" "ZONE"
-  echo "Trying to login user"
+  echo "Trying to login user: root..."
   NODE=$(kubectl get no \
     -o go-template='{{range .items}}{{.metadata.name}} {{end}}' \
     | awk -F " " '{print $1}')
-  HOME_DIR=$(gcloud compute ssh root@$NODE --zone $ZONE --command='echo $HOME' \
-    || echo "Permission denied")
+  HOME_DIR=$(gcloud compute ssh root@$NODE --zone=${arrzones[0]} --command='echo $HOME' \
+             || gcloud compute ssh root@$NODE --zone=${arrzones[1]} --command='echo $HOME' \
+             || gcloud compute ssh root@$NODE --zone=${arrzones[2]} --command='echo $HOME' \
+             || echo "Permission denied")
   if [[ $HOME_DIR =~ "Permission denied" ]];then
-    echo "This occurs when your compute instance has 
-      PermitRootLogin set to  no in it's SSHD config.
-      Trying to login using user"
-    HOME_DIR=$(gcloud compute ssh user@$NODE --zone $ZONE --command='echo $HOME')
+    echo "This occurs when your compute instance has PermitRootLogin set to  no in it's SSHD config."
+    echo "Trying to login using user: user"
+    HOME_DIR=$(gcloud compute ssh user@$NODE --zone=${arrzones[0]} --command='echo $HOME' \
+               || gcloud compute ssh user@$NODE --zone=${arrzones[1]} --command='echo $HOME' \
+               || gcloud compute ssh user@$NODE --zone=${arrzones[2]} --command='echo $HOME' \
+               || emp_output)
   fi
   generate_nfs
 }
@@ -1125,26 +1132,13 @@ generate_yamls() {
   fi
   if [[ $choiceDeploy -eq 2 ]]; then
     mkdir gluuminikubeyamls || emp_output
+    create_local_minikube
+    yaml_folder=$local_minikube_folder
     output_yamls=gluuminikubeyamls
   elif [[ $choiceDeploy -eq 3 ]]; then
     mkdir gluueksyamls || emp_output
     output_yamls=gluueksyamls
-  elif [[ $choiceDeploy -eq 4 ]]; then
-    mkdir gluugkeyamls || emp_output
-    output_yamls=gluugkeyamls
-  elif [[ $choiceDeploy -eq 5 ]]; then
-    mkdir gluuaksyamls || emp_output
-    output_yamls=gluuaksyamls
-  else
-    mkdir gluumicrok8yamls || emp_output
-    output_yamls=gluumicrok8yamls
-  fi
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    if [[ $choiceLDAPDeploy -eq 2 ]]; then
-      create_local_minikube
-      yaml_folder=$local_minikube_folder
-
-    elif [[ $choiceLDAPDeploy -eq 6 ]]; then
+    if [[ $choiceLDAPDeploy -eq 6 ]]; then
       yaml_folder=$local_eks_folder
 
     elif [[ $choiceLDAPDeploy -eq 7 ]]; then
@@ -1154,12 +1148,10 @@ generate_yamls() {
       read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
         && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
       yaml_folder=$dynamic_eks_folder
-      prompt_zones
 
     elif [[ $choiceLDAPDeploy -eq 8 ]]; then
       yaml_folder=$static_eks_folder
       echo "Zones of your volumes are required to match the deployments to the volume zone"
-      prompt_zones
       static_volume_prompt="EBS Volume ID"
       prompt_volumes_identitfier
 
@@ -1169,11 +1161,13 @@ generate_yamls() {
       read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
       read -rp "Enter AWS region (us-west-2):                                    " awsRegion
       read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
-
-    elif [[ $choiceLDAPDeploy -eq 11 ]]; then
+    fi
+    prompt_zones
+  elif [[ $choiceDeploy -eq 4 ]]; then
+    mkdir gluugkeyamls || emp_output
+    output_yamls=gluugkeyamls
+    if [[ $choiceLDAPDeploy -eq 11 ]]; then
       yaml_folder=$local_gke_folder
-      prompt_zones
-      gke_prompts
 
     elif [[ $choiceLDAPDeploy -eq 12 ]]; then
       echo "Please enter the volume type for the persistent disk."
@@ -1181,8 +1175,6 @@ generate_yamls() {
         && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
       create_dynamic_gke
       yaml_folder=$dynamic_gke_folder
-      prompt_zones
-      gke_prompts
 
     elif [[ $choiceLDAPDeploy -eq 13 ]]; then
       create_static_gke
@@ -1191,10 +1183,13 @@ generate_yamls() {
         "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
       prompt_volumes_identitfier
       yaml_folder=$static_gke_folder
-      prompt_zones
-      gke_prompts
-
-    elif [[ $choiceLDAPDeploy -eq 16 ]]; then
+    fi
+    prompt_zones
+	gke_prompts
+  elif [[ $choiceDeploy -eq 5 ]]; then
+    mkdir gluuaksyamls || emp_output
+    output_yamls=gluuaksyamls
+    if [[ $choiceLDAPDeploy -eq 16 ]]; then
       create_local_azure
       yaml_folder=$local_azure_folder
       generate_nfs
@@ -1203,14 +1198,8 @@ generate_yamls() {
       echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
       echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
       echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-      prompt_zones
       read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
         && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
-      echo "Outputing available zones used : "
-      $kubectl get nodes -o json \
-        | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-      read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
-        && set_default "$ZONE" "$google_azure_zone" "ZONE"
       create_dynamic_azure
       yaml_folder=$dynamic_azure_folder
       generate_nfs
@@ -1219,28 +1208,26 @@ generate_yamls() {
       echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
       echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
       echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-      prompt_zones
       read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
         && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
       echo "Outputing available zones used : "
-      $kubectl get nodes -o json | jq '.items[] | .metadata .labels["failure-domain.beta.kubernetes.io/zone"]'
-      read -rp "Please enter a valid Zone name used this might be set to 0:[$google_azure_zone]" ZONE \
-        && set_default "$ZONE" "$google_azure_zone" "ZONE"
       create_static_azure
       static_volume_prompt="Persistent Disk Name"
       prompt_volumes_identitfier
       prompt_disk_uris
       yaml_folder=$static_azure_folder
       generate_nfs
-
-    else
-      mkdir localmicrok8syamls || emp_output
-      yaml_folder=$local_microk8s_folder
     fi
+    prompt_zones
+  else
+    mkdir gluumicrok8yamls || emp_output
+    output_yamls=gluumicrok8yamls
+    yaml_folder=$local_microk8s_folder
   fi
   # Get prams for the yamls
   prompt_storage
   prompt_replicas
+  # Detrmine if FQDN status: If non registered patch, if registered unpatch
   if [[ $FQDN_CHOICE == "y" ]] \
     || [[ $FQDN_CHOICE == "Y" ]]; then
     services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
@@ -1262,6 +1249,7 @@ generate_yamls() {
         || emp_output
     done
   fi
+# Generate the yamls
   output_inital_yamls
   if [[ $FQDN_CHOICE == "y" ]] \
     || [[ $FQDN_CHOICE == "Y" ]]; then
@@ -1614,8 +1602,8 @@ deploy() {
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     deploy_casa
   else
-    $timeout 10 $kubectl delete pvc -l type=casa --ignore-not-found || emp_output
-    $timeout 10 $kubectl delete pv -l type=casa --ignore-not-found || emp_output
+    $kubectl delete pvc -l app=casa --ignore-not-found || emp_output
+    $kubectl delete pv -l app=casa --ignore-not-found || emp_output
   fi
   deploy_oxtrust
   if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
