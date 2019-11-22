@@ -1241,8 +1241,30 @@ generate_yamls() {
   # Get prams for the yamls
   prompt_storage
   prompt_replicas
+  if [[ $FQDN_CHOICE == "y" ]] \
+    || [[ $FQDN_CHOICE == "Y" ]]; then
+    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
+    for service in $services; do
+      # Incase user has used updatelbip and switched kustmization source file
+      cat $service/base/kustomization.yaml \
+        | $sed -s "s@deployments-patch.yaml@deployments.yaml@g" \
+        | $sed -s "s@statefulsets-patch.yaml@statefulsets.yaml@g" > tmpfile \
+        && mv tmpfile $service/base/kustomization.yaml \
+        || emp_output
+    done
+  else
+    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
+    for service in $services; do
+      cat $service/base/kustomization.yaml \
+        | $sed -s "s@deployments.yaml@deployments-patch.yaml@g" \
+        | $sed -s "s@statefulsets.yaml@statefulsets-patch.yaml@g" > tmpfile \
+        && mv tmpfile $service/base/kustomization.yaml \
+        || emp_output
+    done
+  fi
   output_inital_yamls
-  if [[ $FQDN_CHOICE == "y" ]] || [[ $FQDN_CHOICE == "Y" ]]; then
+  if [[ $FQDN_CHOICE == "y" ]] \
+    || [[ $FQDN_CHOICE == "Y" ]]; then
     services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
       # Remove hostAliases object from yamls
@@ -1255,12 +1277,6 @@ generate_yamls() {
         | $sed -s "s@  envFrom@- envFrom@g" \
         | $sed '/ip: NGINX_IP/d'> tmpfile \
         && mv tmpfile $output_yamls/$service.yaml \
-        || emp_output
-      # Incase user has used updatelbip and switched kustmization source file
-      cat $service/base/kustomization.yaml \
-        | $sed -s "s@deployments-patch.yaml@deployments.yaml@g" \
-        | $sed -s "s@statefulsets-patch.yaml@statefulsets.yaml@g" > tmpfile \
-        && mv tmpfile $service/base/kustomization.yaml \
         || emp_output
     done
     # Create dummy updatelbip
@@ -1276,15 +1292,9 @@ generate_yamls() {
           && mv tmpfile $output_yamls/$service.yaml \
           || emp_output
       fi
-      cat $service/base/kustomization.yaml \
-        | $sed -s "s@deployments.yaml@deployments-patch.yaml@g" \
-        | $sed -s "s@statefulsets.yaml@statefulsets-patch.yaml@g" > tmpfile \
-        && mv tmpfile $service/base/kustomization.yaml \
-        || emp_output
     done
     $kustomize update-lb-ip/base > $output_yamls/updatelbip.yaml
   fi
-  output_inital_yamls
   echo " all yamls have been generated in $output_yamls folder"
 }
 
