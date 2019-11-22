@@ -10,7 +10,8 @@
     * [Minikube](#minikube)
     * [MicroK8s](#microk8s)
 
--   If deploying with Couchbase as the persistence layer on AWS EKS take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
+-   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)
+
 
 - Get the source code:
 
@@ -23,11 +24,12 @@
 
 # Use Couchbase soley as the persistence layer
 ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
-
+![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)
 ![image](../../img/gluu_cb_installation.gif)
 
 ## Requirements
-  - An m5.xlarge EKS cluster with 3 nodes at the minimum
+  - An `m5.xlarge` EKS cluster with 3 nodes at the minimum or `n2-standard-4` GKE cluster with 3 nodes. We advice contacting Gluu regarding in production setups.
+  
 - [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `create.sh`.
 
 - Please modify the file `couchbase/couchbase-cluster.yaml` to fit your instituional needs. Currently the file is setup with an example setup of a total of 6 nodes as seen in `spec.servers`. Each set of services is replicating in two different zones. According to your setup these zones might be different and hence should be changed. Do not change the labels of these services such as `couchbase_services: index` the setup requires these labels to track the status of the couchbase setup.Do not change the buckets as they are required for Gluu setup. More information on the properties of this file is found [here](https://docs.couchbase.com/operator/1.2/couchbase-cluster-config.html). 
