@@ -19,7 +19,7 @@ dynamic_azure_folder="overlays/azure/dynamic-dn/"
 static_azure_folder="overlays/azure/static-dn/"
 
 emp_output() {
-  echo "" > /dev/null
+  >/dev/null 2>&1
   echo "Skipping command..."
 }
 
@@ -825,8 +825,8 @@ prepare_config() {
   fi
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     choiceOXD="Y"
-  else
-    read -rp "Deploy OXD-Server[N]?[Y/N]                                       " choiceOXD
+  #else
+  #  read -rp "Deploy OXD-Server[N]?[Y/N]                                       " choiceOXD
   fi
   if [[ $choiceOXD == "Y" || $choiceOXD == "y" ]]; then
     keytool -genkey -noprompt \
@@ -937,17 +937,21 @@ prompt_zones() {
       cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
     fi
     cp ldap/$yaml_folder/storageclasses.yaml ldap/$yaml_folder/storageclasses_copy.yaml
-    while true;do
-      num=$(($num - 1))
-      google_azure_zone="${arrzones[$num]}"
-      singlezone="${arrzones[$num]}"
+  fi
+  while true;do
+    num=$(($num - 1))
+    google_azure_zone="${arrzones[$num]}"
+    singlezone="${arrzones[$num]}"
+    if [[ $choiceLDAPDeploy -eq 7 ]] \
+      || [[ $choiceLDAPDeploy -eq 12 ]] \
+      || [[ $choiceLDAPDeploy -eq 17 ]]; then	
       printf  "\n    - $singlezone" \
         >> ldap/$yaml_folder/storageclasses.yaml
-      if [[ $num -eq 0 ]];then
-        break
-      fi
-    done
-  fi
+    fi
+    if [[ $num -eq 0 ]];then
+      break
+    fi
+  done
 }
 
 prompt_replicas() {
