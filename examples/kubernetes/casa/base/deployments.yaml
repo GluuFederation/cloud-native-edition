@@ -37,18 +37,18 @@ spec:
           - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
-        livenessProbe:
-          httpGet:
-            path: /casa
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /casa
-            port: 8080
-          initialDelaySeconds: 25
-          periodSeconds: 25
+#        livenessProbe:
+#          httpGet:
+#            path: /casa
+#            port: 8080
+#          initialDelaySeconds: 30
+#          periodSeconds: 30
+#        readinessProbe:
+#          httpGet:
+#            path: /casa
+#            port: 8080
+#          initialDelaySeconds: 25
+#          periodSeconds: 25
         resources:
           requests:
             memory: "1000Mi"
