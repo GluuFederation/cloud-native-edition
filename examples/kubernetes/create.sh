@@ -259,7 +259,15 @@ deploy_cb_cluster() {
     if [[ $choiceDeploy -eq 4 ]]; then
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
-        | $sed -s "s@io1@pd-ssd@g" \
+        | $sed '/encrypted:/d' > tmpfile \
+        && mv tmpfile couchbase/storageclasses.yaml \
+        || emp_output
+    elif [[ $choiceDeploy -eq 1 ]]; then
+      cat couchbase/storageclasses.yaml \
+        | $sed -s "s@kubernetes.io/aws-ebs@microk8s.io/hostpath@g" \
+        | $sed '/allowVolumeExpansion:/d' \
+        | $sed '/parameters:/d' \
+        | $sed '/type:/d' \
         | $sed '/encrypted:/d' > tmpfile \
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
@@ -326,9 +334,9 @@ deploy_cb_cluster() {
       && mv tmpfile couchbase/couchbase-cluster.yaml \
       || emp_output
     $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace
-    is_pod_ready "couchbase_services=analytics" 
-    is_pod_ready "couchbase_services=data"
-    is_pod_ready "couchbase_services=index"
+    is_pod_ready "couchbase_analytics=true" 
+    is_pod_ready "couchbase_data=true"
+    is_pod_ready "couchbase_index=true"
     rm -rf $cbinstalldir || emp_output
 	if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
 	  echo "Setup XDCR between the running gluu couchbase cluster and this one"
@@ -609,6 +617,9 @@ prepare_config() {
   echo "| [5] Microsoft Azure (AKS)                                        |"
   echo "|------------------------------------------------------------------|"
   read -rp "Deploy using?                                                      " choiceDeploy
+  if [[ ! "$choiceDeploy" ]]; then
+    choiceDeploy=1
+  fi
   echo "|------------------------------------------------------------------|"
   echo "|                     Persistence layer                            |"
   echo "|------------------------------------------------------------------|"
@@ -963,7 +974,7 @@ prompt_zones() {
     singlezone="${arrzones[$num]}"
     if [[ $choiceLDAPDeploy -eq 7 ]] \
       || [[ $choiceLDAPDeploy -eq 12 ]] \
-      || [[ $choiceLDAPDeploy -eq 17 ]]; then	
+      || [[ $choiceLDAPDeploy -eq 17 ]]; then
       printf  "\n    - $singlezone" \
         >> ldap/$yaml_folder/storageclasses.yaml
     fi
@@ -1241,10 +1252,31 @@ generate_yamls() {
   # Get prams for the yamls
   prompt_storage
   prompt_replicas
-  # Detrmine if FQDN status: If non registered patch, if registered unpatch
+  service_oxshibboleth=""
+  service_passport=""
+  service_oxd=""
+  service_casa=""
+  service_radius=""
+  # Determine enabled services
+  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+    service_oxshibboleth=" oxshibboleth"
+  fi
+  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+    service_passport=" oxpassport"
+  fi
+  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
+    service_oxd=" oxd-server"
+  fi
+  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+    service_casa=" casa"
+  fi  
+  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
+    service_radius=" radius"
+  fi
+  services="${service_oxshibboleth}${service_passport}${service_oxd}${service_casa}${service_radius} oxauth oxtrust"
+  # Determine if FQDN status: If non registered patch, if registered unpatch
   if [[ $FQDN_CHOICE == "y" ]] \
     || [[ $FQDN_CHOICE == "Y" ]]; then
-    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
       # Incase user has used updatelbip and switched kustmization source file
       cat $service/base/kustomization.yaml \
@@ -1254,7 +1286,6 @@ generate_yamls() {
         || emp_output
     done
   else
-    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
       cat $service/base/kustomization.yaml \
         | $sed -s "s@deployments.yaml@deployments-patch.yaml@g" \
@@ -1267,7 +1298,6 @@ generate_yamls() {
   output_inital_yamls
   if [[ $FQDN_CHOICE == "y" ]] \
     || [[ $FQDN_CHOICE == "Y" ]]; then
-    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
       # Remove hostAliases object from yamls
       cat $output_yamls/$service.yaml \
@@ -1284,7 +1314,6 @@ generate_yamls() {
     # Create dummy updatelbip
     $kubectl create configmap updatelbip --from-literal=demo=empty || emp_output
   else
-    services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
       if [[ choiceDeploy -eq 1 ]] || \
          [[ choiceDeploy -eq 2 ]] || \

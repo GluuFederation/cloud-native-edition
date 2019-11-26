@@ -94,7 +94,7 @@ spec:
        - us-west-2a
       pod:
         labels:
-          couchbase_services: analytics #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_analytics: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general  
           analytics: 
@@ -109,7 +109,7 @@ spec:
        - us-west-2b
       pod:
         labels:
-          couchbase_services: analytics #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_analytics: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general
           analytics: 
@@ -122,7 +122,7 @@ spec:
        - us-west-2c
       pod:
         labels:
-          couchbase_services: data #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_data: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general  
           data: pvc-data     
@@ -134,7 +134,7 @@ spec:
        - us-west-2b
       pod:
         labels:
-          couchbase_services: data #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_data: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general 
           data: pvc-data     
@@ -147,7 +147,7 @@ spec:
        - us-west-2a
       pod:
         labels:
-          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_index: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general
           index: pvc-index
@@ -160,7 +160,7 @@ spec:
        - us-west-2c
       pod:
         labels:
-          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_index: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general
           index: pvc-index
@@ -172,7 +172,7 @@ spec:
        - us-west-2a
       pod:
         labels:
-          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_index: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general
           query: pvc-query
@@ -184,7 +184,7 @@ spec:
        - us-west-2c
       pod:
         labels:
-          couchbase_services: index #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
+          couchbase_index: true #DO NOT CHANGE THIS LINE UNLESS SERVER DEF IS REMOVED
         volumeMounts:
           default: pvc-general
           query: pvc-query
