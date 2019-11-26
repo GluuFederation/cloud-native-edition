@@ -24,6 +24,8 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Instructions on installing the chart
 
+NOTE!! If one is planning to use Couchbase as the Backend persistent storage, one should make sure instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
+
 ### Deployments are of 2 types 
 - `Cloud`
 - `Local` 
@@ -74,6 +76,8 @@ If during installation the release was not defined, release name is checked by r
 | `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
 | `global.gluuCouchBaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
 | `global.gluuCouchBaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
+| `global.gluuCouchBasePass`    | Password used to connect to couchbase                      | `password`                          |
+| `global.gluuCouchBaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
 | `efs-provisioner.enabled`     | Enable EFS provisioning for AWS deployments ONLY           | `false`                             |
 | `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
@@ -243,6 +247,15 @@ If during installation the release was not defined, release name is checked by r
     255.255.255.255	broadcasthost
     ::1             localhost
     ```
+## How to use couchbase as backend persistent storage.
+### Couchbase
+
+The recomended way is to install both Gluu server and couchbase on the cluster. This will help in making use of kubernetes network/service discovery when liking both Gluu Server and Couchbase. 
+
+Before deploying Gluu server chart one must deploy couchbase helm chart first. Instructions on how to do that can be found [Couchbase Helm chart](https://github.com/couchbase-partners/helm-charts). It has both developement and production installation instructions. Recommended way to use couchbase set for production environment.   
+
+Set `global.gluuPersistenceType` to `couchbase` and set the values `gluuCouchBase*` to the ones used while installing CB.
+
 
 ## Instructions on how to install different services
 
