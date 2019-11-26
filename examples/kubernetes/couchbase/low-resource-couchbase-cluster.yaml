@@ -20,10 +20,10 @@ spec:
     - client
   exposedFeatureServiceType: NodePort
   cluster:
-    dataServiceMemoryQuota: 4024
-    indexServiceMemoryQuota: 1024
-    searchServiceMemoryQuota: 1024
-    eventingServiceMemoryQuota: 1024
+    dataServiceMemoryQuota: 512
+    indexServiceMemoryQuota: 256
+    searchServiceMemoryQuota: 256
+    eventingServiceMemoryQuota: 256
     analyticsServiceMemoryQuota: 1024
     indexStorageSetting: memory_optimized
     autoFailoverTimeout: 10
@@ -34,144 +34,88 @@ spec:
   buckets:
     - name: gluu #DO NOT CHANGE THIS LINE
       type: couchbase
-      memoryQuota: 800
+      memoryQuota: 100
       replicas: 1
       ioPriority: high
       evictionPolicy: valueOnly
       conflictResolution: seqno
       enableFlush: true
       enableIndexReplica: false
-      compressionMode: passive
+      compressionMode: "off"
     - name: gluu_cache #DO NOT CHANGE THIS LINE
       type: couchbase
-      memoryQuota: 800
+      memoryQuota: 100
       replicas: 1
       ioPriority: high
       evictionPolicy: valueOnly
       conflictResolution: seqno
       enableFlush: true
       enableIndexReplica: false
-      compressionMode: passive
+      compressionMode: "off"
     - name: gluu_site #DO NOT CHANGE THIS LINE
       type: couchbase
-      memoryQuota: 800
+      memoryQuota: 100
       replicas: 1
       ioPriority: high
       evictionPolicy: valueOnly
       conflictResolution: seqno
       enableFlush: true
       enableIndexReplica: false
-      compressionMode: passive
+      compressionMode: "off"
     - name: gluu_token #DO NOT CHANGE THIS LINE
       type: couchbase
-      memoryQuota: 800
+      memoryQuota: 100
       replicas: 1
       ioPriority: high
       evictionPolicy: valueOnly
       conflictResolution: seqno
       enableFlush: true
       enableIndexReplica: false
-      compressionMode: passive
+      compressionMode: "off"
     - name: gluu_user #DO NOT CHANGE THIS LINE
       type: couchbase
-      memoryQuota: 800
+      memoryQuota: 100
       replicas: 1
       ioPriority: high
       evictionPolicy: valueOnly
       conflictResolution: seqno
       enableFlush: true
       enableIndexReplica: false
-      compressionMode: passive
+      compressionMode: "off"
 
   servers:
-    - name: analytics-us-west-2a
-      size: 1
-      services:
-        - search
-        - analytics
-        - eventing
-      serverGroups:
-       - us-west-2a
-      pod:
-        volumeMounts:
-          default: pvc-general  
-          analytics: 
-            - pvc-analytics     
-    - name: analytics-us-west-2b
-      size: 1
-      services:
-        - search
-        - analytics
-        - eventing
-      serverGroups:
-       - us-west-2b
-      pod:
-        volumeMounts:
-          default: pvc-general
-          analytics: 
-            - pvc-analytics 
-    - name: data-us-west-2c
+    - name: allservices
       size: 1
       services:
         - data
-      serverGroups:
-       - us-west-2c
+        - index
+        - query
+        - search
+        - eventing
+        - analytics
       pod:
         volumeMounts:
-          default: pvc-general  
-          data: pvc-data     
-    - name: data-us-west-2b
+          default: pvc-general
+          data:  pvc-data
+          index: pvc-index
+          analytics:
+            - pvc-analytics
+    - name: allservices1
       size: 1
       services:
         - data
-      serverGroups:
-       - us-west-2b
-      pod:
-        volumeMounts:
-          default: pvc-general 
-          data: pvc-data     
-    - name: index-us-west-2a
-      size: 1
-      services:
-        - query
         - index
-      serverGroups:
-       - us-west-2a
+        - query
+        - search
+        - eventing
+        - analytics
       pod:
         volumeMounts:
           default: pvc-general
+          data:  pvc-data
           index: pvc-index
-    - name: index-us-west-2c
-      size: 1
-      services:
-        - query
-        - index
-      serverGroups:
-       - us-west-2c
-      pod:
-        volumeMounts:
-          default: pvc-general
-          index: pvc-index
-    - name: query-us-west-2a
-      size: 1
-      services:
-        - query
-      serverGroups:
-       - us-west-2a
-      pod:
-        volumeMounts:
-          default: pvc-general
-          query: pvc-query
-    - name: query-us-west-2c
-      size: 1
-      services:
-        - query
-      serverGroups:
-       - us-west-2c
-      pod:
-        volumeMounts:
-          default: pvc-general
-          query: pvc-query
+          analytics:
+            - pvc-analytics
   securityContext:
     fsGroup: 1000
   volumeClaimTemplates:
@@ -181,32 +125,25 @@ spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 20Gi
+            storage: 5Gi
     - metadata:
         name: pvc-data
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 100Gi
+            storage: 5Gi
     - metadata:
         name: pvc-index
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 60Gi
-    - metadata:
-        name: pvc-query
-      spec:
-        storageClassName: couchbase-sc
-        resources:
-          requests:
-            storage: 60Gi
+            storage: 5Gi
     - metadata:
         name: pvc-analytics
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 20Gi
+            storage: 5Gi

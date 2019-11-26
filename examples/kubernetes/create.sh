@@ -271,6 +271,15 @@ deploy_cb_cluster() {
         | $sed '/encrypted:/d' > tmpfile \
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
+    elif [[ $choiceDeploy -eq 2 ]]; then
+      cat couchbase/storageclasses.yaml \
+        | $sed -s "s@kubernetes.io/aws-ebs@k8s.io/minikube-hostpath@g" \
+        | $sed '/allowVolumeExpansion:/d' \
+        | $sed '/parameters:/d' \
+        | $sed '/type:/d' \
+        | $sed '/encrypted:/d' > tmpfile \
+        && mv tmpfile couchbase/storageclasses.yaml \
+        || emp_output
     fi
     delete_cb
     echo "Installing Couchbase. Please follow the prompts.."
@@ -333,7 +342,11 @@ deploy_cb_cluster() {
       | $sed -s "s@CLUSTERNAME@$clustername@g" > tmpfile \
       && mv tmpfile couchbase/couchbase-cluster.yaml \
       || emp_output
-    $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace
+    if [[ $choiceDeploy -eq 1 ]] || [[ $choiceDeploy -eq 2 ]] ; then
+      $kubectl apply -f couchbase/low-resource-couchbase-cluster.yaml --namespace $namespace
+    else
+      $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace
+    fi
     is_pod_ready "couchbase_service_analytics=enabled" 
     is_pod_ready "couchbase_service_data=enabled"
     is_pod_ready "couchbase_service_eventing=enabled"
@@ -341,8 +354,8 @@ deploy_cb_cluster() {
     is_pod_ready "couchbase_service_query=enabled"
     is_pod_ready "couchbase_service_search=enabled"
     rm -rf $cbinstalldir || emp_output
-	if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
-	  echo "Setup XDCR between the running gluu couchbase cluster and this one"
+    if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
+      echo "Setup XDCR between the running gluu couchbase cluster and this one"
       read -rp "Press enter  when XDCR is ready?                               "
     fi
   else
