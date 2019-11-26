@@ -1285,7 +1285,10 @@ generate_yamls() {
   else
     services="casa oxauth oxd-server oxpassport radius oxshibboleth oxtrust"
     for service in $services; do
-      if [[ choiceDeploy -eq 4 ]] || [[ choiceDeploy -eq 5 ]]; then
+      if [[ choiceDeploy -eq 1 ]] || \
+         [[ choiceDeploy -eq 2 ]] || \
+         [[ choiceDeploy -eq 4 ]] || \
+         [[ choiceDeploy -eq 5 ]]; then
         cat $output_yamls/$service.yaml \
           | $sed '/LB_ADDR: LBADDR/d' \
           | $sed '/- command:/,/entrypoint.sh/d' \
