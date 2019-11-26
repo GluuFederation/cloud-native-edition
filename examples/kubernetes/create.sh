@@ -828,6 +828,7 @@ prepare_config() {
   read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                               " choiceCasa
   read -rp "Enable oxTrust Api         [N]?[Y/N]                               " choiceOxtustApi \
     && set_default "$gluuOxtrustApiEnabled" "'false'" "gluuOxtrustApiEnabled"
+  gluuOxtrustApiTestmode="'false'"
   if [[ $choiceOxtustApi == "y" || $choiceOxtustApi == "Y" ]]; then
     touch oxtrustApi
     gluuOxtrustApiEnabled="'true'"
@@ -1033,6 +1034,8 @@ prompt_replicas() {
 }
 
 prompt_storage() {
+  STORAGE_SHAREDSHIB="4Gi"
+  STORAGE_CASA=$STORAGE_SHAREDSHIB
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Size of ldap volume storage [4Gi]:                               " STORAGE_LDAP \
       && set_default "$STORAGE_LDAP" "4Gi" "STORAGE_LDAP"
@@ -1041,7 +1044,6 @@ prompt_storage() {
     read -p "Size of Shared-Shib volume storage [4Gi]:                         " STORAGE_SHAREDSHIB \
       && set_default "$STORAGE_SHAREDSHIB" "4Gi" "STORAGE_SHAREDSHIB"
   fi
-  STORAGE_CASA=$STORAGE_SHAREDSHIB
       # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     read -p "Size of Casa volume storage [4Gi]:                                " STORAGE_CASA \
@@ -1087,18 +1089,16 @@ prompt_disk_uris() {
   fi
 }
 output_inital_yamls() {
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
-    if [[ $choiceDeploy -eq 3 ]] \
-      && [[ $choiceVolumeShibboleth -eq 1 ]]; then
-      $kustomize shared-shib/efs \
-        | replace_all  > $output_yamls/shared-shib.yaml
-    elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
-      $kustomize shared-shib/nfs \
-        | replace_all  > $output_yamls/shared-shib.yaml
-    else
-      $kustomize shared-shib/localstorage \
-        | replace_all  > $output_yamls/shared-shib.yaml
-    fi
+  if [[ $choiceDeploy -eq 3 ]] \
+    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+    $kustomize shared-shib/efs \
+      | replace_all  > $output_yamls/shared-shib.yaml
+  elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+    $kustomize shared-shib/nfs \
+      | replace_all  > $output_yamls/shared-shib.yaml
+  else
+    $kustomize shared-shib/localstorage \
+      | replace_all  > $output_yamls/shared-shib.yaml
   fi
   # Config
   $kustomize config/base | replace_all > $output_yamls/config.yaml
