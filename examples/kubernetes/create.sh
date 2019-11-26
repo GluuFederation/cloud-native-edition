@@ -407,9 +407,13 @@ is_pod_ready() {
       pod_status="$($kubectl get pods -l "$1" \
       -o 'jsonpath={..status.conditions[].reason}' || true)"
     elif [[ "$1" == "app=couchbase-operator" ]] \
-      || [[ "$1" == "couchbase_services=analytics" ]] \
-      || [[ "$1" == "couchbase_services=data" ]] \
-      || [[ "$1" == "couchbase_services=index" ]]; then
+      || [[ "$1" == "couchbase_service_analytics=enabled" ]] \
+      || [[ "$1" == "couchbase_service_data=enabled" ]] \
+      || [[ "$1" == "couchbase_service_analytics=enabled" ]] \
+      || [[ "$1" == "couchbase_service_eventing=enabled" ]] \
+      || [[ "$1" == "couchbase_service_index=enabled" ]] \
+      || [[ "$1" == "couchbase_service_query=enabled" ]] \
+      || [[ "$1" == "couchbase_service_search=enabled" ]]; then
       pod_status="$($kubectl get pods -l "$1"  \
         -n $namespace \
         -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'|| true)"
