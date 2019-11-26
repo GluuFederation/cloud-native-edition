@@ -256,6 +256,7 @@ create_static_azure() {
 
 deploy_cb_cluster() {
   if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
+    couchbaseclusterfile="couchbase-cluster.yaml"
     if [[ $choiceDeploy -eq 4 ]]; then
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
@@ -263,6 +264,7 @@ deploy_cb_cluster() {
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
     elif [[ $choiceDeploy -eq 1 ]]; then
+      couchbaseclusterfile="low-resource-couchbase-cluster.yaml"
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@microk8s.io/hostpath@g" \
         | $sed '/allowVolumeExpansion:/d' \
@@ -272,6 +274,7 @@ deploy_cb_cluster() {
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
     elif [[ $choiceDeploy -eq 2 ]]; then
+      couchbaseclusterfile="low-resource-couchbase-cluster.yaml"
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@k8s.io/minikube-hostpath@g" \
         | $sed '/allowVolumeExpansion:/d' \
@@ -338,15 +341,11 @@ deploy_cb_cluster() {
       && mv tmpfile couchbase/storageclasses.yaml \
       || emp_output
     $kubectl apply -f couchbase/storageclasses.yaml --namespace $namespace
-    cat couchbase/couchbase-cluster.yaml \
+    cat couchbase/$couchbaseclusterfile \
       | $sed -s "s@CLUSTERNAME@$clustername@g" > tmpfile \
-      && mv tmpfile couchbase/couchbase-cluster.yaml \
+      && mv tmpfile couchbase/$couchbaseclusterfile \
       || emp_output
-    if [[ $choiceDeploy -eq 1 ]] || [[ $choiceDeploy -eq 2 ]] ; then
-      $kubectl apply -f couchbase/low-resource-couchbase-cluster.yaml --namespace $namespace
-    else
-      $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace
-    fi
+    $kubectl apply -f couchbase/$couchbaseclusterfile --namespace $namespace
     is_pod_ready "couchbase_service_analytics=enabled" 
     is_pod_ready "couchbase_service_data=enabled"
     is_pod_ready "couchbase_service_eventing=enabled"
