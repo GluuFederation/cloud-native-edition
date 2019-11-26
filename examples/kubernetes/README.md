@@ -10,7 +10,7 @@
     * [Minikube](#minikube)
     * [MicroK8s](#microk8s)
 
--   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)
+-   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)
 
 
 - Get the source code:
@@ -23,11 +23,13 @@
 
 
 # Use Couchbase soley as the persistence layer
-![CDNJS](https://img.shields.io/badge/AWS-supported-blue.svg)
+![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg)
 ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)
+![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)
 ![image](../../img/gluu_cb_installation.gif)
 
 ## Requirements
+  - If you are installing on Microk8s please ignore the below notes as a low resource `couchbase-cluster.yaml` will be applied automatically.
   - An `m5.xlarge` EKS cluster with 3 nodes at the minimum or `n2-standard-4` GKE cluster with 3 nodes. We advice contacting Gluu regarding in production setups.
   
 - [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `create.sh`.
@@ -160,7 +162,5 @@ Examples:
 ## Requirements
 
 1. Install [MicroK8s](https://microk8s.io/)
-
-1. Start microk8s `microk8s.start`
 
 1. Make sure all ports are open for [microk8s](https://microk8s.io/docs/)
