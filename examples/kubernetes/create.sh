@@ -362,6 +362,8 @@ replace_all() {
     | $sed -s "s@FILESYSTEMID@$fileSystemID@g" \
     | $sed -s "s@AWSREGION@$awsRegion@g" \
     | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
+    | $sed -s "s@GLUUOXTRUSTAPIENABLED@$gluuOxtrustApiEnabled@g" \
+    | $sed -s "s@GLUUOXTRUSTAPITESTMODE@$gluuOxtrustApiTestmode@g" \
     | $sed -s "s@NFSIP@$NFS_IP@g" 
 }
 
@@ -439,6 +441,8 @@ set_default() {
       "REPLICA_CASA" ) REPLICA_CASA="$2" ;;
       "REPLICA_RADIUS" ) REPLICA_RADIUS="$2" ;;
       "STORAGE_CASA" ) STORAGE_CASA="$2" ;;
+      "gluuOxtrustApiEnabled" ) gluuOxtrustApiEnabled="$2" ;;
+      "gluuOxtrustApiTestmode" ) gluuOxtrustApiTestmode="$2" ;;
     esac
   fi
 }
@@ -752,11 +756,9 @@ prepare_config() {
       if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
         read -rp "Please enter the volume type for EBS.[io1]    :           \
           " VOLUME_TYPE && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
-        read -rp "Please enter a namespace for CB objects. \
-          Confine to 4 lowercase letters only.[cbns] \
+        read -rp "Please enter a namespace for CB objects.[cbns] \
           " namespace && set_default "$namespace" "cbns" "namespace"
-        read -rp "Please enter a cluster name. \
-          Confine to 6 lowercase letter only.[cbgluu] \
+        read -rp "Please enter a cluster name.[cbgluu] \
           " clustername && set_default "$clustername" "cbgluu" "clustername"
         COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
         read -rp "Please enter a couchbase domain for SAN. \
@@ -805,6 +807,17 @@ prepare_config() {
   read -rp "Deploy Passport[N]?[Y/N]                                           " choicePassport
   read -rp "Deploy Shibboleth SAML IDP[N]?[Y/N]                                " choiceShibboleth
   read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                               " choiceCasa
+  read -rp "Enable oxTrust Api         [N]?[Y/N]                               " choiceOxtustApi \
+    && set_default "$gluuOxtrustApiEnabled" "'false'" "gluuOxtrustApiEnabled"
+  if [[ $choiceOxtustApi == "y" || $choiceOxtustApi == "Y" ]]; then
+    touch oxtrustApi
+    gluuOxtrustApiEnabled="'true'"
+    read -rp "Enable oxTrust Test Mode [N]?[Y/N]                               " choiceOxtustApi \
+      && set_default "$gluuOxtrustApiTestmode" "'false'" "gluuOxtrustApiTestmode"
+    if [[ $choiceOxtustApi == "y" || $choiceOxtustApi == "Y" ]]; then
+      gluuOxtrustApiTestmode="'true'"
+    fi
+  fi
   if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
     if [[ $choiceDeploy  -eq 3 ]];then
       echo "|-----------------------------------------------------------------|"
@@ -1185,7 +1198,7 @@ generate_yamls() {
       yaml_folder=$static_gke_folder
     fi
     prompt_zones
-	gke_prompts
+    gke_prompts
   elif [[ $choiceDeploy -eq 5 ]]; then
     mkdir gluuaksyamls || emp_output
     output_yamls=gluuaksyamls
