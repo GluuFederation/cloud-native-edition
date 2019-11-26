@@ -715,6 +715,7 @@ prepare_config() {
   fi
   if [[ $choiceDeploy -eq 1 ]]; then
     kubectl=microk8s.kubectl || emp_output
+    microk8s.enable dns ingress storage || emp_output
   else
     kubectl=kubectl || emp_output
   fi
@@ -1304,10 +1305,6 @@ generate_yamls() {
 
 deploy_nginx() {
   cp -rf nginx $output_yamls
-  if [[ $choiceDeploy -eq 1 ]]; then
-    # If microk8s ingress
-    microk8s.enable ingress dns || emp_output
-  fi
   if [[ $choiceDeploy -eq 2 ]]; then
     # If minikube ingress
     minikube addons enable ingress || emp_output
