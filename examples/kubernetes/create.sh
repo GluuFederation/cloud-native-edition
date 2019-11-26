@@ -334,9 +334,12 @@ deploy_cb_cluster() {
       && mv tmpfile couchbase/couchbase-cluster.yaml \
       || emp_output
     $kubectl apply -f couchbase/couchbase-cluster.yaml --namespace $namespace
-    is_pod_ready "couchbase_analytics=true" 
-    is_pod_ready "couchbase_data=true"
-    is_pod_ready "couchbase_index=true"
+    is_pod_ready "couchbase_service_analytics=enabled" 
+    is_pod_ready "couchbase_service_data=enabled"
+    is_pod_ready "couchbase_service_eventing=enabled"
+    is_pod_ready "couchbase_service_index=enabled"
+    is_pod_ready "couchbase_service_query=enabled"
+    is_pod_ready "couchbase_service_search=enabled"
     rm -rf $cbinstalldir || emp_output
 	if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
 	  echo "Setup XDCR between the running gluu couchbase cluster and this one"
