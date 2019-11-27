@@ -17,7 +17,7 @@ data:
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchBaseUrl }}
   GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchBaseUser }}
-  GLUU_COUCHBASE_CERT_FILE: "/etc/certs/couchbase.crt"
-  GLUU_COUCHBASE_PASSWORD_FILE: "/etc/gluu/conf/couchbase_password"
+  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchBaseCertFile | quote }}
+  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchBasePassFile | quote }}
   {{- end }}
   

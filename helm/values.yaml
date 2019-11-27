@@ -25,7 +25,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: 192.168.64.5 # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: 192.168.64.7 # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -43,16 +43,19 @@ global:
   #persistence types and options
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: ldap
-  # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
-  gluuPersistenceLdapMapping: default
+  # options: default/user/site/cache/statistic
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  gluuPersistenceLdapMapping: default
 
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+
   # gluuCouchBaseUrl is the couchbase service name
-  gluuCouchBaseUrl: http://cbexample:8091/pools # CHANGE THIS 
-  gluuCouchBaseUser: Administrator # CHANGE THIS
-  gluuCouchBasePass: password # CHANGE THIS
-  gluuCouchBaseCert: c3VwZXJtYW46c3VqbmNqcw== # CHANGE THIS
+  gluuCouchBaseUrl: http://cbexample:8091/pools 
+  gluuCouchBaseUser: Administrator 
+  # gluuCouchBasePassFile is the location of password file. Should be name `couchbase_password` containing only password file
+  gluuCouchBasePassFile: /dir/of/couchbase_password 
+  # gluuCouchBaseCertFile location of 
+  gluuCouchBaseCertFile: /dir/of/couchbase.crt
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -157,9 +160,6 @@ nginx:
     - secretName: tls-certificate # DON'T change 
       hosts:
         - demoexample.gluu.org
-
-couchbase:
-  enabled: false
 
 nfs: 
   enabled: false 
