@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-# version >= V1.14 
 #Local Deployments
 local_minikube_folder="overlays/minikube/local-storage/"
 local_microk8s_folder="overlays/microk8s/local-storage/"
@@ -119,7 +118,7 @@ delete_cb() {
       secret/couchbase-operator-tls secret/couchbase-server-tls \
       --ignore-not-found -n $ns || emp_output
   done
-  rm -rf easy-rsa pki || emp_output
+  rm -rf easy-rsa pki rm -rf couchbase-autonomous-operator-kubernetes_*/ || emp_output
 }
 
 create_dynamic_gke() {
@@ -156,7 +155,7 @@ create_dynamic_azure() {
       && mv tmpfile $dynamicazurefolder/storageclasses.yaml \
       || emp_output
     printf  "  kind: Managed" >> $dynamicazurefolder/storageclasses.yaml
-    rm $dynamicazurefolder/deployments.yaml || emp_output 
+    rm $dynamicazurefolder/deployments.yaml || emp_output
   done
 }
 
@@ -286,8 +285,7 @@ deploy_cb_cluster() {
     fi
     delete_cb
     echo "Installing Couchbase. Please follow the prompts.."
-    tar xvzf couchbase-autonomous-operator-kubernetes_*.tar.gz --overwrite \
-      || emp_output
+    tar xvzf couchbase-autonomous-operator-kubernetes_*.tar.gz || emp_output
     cbinstalldir=$(echo couchbase-autonomous-operator-kubernetes_*/)
     $kubectl create namespace $namespace || emp_output
     wget https://github.com/OpenVPN/easy-rsa/archive/master.zip -O easyrsa.zip
@@ -346,7 +344,7 @@ deploy_cb_cluster() {
       && mv tmpfile couchbase/$couchbaseclusterfile \
       || emp_output
     $kubectl apply -f couchbase/$couchbaseclusterfile --namespace $namespace
-    is_pod_ready "couchbase_service_analytics=enabled" 
+    is_pod_ready "couchbase_service_analytics=enabled"
     is_pod_ready "couchbase_service_data=enabled"
     is_pod_ready "couchbase_service_eventing=enabled"
     is_pod_ready "couchbase_service_index=enabled"
@@ -387,7 +385,7 @@ replace_all() {
     | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
     | $sed -s "s@GLUUOXTRUSTAPIENABLED@$gluuOxtrustApiEnabled@g" \
     | $sed -s "s@GLUUOXTRUSTAPITESTMODE@$gluuOxtrustApiTestmode@g" \
-    | $sed -s "s@NFSIP@$NFS_IP@g" 
+    | $sed -s "s@NFSIP@$NFS_IP@g"
 }
 
 setup_tls() {
@@ -412,7 +410,7 @@ setup_tls() {
 
 is_pod_ready() {
   pod_status=""
-  while true; do 
+  while true; do
     echo "[I] Waiting for $1 to finish preperation" && sleep 20
     if [[ "$1" == "app=config-init-load" ]] \
       || [[ "$1" == "app=persistence-load" ]]; then
@@ -476,7 +474,10 @@ set_default() {
 
 check_k8version() {
   kustomize="$kubectl kustomize"
-  linux_flavor=$(cat /etc/*-release) || emp_output
+  linux_flavor=""
+  if [[ $machine != Mac ]]; then
+    linux_flavor=$(cat /etc/*-release) || emp_output
+  fi
   if [[ $linux_flavor =~ "CentOS" ]] || [[ $linux_flavor =~ "Amazon Linux" ]]; then
     yum update -y || emp_output
     yum install epel-release -y
@@ -488,6 +489,13 @@ check_k8version() {
     apt-get install jq -y
     apt-get install openjdk-8-jdk -y
     apt-get install dnsutils -y
+  elif [[ $machine == Mac ]]; then
+    HOST_IP=$(ipconfig getifaddr en0)
+    brew install gnu-sed || emp_output
+    brew tap AdoptOpenJDK/openjdk || emp_output
+    brew install jq || emp_output
+    brew cask install adoptopenjdk8 || emp_output
+    sed=gsed || emp_output
   else
     echo "Please install the follwing packages before you continue"
     echo "jq, openjdk 8, unzip, bc, and wget."
@@ -501,7 +509,7 @@ check_k8version() {
   if [[ $kubectl_version -lt 14 ]]; then
     kustomize_install
     kustomize="./kustomize build"
-  fi 
+  fi
 }
 
 kustomize_install() {
@@ -562,10 +570,6 @@ gather_ip() {
       | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
   elif [[ $machine == Mac ]]; then
     HOST_IP=$(ipconfig getifaddr en0)
-    brew install gnu-sed || emp_output
-    brew install jq || emp_output
-    brew cask install adoptopenjdk8 || emp_output
-    sed=gsed || emp_output
   else
     echo "Cannot determine IP address."
     read -rp "Please input the hosts external IP Address:                      " HOST_IP
@@ -613,8 +617,8 @@ prompt_cb() {
       deploy_cb_cluster
     fi
     if [ ! -f couchbase.crt ] || [ ! -s couchbase.crt ]; then
-      echo "There is no crt inside couchbase.crt for couchbase. 
-        Please create a file named couchbase.crt and past the certification 
+      echo "There is no crt inside couchbase.crt for couchbase.
+        Please create a file named couchbase.crt and past the certification
         found in your couchbase UI Security > Root Certificate inside it."
       exit 1
     fi
@@ -718,7 +722,7 @@ prepare_config() {
     1 ) GLUU_CACHE_TYPE="IN_MEMORY"  ;;
     2 ) GLUU_CACHE_TYPE="REDIS" ;;
     * ) GLUU_CACHE_TYPE="NATIVE_PERSISTENCE"  ;;
-  esac  
+  esac
   LDAP_MAPPING="default"
   GLUU_CACHE_TYPE="'${GLUU_CACHE_TYPE}'"
   #COUCHBASE
@@ -753,7 +757,7 @@ prepare_config() {
   if [[ $choiceDeploy -eq 2 ]] || [[ $choiceDeploy -eq 1 ]]; then
     gather_ip
     until confirm_ip; do : ; done
-    ip=$HOST_IP	    
+    ip=$HOST_IP
   else
     # Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
     ip=22.22.22.22
@@ -771,7 +775,7 @@ prepare_config() {
       1 ) lbChoice="nlb"  ;;
       * ) lbChoice="clb"  ;;
     esac
-    read -rp "Are you terminating SSL traffic at LB and using certificate from 
+    read -rp "Are you terminating SSL traffic at LB and using certificate from
        AWS [N][Y/N]   : " UseARN
     if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
       read -rp 'Enter aws-load-balancer-ssl-cert arn quoted \
@@ -780,7 +784,7 @@ prepare_config() {
   fi
   if [[ $choicePersistence -ge 1 ]]; then
     COUCHBASE_URL=""
-    echo "For the following prompt  if placed [N] the couchbase 
+    echo "For the following prompt  if placed [N] the couchbase
       is assumed to be installed or remotely provisioned"
     read -rp "Install Couchbase[Y][Y/N] ?                                      " installCB
     if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
@@ -803,7 +807,7 @@ prepare_config() {
       fi
     fi
     if [ -z "$COUCHBASE_URL" ];then
-      read -rp "Please enter remote couchbase URL base name, 
+      read -rp "Please enter remote couchbase URL base name,
         couchbase.gluu.org       " COUCHBASE_URL
     fi
     read -rp "Please enter couchbase username [admin]                          " CB_USER \
@@ -821,7 +825,7 @@ prepare_config() {
         CB_PW=$CB_PW_RAND
         break
       else
-        CB_PW=$password 
+        CB_PW=$password
         echo "Confirm couchbase password. Min 6 letters:"
         mask_password
         CB_PW_CM=$password
@@ -911,7 +915,7 @@ prepare_config() {
     read -rp "Enter Hostname [demoexample.gluu.org]:                           " FQDN \
       && set_default "$FQDN" "demoexample.gluu.org" "FQDN"
     if ! [[ $FQDN == *"."*"."* ]]; then
-      echo "[E] Hostname provided is invalid. 
+      echo "[E] Hostname provided is invalid.
         Please enter a FQDN with the format demoexample.gluu.org"
       exit 1
     fi
@@ -1015,7 +1019,7 @@ prompt_replicas() {
     read -rp "Number of LDAP replicas [1]:                                     " REPLICA_LDAP \
       && set_default "$REPLICA_LDAP" "1" "REPLICA_LDAP"
   fi
-  
+
   if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
     # oxShibboleth
     read -rp "Number of oxShibboleth replicas [1]:                             " REPLICA_SHIB \
@@ -1036,7 +1040,7 @@ prompt_replicas() {
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     read -rp "Number of casa replicas [1]:                                     " REPLICA_CASA \
       && set_default "$REPLICA_CASA" "1" "REPLICA_CASA"
-  fi  
+  fi
   # Radius
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
@@ -1092,7 +1096,7 @@ generate_nfs() {
 prompt_volumes_identitfier() {
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     read -rp "Please enter $static_volume_prompt for LDAP:                     " LDAP_VOLUMEID
-  fi  
+  fi
 }
 
 prompt_disk_uris() {
@@ -1150,7 +1154,7 @@ output_inital_yamls() {
     # Casa
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     $kustomize casa/base | replace_all > $output_yamls/casa.yaml
-  fi  
+  fi
   # Radius
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     # Radius server
@@ -1158,19 +1162,19 @@ output_inital_yamls() {
   fi
   if [[ $choiceCache == 2 ]];then
     $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
-  fi 
+  fi
 }
 
 generate_yamls() {
   read -rp "Are you using a globally resolvable FQDN [N] [Y/N]:                " FQDN_CHOICE
   if [[ $FQDN_CHOICE == "y" || $FQDN_CHOICE == "Y" ]]; then
-  echo "You can mount your FQDN certification and key by placing them inside 
+  echo "You can mount your FQDN certification and key by placing them inside
     ingress.crt and ingress.key respectivley "
     if [ ! -f ingress.crt ] \
       || [ ! -s ingress.crt ] \
       || [ ! -f ingress.key ] \
       || [ ! -s ingress.key ]; then
-      echo "Check that  ingress.crt and ingress.key are not empty 
+      echo "Check that  ingress.crt and ingress.key are not empty
         and contain the right information for your FQDN. "
     fi
   fi
@@ -1187,7 +1191,7 @@ generate_yamls() {
 
     elif [[ $choiceLDAPDeploy -eq 7 ]]; then
       echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
-      echo "Follow the doc above to help you choose 
+      echo "Follow the doc above to help you choose
         which volume type to use.Options are [gp2,io1,st1,and sc1]"
       read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
         && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
@@ -1223,7 +1227,7 @@ generate_yamls() {
     elif [[ $choiceLDAPDeploy -eq 13 ]]; then
       create_static_gke
       static_volume_prompt="Persistent Disk Name"
-      echo 'Place the name of your persistent disks between two quotes as such 
+      echo 'Place the name of your persistent disks between two quotes as such
         "gke-testinggluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd"'
       prompt_volumes_identitfier
       yaml_folder=$static_gke_folder
@@ -1288,7 +1292,7 @@ generate_yamls() {
   fi
   if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
     service_casa=" casa"
-  fi  
+  fi
   if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
     service_radius=" radius"
   fi
@@ -1366,7 +1370,7 @@ deploy_nginx() {
       while true; do
         lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
           --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
-        hostname="'${lbhostname}'" || emp_output 
+        hostname="'${lbhostname}'" || emp_output
         ip_static=$(dig +short "$lbhostname" || echo "")
         echo "Waiting for LB to recieve an ip assignment from AWS"
         if [[ $ip_static ]]; then
@@ -1383,7 +1387,7 @@ deploy_nginx() {
         $kubectl apply -f $output_yamls/nginx/service-l7.yaml
         $kubectl apply -f $output_yamls/nginx/patch-configmap-l7.yaml
       else
-        $kubectl apply -f $output_yamls/nginx/service-l4.yaml 
+        $kubectl apply -f $output_yamls/nginx/service-l4.yaml
         $kubectl apply -f $output_yamls/nginx/patch-configmap-l4.yaml
       fi
     fi
@@ -1394,7 +1398,7 @@ deploy_nginx() {
       fi
       lbhostname=$($kubectl -n ingress-nginx get svc ingress-nginx \
         --output jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "")
-      hostname="'${lbhostname}'" || emp_output 
+      hostname="'${lbhostname}'" || emp_output
       sleep 20
       done
   fi
@@ -1435,7 +1439,7 @@ deploy_config() {
 deploy_ldap() {
   # LDAP
   cat $output_yamls/ldap.yaml | $kubectl apply -f -
-  
+
   echo "[I] Deploying LDAP.Please wait.."
   sleep 40
   while true; do
@@ -1504,7 +1508,7 @@ deploy_shared_shib() {
 }
 
 deploy_update_lb_ip() {
-  # Update LB 
+  # Update LB
   $kubectl apply -f $output_yamls/updatelbip.yaml || emp_output
 }
 
@@ -1556,7 +1560,7 @@ deploy_casa() {
   $kubectl create configmap casacm --from-file=casa.json -o yaml --dry-run > casacm.yaml
   $kubectl apply -f casacm.yaml || emp_output
   rm casacm.yaml
-  # restart oxauth 
+  # restart oxauth
   $kubectl scale deployment oxauth --replicas=0
   sleep 5
   $kubectl scale deployment oxauth --replicas=$REPLICA_OXAUTH
@@ -1587,7 +1591,7 @@ deploy_oxshibboleth() {
 deploy_oxpassport() {
   echo "---------------------------------------------------------------------------------------------------------------"
   echo "Please enable Passport in the Gluu GUI in order for oxpassport pod to run."
-  echo "Configuration > Organization configuration > System Configuration > Check Passport Support and press update" 
+  echo "Configuration > Organization configuration > System Configuration > Check Passport Support and press update"
   echo "Please enable the following scripts in the Gluu GUI"
   echo "Configuration > Manage Custom Scripts > Person Authentication > passport_social > Check Enabled and press update"
   echo "Configuration > Manage Custom Scripts > UMA RPT Policies > scim_access_policy > Check Enabled and press update"
@@ -1610,7 +1614,7 @@ deploy_key_rotation() {
 deploy_radius() {
   echo "---------------------------------------------------------------------------------------------------------------"
   echo "Please enable Radius in the Gluu GUI."
-  echo "Configuration > Organization configuration > System Configuration > Check Gluu Radius Support and press update" 
+  echo "Configuration > Organization configuration > System Configuration > Check Gluu Radius Support and press update"
   echo "---------------------------------------------------------------------------------------------------------------"
   cat $output_yamls/radius.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
@@ -1645,7 +1649,7 @@ deploy() {
   setup_tls
   if [[ $choiceCache == 2 ]];then
     deploy_redis
-  fi 
+  fi
   # If hybrid or just ldap
   if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
     deploy_ldap
@@ -1689,7 +1693,7 @@ deploy() {
 # ==========
 # entrypoint
 # ==========
- 
+
 case $1 in
   "install"|"")
     touch couchbase.crt
