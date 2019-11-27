@@ -5,12 +5,12 @@
     * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
     * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
     * [Azure - AKS](#azure---aks) ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
-    
+
 -   If deploying locally make sure to take a look at the specific notes bellow before continuing.
     * [Minikube](#minikube)
     * [MicroK8s](#microk8s)
 
--   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)
+-   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)![CDNJS](https://img.shields.io/badge/minikube-supported-green.svg)
 
 
 - Get the source code:
@@ -26,15 +26,16 @@
 ![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg)
 ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)
 ![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)
+![CDNJS](https://img.shields.io/badge/minikube-supported-green.svg)
 ![image](../../img/gluu_cb_installation.gif)
 
 ## Requirements
-  - If you are installing on Microk8s please ignore the below notes as a low resource `couchbase-cluster.yaml` will be applied automatically.
+  - If you are installing on microk8s or minikube please ignore the below notes as a low resource `couchbase-cluster.yaml` will be applied automatically.
   - An `m5.xlarge` EKS cluster with 3 nodes at the minimum or `n2-standard-4` GKE cluster with 3 nodes. We advice contacting Gluu regarding in production setups.
-  
+
 - [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `create.sh`.
 
-- Please modify the file `couchbase/couchbase-cluster.yaml` to fit your instituional needs. Currently the file is setup with an example setup of a total of 6 nodes as seen in `spec.servers`. Each set of services is replicating in two different zones. According to your setup these zones might be different and hence should be changed. Do not change the labels of these services such as `couchbase_services: index` the setup requires these labels to track the status of the couchbase setup.Do not change the buckets as they are required for Gluu setup. More information on the properties of this file is found [here](https://docs.couchbase.com/operator/1.2/couchbase-cluster-config.html). 
+- Please modify the file `couchbase/couchbase-cluster.yaml` to fit your instituional needs. Currently the file is setup with an example setup of a total of 6 nodes as seen in `spec.servers`. Each set of services is replicating in two different zones. According to your setup these zones might be different and hence should be changed. Do not change the labels of these services such as `couchbase_services: index` the setup requires these labels to track the status of the couchbase setup.Do not change the buckets as they are required for Gluu setup. More information on the properties of this file is found [here](https://docs.couchbase.com/operator/1.2/couchbase-cluster-config.html).
 
 > **_NOTE:_** Please note the `couchbase/couchbase-cluster.yaml` file must include at least three defined `spec.servers` with the labels `couchbase_services: index`, `couchbase_services: data` and `couchbase_services: analytics`
 
@@ -47,7 +48,7 @@
 
 - [Install couchbase](https://docs.couchbase.com/server/current/install/install-intro.html)
 
-- Obtain the Public DNS or FQDN of the couchbase node. 
+- Obtain the Public DNS or FQDN of the couchbase node.
 
 - Head to the FQDN of the couchbase node to [setup](https://docs.couchbase.com/server/current/manage/manage-nodes/create-cluster.html) your couchbase cluster. When setting up please use the FQDN as the hostname of the new cluster.
 
@@ -95,7 +96,7 @@ Examples:
         kubectl version
 
 > **_NOTE:_**  ![CDNJS](https://img.shields.io/badge/CLB--green.svg) Following any AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
-	
+
 ## How to expand EBS volumes
 
 1. Make sure the `StorageClass` used in your deployment has the `allowVolumeExpansion` set to true. If you have used our EBS volume deployment strategy then you will find that this property has already been set for you.
@@ -126,8 +127,8 @@ Examples:
     where `CLUSTER_NAME` is the name you choose for the cluster and `ZONE_NAME` is the name of [zone](https://cloud.google.com/compute/docs/regions-zones/) where the cluster resources live in.
 
     Afterwards run `kubectl cluster-info` to check whether `kubectl` is ready to interact with the cluster.
-		
-# Azure - AKS 
+
+# Azure - AKS
 ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
 
 ## Requirements
@@ -156,7 +157,7 @@ Examples:
 
         kubectl config use-context minikube
 
-	
+
 # MicroK8s
 
 ## Requirements
