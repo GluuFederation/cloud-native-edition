@@ -48,7 +48,7 @@ global:
   gluuPersistenceLdapMapping: default
 
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-
+  # NOTE: For the CB instalation please check the documentation
   # gluuCouchBaseUrl is the couchbase service name
   gluuCouchBaseUrl: http://cbexample:8091/pools 
   gluuCouchBaseUser: Administrator 

@@ -24,7 +24,7 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Instructions on installing the chart
 
-NOTE!! If one is planning to use Couchbase as the Backend persistent storage, one should make sure instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
+> **_NOTE:_** If one is planning to use Couchbase as the Backend persistent storage, one should make sure instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
 
 ### Deployments are of 2 types 
 - `Cloud`
@@ -132,7 +132,7 @@ If during installation the release was not defined, release name is checked by r
         config:
           enabled: false 
       ```
-        NOTE! If FQDN is registered, no need to disable these services
+        > **_NOTE:_** If FQDN is registered, no need to disable these services
     - Install the chart by running   
     `helm install --name <release-name> -f values.yaml .`  
 
@@ -250,19 +250,49 @@ If during installation the release was not defined, release name is checked by r
 ## How to use couchbase as backend persistent storage.
 ### Couchbase
 
-The recomended way is to install both Gluu server and couchbase on the cluster. This will help in making use of kubernetes network/service discovery when liking both Gluu Server and Couchbase. 
+Please follow these instructions carefully to install and link couchbase with Gluu Server.
 
-Before deploying Gluu server chart one must deploy couchbase helm chart first. Instructions on how to do that can be found [Couchbase Helm chart](https://github.com/couchbase-partners/helm-charts). It has both developement and production installation instructions. Recommended way to use couchbase set for production environment.   
-
-Set `global.gluuPersistenceType` to `couchbase` and set the values `gluuCouchBase*` to the ones used while installing CB.
-
+[Install CB K8s](https://www.couchbase.com/downloads). Unzip the folder in a directory of your choice.   
+Place Gluu custom `CBC` resource object - `.yaml`- in the directory mentioned above.
+  - For minikube use [low-resource-couchbase-cluster.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/low-resource-couchbase-cluster.yaml)
+  - High resource usage use [couchbase-cluster.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/couchbase-cluster.yaml)
+  - Don't forget to include the storageclass yaml file in the same directory [storageclasses.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/storageclasses.yaml)
+  - Password and usernames are found in `secret.yaml` file - which are in base64 - defaults `Administrator:password` They SHOULD be updated.
+  - Delete the `pillowfight-data-loader.yaml` 
+  - If one has their own certicate and key they should replace the one in the `admission.yaml` file where there is the `Secret` object as shown in the snippet below.
+    ```
+    tls-cert-file: base64=
+    tls-private-key-file: base64==
+    ```
+  - The directory should be similar to one shown below
+    ```
+      .
+      ├── README.txt
+      ├── VERSION.txt
+      ├── admission.yaml
+      ├── bin
+      │   ├── cbopcfg
+      │   └── cbopinfo
+      ├── crd.yaml
+      ├── gluu-custom-cbc.yaml
+      ├── gluu-storageclass.yaml
+      ├── operator-deployment.yaml
+      ├── operator-role-binding.yaml
+      ├── operator-role.yaml
+      ├── operator-service-account.yaml
+      └── secret.yaml
+      
+    ```
+  - Deploy these to your cluster by running `kubectl create -f <dir-name>` replace `<dir-name>` with the name of your directory.
+  - Update project root level [values.yaml](values.yaml) parameters `gluuCouchBase*` with what has been used to set up CB.
+  - Once CB is up and running, Install Gluu Server helm chart as instructed above changing all the relevant parameters in `values.yaml` file
 
 ## Instructions on how to install different services
 
 ### OXD-server
 
-NOTE: When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
-NOTE!! If these two are not provided `oxd-server` will fail to start.
+> **_NOTE:_** When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
+> **_NOTE:_** If these two are not provided `oxd-server` will fail to start.
 ```
 oxd-server:
   secret:
