@@ -28,7 +28,7 @@ emp_prompt_vars() {
 
 output_prompt_var_values() {
   prompt_vars="NODE_SSH_KEY HOST_EXT_IP VERIFY_EXT_IP DEPLOYMENT_ARCH PERSISTENCE_BACKEND DEPLOY_MULTI_CLUSTER LDAP_VOLUME_TYPE ACCEPT_EFS_NOTES CACHE_TYPE HYBRID_LDAP_HELD_DATA AWS_LB_TYPE USE_ARN ARN_AWS_IAM INSTALL_COUCHBASE VOLUME_TYPE COUCHBASE_NAMESPACE COUCHBASE_CLUSTER_NAME COUCHBASE_FQDN COUCHBASE_URL COUCHBASE_USER ENABLE_CACHE_REFRESH ENABLE_KEY_ROTATE ENABLE_RADIUS ENABLE_OXPASSPORT ENABLE_OXSHIBBOLETH ENABLE_CASA ENABLE_OXTRUST_API ENABLE_OXTRUST_TEST_MODE OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE EFS_FILE_SYSTEM_ID EFS_AWS_REGION EFS_DNS LOAD_PREVIOUS_PARAMS GLUU_FQDN COUNTRY_CODE STATE CITY EMAIL ORG_NAME CONFIRM_PARAMS OXAUTH_REPLICAS OXTRUST_REPLICAS LDAP_REPLICAS OXSHIBBOLETH_REPLICAS OXPASSPORT_REPLICAS OXD_SERVER_REPLICAS CASA_REPLICAS RADIUS_REPLICAS LDAP_STORAGE_SIZE OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE CASA_STORAGE_SIZE GMAIL_ACCOUNT LDAP_STATIC_VOLUME_ID LDAP_STATIC_DISK_URI IS_GLUU_FQDN_REGISTEREDDEPLOY_GENERATED_YAMLS"
-  if [ ! -f installation-variables ] || [ ! -s installation-variables ]; then
+  if [ -f installation-variables ] || [ -s installation-variables ]; then
     mv installation-variables previous-installation-variables || emp_output
   fi
   touch installation-variables
@@ -113,7 +113,7 @@ delete_all() {
   mv -f $manifestsfolder old$manifestsfolder || emp_output
   mv ingress.crt previous-ingress.crt || emp_output
   mv ingress.key previous-ingress.key || emp_output
-  if [ ! -f installation-variables ] || [ ! -s installation-variables ]; then
+  if [ -f installation-variables ] || [ -s installation-variables ]; then
     mv installation-variables previous-installation-variables || emp_output
   fi
   delete_cb
