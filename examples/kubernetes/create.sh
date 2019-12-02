@@ -507,6 +507,7 @@ set_default() {
       "PERSISTENCE_BACKEND" ) PERSISTENCE_BACKEND="$2" ;;
       "DEPLOY_MULTI_CLUSTER" ) DEPLOY_MULTI_CLUSTER="$2" ;;
       "LDAP_VOLUME_TYPE" ) LDAP_VOLUME_TYPE="$2" ;;
+      "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" ) OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE="$2" ;;
       "ACCEPT_EFS_NOTES" ) ACCEPT_EFS_NOTES="$2" ;;
       "CACHE_TYPE" ) CACHE_TYPE="$2" ;;
       "HYBRID_LDAP_HELD_DATA" ) HYBRID_LDAP_HELD_DATA="$2" ;;
@@ -1032,7 +1033,8 @@ prepare_config() {
       echo "| [1] EFS - Required for production                               |"
       echo "|-----------------------------------------------------------------|"
       if [[ ! "$OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" ]]; then
-        read -rp "Type of Shibboleth volume                                      " OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE
+        read -rp "Type of Shibboleth volume                                      " OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE \
+          && set_default "$OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" "0" "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"
       fi
       if [[ OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE -eq 1 ]]; then
         if [[ ! "$OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" ]]; then
