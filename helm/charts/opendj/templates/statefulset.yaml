@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: {{ include "opendj.fullname" . }}
-        imagePullPolicy: {{ .Values.image.statefulset.pullPolicy }}
-        image: "{{ .Values.image.statefulset.repository }}:{{ .Values.image.statefulset.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
             name: {{ include "opendj.fullname" . }}

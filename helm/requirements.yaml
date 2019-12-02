@@ -82,4 +82,8 @@ dependencies:
   - name: casa
     condtion: casa.enabled
     version: 1.0.0
+
+  - name: persistence
+    condition: persistence.enabled
+    version: 1.0.0
     

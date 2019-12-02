@@ -119,6 +119,13 @@ opendj:
   persistence:
     size: 5Gi
 
+# persistence layer
+persistence:
+  enabled: true 
+  configmap:
+    gluuOxtrustApiEnabled: false 
+    gluuOxtrustApiTestMode: false 
+
 oxd-server:
   enabled: true
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE

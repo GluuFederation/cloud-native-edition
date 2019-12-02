@@ -14,14 +14,10 @@ gluuRedisType: STANDALONE
 gluuCacheType: NATIVE_PERSISTENCE
 gluuCouchbaseCertFile: /etc/certs/couchbase.crt
 gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
-gluuCbUrl: # TODO: update this
+gluuCbUrl: cb.gluu.org # TODO: update this
 
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
-
-#support for oxtrust API
-gluuOxtrustApiEnabled: false
-gluuOxtrustApiTestMode: false
 
 nameOverride: ""
 fullnameOverride: ""
@@ -31,13 +27,9 @@ fullnameOverride: ""
 replicas: 1
 
 image:
-  job:
-    repository: gluufederation/persistence
-    tag: 4.0.1_05
-  statefulset:
-    repository: gluufederation/wrends
-    tag: 4.0.1_02
-    pullPolicy: Always
+  repository: gluufederation/wrends
+  tag: 4.0.1_02
+  pullPolicy: Always
 
 persistence:
   size: 5Gi
