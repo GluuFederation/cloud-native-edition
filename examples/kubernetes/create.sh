@@ -22,6 +22,22 @@ emp_output() {
   echo "Skipping command..."
 }
 
+emp_prompt_vars() {
+  read -r NODE_SSH_KEY HOST_EXT_IP VERIFY_EXT_IP DEPLOYMENT_ARCH PERSISTENCE_BACKEND DEPLOY_MULTI_CLUSTER LDAP_VOLUME_TYPE ACCEPT_EFS_NOTES CACHE_TYPE HYBRID_LDAP_HELD_DATA AWS_LB_TYPE USE_ARN ARN_AWS_IAM INSTALL_COUCHBASE VOLUME_TYPE COUCHBASE_NAMESPACE COUCHBASE_CLUSTER_NAME COUCHBASE_FQDN COUCHBASE_URL COUCHBASE_USER ENABLE_CACHE_REFRESH ENABLE_KEY_ROTATE ENABLE_RADIUS ENABLE_OXPASSPORT ENABLE_OXSHIBBOLETH ENABLE_CASA ENABLE_OXTRUST_API ENABLE_OXTRUST_TEST_MODE OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE EFS_FILE_SYSTEM_ID EFS_AWS_REGION EFS_DNS LOAD_PREVIOUS_PARAMS GLUU_FQDN COUNTRY_CODE STATE CITY EMAIL ORG_NAME CONFIRM_PARAMS OXAUTH_REPLICAS OXTRUST_REPLICAS LDAP_REPLICAS OXSHIBBOLETH_REPLICAS OXPASSPORT_REPLICAS OXD_SERVER_REPLICAS CASA_REPLICAS RADIUS_REPLICAS LDAP_STORAGE_SIZE OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE CASA_STORAGE_SIZE GMAIL_ACCOUNT LDAP_STATIC_VOLUME_ID LDAP_STATIC_DISK_URI IS_GLUU_FQDN_REGISTEREDDEPLOY_GENERATED_YAMLS <<<$(echo "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "")
+}
+
+output_prompt_var_values() {
+  prompt_vars="NODE_SSH_KEY HOST_EXT_IP VERIFY_EXT_IP DEPLOYMENT_ARCH PERSISTENCE_BACKEND DEPLOY_MULTI_CLUSTER LDAP_VOLUME_TYPE ACCEPT_EFS_NOTES CACHE_TYPE HYBRID_LDAP_HELD_DATA AWS_LB_TYPE USE_ARN ARN_AWS_IAM INSTALL_COUCHBASE VOLUME_TYPE COUCHBASE_NAMESPACE COUCHBASE_CLUSTER_NAME COUCHBASE_FQDN COUCHBASE_URL COUCHBASE_USER ENABLE_CACHE_REFRESH ENABLE_KEY_ROTATE ENABLE_RADIUS ENABLE_OXPASSPORT ENABLE_OXSHIBBOLETH ENABLE_CASA ENABLE_OXTRUST_API ENABLE_OXTRUST_TEST_MODE OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE EFS_FILE_SYSTEM_ID EFS_AWS_REGION EFS_DNS LOAD_PREVIOUS_PARAMS GLUU_FQDN COUNTRY_CODE STATE CITY EMAIL ORG_NAME CONFIRM_PARAMS OXAUTH_REPLICAS OXTRUST_REPLICAS LDAP_REPLICAS OXSHIBBOLETH_REPLICAS OXPASSPORT_REPLICAS OXD_SERVER_REPLICAS CASA_REPLICAS RADIUS_REPLICAS LDAP_STORAGE_SIZE OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE CASA_STORAGE_SIZE GMAIL_ACCOUNT LDAP_STATIC_VOLUME_ID LDAP_STATIC_DISK_URI IS_GLUU_FQDN_REGISTEREDDEPLOY_GENERATED_YAMLS"
+  mv installation-variables previous-installation-variables || emp_output
+  touch installation-variables
+  for var in $prompt_vars; do
+    if [[ ! ${!var} ]]; then
+      read -r $var <<<$(echo '""')
+    fi
+    echo "$var=${!var}" >> installation-variables
+  done
+}
+
 delete_all() {
   find_host
   timeout=timeout
@@ -39,7 +55,7 @@ delete_all() {
     manifestsfolder=gluugkeyamls
   elif [ -d "gluuaksyamls" ];then
     manifestsfolder=gluuaksyamls
-  else
+  elif [ -d "gluumicrok8yamls" ];then
     kubectl=microk8s.kubectl
     manifestsfolder=gluumicrok8yamls
     rm -rf /data || emp_output
@@ -63,13 +79,15 @@ delete_all() {
   $timeout 10 $kubectl delete cm gluu casacm updatelbip --ignore-not-found || emp_output
   $timeout 10 $kubectl delete secret oxdkeystorecm gluu tls-certificate cb-pass cb-crt --ignore-not-found || emp_output
   $timeout 10 $kubectl delete -f nginx/ --ignore-not-found || emp_output
-  rm oxd-server.keystore || emp_output
+  rm oxd-server.keystore easyrsapas || emp_output
   if [ -d "gluueksyamls" ] \
     || [ -d "gluugkeyamls" ] \
     || [ -d "gluuaksyamls" ]; then
-    read -rp "Please enter the ssh key path to login
-    into the nodes created[~/.ssh/id_rsa ]:                 " sshKey \
-     && set_default "$sshKey" "~/.ssh/id_rsa" "sshKey"
+    if [[ ! "$NODE_SSH_KEY" ]]; then
+      read -rp "Please enter the ssh key path to login
+      into the nodes created[~/.ssh/id_rsa ]:                 " NODE_SSH_KEY \
+       && set_default "$NODE_SSH_KEY" "~/.ssh/id_rsa" "NODE_SSH_KEY"
+    fi
     echo "Trying to delete folders created at other nodes."
     ip_template='{{range.items}}{{range.status.addresses}}
       {{if eq .type "ExternalIP"}}{{.address}}{{end}}{{end}} {{end}}'
@@ -78,13 +96,13 @@ delete_all() {
     # Loops through the IPs of the nodes and deletes /data
     for node_ip in $node_ips; do
       if [ -d "gluueksyamls" ];then
-        ssh -oStrictHostKeyChecking=no -i $sshKey \
+        ssh -oStrictHostKeyChecking=no -i $NODE_SSH_KEY \
           ec2-user@"$node_ip" sudo rm -rf /data || emp_output
       elif [ -d "gluugkeyamls" ];then
-        ssh -oStrictHostKeyChecking=no -i $sshKey \
+        ssh -oStrictHostKeyChecking=no -i $NODE_SSH_KEY \
           user@"$node_ip" sudo rm -rf /opendj || emp_output
       elif [ -d "gluuaksyamls" ];then
-        ssh -oStrictHostKeyChecking=no -i $sshKey \
+        ssh -oStrictHostKeyChecking=no -i $NODE_SSH_KEY \
           opc@"$node_ip" sudo rm -rf /data || emp_output
       fi
     done
@@ -93,6 +111,7 @@ delete_all() {
   mv -f $manifestsfolder old$manifestsfolder || emp_output
   mv ingress.crt previous-ingress.crt || emp_output
   mv ingress.key previous-ingress.key || emp_output
+  mv installation-variables previous-installation-variables || emp_output
   delete_cb
 }
 
@@ -256,13 +275,13 @@ create_static_azure() {
 deploy_cb_cluster() {
   if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
     couchbaseclusterfile="couchbase-cluster.yaml"
-    if [[ $choiceDeploy -eq 4 ]]; then
+    if [[ $DEPLOYMENT_ARCH -eq 4 ]]; then
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@kubernetes.io/gce-pd@g" \
         | $sed '/encrypted:/d' > tmpfile \
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
-    elif [[ $choiceDeploy -eq 1 ]]; then
+    elif [[ $DEPLOYMENT_ARCH -eq 1 ]]; then
       couchbaseclusterfile="low-resource-couchbase-cluster.yaml"
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@microk8s.io/hostpath@g" \
@@ -272,7 +291,7 @@ deploy_cb_cluster() {
         | $sed '/encrypted:/d' > tmpfile \
         && mv tmpfile couchbase/storageclasses.yaml \
         || emp_output
-    elif [[ $choiceDeploy -eq 2 ]]; then
+    elif [[ $DEPLOYMENT_ARCH -eq 2 ]]; then
       couchbaseclusterfile="low-resource-couchbase-cluster.yaml"
       cat couchbase/storageclasses.yaml \
         | $sed -s "s@kubernetes.io/aws-ebs@k8s.io/minikube-hostpath@g" \
@@ -287,19 +306,30 @@ deploy_cb_cluster() {
     echo "Installing Couchbase. Please follow the prompts.."
     tar xvzf couchbase-autonomous-operator-kubernetes_*.tar.gz || emp_output
     cbinstalldir=$(echo couchbase-autonomous-operator-kubernetes_*/)
-    $kubectl create namespace $namespace || emp_output
+    $kubectl create namespace $COUCHBASE_NAMESPACE || emp_output
     wget https://github.com/OpenVPN/easy-rsa/archive/master.zip -O easyrsa.zip
     unzip easyrsa.zip
     mv easy-rsa-master/ easy-rsa
     #git clone http://github.com/OpenVPN/easy-rsa
     easyrsa=easy-rsa/easyrsa3
     $easyrsa/easyrsa init-pki
-    $easyrsa/easyrsa build-ca
-    subject_alt_name="DNS:*.$clustername.$namespace.svc,DNS:*.$namespace.svc,DNS:*.$clustername.$CB_FQDN"
+    if [[ ! "$EASYRSA_COMMON_NAME" ]]; then
+      read -rp "Common Name (eg: your user, host, or server name) [CBCA]:" EASYRSA_COMMON_NAME \
+        && set_default "$EASYRSA_COMMON_NAME" "CBCA" "EASYRSA_COMMON_NAME"
+    fi
+    if [[ ! "$EASYRSA_PW" ]]; then
+      prompt_password "EASYRSA_PW" "EasyRSA CA"
+    fi
+    echo "$EASYRSA_PW" > easyrsapass
+    echo "$EASYRSA_PW" >> easyrsapass
+    echo "$EASYRSA_COMMON_NAME" >> easyrsapass
+    $easyrsa/easyrsa build-ca <easyrsapass
+    rm easyrsapass || emp_output
+    subject_alt_name="DNS:*.$COUCHBASE_CLUSTER_NAME.$COUCHBASE_NAMESPACE.svc,DNS:*.$COUCHBASE_NAMESPACE.svc,DNS:*.$COUCHBASE_CLUSTER_NAME.$COUCHBASE_FQDN"
     $easyrsa/easyrsa --subject-alt-name=$subject_alt_name \
       build-server-full couchbase-server nopass
     cp pki/private/couchbase-server.key $easyrsa/pkey.key
-    openssl rsa -in $easyrsa/pkey.key -out $easyrsa/pkey.key.der -outform DER
+    openssl rsa -in $easyrsa/pkey.key -out $easyrsa/pkey.key.der -outform DER <easyrsapass
     openssl rsa -in $easyrsa/pkey.key.der -inform DER \
       -out $easyrsa/pkey.key -outform PEM
     cp pki/issued/couchbase-server.crt $easyrsa/chain.pem
@@ -308,42 +338,42 @@ deploy_cb_cluster() {
     cp pki/ca.crt couchbase.crt
     $kubectl create secret generic couchbase-server-tls \
       --from-file $easyrsa/chain.pem \
-      --from-file $easyrsa/pkey.key --namespace $namespace
+      --from-file $easyrsa/pkey.key --namespace $COUCHBASE_NAMESPACE
     $kubectl create secret generic couchbase-operator-tls \
-      --from-file pki/ca.crt --namespace $namespace || emp_output
+      --from-file pki/ca.crt --namespace $COUCHBASE_NAMESPACE || emp_output
     $kubectl create secret generic couchbase-operator-admission \
       --from-file $easyrsa/tls-cert-file \
-      --from-file $easyrsa/tls-private-key-file --namespace $namespace \
+      --from-file $easyrsa/tls-private-key-file --namespace $COUCHBASE_NAMESPACE \
       || emp_output
     tlscertfilebase64=$(base64 -i $easyrsa/tls-cert-file | tr -d '\040\011\012\015')
     $sed -i "$cbinstalldir"admission.yaml -re '49,58d'
     $sed -i '/caBundle/c\    caBundle: TLSCERTFILEBASE64' "$cbinstalldir"admission.yaml
     cat "$cbinstalldir"admission.yaml \
-      | $sed -s "s@default@$namespace@g" \
+      | $sed -s "s@default@$COUCHBASE_NAMESPACE@g" \
       | $sed -s "s@TLSCERTFILEBASE64@$tlscertfilebase64@g" > tmpfile \
       && mv tmpfile "$cbinstalldir"admission.yaml \
       || emp_output
 
-    $kubectl apply -f "$cbinstalldir"admission.yaml --namespace $namespace
-    $kubectl apply -f "$cbinstalldir"crd.yaml --namespace $namespace
-    $kubectl apply -f "$cbinstalldir"operator-role.yaml --namespace $namespace
-    $kubectl create  serviceaccount couchbase-operator --namespace $namespace
+    $kubectl apply -f "$cbinstalldir"admission.yaml --namespace $COUCHBASE_NAMESPACE
+    $kubectl apply -f "$cbinstalldir"crd.yaml --namespace $COUCHBASE_NAMESPACE
+    $kubectl apply -f "$cbinstalldir"operator-role.yaml --namespace $COUCHBASE_NAMESPACE
+    $kubectl create  serviceaccount couchbase-operator --namespace $COUCHBASE_NAMESPACE
     $kubectl create  rolebinding couchbase-operator --role couchbase-operator \
-      --serviceaccount $namespace:couchbase-operator --namespace $namespace
-    $kubectl apply -f "$cbinstalldir"operator-deployment.yaml --namespace $namespace
+      --serviceaccount $COUCHBASE_NAMESPACE:couchbase-operator --namespace $COUCHBASE_NAMESPACE
+    $kubectl apply -f "$cbinstalldir"operator-deployment.yaml --namespace $COUCHBASE_NAMESPACE
     is_pod_ready "app=couchbase-operator"
-    $kubectl create secret generic cb-auth --from-literal=username=$CB_USER \
-      --from-literal=password=$CB_PW --namespace $namespace || emp_output
+    $kubectl create secret generic cb-auth --from-literal=username=$COUCHBASE_USER \
+      --from-literal=password=$CB_PW --namespace $COUCHBASE_NAMESPACE || emp_output
     cat couchbase/storageclasses.yaml \
       | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g" > tmpfile \
       && mv tmpfile couchbase/storageclasses.yaml \
       || emp_output
-    $kubectl apply -f couchbase/storageclasses.yaml --namespace $namespace
+    $kubectl apply -f couchbase/storageclasses.yaml --namespace $COUCHBASE_NAMESPACE
     cat couchbase/$couchbaseclusterfile \
-      | $sed -s "s@CLUSTERNAME@$clustername@g" > tmpfile \
+      | $sed -s "s@CLUSTERNAME@$COUCHBASE_CLUSTER_NAME@g" > tmpfile \
       && mv tmpfile couchbase/$couchbaseclusterfile \
       || emp_output
-    $kubectl apply -f couchbase/$couchbaseclusterfile --namespace $namespace
+    $kubectl apply -f couchbase/$couchbaseclusterfile --namespace $COUCHBASE_NAMESPACE
     is_pod_ready "couchbase_service_analytics=enabled"
     is_pod_ready "couchbase_service_data=enabled"
     is_pod_ready "couchbase_service_eventing=enabled"
@@ -351,7 +381,7 @@ deploy_cb_cluster() {
     is_pod_ready "couchbase_service_query=enabled"
     is_pod_ready "couchbase_service_search=enabled"
     rm -rf $cbinstalldir || emp_output
-    if [[ $multiCluster == "Y" || $multiCluster == "y" ]]; then
+    if [[ $DEPLOY_MULTI_CLUSTER == "Y" || $DEPLOY_MULTI_CLUSTER == "y" ]]; then
       echo "Setup XDCR between the running gluu couchbase cluster and this one"
       read -rp "Press enter  when XDCR is ready?                               "
     fi
@@ -368,23 +398,27 @@ deploy_cb_cluster() {
 replace_all() {
   $sed "s/\<PERSISTENCETYPE\>/$PERSISTENCE_TYPE/" \
     | $sed "s/\<LDAPMAPPING\>/$LDAP_MAPPING/" \
-    | $sed -s "s@LDAPVOLUMEID@$LDAP_VOLUMEID@g" \
-    | $sed -s "s@STORAGELDAP@$STORAGE_LDAP@g" \
-    | $sed -s "s@LDAPDISKURI@$LDAP_DISKURI@g" \
-    | $sed -s "s@STORAGESHAREDSHIB@$STORAGE_SHAREDSHIB@g" \
-    | $sed -s "s@STORAGECASA@$STORAGE_CASA@g" \
+    | $sed -s "s@LDAPVOLUMEID@$LDAP_STATIC_VOLUME_ID@g" \
+    | $sed -s "s@STORAGELDAP@$LDAP_STORAGE_SIZE@g" \
+    | $sed -s "s@LDAPDISKURI@$LDAP_STATIC_DISK_URI@g" \
+    | $sed -s "s@STORAGESHAREDSHIB@$OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE@g" \
+    | $sed -s "s@STORAGECASA@$CASA_STORAGE_SIZE@g" \
     | $sed -s "s@HOME_DIR@$HOME_DIR@g" \
     | $sed "s/\<COUCHBASEURL\>/$COUCHBASE_URL/" \
-    | $sed "s/\<CBUSER\>/$CB_USER/" \
-    | $sed "s/\<FQDN\>/$FQDN/" \
-    | $sed "s#ACCOUNT#$ACCOUNT#g" \
+    | $sed "s/\<CBUSER\>/$COUCHBASE_USER/" \
+    | $sed "s/\<FQDN\>/$GLUU_FQDN/" \
+    | $sed "s#ACCOUNT#$GMAIL_ACCOUNT#g" \
     | $sed "s/\<GLUUCACHETYPE\>/$GLUU_CACHE_TYPE/" \
     | $sed -s "s@VOLUMETYPE@$VOLUME_TYPE@g" \
-    | $sed -s "s@FILESYSTEMID@$fileSystemID@g" \
-    | $sed -s "s@AWSREGION@$awsRegion@g" \
-    | $sed -s "s@EFSDNSNAME@$efsDNS@g" \
-    | $sed -s "s@GLUUOXTRUSTAPIENABLED@$gluuOxtrustApiEnabled@g" \
-    | $sed -s "s@GLUUOXTRUSTAPITESTMODE@$gluuOxtrustApiTestmode@g" \
+    | $sed -s "s@FILESYSTEMID@$EFS_FILE_SYSTEM_ID@g" \
+    | $sed -s "s@AWSREGION@$EFS_AWS_REGION@g" \
+    | $sed -s "s@EFSDNSNAME@$EFS_DNS@g" \
+    | $sed -s "s@GLUUOXTRUSTAPIENABLED@$ENABLE_OXTRUST_API_BOOLEAN@g" \
+    | $sed -s "s@GLUUOXTRUSTAPITESTMODE@$ENABLE_OXTRUST_TEST_MODE_BOOLEAN@g" \
+    | $sed -s "s@GLUUCASAENABBLED@$ENABLE_CASA_BOOLEAN@g" \
+    | $sed -s "s@GLUUPASSPORTENABLED@$ENABLE_OXPASSPORT_BOOLEAN@g" \
+    | $sed -s "s@GLUURADIUSENABLED@$ENABLE_RADIUS_BOOLEAN@g" \
+    | $sed -s "s@GLUUSAMLENABLED@$ENABLE_SAML_BOOLEAN@g" \
     | $sed -s "s@NFSIP@$NFS_IP@g"
 }
 
@@ -425,7 +459,7 @@ is_pod_ready() {
       || [[ "$1" == "couchbase_service_query=enabled" ]] \
       || [[ "$1" == "couchbase_service_search=enabled" ]]; then
       pod_status="$($kubectl get pods -l "$1"  \
-        -n $namespace \
+        -n $COUCHBASE_NAMESPACE \
         -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'|| true)"
     else
       pod_status="$($kubectl get pods -l "$1" \
@@ -440,34 +474,54 @@ is_pod_ready() {
 set_default() {
   if [[ ! "$1" ]]; then
     case "$3" in
-      "STORAGE_LDAP" ) STORAGE_LDAP="$2"  ;;
-      "STORAGE_SHAREDSHIB" ) STORAGE_SHAREDSHIB="$2"  ;;
+      "LDAP_STORAGE_SIZE" ) LDAP_STORAGE_SIZE="$2"  ;;
+      "OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE" ) OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE="$2"  ;;
       "STORAGE_NFS" ) STORAGE_NFS="$2"  ;;
       "EMAIL" ) EMAIL="$2"  ;;
       "ORG_NAME" ) ORG_NAME="$2" ;;
-      "sshKey" ) sshKey="$2"  ;;
+      "NODE_SSH_KEY" ) NODE_SSH_KEY="$2"  ;;
       "VOLUME_TYPE" ) VOLUME_TYPE="$2"  ;;
-      "namespace" ) namespace="$2" ;;
-      "clustername" ) clustername="$2"  ;;
-      "CB_USER" ) CB_USER="$2"  ;;
-      "FQDN" ) FQDN="$2"  ;;
+      "COUCHBASE_NAMESPACE" ) COUCHBASE_NAMESPACE="$2" ;;
+      "COUCHBASE_CLUSTER_NAME" ) COUCHBASE_CLUSTER_NAME="$2"  ;;
+      "COUCHBASE_USER" ) COUCHBASE_USER="$2"  ;;
+      "GLUU_FQDN" ) GLUU_FQDN="$2"  ;;
       "COUNTRY_CODE" ) COUNTRY_CODE="$2" ;;
       "STATE" ) STATE="$2"  ;;
       "CITY" ) CITY="$2"  ;;
       "EMAIL" ) EMAIL="$2"  ;;
       "ORG_NAME" ) ORG_NAME="$2" ;;
-      "CB_FQDN" ) CB_FQDN="$2" ;;
-      "REPLICA_OXAUTH" ) REPLICA_OXAUTH="$2" ;;
-      "REPLICA_OXTRUST" ) REPLICA_OXTRUST="$2" ;;
-      "REPLICA_LDAP" ) REPLICA_LDAP="$2" ;;
-      "REPLICA_SHIB" ) REPLICA_SHIB="$2" ;;
-      "REPLICA_PASSPORT" ) REPLICA_PASSPORT="$2" ;;
-      "REPLICA_OXD" ) REPLICA_OXD="$2" ;;
-      "REPLICA_CASA" ) REPLICA_CASA="$2" ;;
-      "REPLICA_RADIUS" ) REPLICA_RADIUS="$2" ;;
-      "STORAGE_CASA" ) STORAGE_CASA="$2" ;;
-      "gluuOxtrustApiEnabled" ) gluuOxtrustApiEnabled="$2" ;;
-      "gluuOxtrustApiTestmode" ) gluuOxtrustApiTestmode="$2" ;;
+      "COUCHBASE_FQDN" ) COUCHBASE_FQDN="$2" ;;
+      "OXAUTH_REPLICAS" ) OXAUTH_REPLICAS="$2" ;;
+      "OXTRUST_REPLICAS" ) OXTRUST_REPLICAS="$2" ;;
+      "LDAP_REPLICAS" ) LDAP_REPLICAS="$2" ;;
+      "OXSHIBBOLETH_REPLICAS" ) OXSHIBBOLETH_REPLICAS="$2" ;;
+      "OXPASSPORT_REPLICAS" ) OXPASSPORT_REPLICAS="$2" ;;
+      "OXD_SERVER_REPLICAS" ) OXD_SERVER_REPLICAS="$2" ;;
+      "CASA_REPLICAS" ) CASA_REPLICAS="$2" ;;
+      "RADIUS_REPLICAS" ) RADIUS_REPLICAS="$2" ;;
+      "CASA_STORAGE_SIZE" ) CASA_STORAGE_SIZE="$2" ;;
+      "DEPLOYMENT_ARCH" ) DEPLOYMENT_ARCH="$2" ;;
+      "PERSISTENCE_BACKEND" ) PERSISTENCE_BACKEND="$2" ;;
+      "DEPLOY_MULTI_CLUSTER" ) DEPLOY_MULTI_CLUSTER="$2" ;;
+      "LDAP_VOLUME_TYPE" ) LDAP_VOLUME_TYPE="$2" ;;
+      "ACCEPT_EFS_NOTES" ) ACCEPT_EFS_NOTES="$2" ;;
+      "CACHE_TYPE" ) CACHE_TYPE="$2" ;;
+      "HYBRID_LDAP_HELD_DATA" ) HYBRID_LDAP_HELD_DATA="$2" ;;
+      "USE_ARN" ) USE_ARN="$2" ;;
+      "INSTALL_COUCHBASE" ) INSTALL_COUCHBASE="$2" ;;
+      "ENABLE_CACHE_REFRESH" ) ENABLE_CACHE_REFRESH="$2" ;;
+      "ENABLE_KEY_ROTATE" ) ENABLE_KEY_ROTATE="$2" ;;
+      "ENABLE_RADIUS" ) ENABLE_RADIUS="$2" ;;
+      "ENABLE_OXPASSPORT" ) ENABLE_OXPASSPORT="$2" ;;
+      "ENABLE_OXSHIBBOLETH" ) ENABLE_OXSHIBBOLETH="$2" ;;
+      "ENABLE_CASA" ) ENABLE_CASA="$2" ;;
+      "ENABLE_OXTRUST_API" ) ENABLE_OXTRUST_API="$2" ;;
+      "ENABLE_OXTRUST_TEST_MODE" ) ENABLE_OXTRUST_TEST_MODE="$2" ;;
+      "LOAD_PREVIOUS_PARAMS" ) LOAD_PREVIOUS_PARAMS="$2" ;;
+      "CONFIRM_PARAMS" ) CONFIRM_PARAMS="$2" ;;
+      "IS_GLUU_FQDN_REGISTERED" ) IS_GLUU_FQDN_REGISTERED="$2" ;;
+      "EASYRSA_COMMON_NAME" ) EASYRSA_COMMON_NAME="$2" ;;
+      "DEPLOY_GENERATED_YAMLS" ) DEPLOY_GENERATED_YAMLS="$2" ;;
     esac
   fi
 }
@@ -490,7 +544,7 @@ check_k8version() {
     apt-get install openjdk-8-jdk -y
     apt-get install dnsutils -y
   elif [[ $machine == Mac ]]; then
-    HOST_IP=$(ipconfig getifaddr en0)
+    HOST_EXT_IP=$(ipconfig getifaddr en0)
     brew install gnu-sed || emp_output
     brew tap AdoptOpenJDK/openjdk || emp_output
     brew install jq || emp_output
@@ -552,6 +606,43 @@ mask_password() {
   done
 }
 
+prompt_password() {
+  while true; do
+    TEMP_PW_RAND="$(cat /dev/urandom \
+      | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!@^%_+#$' \
+      | fold -w 6 | head -c 6)"GlU4%
+    TEMP_PW_OUT=${TEMP_PW_RAND::3}
+    TEMP_PW_RAND_OUT="$TEMP_PW_OUT***"
+    echo "Passwords requires the following structure :"
+    echo "One upper case, one lower case, one number, one of the following symbols @#%^&*_+ and a total of 6 characters"
+    echo "Enter $2 password.[$TEMP_PW_RAND_OUT]:"
+    mask_password
+    if [[ ! "$password" ]]; then
+      TEMP_PW=$TEMP_PW_RAND
+      break
+    else
+      TEMP_PW=$password
+      if [[ ${#TEMP_PW} -ge 6 && "$TEMP_PW" == *[[:lower:]]* && "$TEMP_PW" == *[[:upper:]]* && "$TEMP_PW" == *[0-9]* && "$TEMP_PW" == *['!'@#\$%^\&*_+]* ]]; then
+        echo "Confirm password :"
+        mask_password
+        TEMP_PW_VERIFY=$password
+        [ "$TEMP_PW" = "$TEMP_PW_VERIFY" ] && break || echo "Please try again"
+      else
+        echo "Password does not meet requirments."
+      fi
+    fi
+  done
+  if [[ "$1" == "ADMIN_PW" ]]; then
+    ADMIN_PW="$TEMP_PW"
+    echo "$TEMP_PW" > gluu_admin_password
+  elif [[ "$1" == "CB_PW" ]]; then
+    CB_PW="$TEMP_PW"
+    echo "$TEMP_PW" > couchbase_password
+  elif [[ "$1" == "EASYRSA_PW" ]]; then
+    EASYRSA_PW="$TEMP_PW"
+  fi
+}
+
 find_host() {
   echo "[I] Determining OS Type "
   unameOut="$(uname -s)"
@@ -566,13 +657,19 @@ find_host() {
 gather_ip() {
   echo "Attempting to Gather External IP Address"
   if [[ $machine == Linux ]]; then
-    HOST_IP=$(ip route get 8.8.8.8 \
-      | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
+    if [[ ! $HOST_EXT_IP ]]; then
+      HOST_EXT_IP=$(ip route get 8.8.8.8 \
+        | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
+    fi
   elif [[ $machine == Mac ]]; then
-    HOST_IP=$(ipconfig getifaddr en0)
+    if [[ ! $HOST_EXT_IP ]]; then
+      HOST_EXT_IP=$(ipconfig getifaddr en0)
+    fi
   else
-    echo "Cannot determine IP address."
-    read -rp "Please input the hosts external IP Address:                      " HOST_IP
+    if [[ ! $HOST_EXT_IP ]]; then
+      echo "Cannot determine IP address."
+      read -rp "Please input the hosts external IP Address:                      " HOST_EXT_IP
+    fi
   fi
 }
 
@@ -588,14 +685,16 @@ valid_ip() {
 }
 
 confirm_ip() {
-  read -rp "Is this the correct external IP Address: ${HOST_IP} [Y/n]?         " cont
-  case "$cont" in
+  if [[ ! $VERIFY_EXT_IP ]]; then
+    read -rp "Is this the correct external IP Address: ${HOST_EXT_IP} [Y/n]?         " VERIFY_EXT_IP
+  fi
+  case "$VERIFY_EXT_IP" in
     y|Y)
       return 0
     ;;
     n|N)
-      read -rp "Please input the hosts external IP Address:                    " HOST_IP
-      if valid_ip "$HOST_IP"; then
+      read -rp "Please input the hosts external IP Address:                    " HOST_EXT_IP
+      if valid_ip "$HOST_EXT_IP"; then
         return 0
       else
         echo "Please enter a valid IP Address."
@@ -605,15 +704,16 @@ confirm_ip() {
       return 0
     ;;
     *)
+      VERIFY_EXT_IP="Y"
       return 0
     ;;
   esac
 }
 
 prompt_cb() {
- if [[ $choicePersistence -ge 1 ]]; then
-    if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
-      echo "ONLY TESTED ON AWS. Couchbase will begin installation..."
+ if [[ $PERSISTENCE_BACKEND -ge 1 ]]; then
+    if [[ $INSTALL_COUCHBASE != "n" ]] && [[ $INSTALL_COUCHBASE != "N" ]]; then
+      echo "Couchbase will begin installation..."
       deploy_cb_cluster
     fi
     if [ ! -f couchbase.crt ] || [ ! -s couchbase.crt ]; then
@@ -627,21 +727,24 @@ prompt_cb() {
 
 prepare_config() {
   sed=sed || emp_output
-  echo "|---------------------------------------------------------------- -|"
+  echo "|------------------------------------------------------------------|"
   echo "|                     Local Deployments                            |"
-  echo "|---------------------------------------------------------------- -|"
+  echo "|------------------------------------------------------------------|"
   echo "| [1]  Microk8s [default]                                          |"
   echo "| [2]  Minikube                                                    |"
-  echo "|---------------------------------------------------------------- -|"
+  echo "|------------------------------------------------------------------|"
   echo "|                     Cloud Deployments                            |"
-  echo "|----------------------------------------------------------------- |"
+  echo "|------------------------------------------------------------------|"
   echo "| [3] Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)|"
   echo "| [4] Google Cloud Engine - Google Kubernetes Engine (GKE)         |"
   echo "| [5] Microsoft Azure (AKS)                                        |"
   echo "|------------------------------------------------------------------|"
-  read -rp "Deploy using?                                                      " choiceDeploy
-  if [[ ! "$choiceDeploy" ]]; then
-    choiceDeploy=1
+  if [[ ! "$DEPLOYMENT_ARCH" ]]; then
+    read -rp "Deploy using?                                                      " DEPLOYMENT_ARCH \
+      && set_default "$DEPLOYMENT_ARCH" "1" "DEPLOYMENT_ARCH"
+    if [[ ! "$DEPLOYMENT_ARCH" ]]; then
+      DEPLOYMENT_ARCH=1
+    fi
   fi
   echo "|------------------------------------------------------------------|"
   echo "|                     Persistence layer                            |"
@@ -650,11 +753,14 @@ prepare_config() {
   echo "| [1] Couchbase [Testing Phase]                                    |"
   echo "| [2] Hybrid(WrenDS + Couchbase)[Testing Phase]                    |"
   echo "|------------------------------------------------------------------|"
-  read -rp "Persistence layer?                                                 " choicePersistence
-  case "$choicePersistence" in
-    1 ) PERSISTENCE_TYPE="couchbase"  ;;
+  if [[ ! "$PERSISTENCE_BACKEND" ]]; then
+    read -rp "Persistence layer?                                                 " PERSISTENCE_BACKEND \
+      && set_default "$PERSISTENCE_BACKEND" "0" "PERSISTENCE_BACKEND"
+  fi
+  case "$PERSISTENCE_BACKEND" in
+    1 ) PERSISTENCE_TYPE="couchbase";;
     2 ) PERSISTENCE_TYPE="hybrid"  ;;
-    * ) PERSISTENCE_TYPE="ldap"  ;;
+    * ) PERSISTENCE_TYPE="ldap" ;;
   esac
   echo "|------------------------------------------------------------------|"
   echo "|            Is this a multi-cloud/region setup[N] ?[Y/N]          |"
@@ -665,12 +771,15 @@ prepare_config() {
   echo "|  is the first cluster answer N or leave blank. You will answer Y |"
   echo "|  for the second and more cluster setup                           |"
   echo "|------------------------------------------------------------------|"
-  read -rp "Is this a multi-cloud/region setup[N]                              " multiCluster
-  if [[ $choicePersistence -ne 1 ]]; then
+  if [[ ! "$DEPLOY_MULTI_CLUSTER" ]]; then
+    read -rp "Is this a multi-cloud/region setup[N]                              " DEPLOY_MULTI_CLUSTER \
+      && set_default "$DEPLOY_MULTI_CLUSTER" "N" "DEPLOY_MULTI_CLUSTER"
+  fi
+  if [[ $PERSISTENCE_BACKEND -ne 1 ]]; then
     echo "|------------------------------------------------------------------|"
     echo "|                     Local Deployments                            |"
     echo "|------------------------------------------------------------------|"
-    echo "| [1]  Microk8s | LDAP volumes on host                             |"
+    echo "| [1]  Microk8s | LDAP volumes on host [default]                   |"
     echo "| [2]  Minikube | LDAP volumes on host                             |"
     echo "|------------------------------------------------------------------|"
     echo "|                     Cloud Deployments                            |"
@@ -699,13 +808,19 @@ prepare_config() {
     echo "|------------------------------------------------------------------|"
     echo "|- Any other option will default to choice 1                       |"
     echo "|------------------------------------------------------------------|"
-    read -rp "What type of deployment?                                         " choiceLDAPDeploy
-    if [[ $choiceLDAPDeploy -eq 9 ]];then
-      read -rp "EFS created [Y]" efsNote
-      read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
-      read -rp "VPC of EKS and EFS are the same [Y]" efsNote
-      read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
-      if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
+    if [[ ! "$LDAP_VOLUME_TYPE" ]]; then
+      read -rp "What type of deployment?                                         " LDAP_VOLUME_TYPE \
+        && set_default "$LDAP_VOLUME_TYPE" "1" "LDAP_VOLUME_TYPE"
+    fi
+    if [[ $LDAP_VOLUME_TYPE -eq 9 ]];then
+      if [[ ! "$ACCEPT_EFS_NOTES" ]]; then
+        read -rp "EFS created [Y]" ACCEPT_EFS_NOTES
+        read -rp "EFS must be inside the same region as the EKS cluster [Y]" ACCEPT_EFS_NOTES
+        read -rp "VPC of EKS and EFS are the same [Y]" ACCEPT_EFS_NOTES
+        read -rp "Security group of EFS allows all connections from EKS nodes [Y]" ACCEPT_EFS_NOTES \
+          && set_default "$ACCEPT_EFS_NOTES" "Y" "ACCEPT_EFS_NOTES"
+      fi
+      if [[ ACCEPT_EFS_NOTES == "n" ]] || [[ ACCEPT_EFS_NOTES == "N" ]]; then
         exit 1
       fi
     fi
@@ -717,8 +832,11 @@ prepare_config() {
   echo "| [1] IN_MEMORY                                                    |"
   echo "| [2] REDIS                                                        |"
   echo "|------------------------------------------------------------------|"
-  read -rp "Cache layer?                                                       " choiceCache
-  case "$choiceCache" in
+  if [[ ! "$CACHE_TYPE" ]]; then
+    read -rp "Cache layer?                                                       " CACHE_TYPE \
+      && set_default "$CACHE_TYPE" "0" "CACHE_TYPE"
+  fi
+  case "$CACHE_TYPE" in
     1 ) GLUU_CACHE_TYPE="IN_MEMORY"  ;;
     2 ) GLUU_CACHE_TYPE="REDIS" ;;
     * ) GLUU_CACHE_TYPE="NATIVE_PERSISTENCE"  ;;
@@ -727,8 +845,8 @@ prepare_config() {
   GLUU_CACHE_TYPE="'${GLUU_CACHE_TYPE}'"
   #COUCHBASE
   COUCHBASE_URL="couchbase"
-  CB_USER="admin"
-  if [[ $choicePersistence -eq 2 ]]; then
+  COUCHBASE_USER="admin"
+  if [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
     echo "|-----------------------------------------------------------------|"
     echo "|                     Hybrid [WrendDS + Couchbase]                |"
     echo "|-----------------------------------------------------------------|"
@@ -738,8 +856,11 @@ prepare_config() {
     echo "| [3] Cache                                                       |"
     echo "| [4] Token                                                       |"
     echo "|-----------------------------------------------------------------|"
-    read -rp "Persistence type?                                                " choiceHybrid
-    case "$choiceHybrid" in
+    if [[ ! "$HYBRID_LDAP_HELD_DATA" ]]; then
+      read -rp "Persistence type?                                                " HYBRID_LDAP_HELD_DATA \
+        && set_default "$HYBRID_LDAP_HELD_DATA" "0" "HYBRID_LDAP_HELD_DATA"
+    fi
+    case "$HYBRID_LDAP_HELD_DATA" in
       1 ) LDAP_MAPPING="user"  ;;
       2 ) LDAP_MAPPING="site"  ;;
       3 ) LDAP_MAPPING="cache" ;;
@@ -747,57 +868,80 @@ prepare_config() {
       * ) LDAP_MAPPING="default"  ;;
     esac
   fi
-  if [[ $choiceDeploy -eq 1 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 1 ]]; then
     kubectl=microk8s.kubectl || emp_output
     microk8s.enable dns ingress storage || emp_output
   else
     kubectl=kubectl || emp_output
   fi
   check_k8version
-  if [[ $choiceDeploy -eq 2 ]] || [[ $choiceDeploy -eq 1 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 2 ]] || [[ $DEPLOYMENT_ARCH -eq 1 ]]; then
     gather_ip
     until confirm_ip; do : ; done
-    ip=$HOST_IP
+    ip=$HOST_EXT_IP
   else
     # Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
     ip=22.22.22.22
   fi
-  if [[ $choiceDeploy -eq 3 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 3 ]]; then
     echo "|-----------------------------------------------------------------|"
     echo "|                     AWS Loadbalancer type                       |"
     echo "|-----------------------------------------------------------------|"
     echo "| [0] Classic Load Balancer (CLB) [default]                       |"
     echo "| [1] Network Load Balancer (NLB - Alpha) -- Static IP            |"
     echo "|-----------------------------------------------------------------|"
-    read -rp "Loadbalancer type ?                                              " lbChoicenumber
-    case "$lbChoicenumber" in
+    if [[ ! "$AWS_LB_TYPE" ]]; then
+      read -rp "Loadbalancer type ?                                              " AWS_LB_TYPE \
+        && set_default "$AWS_LB_TYPE" "0" "AWS_LB_TYPE"
+    fi
+    case "$AWS_LB_TYPE" in
       0 ) lbChoice="clb"  ;;
       1 ) lbChoice="nlb"  ;;
       * ) lbChoice="clb"  ;;
     esac
-    read -rp "Are you terminating SSL traffic at LB and using certificate from
-       AWS [N][Y/N]   : " UseARN
-    if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
-      read -rp 'Enter aws-load-balancer-ssl-cert arn quoted \
-        ("arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX"): ' ARN
+    if [[ ! "$USE_ARN" ]]; then
+      read -rp "Are you terminating SSL traffic at LB and using certificate from
+         AWS [N][Y/N]   : " USE_ARN \
+         && set_default "$USE_ARN" "N" "USE_ARN"
+    fi
+    if [[ $USE_ARN == "Y" || $USE_ARN == "y" ]]; then
+      if [[ ! "$ARN_AWS_IAM" ]]; then
+        read -rp 'Enter aws-load-balancer-ssl-cert arn quoted \
+          ("arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX"): ' ARN_AWS_IAM
+      fi
     fi
   fi
-  if [[ $choicePersistence -ge 1 ]]; then
+  if [[ $PERSISTENCE_BACKEND -ge 1 ]]; then
     COUCHBASE_URL=""
     echo "For the following prompt  if placed [N] the couchbase
       is assumed to be installed or remotely provisioned"
-    read -rp "Install Couchbase[Y][Y/N] ?                                      " installCB
-    if [[ $installCB != "n" ]] && [[ $installCB != "N" ]]; then
+    if [[ ! "$INSTALL_COUCHBASE" ]]; then
+      read -rp "Install Couchbase[Y][Y/N] ?                                      " INSTALL_COUCHBASE \
+        && set_default "$INSTALL_COUCHBASE" "Y" "INSTALL_COUCHBASE"
+    fi
+    if [[ $INSTALL_COUCHBASE != "n" ]] && [[ $INSTALL_COUCHBASE != "N" ]]; then
       if [ -f couchbase-autonomous-operator-kubernetes_*.tar.gz ];then
-        read -rp "Please enter the volume type for EBS.[io1]    :           \
-          " VOLUME_TYPE && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
-        read -rp "Please enter a namespace for CB objects.[cbns] \
-          " namespace && set_default "$namespace" "cbns" "namespace"
-        read -rp "Please enter a cluster name.[cbgluu] \
-          " clustername && set_default "$clustername" "cbgluu" "clustername"
-        COUCHBASE_URL="$clustername.$namespace.svc.cluster.local"
-        read -rp "Please enter a couchbase domain for SAN. \
-          " CB_FQDN && set_default "$CB_FQDN" "cb.gluu.org" "CB_FQDN"
+        if [[ ! "$VOLUME_TYPE" ]]; then
+          read -rp "Please enter the volume type for EBS.[io1]    :           \
+            " VOLUME_TYPE && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
+        fi
+        if [[ ! "$COUCHBASE_NAMESPACE" ]]; then
+          read -rp "Please enter a namespace for CB objects.[cbns] \
+            " COUCHBASE_NAMESPACE && set_default "$COUCHBASE_NAMESPACE" "cbns" "COUCHBASE_NAMESPACE"
+        fi
+        if [[ ! "$COUCHBASE_NAMESPACE" ]]; then
+          read -rp "Please enter a namespace for CB objects.[cbns] \
+            " COUCHBASE_NAMESPACE && set_default "$COUCHBASE_NAMESPACE" "cbns" "COUCHBASE_NAMESPACE"
+        fi
+        if [[ ! "$COUCHBASE_CLUSTER_NAME" ]]; then
+          read -rp "Please enter a cluster name.[cbgluu] \
+            " COUCHBASE_CLUSTER_NAME && set_default "$COUCHBASE_CLUSTER_NAME" "cbgluu" "COUCHBASE_CLUSTER_NAME"
+        fi
+        COUCHBASE_URL="$COUCHBASE_CLUSTER_NAME.$COUCHBASE_NAMESPACE.svc.cluster.local"
+        if [[ ! "$COUCHBASE_FQDN" ]]; then
+          read -rp "Please enter a couchbase domain for SAN. \
+            " COUCHBASE_FQDN && set_default "$COUCHBASE_FQDN" "cb.gluu.org" "COUCHBASE_FQDN"
+        fi
       else
         echo "Error: Couchbase package not found."
         echo "Please download the couchbase kubernetes package and place it inside
@@ -807,77 +951,108 @@ prepare_config() {
       fi
     fi
     if [ -z "$COUCHBASE_URL" ];then
-      read -rp "Please enter remote couchbase URL base name,
-        couchbase.gluu.org       " COUCHBASE_URL
+      read -rp "Please enter remote couchbase URL base name couchbase.gluu.org  " COUCHBASE_URL
     fi
-    read -rp "Please enter couchbase username [admin]                          " CB_USER \
-      && set_default "$CB_USER" "admin" "CB_USER"
+    if [[ ! "$COUCHBASE_USER" ]]; then
+      read -rp "Please enter couchbase username [admin]                         " COUCHBASE_USER \
+        && set_default "$COUCHBASE_USER" "admin" "COUCHBASE_USER"
+    fi
     #TODO: Add test CB connection
-    while true; do
-      CB_PW_RAND="$(cat /dev/urandom \
-        | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!"#$' \
-        | fold -w 6 | head -c 6)"GlU4%
-      CB_PW_RAND_OUT=${CB_PW_RAND::3}
-      CB_PW_RAND_OUT="$CB_PW_RAND_OUT***"
-      echo "Enter couchbase password.Min 6 letters [$CB_PW_RAND_OUT]:"
-      mask_password
-      if [[ ! "$password" ]]; then
-        CB_PW=$CB_PW_RAND
-        break
-      else
-        CB_PW=$password
-        echo "Confirm couchbase password. Min 6 letters:"
-        mask_password
-        CB_PW_CM=$password
-        [ "$CB_PW" = "$CB_PW_CM" ] && break || echo "Please try again"
-      fi
-    done
-    echo "$CB_PW" > couchbase_password
+    if [[ ! "$CB_PW" ]]; then
+      prompt_password "CB_PW" "Couchbase"
+    fi
     echo "Password is located in couchbase_password.
       Please save your password securely and delete file couchbase_password"
   fi
-  read -rp "Deploy Cr-Rotate[N]?[Y/N]                                          " choiceCR
-  read -rp "Deploy Key-Rotation[N]?[Y/N]                                       " choiceKeyRotate
-  read -rp "Deploy Radius[N]?[Y/N]                                             " choiceRadius
-  read -rp "Deploy Passport[N]?[Y/N]                                           " choicePassport
-  read -rp "Deploy Shibboleth SAML IDP[N]?[Y/N]                                " choiceShibboleth
-  read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                               " choiceCasa
-  read -rp "Enable oxTrust Api         [N]?[Y/N]                               " choiceOxtustApi \
-    && set_default "$gluuOxtrustApiEnabled" "'false'" "gluuOxtrustApiEnabled"
-  gluuOxtrustApiTestmode="'false'"
-  if [[ $choiceOxtustApi == "y" || $choiceOxtustApi == "Y" ]]; then
-    touch oxtrustApi
-    gluuOxtrustApiEnabled="'true'"
-    read -rp "Enable oxTrust Test Mode [N]?[Y/N]                               " choiceOxtustApi \
-      && set_default "$gluuOxtrustApiTestmode" "'false'" "gluuOxtrustApiTestmode"
-    if [[ $choiceOxtustApi == "y" || $choiceOxtustApi == "Y" ]]; then
-      gluuOxtrustApiTestmode="'true'"
+  if [[ ! "$ENABLE_CACHE_REFRESH" ]]; then
+    read -rp "Deploy Cr-Rotate[N]?[Y/N]                                          " ENABLE_CACHE_REFRESH \
+      && set_default "$ENABLE_CACHE_REFRESH" "N" "ENABLE_CACHE_REFRESH"
+  fi
+  if [[ ! "$ENABLE_KEY_ROTATE" ]]; then
+    read -rp "Deploy Key-Rotation[N]?[Y/N]                                       " ENABLE_KEY_ROTATE \
+      && set_default "$ENABLE_KEY_ROTATE" "N" "ENABLE_KEY_ROTATE"
+  fi
+  if [[ ! "$ENABLE_RADIUS" ]]; then
+    read -rp "Deploy Radius[N]?[Y/N]                                             " ENABLE_RADIUS \
+      && set_default "$ENABLE_RADIUS" "N" "ENABLE_RADIUS"
+  fi
+  if [[ ! "$ENABLE_OXPASSPORT" ]]; then
+    read -rp "Deploy Passport[N]?[Y/N]                                           " ENABLE_OXPASSPORT \
+      && set_default "$ENABLE_OXPASSPORT" "N" "ENABLE_OXPASSPORT"
+  fi
+  if [[ ! "$ENABLE_OXSHIBBOLETH" ]]; then
+    read -rp "Deploy Shibboleth SAML IDP[N]?[Y/N]                                " ENABLE_OXSHIBBOLETH \
+      && set_default "$ENABLE_OXSHIBBOLETH" "N" "ENABLE_OXSHIBBOLETH"
+  fi
+  if [[ ! "$ENABLE_CASA" ]]; then
+    read -rp "[Testing Phase] Deploy Casa[N]?[Y/N]                               " ENABLE_CASA \
+      && set_default "$ENABLE_CASA" "N" "ENABLE_CASA"
+  fi
+  if [[ ! "$ENABLE_OXTRUST_API" ]]; then
+    read -rp "Enable oxTrust Api         [N]?[Y/N]                               " ENABLE_OXTRUST_API \
+      && set_default "$ENABLE_OXTRUST_API" "N" "ENABLE_OXTRUST_API"
+  fi
+  ENABLE_OXTRUST_API_BOOLEAN="'false'"
+  ENABLE_OXTRUST_TEST_MODE_BOOLEAN="'false'"
+  if [[ $ENABLE_OXTRUST_API == "y" || $ENABLE_OXTRUST_API == "Y" ]]; then
+    ENABLE_OXTRUST_API_BOOLEAN="'true'"
+    if [[ ! "$ENABLE_OXTRUST_TEST_MODE" ]]; then
+      read -rp "Enable oxTrust Test Mode [N]?[Y/N]                               " ENABLE_OXTRUST_TEST_MODE \
+        && set_default "$ENABLE_OXTRUST_TEST_MODE" "N" "ENABLE_OXTRUST_TEST_MODE"
+    fi
+    if [[ $ENABLE_OXTRUST_TEST_MODE == "y" || $ENABLE_OXTRUST_TEST_MODE == "Y" ]]; then
+      ENABLE_OXTRUST_TEST_MODE_BOOLEAN="'true'"
     fi
   fi
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
-    if [[ $choiceDeploy  -eq 3 ]];then
+  ENABLE_RADIUS_BOOLEAN="'false'"
+  ENABLE_OXPASSPORT_BOOLEAN="'false'"
+  ENABLE_CASA_BOOLEAN="'false'"
+  ENABLE_SAML_BOOLEAN="'false'"
+  if [[ $ENABLE_RADIUS == "y" || $ENABLE_RADIUS == "Y" ]]; then
+    ENABLE_RADIUS_BOOLEAN="'true'"
+  fi
+  if [[ $ENABLE_OXPASSPORT == "y" || $ENABLE_OXPASSPORT == "Y" ]]; then
+    ENABLE_OXPASSPORT_BOOLEAN="'true'"
+  fi
+  if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
+    ENABLE_CASA_BOOLEAN="'true'"
+  fi
+  if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
+    ENABLE_SAML_BOOLEAN="'true'"
+  fi
+    if [[ $DEPLOYMENT_ARCH  -eq 3 ]];then
       echo "|-----------------------------------------------------------------|"
       echo "|                     Shared Shibboleth Volume                    |"
       echo "|-----------------------------------------------------------------|"
       echo "| [0] local storage [default]                                     |"
       echo "| [1] EFS - Required for production                               |"
       echo "|-----------------------------------------------------------------|"
-      read -rp "Type of Shibboleth volume                                      " choiceVolumeShibboleth
-      if [[ choiceVolumeShibboleth -eq 1 ]]; then
-        read -rp "EFS created [Y]" efsNote
-        read -rp "EFS must be inside the same region as the EKS cluster [Y]" efsNote
-        read -rp "VPC of EKS and EFS are the same [Y]" efsNote
-        read -rp "Security group of EFS allows all connections from EKS nodes [Y]" efsNote
-        read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
-        read -rp "Enter AWS region (us-west-2):                                    " awsRegion
-        read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
-        if [[ efsNote == "n" ]] || [[ efsNote == "N" ]]; then
+      if [[ ! "$OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" ]]; then
+        read -rp "Type of Shibboleth volume                                      " OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE
+      fi
+      if [[ OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE -eq 1 ]]; then
+        if [[ ! "$OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE" ]]; then
+          read -rp "EFS created [Y]" ACCEPT_EFS_NOTES
+          read -rp "EFS must be inside the same region as the EKS cluster [Y]" ACCEPT_EFS_NOTES
+          read -rp "VPC of EKS and EFS are the same [Y]" ACCEPT_EFS_NOTES
+          read -rp "Security group of EFS allows all connections from EKS nodes [Y]" ACCEPT_EFS_NOTES \
+            && set_default "$ACCEPT_EFS_NOTES" "Y" "ACCEPT_EFS_NOTES"
+        fi
+        if [[ ! "$EFS_FILE_SYSTEM_ID" ]]; then
+          read -rp "Enter FileSystemID (fs-xxx):                                     " EFS_FILE_SYSTEM_ID
+        fi
+        if [[ ! "$EFS_AWS_REGION" ]]; then
+          read -rp "Enter AWS region (us-west-2):                                    " EFS_AWS_REGION
+        fi
+        if [[ ! "$EFS_DNS" ]]; then
+          read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " EFS_DNS
+        fi
+        if [[ ACCEPT_EFS_NOTES == "n" ]] || [[ ACCEPT_EFS_NOTES == "N" ]]; then
           exit 1
         fi
       fi
     fi
-  fi
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+  if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
     choiceOXD="Y"
   #else
   #  read -rp "Deploy OXD-Server[N]?[Y/N]                                       " choiceOXD
@@ -901,65 +1076,64 @@ prepare_config() {
     echo "No config parameters found"
   else
     echo "[I] Found existing parametes configmap"
-    $kubectl get cm config-generate-params -o yaml | cat -
-    read -rp "[I] Use pervious params? [Y/n]                                   " param_choice
-    if [[ $param_choice != "y" && $param_choice != "Y" ]]; then
+    $kubectl get cm gluu -o yaml > gluu-cm.yaml
+    $kubectl get secret gluu -o yaml > gluu-secret.yaml
+    if [[ ! "$LOAD_PREVIOUS_PARAMS" ]]; then
+      read -rp "[I] Use pervious params? [Y/n]                                   " LOAD_PREVIOUS_PARAMS \
+        && set_default "$LOAD_PREVIOUS_PARAMS" "N" "LOAD_PREVIOUS_PARAMS"
+    fi
+    if [[ $LOAD_PREVIOUS_PARAMS != "y" && $LOAD_PREVIOUS_PARAMS != "Y" ]]; then
       generate=1
     fi
   fi
   # config is not loaded from previously saved configuration
   if [[ $generate -eq 1 ]]; then
     echo "[I] Removing all previous gluu services if found"
-    #delete_all
+    delete_all
     echo "[I] Creating new configuration, please input the following parameters"
-    read -rp "Enter Hostname [demoexample.gluu.org]:                           " FQDN \
-      && set_default "$FQDN" "demoexample.gluu.org" "FQDN"
-    if ! [[ $FQDN == *"."*"."* ]]; then
+    if [[ ! "$GLUU_FQDN" ]]; then
+      read -rp "Enter Hostname [demoexample.gluu.org]:                           " GLUU_FQDN \
+        && set_default "$GLUU_FQDN" "demoexample.gluu.org" "GLUU_FQDN"
+    fi
+    if ! [[ $GLUU_FQDN == *"."*"."* ]]; then
       echo "[E] Hostname provided is invalid.
         Please enter a FQDN with the format demoexample.gluu.org"
       exit 1
     fi
-    read -rp "Enter Country Code [US]:                                         " COUNTRY_CODE \
-      && set_default "$COUNTRY_CODE" "US" "COUNTRY_CODE"
-    read -rp "Enter State [TX]:                                                " STATE \
-      && set_default "$STATE" "TX" "STATE"
-    read -rp "Enter City [Austin]:                                             " CITY \
-      && set_default "$CITY" "Austin" "CITY"
-    read -rp "Enter Email [support@gluu.org]:                                  " EMAIL \
-      && set_default "$EMAIL" "support@gluu.org" "EMAIL"
-    read -rp "Enter Organization [Gluu]:                                       " ORG_NAME \
-      && set_default "$ORG_NAME" "Gluu" "ORG_NAME"
-    echo "$CB_PW" > couchbase_password
-    while true; do
-      ADMIN_PW_RAND="$(cat /dev/urandom \
-       | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!#$' \
-       | fold -w 6 | head -c 6)"GlU4%
-      ADMIN_PW_RAND_OUT=${ADMIN_PW_RAND::3}
-      ADMIN_PW_RAND_OUT="$ADMIN_PW_RAND_OUT***"
-      echo "Password will be located in gluu_admin_password.
-Please save your password securely and delete file gluu_admin_password"
-      echo "Enter Gluu Admin/LDAP Password [$ADMIN_PW_RAND_OUT]:"
-      mask_password
-      if [[ ! "$password" ]]; then
-        ADMIN_PW=$ADMIN_PW_RAND
-        break
-      else
-        ADMIN_PW=$password
-        echo "Confirm Admin/LDAP Password: "
-        mask_password
-        password2=$password
-        [ "$ADMIN_PW" = "$password2" ] && break || echo "Please try again"
-      fi
-    done
-    echo "$ADMIN_PW" > gluu_admin_password
-    read -rp "Continue with the above settings? [Y/n]                          " choiceCont
-    case "$choiceCont" in
+    if [[ ! "$COUNTRY_CODE" ]]; then
+      read -rp "Enter Country Code [US]:                                         " COUNTRY_CODE \
+        && set_default "$COUNTRY_CODE" "US" "COUNTRY_CODE"
+    fi
+    if [[ ! "$STATE" ]]; then
+      read -rp "Enter State [TX]:                                                " STATE \
+        && set_default "$STATE" "TX" "STATE"
+    fi
+    if [[ ! "$CITY" ]]; then
+      read -rp "Enter City [Austin]:                                             " CITY \
+        && set_default "$CITY" "Austin" "CITY"
+    fi
+    if [[ ! "$EMAIL" ]]; then
+      read -rp "Enter Email [support@gluu.org]:                                  " EMAIL \
+        && set_default "$EMAIL" "support@gluu.org" "EMAIL"
+    fi
+    if [[ ! "$ORG_NAME" ]]; then
+      read -rp "Enter Organization [Gluu]:                                       " ORG_NAME \
+        && set_default "$ORG_NAME" "Gluu" "ORG_NAME"
+    fi
+    if [[ ! "$ADMIN_PW" ]]; then
+      prompt_password "ADMIN_PW" "Gluu"
+    fi
+    if [[ ! "$CONFIRM_PARAMS" ]]; then
+      read -rp "Continue with the above settings? [Y/n]                          " CONFIRM_PARAMS \
+        && set_default "$CONFIRM_PARAMS" "Y" "CONFIRM_PARAMS"
+    fi
+    case "$CONFIRM_PARAMS" in
       y|Y ) ;;
       n|N ) exit 1 ;;
       * )   ;;
     esac
     echo "{" > config/base/generate.json
-    echo '"hostname"': \"$FQDN\", >> config/base/generate.json
+    echo '"hostname"': \"$GLUU_FQDN\", >> config/base/generate.json
     echo '"country_code"': \"$COUNTRY_CODE\", >> config/base/generate.json
     echo '"state"': \"$STATE\", >> config/base/generate.json
     echo '"city"': \"$CITY\", >> config/base/generate.json
@@ -968,7 +1142,10 @@ Please save your password securely and delete file gluu_admin_password"
     echo '"org_name"': \"$ORG_NAME\" >> config/base/generate.json
     echo "}" >> config/base/generate.json
   else
-    read -rp "Please confirm your FQDN                                         " FQDN
+    $kubectl apply -f gluu-cm.yaml || emp_output
+    $kubebctl apply -f gluu-secret.yaml || emp_output
+    GLUU_FQDN="$kubectl get cm gluu --output jsonpath='{.data.hostname}'"
+    deployConfig="N"
   fi
 }
 
@@ -984,9 +1161,9 @@ prompt_zones() {
   arrzones=($zones)
   numberofzones="${#arrzones[@]}"
   num=$numberofzones
-  if [[ $choiceLDAPDeploy -eq 7 ]] \
-    || [[ $choiceLDAPDeploy -eq 12 ]] \
-    || [[ $choiceLDAPDeploy -eq 17 ]]; then
+  if [[ $LDAP_VOLUME_TYPE -eq 7 ]] \
+    || [[ $LDAP_VOLUME_TYPE -eq 12 ]] \
+    || [[ $LDAP_VOLUME_TYPE -eq 17 ]]; then
     if [[ -f ldap/$yaml_folder/storageclasses_copy.yaml ]]; then
       cp ldap/$yaml_folder/storageclasses_copy.yaml ldap/$yaml_folder/storageclasses.yaml
     fi
@@ -996,9 +1173,9 @@ prompt_zones() {
     num=$(($num - 1))
     google_azure_zone="${arrzones[$num]}"
     singlezone="${arrzones[$num]}"
-    if [[ $choiceLDAPDeploy -eq 7 ]] \
-      || [[ $choiceLDAPDeploy -eq 12 ]] \
-      || [[ $choiceLDAPDeploy -eq 17 ]]; then
+    if [[ $LDAP_VOLUME_TYPE -eq 7 ]] \
+      || [[ $LDAP_VOLUME_TYPE -eq 12 ]] \
+      || [[ $LDAP_VOLUME_TYPE -eq 17 ]]; then
       printf  "\n    - $singlezone" \
         >> ldap/$yaml_folder/storageclasses.yaml
     fi
@@ -1009,66 +1186,91 @@ prompt_zones() {
 }
 
 prompt_replicas() {
-  read -rp "Number of oxAuth replicas [1]:                                     " REPLICA_OXAUTH \
-    && set_default "$REPLICA_OXAUTH" "1" "REPLICA_OXAUTH"
-
-  read -rp "Number of oxTrust replicas [1]:                                    " REPLICA_OXTRUST \
-    && set_default "$REPLICA_OXTRUST" "1" "REPLICA_OXTRUST"
-
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    read -rp "Number of LDAP replicas [1]:                                     " REPLICA_LDAP \
-      && set_default "$REPLICA_LDAP" "1" "REPLICA_LDAP"
+  if [[ ! "$OXAUTH_REPLICAS" ]]; then
+    read -rp "Number of oxAuth replicas [1]:                                     " OXAUTH_REPLICAS \
+      && set_default "$OXAUTH_REPLICAS" "1" "OXAUTH_REPLICAS"
   fi
 
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
-    # oxShibboleth
-    read -rp "Number of oxShibboleth replicas [1]:                             " REPLICA_SHIB \
-      && set_default "$REPLICA_SHIB" "1" "REPLICA_SHIB"
+  if [[ ! "$OXTRUST_REPLICAS" ]]; then
+    read -rp "Number of oxTrust replicas [1]:                                    " OXTRUST_REPLICAS \
+      && set_default "$OXTRUST_REPLICAS" "1" "OXTRUST_REPLICAS"
   fi
 
-  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
-    # oxPassport
-    read -rp "Number of oxPassport replicas [1]:                               " REPLICA_PASSPORT \
-      && set_default "$REPLICA_PASSPORT" "1" "REPLICA_PASSPORT"
+  if [[ ! "$LDAP_REPLICAS" ]]; then
+    if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
+      read -rp "Number of LDAP replicas [1]:                                     " LDAP_REPLICAS \
+        && set_default "$LDAP_REPLICAS" "1" "LDAP_REPLICAS"
+    fi
   fi
-    # OXD-Server
-  if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
-    read -rp "Number of oxd-server replicas [1]:                               " REPLICA_OXD \
-      && set_default "$REPLICA_OXD" "1" "REPLICA_OXD"
+
+  if [[ ! "$OXSHIBBOLETH_REPLICAS" ]]; then
+    if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
+      # oxShibboleth
+      read -rp "Number of oxShibboleth replicas [1]:                             " OXSHIBBOLETH_REPLICAS \
+        && set_default "$OXSHIBBOLETH_REPLICAS" "1" "OXSHIBBOLETH_REPLICAS"
+    fi
   fi
-    # Casa
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -rp "Number of casa replicas [1]:                                     " REPLICA_CASA \
-      && set_default "$REPLICA_CASA" "1" "REPLICA_CASA"
+
+  if [[ ! "$OXPASSPORT_REPLICAS" ]]; then
+    if [[ $ENABLE_OXPASSPORT == "y" || $ENABLE_OXPASSPORT == "Y" ]]; then
+      # oxPassport
+      read -rp "Number of oxPassport replicas [1]:                               " OXPASSPORT_REPLICAS \
+        && set_default "$OXPASSPORT_REPLICAS" "1" "OXPASSPORT_REPLICAS"
+    fi
   fi
-  # Radius
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
-    # Radius server
-    read -rp "Number of Radius replicas [1]:                                   " REPLICA_RADIUS \
-      && set_default "$REPLICA_RADIUS" "1" "REPLICA_RADIUS"
+
+  if [[ ! "$OXD_SERVER_REPLICAS" ]]; then
+    if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
+      read -rp "Number of oxd-server replicas [1]:                               " OXD_SERVER_REPLICAS \
+        && set_default "$OXD_SERVER_REPLICAS" "1" "OXD_SERVER_REPLICAS"
+    fi
+  fi
+
+  if [[ ! "$CASA_REPLICAS" ]]; then
+    if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
+      read -rp "Number of casa replicas [1]:                                     " CASA_REPLICAS \
+        && set_default "$CASA_REPLICAS" "1" "CASA_REPLICAS"
+    fi
+  fi
+
+  if [[ ! "$RADIUS_REPLICAS" ]]; then
+    if [[ $ENABLE_RADIUS == "y" || $ENABLE_RADIUS == "Y" ]]; then
+      # Radius server
+      read -rp "Number of Radius replicas [1]:                                   " RADIUS_REPLICAS \
+        && set_default "$RADIUS_REPLICAS" "1" "RADIUS_REPLICAS"
+    fi
   fi
 }
 
 prompt_storage() {
-  STORAGE_SHAREDSHIB="4Gi"
-  STORAGE_CASA=$STORAGE_SHAREDSHIB
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    read -rp "Size of ldap volume storage [4Gi]:                               " STORAGE_LDAP \
-      && set_default "$STORAGE_LDAP" "4Gi" "STORAGE_LDAP"
+  OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE="4Gi"
+  CASA_STORAGE_SIZE=$OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE
+  if [[ ! "$LDAP_STORAGE_SIZE" ]]; then
+    if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
+      read -rp "Size of ldap volume storage [4Gi]:                               " LDAP_STORAGE_SIZE \
+        && set_default "$LDAP_STORAGE_SIZE" "4Gi" "LDAP_STORAGE_SIZE"
+    fi
   fi
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
-    read -p "Size of Shared-Shib volume storage [4Gi]:                         " STORAGE_SHAREDSHIB \
-      && set_default "$STORAGE_SHAREDSHIB" "4Gi" "STORAGE_SHAREDSHIB"
+
+  if [[ ! "$OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE" ]]; then
+    if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
+      read -p "Size of Shared-Shib volume storage [4Gi]:                         " OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE \
+        && set_default "$OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE" "4Gi" "OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"
+    fi
   fi
-      # Casa
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
-    read -p "Size of Casa volume storage [4Gi]:                                " STORAGE_CASA \
-      && set_default "$STORAGE_CASA" "4Gi" "STORAGE_CASA"
+
+  if [[ ! "$CASA_STORAGE_SIZE" ]]; then
+    if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
+      read -p "Size of Casa volume storage [4Gi]:                                " CASA_STORAGE_SIZE \
+        && set_default "$CASA_STORAGE_SIZE" "4Gi" "CASA_STORAGE_SIZE"
+    fi
   fi
 }
 
 gke_prompts() {
-  read -rp "Please enter valid email for Google Cloud account:                 " ACCOUNT
+  if [[ ! "$GMAIL_ACCOUNT" ]]; then
+    read -rp "Please enter valid email for Google Cloud account:                 " GMAIL_ACCOUNT
+  fi
   echo "Trying to login user: root..."
   NODE=$(kubectl get no \
     -o go-template='{{range .items}}{{.metadata.name}} {{end}}' \
@@ -1090,26 +1292,31 @@ gke_prompts() {
 
 generate_nfs() {
   $kustomize shared-shib/nfs > $output_yamls/nfs.yaml
-  STORAGE_NFS=$STORAGE_SHAREDSHIB
+  STORAGE_NFS=$OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE
 }
 
 prompt_volumes_identitfier() {
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    read -rp "Please enter $static_volume_prompt for LDAP:                     " LDAP_VOLUMEID
+  if [[ ! "$LDAP_STATIC_VOLUME_ID" ]]; then
+    if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
+      read -rp "Please enter $static_volume_prompt for LDAP:                     " LDAP_STATIC_VOLUME_ID
+    fi
   fi
 }
 
 prompt_disk_uris() {
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    read -rp "Please enter the disk uri for LDAP:                              " LDAP_DISKURI
+  if [[ ! "$LDAP_STATIC_DISK_URI" ]]; then
+    if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
+      read -rp "Please enter the disk uri for LDAP:                              " LDAP_STATIC_DISK_URI
+    fi
   fi
+
 }
 output_inital_yamls() {
-  if [[ $choiceDeploy -eq 3 ]] \
-    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 3 ]] \
+    && [[ $OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE -eq 1 ]]; then
     $kustomize shared-shib/efs \
       | replace_all  > $output_yamls/shared-shib.yaml
-  elif [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+  elif [[ $DEPLOYMENT_ARCH -eq 4 ]] || [[ $DEPLOYMENT_ARCH -eq 5 ]]; then
     $kustomize shared-shib/nfs \
       | replace_all  > $output_yamls/shared-shib.yaml
   else
@@ -1119,7 +1326,7 @@ output_inital_yamls() {
   # Config
   $kustomize config/base | replace_all > $output_yamls/config.yaml
   # WrenDS
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+  if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
     $kustomize ldap/$yaml_folder | replace_all > $output_yamls/ldap.yaml
   fi
   # Persistence
@@ -1128,22 +1335,22 @@ output_inital_yamls() {
   $kustomize oxauth/base | replace_all > $output_yamls/oxauth.yaml
   # oxTrust
   $kustomize oxtrust/base | replace_all > $output_yamls/oxtrust.yaml
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+  if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
     # oxShibboleth
     $kustomize oxshibboleth/base \
       | replace_all  > $output_yamls/oxshibboleth.yaml
   fi
 
-  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+  if [[ $ENABLE_OXPASSPORT == "y" || $ENABLE_OXPASSPORT == "Y" ]]; then
     # oxPassport
     $kustomize oxpassport/base \
       | replace_all  > $output_yamls/oxpassport.yaml
   fi
-  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
+  if [[ $ENABLE_KEY_ROTATE == "y" || $ENABLE_KEY_ROTATE == "Y" ]]; then
     # Key Rotationls
     $kustomize key-rotation/base | replace_all > $output_yamls/key-rotation.yaml
   fi
-  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
+  if [[ $ENABLE_CACHE_REFRESH == "y" || $ENABLE_CACHE_REFRESH == "Y" ]]; then
     # Cache Refresh rotating IP registry
     $kustomize cr-rotate/base | replace_all > $output_yamls/cr-rotate.yaml
   fi
@@ -1152,22 +1359,25 @@ output_inital_yamls() {
     $kustomize oxd-server/base | replace_all > $output_yamls/oxd-server.yaml
   fi
     # Casa
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+  if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
     $kustomize casa/base | replace_all > $output_yamls/casa.yaml
   fi
   # Radius
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
+  if [[ $ENABLE_RADIUS == "y" || $ENABLE_RADIUS == "Y" ]]; then
     # Radius server
     $kustomize radius/base | replace_all > $output_yamls/radius.yaml
   fi
-  if [[ $choiceCache == 2 ]];then
+  if [[ $CACHE_TYPE == 2 ]];then
     $kustomize redis/base/ | replace_all > $output_yamls/redis.yaml
   fi
 }
 
 generate_yamls() {
-  read -rp "Are you using a globally resolvable FQDN [N] [Y/N]:                " FQDN_CHOICE
-  if [[ $FQDN_CHOICE == "y" || $FQDN_CHOICE == "Y" ]]; then
+  if [[ ! "$IS_GLUU_FQDN_REGISTERED" ]]; then
+    read -rp "Are you using a globally resolvable FQDN [N] [Y/N]:                " IS_GLUU_FQDN_REGISTERED \
+      && set_default "$IS_GLUU_FQDN_REGISTERED" "N" "IS_GLUU_FQDN_REGISTERED"
+  fi
+  if [[ $IS_GLUU_FQDN_REGISTERED == "y" || $IS_GLUU_FQDN_REGISTERED == "Y" ]]; then
   echo "You can mount your FQDN certification and key by placing them inside
     ingress.crt and ingress.key respectivley "
     if [ ! -f ingress.crt ] \
@@ -1178,53 +1388,65 @@ generate_yamls() {
         and contain the right information for your FQDN. "
     fi
   fi
-  if [[ $choiceDeploy -eq 2 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 2 ]]; then
     mkdir gluuminikubeyamls || emp_output
     create_local_minikube
     yaml_folder=$local_minikube_folder
     output_yamls=gluuminikubeyamls
-  elif [[ $choiceDeploy -eq 3 ]]; then
+  elif [[ $DEPLOYMENT_ARCH -eq 3 ]]; then
     mkdir gluueksyamls || emp_output
     output_yamls=gluueksyamls
-    if [[ $choiceLDAPDeploy -eq 6 ]]; then
+    if [[ $LDAP_VOLUME_TYPE -eq 6 ]]; then
       yaml_folder=$local_eks_folder
 
-    elif [[ $choiceLDAPDeploy -eq 7 ]]; then
+    elif [[ $LDAP_VOLUME_TYPE -eq 7 ]]; then
       echo "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html"
       echo "Follow the doc above to help you choose
         which volume type to use.Options are [gp2,io1,st1,and sc1]"
-      read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
-        && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
+      if [[ ! "$VOLUME_TYPE" ]]; then
+        read -rp "Please enter the volume type for EBS[io1]:                       " VOLUME_TYPE \
+          && set_default "$VOLUME_TYPE" "io1" "VOLUME_TYPE"
+      fi
       yaml_folder=$dynamic_eks_folder
 
-    elif [[ $choiceLDAPDeploy -eq 8 ]]; then
+    elif [[ $LDAP_VOLUME_TYPE -eq 8 ]]; then
       yaml_folder=$static_eks_folder
       echo "Zones of your volumes are required to match the deployments to the volume zone"
       static_volume_prompt="EBS Volume ID"
       prompt_volumes_identitfier
 
-    elif [[ $choiceLDAPDeploy -eq 9 ]]; then
+    elif [[ $LDAP_VOLUME_TYPE -eq 9 ]]; then
       create_efs_aws
       yaml_folder=$efs_eks_folder
-      read -rp "Enter FileSystemID (fs-xxx):                                     " fileSystemID
-      read -rp "Enter AWS region (us-west-2):                                    " awsRegion
-      read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " efsDNS
+      if [[ ! "$EFS_FILE_SYSTEM_ID" ]]; then
+        read -rp "Enter FileSystemID (fs-xxx):                                     " EFS_FILE_SYSTEM_ID
+      fi
+
+      if [[ ! "$EFS_AWS_REGION" ]]; then
+        read -rp "Enter AWS region (us-west-2):                                    " EFS_AWS_REGION
+      fi
+
+      if [[ ! "$EFS_DNS" ]]; then
+        read -rp "Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):             " EFS_DNS
+      fi
     fi
     prompt_zones
-  elif [[ $choiceDeploy -eq 4 ]]; then
+  elif [[ $DEPLOYMENT_ARCH -eq 4 ]]; then
     mkdir gluugkeyamls || emp_output
     output_yamls=gluugkeyamls
-    if [[ $choiceLDAPDeploy -eq 11 ]]; then
+    if [[ $LDAP_VOLUME_TYPE -eq 11 ]]; then
       yaml_folder=$local_gke_folder
 
-    elif [[ $choiceLDAPDeploy -eq 12 ]]; then
-      echo "Please enter the volume type for the persistent disk."
-      read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
-        && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
+    elif [[ $LDAP_VOLUME_TYPE -eq 12 ]]; then
+      if [[ ! "$VOLUME_TYPE" ]]; then
+        echo "Please enter the volume type for the persistent disk."
+        read -rp "Options are (pd-standard, pd-ssd). [pd-ssd] :                    " VOLUME_TYPE \
+          && set_default "$VOLUME_TYPE" "pd-ssd" "VOLUME_TYPE"
+      fi
       create_dynamic_gke
       yaml_folder=$dynamic_gke_folder
 
-    elif [[ $choiceLDAPDeploy -eq 13 ]]; then
+    elif [[ $LDAP_VOLUME_TYPE -eq 13 ]]; then
       create_static_gke
       static_volume_prompt="Persistent Disk Name"
       echo 'Place the name of your persistent disks between two quotes as such
@@ -1234,30 +1456,34 @@ generate_yamls() {
     fi
     prompt_zones
     gke_prompts
-  elif [[ $choiceDeploy -eq 5 ]]; then
+  elif [[ $DEPLOYMENT_ARCH -eq 5 ]]; then
     mkdir gluuaksyamls || emp_output
     output_yamls=gluuaksyamls
-    if [[ $choiceLDAPDeploy -eq 16 ]]; then
+    if [[ $LDAP_VOLUME_TYPE -eq 16 ]]; then
       create_local_azure
       yaml_folder=$local_azure_folder
       generate_nfs
 
-    elif [[ $choiceLDAPDeploy -eq 17 ]]; then
-      echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
-      echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
-      echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-      read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
-        && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+    elif [[ $LDAP_VOLUME_TYPE -eq 17 ]]; then
+      if [[ ! "$VOLUME_TYPE" ]]; then
+        echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+        echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
+        echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+        read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
+          && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+      fi
       create_dynamic_azure
       yaml_folder=$dynamic_azure_folder
       generate_nfs
 
-    elif [[ $choiceLDAPDeploy -eq 18 ]]; then
-      echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
-      echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
-      echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
-      read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
-        && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+    elif [[ $LDAP_VOLUME_TYPE -eq 18 ]]; then
+      if [[ ! "$VOLUME_TYPE" ]]; then
+        echo "https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types"
+        echo "Please enter the volume type for the persistent disk. Example:UltraSSD_LRS,"
+        echo "Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')"
+        read -rp "[Premium_LRS] :                                                  " VOLUME_TYPE \
+          && set_default "$VOLUME_TYPE" "Premium_LRS" "VOLUME_TYPE"
+      fi
       echo "Outputing available zones used : "
       create_static_azure
       static_volume_prompt="Persistent Disk Name"
@@ -1281,25 +1507,25 @@ generate_yamls() {
   service_casa=""
   service_radius=""
   # Determine enabled services
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+  if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
     service_oxshibboleth=" oxshibboleth"
   fi
-  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+  if [[ $ENABLE_OXPASSPORT == "y" || $ENABLE_OXPASSPORT == "Y" ]]; then
     service_passport=" oxpassport"
   fi
   if [[ $choiceOXD == "y" || $choiceOXD == "Y" ]]; then
     service_oxd=" oxd-server"
   fi
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+  if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
     service_casa=" casa"
   fi
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
+  if [[ $ENABLE_RADIUS == "y" || $ENABLE_RADIUS == "Y" ]]; then
     service_radius=" radius"
   fi
   services="${service_oxshibboleth}${service_passport}${service_oxd}${service_casa}${service_radius} oxauth oxtrust"
   # Determine if FQDN status: If non registered patch, if registered unpatch
-  if [[ $FQDN_CHOICE == "y" ]] \
-    || [[ $FQDN_CHOICE == "Y" ]]; then
+  if [[ $IS_GLUU_FQDN_REGISTERED == "y" ]] \
+    || [[ $IS_GLUU_FQDN_REGISTERED == "Y" ]]; then
     for service in $services; do
       # Incase user has used updatelbip and switched kustmization source file
       cat $service/base/kustomization.yaml \
@@ -1319,15 +1545,15 @@ generate_yamls() {
   fi
 # Generate the yamls
   output_inital_yamls
-  if [[ $FQDN_CHOICE == "y" ]] \
-    || [[ $FQDN_CHOICE == "Y" ]]; then
+  if [[ $IS_GLUU_FQDN_REGISTERED == "y" ]] \
+    || [[ $IS_GLUU_FQDN_REGISTERED == "Y" ]]; then
     for service in $services; do
       # Remove hostAliases object from yamls
       cat $output_yamls/$service.yaml \
         | $sed '/LB_ADDR: LBADDR/d' \
         | $sed '/hostAliases:/d' \
         | $sed '/- hostnames:/d' \
-        | $sed "/$FQDN/d" \
+        | $sed "/$GLUU_FQDN/d" \
         | $sed '/- command:/,/entrypoint.sh/d' \
         | $sed -s "s@  envFrom@- envFrom@g" \
         | $sed '/ip: NGINX_IP/d'> tmpfile \
@@ -1338,10 +1564,10 @@ generate_yamls() {
     $kubectl create configmap updatelbip --from-literal=demo=empty || emp_output
   else
     for service in $services; do
-      if [[ choiceDeploy -eq 1 ]] || \
-         [[ choiceDeploy -eq 2 ]] || \
-         [[ choiceDeploy -eq 4 ]] || \
-         [[ choiceDeploy -eq 5 ]]; then
+      if [[ DEPLOYMENT_ARCH -eq 1 ]] || \
+         [[ DEPLOYMENT_ARCH -eq 2 ]] || \
+         [[ DEPLOYMENT_ARCH -eq 4 ]] || \
+         [[ DEPLOYMENT_ARCH -eq 5 ]]; then
         cat $output_yamls/$service.yaml \
           | $sed '/LB_ADDR: LBADDR/d' \
           | $sed '/- command:/,/entrypoint.sh/d' \
@@ -1357,13 +1583,13 @@ generate_yamls() {
 
 deploy_nginx() {
   cp -rf nginx $output_yamls
-  if [[ $choiceDeploy -eq 2 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 2 ]]; then
     # If minikube ingress
     minikube addons enable ingress || emp_output
   fi
   # Nginx
   $kubectl apply -f $output_yamls/nginx/mandatory.yaml
-  if [[ $choiceDeploy -eq 3 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 3 ]]; then
     lbhostname=""
     if [[ $lbChoice == "nlb" ]];then
       $kubectl apply -f $output_yamls/nginx/nlb-service.yaml
@@ -1379,9 +1605,9 @@ deploy_nginx() {
         sleep 20
       done
     else
-      if [[ $UseARN == "Y" || $UseARN == "y" ]]; then
+      if [[ $USE_ARN == "Y" || $USE_ARN == "y" ]]; then
         cat $output_yamls/nginx/service-l7.yaml \
-          | $sed -s "s@ARN@$ARN@g" > tmpfile \
+          | $sed -s "s@ARN_AWS_IAM@$ARN_AWS_IAM@g" > tmpfile \
           && mv tmpfile $output_yamls/nginx/service-l7.yaml \
           || emp_output
         $kubectl apply -f $output_yamls/nginx/service-l7.yaml
@@ -1403,7 +1629,7 @@ deploy_nginx() {
       done
   fi
 
-  if [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 4 ]] || [[ $DEPLOYMENT_ARCH -eq 5 ]]; then
     $kubectl apply -f $output_yamls/nginx/cloud-generic.yaml
     ip=""
     echo "Waiting for the ip of the Loadbalancer"
@@ -1418,7 +1644,7 @@ deploy_nginx() {
       done
       echo "IP: $ip"
   fi
-  cat $output_yamls/nginx/nginx.yaml | $sed "s/\<FQDN\>/$FQDN/" > tmpfile \
+  cat $output_yamls/nginx/nginx.yaml | $sed "s/\<FQDN\>/$GLUU_FQDN/" > tmpfile \
     && mv tmpfile $output_yamls/nginx/nginx.yaml \
     || emp_output
   $kubectl apply -f $output_yamls/nginx/nginx.yaml
@@ -1463,15 +1689,15 @@ deploy_persistence() {
     fi
     sleep 30
   done
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
-    $kubectl scale statefulset opendj --replicas=$REPLICA_LDAP
+  if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
+    $kubectl scale statefulset opendj --replicas=$LDAP_REPLICAS
     is_pod_ready "app=opendj"
   fi
 
 }
 
 deploy_shared_shib() {
-  if [[ $choiceDeploy -eq 4 ]] || [[ $choiceDeploy -eq 5 ]]; then
+  if [[ $DEPLOYMENT_ARCH -eq 4 ]] || [[ $DEPLOYMENT_ARCH -eq 5 ]]; then
     $kubectl apply -f shared-shib/nfs/services.yaml
     NFS_IP=""
     while true; do
@@ -1494,8 +1720,8 @@ deploy_shared_shib() {
     $kubectl exec -ti $($kubectl get pods -l app=nfs-server \
       -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}') \
       -- mkdir -p /exports/data/casa
-  elif [[ $choiceDeploy -eq 3 ]] \
-    && [[ $choiceVolumeShibboleth -eq 1 ]]; then
+  elif [[ $DEPLOYMENT_ARCH -eq 3 ]] \
+    && [[ $OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE -eq 1 ]]; then
     cat $output_yamls/shared-shib.yaml \
       | replace_all > tmpfile \
       && mv tmpfile $output_yamls/shared-shib.yaml \
@@ -1522,7 +1748,7 @@ deploy_oxauth() {
     || emp_output
   $kubectl apply -f $output_yamls/oxauth.yaml
   is_pod_ready "app=oxauth"
-  $kubectl scale deployment oxauth --replicas=$REPLICA_OXAUTH
+  $kubectl scale deployment oxauth --replicas=$OXAUTH_REPLICAS
   is_pod_ready "app=oxauth"
 }
 
@@ -1536,7 +1762,7 @@ deploy_oxd() {
     || emp_output
   $kubectl apply -f $output_yamls/oxd-server.yaml
   is_pod_ready "app=oxd-server"
-  $kubectl scale deployment oxd-server --replicas=$REPLICA_OXD
+  $kubectl scale deployment oxd-server --replicas=$OXD_SERVER_REPLICAS
   is_pod_ready "app=oxd-server"
 
 }
@@ -1563,7 +1789,7 @@ deploy_casa() {
   # restart oxauth
   $kubectl scale deployment oxauth --replicas=0
   sleep 5
-  $kubectl scale deployment oxauth --replicas=$REPLICA_OXAUTH
+  $kubectl scale deployment oxauth --replicas=$OXAUTH_REPLICAS
 }
 
 deploy_oxtrust() {
@@ -1574,7 +1800,7 @@ deploy_oxtrust() {
     || emp_output
   $kubectl apply -f $output_yamls/oxtrust.yaml || emp_output
   is_pod_ready "app=oxtrust"
-  $kubectl scale statefulset oxtrust --replicas=$REPLICA_OXTRUST
+  $kubectl scale statefulset oxtrust --replicas=$OXTRUST_REPLICAS
 }
 
 deploy_oxshibboleth() {
@@ -1585,17 +1811,10 @@ deploy_oxshibboleth() {
     || emp_output
   $kubectl apply -f $output_yamls/oxshibboleth.yaml || emp_output
   is_pod_ready "app=oxshibboleth"
-  $kubectl scale statefulset oxshibboleth --replicas=$REPLICA_SHIB
+  $kubectl scale statefulset oxshibboleth --replicas=$OXSHIBBOLETH_REPLICAS
 }
 
 deploy_oxpassport() {
-  echo "---------------------------------------------------------------------------------------------------------------"
-  echo "Please enable Passport in the Gluu GUI in order for oxpassport pod to run."
-  echo "Configuration > Organization configuration > System Configuration > Check Passport Support and press update"
-  echo "Please enable the following scripts in the Gluu GUI"
-  echo "Configuration > Manage Custom Scripts > Person Authentication > passport_social > Check Enabled and press update"
-  echo "Configuration > Manage Custom Scripts > UMA RPT Policies > scim_access_policy > Check Enabled and press update"
-  echo "---------------------------------------------------------------------------------------------------------------"
   cat $output_yamls/oxpassport.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
     | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
@@ -1603,7 +1822,7 @@ deploy_oxpassport() {
     || emp_output
   $kubectl apply -f $output_yamls/oxpassport.yaml || emp_output
   is_pod_ready "app=oxpassport"
-  $kubectl scale deployment oxpassport --replicas=$REPLICA_PASSPORT
+  $kubectl scale deployment oxpassport --replicas=$OXPASSPORT_REPLICAS
 }
 
 deploy_key_rotation() {
@@ -1612,10 +1831,6 @@ deploy_key_rotation() {
 }
 
 deploy_radius() {
-  echo "---------------------------------------------------------------------------------------------------------------"
-  echo "Please enable Radius in the Gluu GUI."
-  echo "Configuration > Organization configuration > System Configuration > Check Gluu Radius Support and press update"
-  echo "---------------------------------------------------------------------------------------------------------------"
   cat $output_yamls/radius.yaml \
     | $sed -s "s@NGINX_IP@$ip@g" \
     | $sed "s/\<LBADDR\>/$hostname/" > tmpfile \
@@ -1623,7 +1838,7 @@ deploy_radius() {
     || emp_output
   $kubectl apply -f $output_yamls/radius.yaml || emp_output
   is_pod_ready "app=radius"
-  $kubectl scale deployment radius --replicas=$REPLICA_RADIUS
+  $kubectl scale deployment radius --replicas=$RADIUS_REPLICAS
 
 }
 
@@ -1633,30 +1848,35 @@ deploy_cr_rotate() {
 
 deploy() {
   ls $output_yamls || true
-  read -rp "Deploy the generated yamls? [Y][Y/n]                                " choiceContDeploy
-  case "$choiceContDeploy" in
+  if [[ ! "$DEPLOY_GENERATED_YAMLS" ]]; then
+    read -rp "Deploy the generated yamls? [Y][Y/n]                                " DEPLOY_GENERATED_YAMLS \
+      && set_default "$DEPLOY_GENERATED_YAMLS" "Y" "DEPLOY_GENERATED_YAMLS"
+  fi
+  case "$DEPLOY_GENERATED_YAMLS" in
     y|Y ) ;;
     n|N ) exit 1 ;;
     * )   ;;
   esac
   prompt_cb
+  # Writing all vars and vlaues to installation-variables
+  output_prompt_var_values
   deploy_shared_shib
   $kubectl create secret generic cb-pass --from-file=couchbase_password || true
   $kubectl create secret generic cb-crt --from-file=couchbase.crt || true
-  if [[ $multiCluster != "Y" && $multiCluster != "y" ]]; then
+  if [[ $DEPLOY_MULTI_CLUSTER != "Y" && $DEPLOY_MULTI_CLUSTER != "y" && $deployConfig != "N" ]]; then
     deploy_config
   fi
   setup_tls
-  if [[ $choiceCache == 2 ]];then
+  if [[ $CACHE_TYPE == 2 ]];then
     deploy_redis
   fi
   # If hybrid or just ldap
-  if [[ $choicePersistence -eq 0 ]] || [[ $choicePersistence -eq 2 ]]; then
+  if [[ $PERSISTENCE_BACKEND -eq 0 ]] || [[ $PERSISTENCE_BACKEND -eq 2 ]]; then
     deploy_ldap
   fi
   deploy_nginx
   deploy_persistence
-  if [[ $FQDN_CHOICE != "y" ]] && [[ $FQDN_CHOICE != "Y" ]]; then
+  if [[ $IS_GLUU_FQDN_REGISTERED != "y" ]] && [[ $IS_GLUU_FQDN_REGISTERED != "Y" ]]; then
     deploy_update_lb_ip
   fi
   deploy_oxauth
@@ -1664,27 +1884,27 @@ deploy() {
     deploy_oxd
   fi
     # Casa
-  if [[ $choiceCasa == "y" || $choiceCasa == "Y" ]]; then
+  if [[ $ENABLE_CASA == "y" || $ENABLE_CASA == "Y" ]]; then
     deploy_casa
   else
     $kubectl delete pvc -l app=casa --ignore-not-found || emp_output
     $kubectl delete pv -l app=casa --ignore-not-found || emp_output
   fi
   deploy_oxtrust
-  if [[ $choiceShibboleth == "y" || $choiceShibboleth == "Y" ]]; then
+  if [[ $ENABLE_OXSHIBBOLETH == "y" || $ENABLE_OXSHIBBOLETH == "Y" ]]; then
     # oxShibboleth
     deploy_oxshibboleth
   fi
-  if [[ $choicePassport == "y" || $choicePassport == "Y" ]]; then
+  if [[ $ENABLE_OXPASSPORT == "y" || $ENABLE_OXPASSPORT == "Y" ]]; then
     deploy_oxpassport
   fi
-  if [[ $choiceCR == "y" || $choiceCR == "Y" ]]; then
+  if [[ $ENABLE_CACHE_REFRESH == "y" || $ENABLE_CACHE_REFRESH == "Y" ]]; then
     deploy_cr_rotate
   fi
-  if [[ $choiceRotate == "y" || $choiceRotate == "Y" ]]; then
+  if [[ $ENABLE_KEY_ROTATE == "y" || $ENABLE_KEY_ROTATE == "Y" ]]; then
     deploy_key_rotation
   fi
-  if [[ $choiceRadius == "y" || $choiceRadius == "Y" ]]; then
+  if [[ $ENABLE_RADIUS == "y" || $ENABLE_RADIUS == "Y" ]]; then
     # Radius server
     deploy_radius
   fi
@@ -1696,6 +1916,14 @@ deploy() {
 
 case $1 in
   "install"|"")
+    emp_prompt_vars
+    if [ -f installation-variables ] || [ -s installation-variables ]; then
+      read -rp "Installation settings have been found. Would you like to use it? [N][Y/n]                                " USE_INSTALLATION_VARIABLES
+      case "$USE_INSTALLATION_VARIABLES" in
+        y|Y ) source installation-variables ;;
+        * ) ;;
+      esac
+    fi
     touch couchbase.crt
     touch couchbase_password
     touch casa.json
