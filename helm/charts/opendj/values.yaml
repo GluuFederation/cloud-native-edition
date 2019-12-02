@@ -16,9 +16,12 @@ gluuCouchbaseCertFile: /etc/certs/couchbase.crt
 gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
 gluuCbUrl: # TODO: update this
 
-
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
+
+#support for oxtrust API
+gluuOxtrustApiEnabled: false
+gluuOxtrustApiTestMode: false
 
 nameOverride: ""
 fullnameOverride: ""
@@ -30,7 +33,7 @@ replicas: 1
 image:
   job:
     repository: gluufederation/persistence
-    tag: 4.0.1_04
+    tag: 4.0.1_05
   statefulset:
     repository: gluufederation/wrends
     tag: 4.0.1_02
