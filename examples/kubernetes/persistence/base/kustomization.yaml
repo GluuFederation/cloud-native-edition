@@ -6,7 +6,7 @@ resources:
   - jobs.yaml
 images:
   - name: gluufederation/persistence
-    newTag: 4.0.1_04
+    newTag: 4.0.1_05
 configMapGenerator:
   - name: persistence-cm
     literals:
