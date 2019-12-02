@@ -320,16 +320,15 @@ deploy_cb_cluster() {
     if [[ ! "$EASYRSA_PW" ]]; then
       prompt_password "EASYRSA_PW" "EasyRSA CA"
     fi
-    echo "$EASYRSA_PW" > easyrsapass
-    echo "$EASYRSA_PW" >> easyrsapass
-    echo "$EASYRSA_COMMON_NAME" >> easyrsapass
-    $easyrsa/easyrsa build-ca <easyrsapass
-    rm easyrsapass || emp_output
+    echo "$EASYRSA_PW" > easyrsa_ca_password
+    echo "$EASYRSA_PW" >> easyrsa_ca_password
+    echo "$EASYRSA_COMMON_NAME" >> easyrsa_ca_password
+    $easyrsa/easyrsa build-ca <easyrsa_ca_password
     subject_alt_name="DNS:*.$COUCHBASE_CLUSTER_NAME.$COUCHBASE_NAMESPACE.svc,DNS:*.$COUCHBASE_NAMESPACE.svc,DNS:*.$COUCHBASE_CLUSTER_NAME.$COUCHBASE_FQDN"
     $easyrsa/easyrsa --subject-alt-name=$subject_alt_name \
       build-server-full couchbase-server nopass
     cp pki/private/couchbase-server.key $easyrsa/pkey.key
-    openssl rsa -in $easyrsa/pkey.key -out $easyrsa/pkey.key.der -outform DER <easyrsapass
+    openssl rsa -in $easyrsa/pkey.key -out $easyrsa/pkey.key.der -outform DER
     openssl rsa -in $easyrsa/pkey.key.der -inform DER \
       -out $easyrsa/pkey.key -outform PEM
     cp pki/issued/couchbase-server.crt $easyrsa/chain.pem
@@ -640,6 +639,7 @@ prompt_password() {
     echo "$TEMP_PW" > couchbase_password
   elif [[ "$1" == "EASYRSA_PW" ]]; then
     EASYRSA_PW="$TEMP_PW"
+    echo "$TEMP_PW" > easyrsa_ca_password
   fi
 }
 
