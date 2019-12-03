@@ -628,7 +628,7 @@ prompt_password() {
       break
     else
       TEMP_PW=$password
-      if [[ ${#TEMP_PW} -ge 6 && "$TEMP_PW" == *[[:lower:]]* && "$TEMP_PW" == *[[:upper:]]* && "$TEMP_PW" == *[0-9]* && "$TEMP_PW" == *['!''['']'|:@#\$%^\&*_+]* ]]; then
+      if [[ ${#TEMP_PW} -ge 6 && "$TEMP_PW" == *[[:lower:]]* && "$TEMP_PW" == *[[:upper:]]* && "$TEMP_PW" == *[0-9]* && "$TEMP_PW" == *['!''['']''|':@#\$%^\&*_+]* ]]; then
         echo "Confirm password :"
         mask_password
         TEMP_PW_VERIFY=$password
