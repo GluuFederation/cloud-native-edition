@@ -95,8 +95,14 @@ If during installation the release was not defined, release name is checked by r
 | `config.ldapType`             | Type of LDAP server to use.                                | `opendj`                            |
 | `oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`               |
 | `opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
-| `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE`                |
+| `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE` |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
+| `persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                            |
+| `persistence.secrets`         | Couchbase credentials - password and ssl cert to connect to CB. `dummy-pass` and `dummy-cert`    |
+| `persistence.configmap.gluuCasaEnabled`     | Enable auto install of casa chart/service while installing Gluu server chart | `false` |
+| `persistence.configmap.gluuPassportEnabled` | Auto install passport service chart          | `false`                             |
+| `persistence.configmap.gluuRadiusEnabled`   | Auto install radius service chart            | `false`                             |
+| `persistence.configmap.gluuSamlEnabled`     | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not. | `true` |
 | `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
 | `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
 | `oxd-server.secret.keyStorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                   |
@@ -109,7 +115,6 @@ If during installation the release was not defined, release name is checked by r
 | `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
 | `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
 | `oxshibboleth.enabled`        | Allow oxshibboleth installation                            | `false`                             |
-| `oxpassport.enabled`          | Allow oxpassport installation                              | `false`                             |
 | `key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
 | `cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
 | `radius.enabled`              | Enabled radius installation                                | `false`                             |
@@ -247,47 +252,38 @@ If during installation the release was not defined, release name is checked by r
     255.255.255.255	broadcasthost
     ::1             localhost
     ```
-## How to use couchbase as backend persistent storage.
-### Couchbase
+**_NOTE_** Enabling support of `oxtrust API` and `oxtrust TEST_MODE`
+ To enable `oxtrust API` support, user should set the variable `gluuOxtrustApiEnabled` in the persistence service to true.
+  ```
+  # persistence layer
+  persistence:
+    configmap:
+    gluuOxtrustApiEnabled: false
 
-Please follow these instructions carefully to install and link couchbase with Gluu Server.
+  ```
+ Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
+   ```
+  # persistence layer
+  persistence:
+    configmap:
+    gluuOxtrustApiTestMode: false
 
-[Install CB K8s](https://www.couchbase.com/downloads). Unzip the folder in a directory of your choice.   
-Place Gluu custom `CBC` resource object - `.yaml`- in the directory mentioned above.
-  - For minikube use [low-resource-couchbase-cluster.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/low-resource-couchbase-cluster.yaml)
-  - High resource usage use [couchbase-cluster.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/couchbase-cluster.yaml)
-  - Don't forget to include the storageclass yaml file in the same directory [storageclasses.yaml](https://github.com/GluuFederation/enterprise-edition/blob/4.0/examples/kubernetes/couchbase/storageclasses.yaml)
-  - Password and usernames are found in `secret.yaml` file - which are in base64 - defaults `Administrator:password` They SHOULD be updated.
-  - Delete the `pillowfight-data-loader.yaml` 
-  - If one has their own certicate and key they should replace the one in the `admission.yaml` file where there is the `Secret` object as shown in the snippet below.
-    ```
-    tls-cert-file: base64=
-    tls-private-key-file: base64==
-    ```
-  - The directory should be similar to one shown below
-    ```
-      .
-      ├── README.txt
-      ├── VERSION.txt
-      ├── admission.yaml
-      ├── bin
-      │   ├── cbopcfg
-      │   └── cbopinfo
-      ├── crd.yaml
-      ├── gluu-custom-cbc.yaml
-      ├── gluu-storageclass.yaml
-      ├── operator-deployment.yaml
-      ├── operator-role-binding.yaml
-      ├── operator-role.yaml
-      ├── operator-service-account.yaml
-      └── secret.yaml
-      
-    ```
-  - Deploy these to your cluster by running `kubectl create -f <dir-name>` replace `<dir-name>` with the name of your directory.
-  - Update project root level [values.yaml](values.yaml) parameters `gluuCouchBase*` with what has been used to set up CB.
-  - Once CB is up and running, Install Gluu Server helm chart as instructed above changing all the relevant parameters in `values.yaml` file
+  ```
 
 ## Instructions on how to install different services
+
+There are some services that have auto install/enable while installing the overall Gluu server Helm chart. This configuration is made on the persistence level. To enable/disable them  
+one only needs to set `true` or ``false` in the persistence configs as shown below.  
+  ```
+  # persistence layer
+  persistence:
+    enabled: true
+    configmap:
+      # Auto install other services. If enabled the respective service chart will be installed
+      gluuCasaEnabled: true 
+      gluuPassportEnabled: false
+      gluuRadiusEnabled: false
+  ```
 
 ### OXD-server
 
@@ -301,19 +297,6 @@ oxd-server:
 ```
 
 If one doesn't have a key store it must be generated and place to the variable mentioned above. To generate, find the instructions [here](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore)
-
-### Passport
-
-Because by default `oxpassport` is disabled and needs to be configured before it can be used. There are 2 different ways to enable oxpassport.
-- Method 1: Setting `oxpassport.enabled` to `true` before installation, then configuring it on the UI. Kubernetes will restart the pod until the it detects that passport has been enabled. To enable it on the UI follow these instructions.
-
-1. Login to the UI and navigate to `Configuration` -> `Organization Configuration` -> `System Configuration` and check `Scim Support` and `Passport Support` then click `Update` button on the bottom left.
-2. Navigate to `Configuration` -> `Manage Custom Scripts` -> `Person Authentication` -> `passport_social`. Check enabled and click `Save` at the top right of the screen.
-
-3. Navigate to `Configuration` -> `Manage Custom Scripts` -> `UMA RPT Policies` -> `scim_access_policy`. Enable it by checking the box and clicking `Save`.
-
-- Method 2: Installing the required services. Enabling installation of `oxpassport` and upgrading helm installation through,  
-`helm upgrade --install RELEASE-NAME .` then following the above instructions.
 
 ### Redis
 

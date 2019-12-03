@@ -122,14 +122,20 @@ opendj:
 # persistence layer
 persistence:
   enabled: true 
+
+  secrets:
+    # couchbase secrets MUST be changed to match users credentials
+    cbPass: password
+    encodedCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURvakNDQW9vQ0NRQ3ZFOFVNR1NYSkp6QU5CZ2txaGtpRzl3MEJBUXNGQURDQmtqRUxNQWtHQTFVRUJoTUMKVlZNeERqQU1CZ05WQkFnTUJWUmxlR0Z6TVE4d0RRWURWUVFIREFaQmRYTjBhVzR4RFRBTEJnTlZCQW9NQkVkcwpkWFV4RWpBUUJnTlZCQXNNQ1dOdmJuUmhhVzVsY2pFZU1Cd0dBMVVFQXd3VlkySXVaMngxZFM1dmNtY3NZMjkxClkyaGlZWE5sTVI4d0hRWUpLb1pJaHZjTkFRa0JGaEJ6YUdGdGJXbHlRR2RzZFhVdWIzSm5NQjRYRFRFNU1USXcKTXpFeU5UUXdPVm9YRFRJd01USXdNakV5TlRRd09Wb3dnWkl4Q3pBSkJnTlZCQVlUQWxWVE1RNHdEQVlEVlFRSQpEQVZVWlhoaGN6RVBNQTBHQTFVRUJ3d0dRWFZ6ZEdsdU1RMHdDd1lEVlFRS0RBUkhiSFYxTVJJd0VBWURWUVFMCkRBbGpiMjUwWVdsdVpYSXhIakFjQmdOVkJBTU1GV05pTG1kc2RYVXViM0puTEdOdmRXTm9ZbUZ6WlRFZk1CMEcKQ1NxR1NJYjNEUUVKQVJZUWMyaGhiVzFwY2tCbmJIVjFMbTl5WnpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQU50RURYRVlMVER5alI3Um5IeW5QZDNzbnJ3UGFOUEkxRWdzaVR4UFFBQ3BwcExrCmNNamI3SUtObGh1OWZFeTh3RWxxOEpvSGNpSlpjUm4rNXpnSUs0dnAzZHFHd2IyOHNpVmc3aElBdEtLdkNTdlcKNUxIcXdyMnVJdWJIMERqM0FHMlVoVnNFbVgxM3NuR0ZMMHI3MW0xcUZGQ1BSVjJYcVB0V0lBUEYyS2p3LzdMaApQbjg0NkhITVJ1SkxIZGRGUDVGaEIwVXE5NjhrMHByRHFicXp6VDdUU1k2MXliU3pRdDVhUS83R21aVkNaN1RLCkxPeVhDMEFXangxY0F4a3IzUHFwY2ZFK2czNWVjdDNHdytGUUVSU2ZQZ2FiTkFQZDJWU2tKbXhTaGdNcUN0blYKWnNyVkdoUXp6TzRNOG45R1Jxa0xud3ZhZjFGcy9Xam9KeU9nSkU4Q0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRgpBQU9DQVFFQTJWUHVFU2RxSkxmTG1QUkExU3Y1SGQxQXcwMDdHemN4b05YSWtydkNLUWpXNTI0YVYyVU96eUJzCkdDNVREbXRHRGErakpJZmhzdWdYaXhiRUc2R1hpZ3V6YnpEQVUrTlM3WFF4WFVyQi9nZldSRytIK3dnUDZDN28KT2R4K0s3OEZFTHJlZHlySmN3ZlFtWnkzcjlYazB6OEI4NGk5ekNmU3dTWVVmdFd5WkhWR2hPeHFvRUlEWTh1WQpaTDFYa0haRkdRakthblRvYStYaWxUanUyZG9lcGcvMUM3OUxlRHc5eCtDNEtLMmRGZDAwb2xpaWRpeU1tbEZYCnZRSWJGai9oUXJkT1p3UXNPL0VtNFpTT3g4UVJEWWhGbkhicS9xSTQxOXpmSWVOTExNTEVNdnduR2RUMk1mTHAKVUdydWU2T3Q0WVNyendyVlhNOHIvdjNhUmxpZHF3PT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+
   configmap:
     gluuOxtrustApiEnabled: false 
     gluuOxtrustApiTestMode: false 
-    # Auto install other services. If required
-    gluuCasaEnabled: true
-    gluuPassportEnabled: true
-    gluuRadiusEnabled: true
-    gluuSamlEnabled: true
+    # Auto install other services. If enabled the respective service chart will be installed
+    gluuCasaEnabled: true 
+    gluuPassportEnabled: false
+    gluuRadiusEnabled: false
+    gluuSamlEnabled: true 
 
 oxd-server:
   enabled: true
@@ -153,7 +159,6 @@ oxd-server:
 
 # casa service installation is dependant on boolean value dependant set in persistence.configmap.gluuCasaEnabled
 casa:
-  enabled: true
   # storage declarations
   persistence:
     size: 5Gi
@@ -185,11 +190,21 @@ rbac:
   enabled: true
 
 oxshibboleth:
-  enabled: false
+  enabled: false 
 
 # oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
-  enabled: false
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
 
 key-rotation:
   enabled: false
@@ -199,4 +214,5 @@ cr-rotate:
 
 # rdius service installation is dependant on boolean value dependant set in persistence.configmap.gluuRadiusEnabled
 radius:
-  enabled: false
+  persistence:
+    size: 10M

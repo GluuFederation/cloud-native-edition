@@ -9,10 +9,24 @@ spec:
       labels:
         app: {{ include "persistence.name" . }}
     spec:
+      restartPolicy: Never
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
             name: {{ include "persistence.fullname" . }}
-      restartPolicy: OnFailure
+        volumeMounts:
+          - name: {{ include "persistence.name" . }}-cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: {{ include "persistence.name" . }}-cb-crt 
+            mountPath: "/etc/gluu/conf/couchbase.crt"
+            subPath: couchbase.crt 
+      volumes:
+        - name: {{ include "persistence.name" . }}-cb-pass
+          secret:
+            secretName: {{ include "persistence.name" . }}-cb-pass
+        - name: {{ include "persistence.name" . }}-cb-crt
+          secret:
+            secretName: {{ include "persistence.name" . }}-cb-crt
