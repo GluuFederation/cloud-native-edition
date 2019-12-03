@@ -616,11 +616,11 @@ prompt_password() {
   while true; do
     TEMP_PW_RAND="$(cat /dev/urandom \
       | env LC_CTYPE=C tr -dc 'a-zA-Z0-9A-Za-z0-9!@^%_+#$' \
-      | fold -w 6 | head -c 6)"GlU4%
+      | fold -w 6 | head -c 6)"GlU4#
     TEMP_PW_OUT=${TEMP_PW_RAND::3}
     TEMP_PW_RAND_OUT="$TEMP_PW_OUT***"
     echo "Passwords requires the following structure :"
-    echo "One upper case, one lower case, one number, one of the following symbols @#%^&*_+ and a total of 6 characters"
+    echo "One upper case, one lower case, one number, one of the following symbols ]:[|@#%^&*_+ and a total of 6 characters"
     echo "Enter $2 password.[$TEMP_PW_RAND_OUT]:"
     mask_password
     if [[ ! "$password" ]]; then
@@ -628,7 +628,7 @@ prompt_password() {
       break
     else
       TEMP_PW=$password
-      if [[ ${#TEMP_PW} -ge 6 && "$TEMP_PW" == *[[:lower:]]* && "$TEMP_PW" == *[[:upper:]]* && "$TEMP_PW" == *[0-9]* && "$TEMP_PW" == *['!'@#\$%^\&*_+]* ]]; then
+      if [[ ${#TEMP_PW} -ge 6 && "$TEMP_PW" == *[[:lower:]]* && "$TEMP_PW" == *[[:upper:]]* && "$TEMP_PW" == *[0-9]* && "$TEMP_PW" == *['!''['']'|:@#\$%^\&*_+]* ]]; then
         echo "Confirm password :"
         mask_password
         TEMP_PW_VERIFY=$password
