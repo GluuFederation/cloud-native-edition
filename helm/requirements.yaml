@@ -35,7 +35,7 @@ dependencies:
 
   - name: oxpassport
     version: 1.0.0
-    condition: oxpassport.enabled
+    condition: persistence.configmap.gluuPassportEnabled
     tags:
       - oxpassport
 
@@ -52,7 +52,7 @@ dependencies:
       - cr-rotate
 
   - name: radius
-    condition: radius.enabled
+    condition: persistence.configmap.gluuRadius
     version: 1.0.0
     tags:
       - radius
@@ -80,7 +80,7 @@ dependencies:
     version: 1.0.0
   
   - name: casa
-    condtion: casa.enabled
+    condtion: persistence.configmap.gluuCasaEnabled
     version: 1.0.0
 
   - name: persistence

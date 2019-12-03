@@ -5,6 +5,11 @@ metadata:
 data:
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
+  # Auto enable installation of some services
+  GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
+  GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
+  GLUU_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
+  GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote}}
   
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}

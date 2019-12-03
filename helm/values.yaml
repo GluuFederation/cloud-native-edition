@@ -125,6 +125,11 @@ persistence:
   configmap:
     gluuOxtrustApiEnabled: false 
     gluuOxtrustApiTestMode: false 
+    # Auto install other services. If required
+    gluuCasaEnabled: true
+    gluuPassportEnabled: true
+    gluuRadiusEnabled: true
+    gluuSamlEnabled: true
 
 oxd-server:
   enabled: true
@@ -145,6 +150,8 @@ oxd-server:
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
+
+# casa service installation is dependant on boolean value dependant set in persistence.configmap.gluuCasaEnabled
 casa:
   enabled: true
   # storage declarations
@@ -180,6 +187,7 @@ rbac:
 oxshibboleth:
   enabled: false
 
+# oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
   enabled: false
 
@@ -189,5 +197,6 @@ key-rotation:
 cr-rotate:
   enabled: false 
 
+# rdius service installation is dependant on boolean value dependant set in persistence.configmap.gluuRadiusEnabled
 radius:
   enabled: false

@@ -17,3 +17,7 @@ configmap:
   #support for oxtrust API
   gluuOxtrustApiEnabled: false
   gluuOxtrustApiTestMode: false
+  gluuCasaEnabled: true
+  gluuPassportEnabled: true
+  gluuRadiusEnabled: true
+  gluuSamlEnabled: true  
