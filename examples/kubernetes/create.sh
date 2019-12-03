@@ -527,6 +527,7 @@ set_default() {
       "EASYRSA_COMMON_NAME" ) EASYRSA_COMMON_NAME="$2" ;;
       "DEPLOY_GENERATED_YAMLS" ) DEPLOY_GENERATED_YAMLS="$2" ;;
       "AWS_LB_TYPE" ) AWS_LB_TYPE="$2" ;;
+      "COUCHBASE_NAMESPACE" ) COUCHBASE_NAMESPACE="$2" ;;
     esac
   fi
 }
