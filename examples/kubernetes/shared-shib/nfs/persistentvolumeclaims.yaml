@@ -32,4 +32,4 @@ spec:
   accessModes: [ "ReadWriteOnce" ]
   resources:
     requests:
-      storage: STORAGENFS
+      storage: 50Gi
