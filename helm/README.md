@@ -78,6 +78,16 @@ If during installation the release was not defined, release name is checked by r
 | `global.gluuCouchBaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
 | `global.gluuCouchBasePass`    | Password used to connect to couchbase                      | `password`                          |
 | `global.gluuCouchBaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
+| `global.oxshibboleth.enabled` | Whether to allow installation of oxshibboleth chart        | `false`                             |
+| `global.key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
+| `global.cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
+| `global.radius.enabled`              | Enabled radius installation                                | `false`                             |
+| `global.rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
+| `global.redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
+| `global.shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
+| `global.oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
+| `global.nginx.enabled`               | Allow installation of nginx. Should be allowed unless another nginx is being deployed   |  `true`|
+| `global.config.enabled`              | Either to install config chart or not.                     | `true`                              |   
 | `efs-provisioner.enabled`     | Enable EFS provisioning for AWS deployments ONLY           | `false`                             |
 | `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
@@ -85,7 +95,6 @@ If during installation the release was not defined, release name is checked by r
 | `nginx-ingress.controller.service.loadBalancerIP` | This is used if cloud deployment is used. It is the IP address associated with the FQDN `global.domain` to be used | `34.70.112.93` |
 | `nginx-ingress.metrics.service.loadBalancerIP`    | As described above                     | `34.70.112.93`                      |
 | `nginx-ingress.service.loadBalancerIP`            | As described above                     | `34.70.112.93`                      |
-| `config.enabled`              | Either to install config chart or not.                     | `true`                              |   
 | `config.orgName`              | Organisation Name                                          | `Gluu`                              |
 | `config.email`                | Email to be registered with ssl                            | `support@gluu.org`                  |
 | `config.adminPass`            | Admin password to log in to the UI                         | `P@ssw0rd`                          |
@@ -93,11 +102,11 @@ If during installation the release was not defined, release name is checked by r
 | `config.countryCode`          | Country code of where the Org is located                   | `US`                                |
 | `config.state`                | State                                                      | `TX`                                |
 | `config.ldapType`             | Type of LDAP server to use.                                | `opendj`                            |
-| `oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`               |
-| `opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
+| `global.oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`               |
+| `global.opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
 | `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE` |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
-| `persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                            |
+| `global.persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                            |
 | `persistence.secrets`         | Couchbase credentials - password and ssl cert to connect to CB. `dummy-pass` and `dummy-cert`    |
 | `persistence.configmap.gluuCasaEnabled`     | Enable auto install of casa chart/service while installing Gluu server chart | `false` |
 | `persistence.configmap.gluuPassportEnabled` | Auto install passport service chart          | `false`                             |
@@ -106,19 +115,9 @@ If during installation the release was not defined, release name is checked by r
 | `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
 | `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
 | `oxd-server.secret.keyStorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                   |
-| `casa.enabled`                | Whether to enable installation of casa service chart       | `false`                             |
 | `casa.persistence.size`       | Storage size to be used                                    | `5Gi`                               |
-| `redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
-| `shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
-| `oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
-| `nginx.enabled`               | Allow installation of nginx. Should be allowed unless another nginx is being deployed   |  `true`|
 | `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
 | `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
-| `oxshibboleth.enabled`        | Allow oxshibboleth installation                            | `false`                             |
-| `key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
-| `cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
-| `radius.enabled`              | Enabled radius installation                                | `false`                             |
-| `rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
 
 
 ## Deployments
