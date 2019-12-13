@@ -11,7 +11,7 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Prerequisites
 
-- Kubernetes 1.3+ 
+- Kubernetes 1.+ 
 - PV provisioner support in the underlying infrastructure
 - Helm 
 
@@ -34,7 +34,7 @@ For both deployments, different configurations needs to be changed depending on 
 
 The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
 
-`helm install --name <release-name> -f values.yaml .`  
+`helm install <release-name> -f values.yaml .`  
 
 `< . >` means that this command is run in the root directory of the helm directory.
 
@@ -138,7 +138,7 @@ If during installation the release was not defined, release name is checked by r
       ```
         > **_NOTE:_** If FQDN is registered, no need to disable these services
     - Install the chart by running   
-    `helm install --name <release-name> -f values.yaml .`  
+    `helm install <release-name> -f values.yaml .`  
 
   ### GCE
   Two options from here.

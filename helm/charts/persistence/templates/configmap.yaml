@@ -10,8 +10,8 @@ data:
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
   GLUU_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
-  GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote}}
-  {{{- end }}}
+  GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
+  {{- end }}
 
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
