@@ -5,7 +5,7 @@ dynamicStorage: true
 
 image:
   repository: gluufederation/oxauth
-  tag: 4.0.1_05
+  tag: 4.0.1_06
   pullPolicy: Always
 
 persistence:

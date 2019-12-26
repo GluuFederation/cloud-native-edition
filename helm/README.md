@@ -13,7 +13,7 @@ It also packages other components/services that makeup Gluu Server.
 
 - Kubernetes 1.+ 
 - PV provisioner support in the underlying infrastructure
-- Helm 
+- Helm version 2.*
 
 ### Instructions to set up Helm in a kubernetes cluster.
 1. To install kubernetes follow the official guide found at [kubernetes](https://kubernetes.io/docs/setup/).  
@@ -24,7 +24,7 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Instructions on installing the chart
 
-> **_NOTE:_** If one is planning to use Couchbase as the Backend persistent storage, one should make sure instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
+> **_NOTE:_** If one is planning to use Couchbase as the Backend persistent storage, one should make sure to read instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
 
 ### Deployments are of 2 types 
 - `Cloud`
@@ -119,6 +119,13 @@ If during installation the release was not defined, release name is checked by r
 | `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
 | `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
 
+## Persistence
+
+### couchbase
+To use couchbase as the backend persistence option, change the following values to use your own.
+`global.gluuCouchBaseUser`,`persistence.secrets.cbPass` and `persistence.secrets.encodedCouchbaseCrt`.
+
+To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase server, use the command `kubectl get secret -n cbns couchbase-operator-tls -o yaml`. This assumes that couchbase was set up using Gluu Installation scripts.
 
 ## Deployments
 
@@ -257,7 +264,7 @@ If during installation the release was not defined, release name is checked by r
   # persistence layer
   persistence:
     configmap:
-    gluuOxtrustApiEnabled: false
+       gluuOxtrustApiEnabled: false
 
   ```
  Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
@@ -265,7 +272,7 @@ If during installation the release was not defined, release name is checked by r
   # persistence layer
   persistence:
     configmap:
-    gluuOxtrustApiTestMode: false
+       gluuOxtrustApiTestMode: false
 
   ```
 
