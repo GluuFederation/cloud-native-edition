@@ -65,7 +65,7 @@ spec:
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
             - name: {{ include "casa.name" . }}-cert
-              mountPath: "/etc/certs/couchbase.crt"
+              mountPath: "/etc/gluu/certs/couchbase.crt"
               subPath: couchbase.crt 
       volumes:
         - name: {{ include "casa.name" . }}

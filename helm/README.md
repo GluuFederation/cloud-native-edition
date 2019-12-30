@@ -13,7 +13,7 @@ It also packages other components/services that makeup Gluu Server.
 
 - Kubernetes 1.+ 
 - PV provisioner support in the underlying infrastructure
-- Helm version 2.*
+- Helm 
 
 ### Instructions to set up Helm in a kubernetes cluster.
 1. To install kubernetes follow the official guide found at [kubernetes](https://kubernetes.io/docs/setup/).  

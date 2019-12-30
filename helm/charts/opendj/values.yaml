@@ -10,11 +10,7 @@ gluuRedisEnabled: false
 gluuRedisCacheType: REDIS
 gluuRedisUrl: redis:6379
 gluuRedisType: STANDALONE
-# couchbase
 gluuCacheType: NATIVE_PERSISTENCE
-gluuCouchbaseCertFile: /etc/certs/couchbase.crt
-gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
-gluuCbUrl: cb.gluu.org # TODO: update this
 
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
