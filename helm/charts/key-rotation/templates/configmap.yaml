@@ -5,6 +5,7 @@ metadata:
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
+  GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if eq .Values.global.gluuPersistenceType "hybrid" }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}
