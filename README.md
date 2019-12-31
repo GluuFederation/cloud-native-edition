@@ -8,8 +8,7 @@ Multi-hosts Gluu Server deployment.
 
 ## Examples
 
-- [Docker Swarm Mode](./examples/swarm/)
-- [Kubernetes](./examples/kubernetes/)
+- [Kubernetes](./kubernetes/)
 
 ## Issues
 
