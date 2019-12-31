@@ -6,7 +6,7 @@ networks:
 
 services:
   consul:
-    image: consul
+    image: consul:1.6
     # will be used as consul node name (alphanum and dash only)
     hostname: "consul-{{.Node.Hostname}}"
     command: "agent -server -retry-join consul.server -client 0.0.0.0"
