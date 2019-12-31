@@ -123,7 +123,7 @@ If during installation the release was not defined, release name is checked by r
 
 ### couchbase
 To use couchbase as the backend persistence option, change the following values to use your own.
-`global.gluuCouchBaseUser`,`persistence.secrets.cbPass` and `persistence.secrets.encodedCouchbaseCrt`.
+`global.gluuCouchBaseUser`,`global.encodedCbPass` and `global.encodedCouchbaseCrt`.
 
 To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase server, use the command `kubectl get secret -n cbns couchbase-operator-tls -o yaml`. This assumes that couchbase was set up using Gluu Installation scripts.
 
@@ -140,8 +140,9 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
       `rbac.enabled: false`
     - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
       ```
-        config:
-          enabled: false 
+        global
+          config:
+            enabled: false 
       ```
         > **_NOTE:_** If FQDN is registered, no need to disable these services
     - Install the chart by running   
@@ -204,9 +205,10 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
 
    - Update the value of domain name in `nginx` section as shown below   
       ```
+          global:
+             nginx: true
+
           nginx:
-            enabled: true
-            # ingress resources
             ingress:
               enabled: true
               path: /
@@ -264,7 +266,7 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
   # persistence layer
   persistence:
     configmap:
-       gluuOxtrustApiEnabled: false
+       gluuOxtrustApiEnabled: true
 
   ```
  Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
@@ -272,13 +274,13 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
   # persistence layer
   persistence:
     configmap:
-       gluuOxtrustApiTestMode: false
+       gluuOxtrustApiTestMode: true
 
   ```
 
 ## Instructions on how to install different services
 
-There are some services that have auto install/enable while installing the overall Gluu server Helm chart. This configuration is made on the persistence level. To enable/disable them  
+There are some services that have auto install enabled while installing the overall Gluu server Helm chart. This configuration is made on the persistence level. To enable/disable them  
 one only needs to set `true` or ``false` in the persistence configs as shown below.  
   ```
   # persistence layer
@@ -310,25 +312,27 @@ To enable usage of Redis, change the following values.
 
 ```
 opendj:
-  enabled: true
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: REDIS
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: true
 
 # redis should be enabled only when cacheType is REDIS
-redis:
-  enabled: true
+global:
+  redis:
+    enabled: true
 
 ```
 
 
 ### Other optional services
 
-Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values - more like the previous 2 - to true.  
+Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values - more like the previous 2 - to true under the global block.
+
 For example, to enable `cr-rotate` set
 ```
-cr-rotate:
-  enabled: true
+global:
+  cr-rotate:
+    enabled: true
 
 ```

@@ -42,7 +42,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap
   # options: default/user/site/cache/statistic
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   gluuPersistenceLdapMapping: default
@@ -60,14 +60,56 @@ global:
   # couchbase secrets MUST be changed to match users credentials. Both MUST be base64 encoded
   encodedCbPass: UEBzc3cwcmQK 
   encodedCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUROVENDQWgyZ0F3SUJBZ0lKQVA5Z1NrOXdYakhpTUEwR0NTcUdTSWIzRFFFQkN3VUFNQll4RkRBU0JnTlYKQkFNTUMyTmlMbWRzZFhVdWIzSm5NQjRYRFRFNU1USXpNREUxTVRjd01sb1hEVEk1TVRJeU56RTFNVGN3TWxvdwpGakVVTUJJR0ExVUVBd3dMWTJJdVoyeDFkUzV2Y21jd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3CmdnRUtBb0lCQVFDbWZleHNHNHFiUVVpLy9vVFhYZytpOEhXWHlzZGl4aFFmTU9SRThRelZGR0tuZ3NLTEljOUkKNjZ3ZmU3akN2cFBvbFdkd3NGaGxNOVFwS0NxbnZNMWhNdStlNEN0TGRzaTg3RlVyMFo5WUpwdDRmenZNOXBXYQpGcG53cU5iRHJiaVZ4eFdPaDliV25uK3V0aFQ4a2RiV0ROVVlIUVZIeG1NbHhva20vNDFydGFMV0F1TTlscm1CClJJOC82WTFGMWttOVVjTk1NNWtLKzE1cjlWR0tmeGNMR0htV2xaalV0M3VaWkdJODFnb0JOZ3VtMUFOK3hUd2oKYVByY3BJYUlrZFBieGpYRVd0TzQxTlM0c1h5cDZXQlF5dGptNUZOb0VBZllGYWNjTE5sVUlqY0RIaWJFS1VGdwo0bFhVWDBPSDJiaXRKajJ3ZmMzcXJEVGoyY0loa1hCeEFnTUJBQUdqZ1lVd2dZSXdIUVlEVlIwT0JCWUVGRE4yCkR4cGt4YjJLQW83WFdwV2ora0MvdjRtYU1FWUdBMVVkSXdRL01EMkFGRE4yRHhwa3hiMktBbzdYV3BXaitrQy8KdjRtYW9ScWtHREFXTVJRd0VnWURWUVFEREF0allpNW5iSFYxTG05eVo0SUpBUDlnU2s5d1hqSGlNQXdHQTFVZApFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElCQVFBeGU5czVLakxrCi8yZlE0RVBqU0Z2a1BINFNoUlAva3NsRU9ETmNBeEpMVXl2QVZ5Q3hlaG12ZkNyYXBnYkN3V1luT1NpejlSMFIKQTF1YmN6K3FhVU5kdDNuYmdjNE0zUU9BRWgxb0FhZHVzdG5Ya1k4Q1prYkV0dmVHUkk5eDdvTGlmL1htb3FvRgpoVExJUkZmSDN0Vy8xZUxLdGV6SHhFcnZLbjlCSW03U1IrcVh0OXRPTlY0V0JoMXB3YzRvYklOU3FydmNvME9xCkIwdVMrY1NFb1NEUkUvQ0NiWmlXckkyM1ZoQjJYT2FwRTdLVHpOamhRdHJHNHU0Znp3c2M2elhidU5yQzIrcC8KS0VzLzg1emRYTXhnamdncy9pVC9ZWlFRdGp3SEZkcW9aOEFtblV4dVZ3K3MzZ05KTXBSZ2tMeklUaW1lSkwwMAo2ZzVZR2hDd05lUmMKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  
+  # Enable installation of services
+  oxauth:
+    enabled: true
 
-  # Enable oxshiboleth service
+  persistence:
+    enabled: true
+
+  oxtrust:
+    enabled: true
+
+  config:
+    enabled: true
+
+  opendj:
+    enabled: true
+
+  rbac:
+    enabled: false 
+
   oxshibboleth:
     enabled: false
 
+  efs-provisioner:
+    enabled: false
+
+  oxd-server:
+    enabled: false
+
+  # redis should be enabled only when cacheType is REDIS
+  redis:
+    enabled: false
+
+  nginx:
+    enabled: true
+
+  cr-rotate:
+    enabled: false
+  
+  key-rotation:
+    enabled: false
+    
+  nfs: 
+    enabled: false 
+  
+  shared-shib:
+    enabled: true
+  
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
-  enabled: false
   efsProvisioner:
     # If specified, use this DNS or IP to connect the EFS
     dnsName: "" # fs-xxxxxx.efs.us-east-1.amazonaws.com
@@ -81,9 +123,6 @@ efs-provisioner:
     persistentVolume:
       accessModes: ReadWriteMany
       storage: 5Gi
-
-oxtrust:
-  enabled: true
 
 nginx-ingress:
   controller:
@@ -101,7 +140,6 @@ nginx-ingress:
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
 config:
-  enabled: true
   orgName: Gluu
   # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
@@ -115,19 +153,16 @@ config:
   ldapType: opendj
 
 opendj:
-  enabled: true
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
-  gluuRedisEnabled: false
+  gluuRedisEnabled: false 
   replicas: 1
   persistence:
     size: 5Gi
 
 # persistence layer
 persistence:
-  enabled: true
-
   configmap:
     gluuOxtrustApiEnabled: false 
     gluuOxtrustApiTestMode: false 
@@ -138,7 +173,6 @@ persistence:
     gluuSamlEnabled: true
 
 oxd-server:
-  enabled: false
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
   secret:
     keystore: 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
@@ -146,9 +180,7 @@ oxd-server:
     keystorePassword: changeit # example-password
     
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #  cpu: 100m
@@ -163,12 +195,7 @@ casa:
   persistence:
     size: 5Gi
 
-# redis should be enabled only when cacheType is REDIS
-redis:
-  enabled: false
-
 nginx:
-  enabled: true
   # ingress resources
   ingress:
     enabled: true
@@ -183,9 +210,7 @@ nginx:
 # oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #  cpu: 100m
@@ -194,25 +219,7 @@ oxpassport:
   #  cpu: 100m
   #  memory: 128Mi 
 
-# rdius service installation is dependant on boolean value dependant set in persistence.configmap.gluuRadiusEnabled
+# radius service installation is dependant on boolean value set in persistence.configmap.gluuRadiusEnabled
 radius:
   persistence:
     size: 10M
-
-cr-rotate:
-  enabled: false
-
-key-rotation:
-  enabled: false
-
-oxauth:
-  enabled: true
-    
-nfs: 
-  enabled: false 
-
-shared-shib:
-  enabled: true
-
-rbac:
-  enabled: false 

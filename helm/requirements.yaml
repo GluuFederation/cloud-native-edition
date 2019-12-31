@@ -1,16 +1,16 @@
 dependencies:
   - name: config
-    condition: config.enabled
+    condition: global.config.enabled
     version: 1.0.0
 
   - name: redis
-    condition: redis.enabled
+    condition: global.redis.enabled
     version: 1.0.0
     tags:
       - redis
 
   - name: opendj
-    condition: opendj.enabled
+    condition: global.opendj.enabled
     version: 1.0.0
 
   - name: oxauth
@@ -26,7 +26,7 @@ dependencies:
     version: 1.0.0
 
   - name: nginx
-    condition: nginx.enabled
+    condition: global.nginx.enabled
     version: 1.0.0
 
   - name: oxshibboleth
@@ -40,13 +40,13 @@ dependencies:
       - oxpassport
 
   - name: key-rotation
-    condition: key-rotation.enabled
+    condition: global.key-rotation.enabled
     version: 1.0.0
     tags:
       - key-rotation
 
   - name: cr-rotate
-    condtion: cr-rotate.enabled
+    condtion: global.cr-rotate.enabled
     version: 1.0.0
     tags:
       - cr-rotate
@@ -58,13 +58,13 @@ dependencies:
       - radius
   
   - name: rbac
-    condition: rbac.enabled
+    condition: global.rbac.enabled
     version: 1.0.0
     tags:
       - rbac
 
   - name: nfs
-    condition: nfs.enabled
+    condition: global.nfs.enabled
     version: 1.0.0
 
   - name: nginx-ingress
@@ -72,11 +72,11 @@ dependencies:
     version: 0.25.1
 
   - name: efs-provisioner
-    condition: efs-provisioner.enabled
+    condition: global.efs-provisioner.enabled
     version: 0.7.0
 
   - name: oxd-server
-    condition: oxd-server.enabled
+    condition: global.oxd-server.enabled
     version: 1.0.0
   
   - name: casa
@@ -84,6 +84,6 @@ dependencies:
     version: 1.0.0
 
   - name: persistence
-    condition: persistence.enabled
+    condition: global.persistence.enabled
     version: 1.0.0
     
