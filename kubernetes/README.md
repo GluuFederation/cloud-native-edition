@@ -17,7 +17,7 @@
 
         wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.zip
         unzip 4.0.zip
-        cd enterprise-edition-4.0/examples/kubernetes
+        cd enterprise-edition-4.0/kubernetes
 
 - Run `bash create.sh` to initialize the installation. Prompts will ask for the rest of the information needed. You may generate the manifests (yamls) and continue to deployment or just generate the  manifests (yamls) during the execution of `create.sh`. `create.sh` will output a file called `previous-installation-variables` holding all the answers to the prompts and can be later used by renaming the file to `installation-variables` and running `bash create.sh`. More information about this file and the vars it holds is [below](#previous-installation-variables-file-contents) but you shouldn't have to manually create this file as the script generates it for you. 
 
