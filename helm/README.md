@@ -132,6 +132,7 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
 1. ## Cloud deployments.
 
    ### Common instructions on all Cloud providers (Both AWS and GKE)
+    - Change `global.provisioner` value in `values.yaml` to `kubernetes.io/gce-pd` 
     - Enabling RBAC in the cluster before deploying the chart. This has to be done first.  
       To do this deploy the `tiller.yaml` file   
       `$ kubectl apply -f tiller.yaml`
@@ -144,7 +145,7 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
           config:
             enabled: false 
       ```
-        > **_NOTE:_** If FQDN is registered, no need to disable these services
+        > **_NOTE:_** If FQDN is registered, no need to disable these services. Just forward the FQDN to the LB address.
     - Install the chart by running   
     `helm install <release-name> -f values.yaml .`  
 
