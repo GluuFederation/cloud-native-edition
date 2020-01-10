@@ -13,7 +13,7 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Prerequisites
 
-- Kubernetes 1.+ 
+- Kubernetes 1.x 
 - PV provisioner support in the underlying infrastructure
 - Helm 
 
