@@ -1,3 +1,5 @@
+# Install Gluu using Helm![CDNJS](https://img.shields.io/badge/BETA-red.svg?style=for-the-badge)
+
 ## Gluu Server
 
 [Gluu server](https://www.gluu.org) is an open-source IAM server that sync backend identities, leverage external IDPs, and achieve SSO, 2FA and more.
