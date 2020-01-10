@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: 4.0.0_04
+home: https://www.gluu.org/de
+maintainers:
+- name: Gluu
+email: support@gluu.org
+description: Helm chart for oxauth service
+name: oxauth
+version: 1.0.0

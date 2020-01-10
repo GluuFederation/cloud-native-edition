@@ -1,0 +1,67 @@
+# opendj Environament Variables
+# common ConfigMap values
+gluuLdapInit: true
+gluuLdapInitHost: localhost
+gluuLdapInitPort: 1636
+gluuOxtrustConfigGeneration: true
+gluuCertAltName: opendj
+# gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
+gluuRedisEnabled: false
+gluuRedisCacheType: REDIS
+gluuRedisUrl: redis:6379
+gluuRedisType: STANDALONE
+gluuCacheType: NATIVE_PERSISTENCE
+
+gluuLdapInitRepl: false
+gluuOxtrustConfigGenerationRepl: false
+
+nameOverride: ""
+fullnameOverride: ""
+
+# StatefulSet
+# values declaration
+replicas: 1
+
+image:
+  repository: gluufederation/wrends
+  tag: 4.0.1_02
+  pullPolicy: Always
+
+persistence:
+  size: 5Gi
+  accessModes: ReadWriteOnce
+  type: DirectoryOrCreate
+  dbStorageSize: 5Gi
+
+#servicePorts values used in StatefulSet container
+ports:
+  ldaps:
+    port: 1636
+    targetPort: 1636
+  ldap:
+    port: 1389
+    targetPort: 1389
+  replication:
+    port: 8989
+    targetPort: 8989
+  admin:
+    port: 4444
+    targetPort: 4444
+# VolumeMounts for StatefulSet
+# opendj-init vm
+volumeMounts:
+  config:
+    mountPath: /opt/opendj/config
+    name: opendj-volume
+  ldif: 
+    mountPath: /opt/opendj/ldif
+    name: opendj-volume
+  logs: 
+    mountPath: /opt/opendj/logs
+    name: opendj-volume
+  db: 
+    mountPath: /opt/opendj/db
+    name: opendj-volume
+  flag: 
+    mountPath: /flag
+    name: opendj-volume

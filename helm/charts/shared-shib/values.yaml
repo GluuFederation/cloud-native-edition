@@ -1,0 +1,15 @@
+# Default values for shared-shib.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+dynamicStorage: true
+
+#storage values
+requests:
+  storage: 10M
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 8Gi

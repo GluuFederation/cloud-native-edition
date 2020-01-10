@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cr-rotate.fullname" . }}
+  labels:
+    app: {{ include "cr-rotate.name" . }}
+    chart: {{ include "cr-rotate.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "cr-rotate.name" . }}
+    release: {{ .Release.Name }}
