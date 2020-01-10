@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "oxtrust.fullname" . }}
+  labels:
+    app: {{ include "oxtrust.fullname" . }}
+    APP_NAME: oxtrust
+spec:
+  serviceName: oxtrust
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "oxtrust.fullname" . }}
+      APP_NAME: oxtrust
+  template:
+    metadata:
+      labels: 
+        app: {{ include "oxtrust.fullname" . }}
+        APP_NAME: oxtrust
+    spec:
+      containers:
+      - name: {{ include "oxtrust.name" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python /scripts/updatelbip.py &
+              /app/scripts/entrypoint.sh
+        {{- end }}
+        resources:
+          requests:
+            memory: {{ .Values.requests.memory }}
+          # limits:
+          #   memory: {{ .Values.limits.memory }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: JVM_OPTS
+          value: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
+        envFrom:
+        - configMapRef:
+            name: {{ template "oxtrust.fullname" . }}-cm
+        volumeMounts:
+          # names must match the volume names below
+          - name: {{ .Release.Name }}-shared-shib
+            mountPath: "/opt/shared-shibboleth-idp"
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          - name: {{ include "oxtrust.fullname" .}}-updatelbip
+            mountPath: /scripts
+        {{- end }}
+        {{- range $key, $value := .Values.volumeMounts}}
+          - mountPath: {{ $value.mountPath }}
+            name: {{ $value.name }}
+            subPath: {{ $key }}
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /identity/restv1/scim-configuration
+            port: 8080
+          initialDelaySeconds: 45
+          periodSeconds: 45
+        readinessProbe:
+          httpGet:
+            path: /identity/restv1/scim-configuration
+            port: 8080
+          initialDelaySeconds: 35
+          periodSeconds: 35
+      volumes:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "oxtrust.fullname" .}}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+        {{- end }}
+        - name: {{ .Release.Name }}-shared-shib
+          persistentVolumeClaim:
+            {{- if and .Values.global.cloud.enabled (ne .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            claimName: nfs
+            {{- else if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            claimName: efs
+            {{- else }}
+            claimName: {{ .Release.Name }}-shared-shib-pvc
+            {{- end }}
+        - name: oxtrust
+          persistentVolumeClaim:
+            claimName: {{ include "oxtrust.fullname" . }}
+      {{- if eq .Values.global.isDomainRegistered "false" }}
+      hostAliases:
+      - ip: {{ .Values.global.nginxIp }}
+        hostnames:
+        - {{ .Values.global.domain }}
+      {{- end }}

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "opendj.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.global.ldapServiceName }} 
+  serviceName: {{ .Values.global.ldapServiceName }}
+  replicas: {{ .Values.replicas }} 
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.ldapServiceName }} 
+    spec:
+      containers:
+      - name: {{ include "opendj.fullname" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        envFrom:
+        - configMapRef:
+            name: {{ include "opendj.fullname" . }}
+        ports:
+        {{- range $key, $value := .Values.ports }}
+          - containerPort: {{ $value.targetPort }}
+            name: {{ $key }}
+        {{- end }}
+        volumeMounts:
+        {{- range $key, $values := .Values.volumeMounts }}
+          - mountPath: {{$values.mountPath}}
+            name: {{$values.name}}
+            subPath: {{$key}}
+        {{- end }}
+        readinessProbe:
+          tcpSocket: 
+            port: 1636
+          initialDelaySeconds: 25
+          periodSeconds: 25
+        livenessProbe:
+          tcpSocket:
+            port: 1636
+          initialDelaySeconds: 30
+          periodSeconds: 30
+  volumeClaimTemplates:
+  - metadata:
+      name: opendj-volume
+    spec:
+      accessModes:
+      - {{ .Values.persistence.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size }}
+      storageClassName: {{ include "opendj.fullname" . | quote }}
+  
