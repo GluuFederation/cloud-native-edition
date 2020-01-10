@@ -6,9 +6,10 @@ Multi-hosts Gluu Server deployment.
 
 [Gluu Server Enterprise Edition Documentation](https://gluu.org/docs/de/4.0)
 
-## Examples
+## Deployment options
 
-- [Kubernetes](./kubernetes/)
+- [Kustomize](./kustomize/)
+- [Helm](./helm/) ![CDNJS](https://img.shields.io/badge/BETA-red.svg?style=for-the-badge)
 
 ## Issues
 
