@@ -16,9 +16,9 @@ data:
   GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchbaseUrl }}
-  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchbaseUser }}
-  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchbaseCertFile | quote }}
-  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchbasePassFile | quote }}
+  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchBaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchBaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchBaseCertFile | quote }}
+  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchBasePassFile | quote }}
   {{- end }}
   
