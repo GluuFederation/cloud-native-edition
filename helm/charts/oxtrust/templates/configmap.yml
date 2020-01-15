@@ -8,7 +8,9 @@ data:
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
-  LB_ADDR: {{ .Values.global.lbAddr | quote }}
+  {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+  LB_ADDR: {{ .Values.global.lbAddr }}
+  {{- end }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if eq .Values.global.gluuPersistenceType "hybrid" }}

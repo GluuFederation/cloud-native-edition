@@ -28,18 +28,4 @@ requests:
 #containerPOrt ot connect the container with
 containerPort: 8080
 
-#VolumeMounts
-volumeMounts:
-  logs:
-    mountPath: /opt/gluu/jetty/identity/logs
-    name: oxtrust
-  ext:
-    mountPath: /opt/gluu/jetty/identity/lib/ext
-    name: oxtrust
-  static:
-    mountPath: /opt/gluu/jetty/identity/custom/static
-    name: oxtrust
-  pages:
-    mountPath: /opt/gluu/jetty/identity/custom/pages
-    name: oxtrust
     

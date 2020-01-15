@@ -6,4 +6,4 @@ maintainers:
 email: support@gluu.org
 description: A Helm chart for wrends/opendj server
 name: opendj
-version: 1.0.0
+version: 1.0.1

@@ -51,11 +51,12 @@ spec:
           - name: {{ include "oxtrust.fullname" .}}-updatelbip
             mountPath: /scripts
         {{- end }}
-        {{- range $key, $value := .Values.volumeMounts}}
-          - mountPath: {{ $value.mountPath }}
-            name: {{ $value.name }}
-            subPath: {{ $key }}
-        {{- end }}
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-cert
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
         livenessProbe:
           httpGet:
             path: /identity/restv1/scim-configuration
@@ -76,16 +77,19 @@ spec:
         {{- end }}
         - name: {{ .Release.Name }}-shared-shib
           persistentVolumeClaim:
-            {{- if and .Values.global.cloud.enabled (ne .Values.global.provisioner "kubernetes.io/aws-ebs") }}
-            claimName: nfs
-            {{- else if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
             claimName: efs
-            {{- else }}
+            {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
             claimName: {{ .Release.Name }}-shared-shib-pvc
+            {{- else }}
+            claimName: nfs
             {{- end }}
-        - name: oxtrust
-          persistentVolumeClaim:
-            claimName: {{ include "oxtrust.fullname" . }}
+        - name: cb-pass
+          secret:
+            secretName: {{ include "oxtrust.name" . }}-cb-pass
+        - name: cb-cert 
+          secret: 
+            secretName: {{ include "oxtrust.name" . }}-cb-cert 
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
