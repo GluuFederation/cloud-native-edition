@@ -30,18 +30,3 @@ limits:
 #ports for the deployment
 ports:
   containerPort: 8080
-
-#VolumeMounts
-volumeMounts:
-  logs:
-    mountPath: /opt/gluu/jetty/oxauth/logs
-    name: oxauth-volume
-  ext:
-    mountPath: /opt/gluu/jetty/oxauth/lib/ext
-    name: oxauth-volume
-  static:
-    mountPath: /opt/gluu/jetty/oxauth/custom/static
-    name: oxauth-volume
-  pages:
-    mountPath: /opt/gluu/jetty/oxauth/custom/pages
-    name: oxauth-volume
