@@ -43,8 +43,12 @@ spec:
           - configMapRef:
               name: {{ include "radius.fullname" . }}
         volumeMounts:
-          - mountPath: /opt/gluu/radius/logs
-            name: radius-logs
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-cert
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
         livenessProbe:
           exec:
             command:
@@ -68,9 +72,12 @@ spec:
             - {{ .Values.global.domain }} 
       {{- end }}
       volumes:
-      - name: radius-logs
-        persistentVolumeClaim:
-          claimName: {{ include "radius.fullname" . }}
+      - name: cb-pass 
+        secret:
+          secretName: {{ include "radius.name" . }}-cb-pass
+      - name: cb-cert 
+        secret: 
+          secretName: {{ include "radius.name" . }}-cb-cert
         resources:
 {{ toYaml .Values.resources | indent 10 }}
     {{- with .Values.nodeSelector }}

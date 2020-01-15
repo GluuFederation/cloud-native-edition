@@ -3,7 +3,9 @@ kind: ConfigMap
 metadata:
   name: {{ include "radius.fullname" . }}
 data:
-  LB_ADDR: {{ .Values.configMap.lbAddr }}
+  {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+  LB_ADDR: {{ .Values.global.lbAddr }}
+  {{- end }}
   GLUU_OXAUTH_BACKEND: {{ .Values.configMap.oxauthBackendUrl | quote }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}

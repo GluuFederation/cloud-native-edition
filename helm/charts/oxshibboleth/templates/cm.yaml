@@ -6,7 +6,9 @@ data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
+  {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
   LB_ADDR: {{ .Values.global.lbAddr }}
+  {{- end }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   GLUU_OXTRUST_BACKEND: {{ .Values.global.gluuOxtrustBackend | quote }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
