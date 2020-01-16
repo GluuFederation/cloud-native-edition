@@ -65,15 +65,15 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
-      - name: {{ .Release.Name }}-shared-shib
-        persistentVolumeClaim: 
-          {{- if and .Values.global.cloud.enabled (ne .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-          claimName: nfs
-          {{- else if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
-          claimName: efs
-          {{- else }}
-          claimName: {{ .Release.Name }}-shared-shib-pvc
-          {{- end }}
+        - name: {{ .Release.Name }}-shared-shib
+          persistentVolumeClaim:
+            {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            claimName: efs
+            {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
+            claimName: {{ .Release.Name }}-shared-shib-pvc
+            {{- else }}
+            claimName: nfs
+            {{- end }}
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       - name: {{ include "oxshibboleth.name" .}}-updatelbip
         configMap:
