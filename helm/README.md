@@ -68,7 +68,7 @@ If during installation the release was not defined, release name is checked by r
 | `global.ldapServiceName`      | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | IP address to be used with a FQDN                          | `192.168.99.100` (for minikube)     |
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
-| `global.oxTrustSeriveName`    | `oxtrust` service name - should not be changed             | `oxtrust`                           |
+| `global.oxTrustServiceName`   | `oxtrust` service name - should not be changed             | `oxtrust`                           |
 | `global.domain`               | DNS domain name                                            | `demoexample.gluu.org`              |
 | `global.isDomainRegistered`   | Whether the domain to be used is registered or not         | `false`                             |
 | `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed |  `opendj:1636` |
