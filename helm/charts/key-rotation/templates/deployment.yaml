@@ -26,6 +26,20 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "key-rotation.name" . }}
+          volumeMounts:
+            - name: cb-pass 
+              mountPath: "/etc/gluu/conf/couchbase_password"
+              subPath: couchbase_password
+            - name: cb-cert 
+              mountPath: "/etc/certs/couchbase.crt"
+              subPath: couchbase.crt 
+      volumes:
+        - name: cb-pass
+          secret:
+            secretName: {{ include "key-rotation.fullname" . }}-cb-pass
+        - name: cb-cert
+          secret:
+            secretName: {{ include "key-rotation.fullname" . }}-cb-cert 
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
