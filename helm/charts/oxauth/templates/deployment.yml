@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "oxauth.fullname" . }}-deployment
+  name: {{ include "oxauth.name" . }}
   labels:
     app: {{ .Values.global.oxAuthServiceName }}
 spec:
