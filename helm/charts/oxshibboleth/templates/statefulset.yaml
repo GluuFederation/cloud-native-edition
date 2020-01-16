@@ -46,6 +46,12 @@ spec:
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-cert
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
         livenessProbe:
           httpGet:
             path: /idp
@@ -65,31 +71,23 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
-        - name: {{ .Release.Name }}-shared-shib
-          persistentVolumeClaim:
-            {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
-            claimName: efs
-            {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
-            claimName: {{ .Release.Name }}-shared-shib-pvc
-            {{- else }}
-            claimName: nfs
-            {{- end }}
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       - name: {{ include "oxshibboleth.name" .}}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip
       {{- end }}
-        resources:
-{{ toYaml .Values.resources | indent 10 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 6 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 6 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 6 }}
-    {{- end }}
+      - name: {{ .Release.Name }}-shared-shib
+        persistentVolumeClaim:
+          {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          claimName: efs
+          {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
+          claimName: {{ .Release.Name }}-shared-shib-pvc
+          {{- else }}
+          claimName: nfs
+          {{- end }}
+      - name: cb-pass 
+        secret:
+          secretName: {{ include "oxshibboleth.name" . }}-cb-pass
+      - name: cb-cert 
+        secret: 
+          secretName: {{ include "oxshibboleth.name" . }}-cb-cert 

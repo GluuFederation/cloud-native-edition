@@ -60,7 +60,7 @@ spec:
         readinessProbe:
           exec:
             command:
-            - cast
+            - cat
             - /etc/gluu-radius-health
           initialDelaySeconds: 25
           periodSeconds: 25
@@ -78,3 +78,4 @@ spec:
       - name: cb-cert 
         secret: 
           secretName: {{ include "radius.name" . }}-cb-cert
+
