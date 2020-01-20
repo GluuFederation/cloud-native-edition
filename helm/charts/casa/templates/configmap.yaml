@@ -22,38 +22,8 @@ data:
   GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchBaseUrl }}
-  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchBaseUser }}
-  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchBaseCertFile | quote }}
-  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchBasePassFile | quote }}
+  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchbaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchbaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchbaseCertFile | quote }}
+  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchbasePassFile | quote }}
   {{- end }}
-
----
-
-apiVersion: v1
-data:
-  casacm.sh: |-
-    #!/bin/bash
-    wait_until_casa_pod_ready() {
-        # use label to check if the casa pod is ready
-        while [[ $(kubectl get pods -l app.kubernetes.io/name=casa -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for casa pod to be ready" && sleep 1; done
-    }
-    create_casa_cm() {
-        wait_until_casa_pod_ready
-        #Wait some time for casa.json to be created in casa app correctly
-        sleep 15
-        podname_template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
-        casapodname=$($kubectl get pod -l=app.kubernetes.io/name=casa -o template --template="$podname_template" || echo "")
-        $kubectl cp $casapodname:etc/gluu/conf/casa.json ./casa.json
-        rm casacm.yaml
-        $kubectl create configmap casacm --from-file=casa.json -o yaml --dry-run > casacm.yaml
-        $kubectl apply -f casacm.yaml || emp_output
-        # reload oxauth
-        kubectl scale deployment oxauth --replicas=0
-        sleep 5
-        kubectl scale deployment oxauth --replicas=2
-    }
-    create_casa_cm
-kind: ConfigMap
-metadata:
-  name: {{ include "casa.name" . }}-update-casacm

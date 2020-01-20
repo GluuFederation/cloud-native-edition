@@ -13,7 +13,7 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Prerequisites
 
-- Kubernetes 1.+ 
+- Kubernetes 1.x 
 - PV provisioner support in the underlying infrastructure
 - Helm 
 
@@ -68,18 +68,18 @@ If during installation the release was not defined, release name is checked by r
 | `global.ldapServiceName`      | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | IP address to be used with a FQDN                          | `192.168.99.100` (for minikube)     |
 | `global.oxAuthServiceName`    | `oxauth` service name - should not be changed              |  `oxauth`                           |
-| `global.oxTrustSeriveName`    | `oxtrust` service name - should not be changed             | `oxtrust`                           |
+| `global.oxTrustServiceName`   | `oxtrust` service name - should not be changed             | `oxtrust`                           |
 | `global.domain`               | DNS domain name                                            | `demoexample.gluu.org`              |
-| `global.isDomainRegostered`   | Whether the domain to be used is registered or not         | `false`                             |
+| `global.isDomainRegistered`   | Whether the domain to be used is registered or not         | `false`                             |
 | `global.gluuLdapUrl`          | wrends/ldap server url. Port and service name of opendj server - should not be changed |  `opendj:1636` |
 | `global.gluuMaxFraction`      | Controls how much of total RAM is up for grabs in containers running Java apps         |  `1`    |
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
 | `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
-| `global.gluuCouchBaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
-| `global.gluuCouchBaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
-| `global.gluuCouchBasePass`    | Password used to connect to couchbase                      | `password`                          |
-| `global.gluuCouchBaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
+| `global.gluuCouchbaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
+| `global.gluuCouchbaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
+| `global.gluuCouchbasePass`    | Password used to connect to couchbase                      | `password`                          |
+| `global.gluuCouchbaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
 | `global.oxshibboleth.enabled` | Whether to allow installation of oxshibboleth chart        | `false`                             |
 | `global.key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
 | `global.cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
@@ -125,7 +125,7 @@ If during installation the release was not defined, release name is checked by r
 
 ### couchbase
 To use couchbase as the backend persistence option, change the following values to use your own.
-`global.gluuCouchBaseUser`,`global.encodedCbPass` and `global.encodedCouchbaseCrt`.
+`global.gluuCouchbaseUser`,`global.encodedCouchbasePass` and `global.encodedCouchbaseCrt`.
 
 To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase server, use the command `kubectl get secret -n cbns couchbase-operator-tls -o yaml`. This assumes that couchbase was set up using Gluu Installation scripts.
 
