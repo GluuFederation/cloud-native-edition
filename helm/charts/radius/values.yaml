@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/radius
-  tag: 4.1
+  tag: 4.1.0_dev
   pullPolicy: Always
 
 nameOverride: ""

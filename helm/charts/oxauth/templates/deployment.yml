@@ -47,9 +47,6 @@ spec:
           - name: cb-cert
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
-          - name: casa
-            mountPath: "/etc/gluu/conf/casa.json"
-            subPath: casa.json
         livenessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
@@ -74,10 +71,7 @@ spec:
           secretName: {{ include "oxauth.name" . }}-cb-pass 
       - name: cb-cert 
         secret:
-          secretName: {{ include "oxauth.name" . }}-cb-cert
-      - name: casa 
-        configMap:
-          name: {{ include "oxauth.name" . }}-casacm 
+          secretName: {{ include "oxauth.name" . }}-cb-cert 
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       - name: {{ include "oxauth.fullname" . }}-updatelbip
         configMap:

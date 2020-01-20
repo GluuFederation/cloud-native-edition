@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/casa
-  tag: 4.2
+  tag: 4.2.0_dev
   pullPolicy: Always
 
 imagePullSecrets: []
