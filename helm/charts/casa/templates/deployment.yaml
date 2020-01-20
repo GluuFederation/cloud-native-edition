@@ -58,9 +58,6 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}          
           volumeMounts:
-            - name: {{ include "casa.name" . }}
-              mountPath: /etc/gluu/conf
-              subPath: casa.json
             - name: {{ include "casa.name" . }}-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
@@ -68,9 +65,6 @@ spec:
               mountPath: "/etc/gluu/certs/couchbase.crt"
               subPath: couchbase.crt 
       volumes:
-        - name: {{ include "casa.name" . }}
-          persistentVolumeClaim: 
-            claimName: {{ include "casa.fullname" . }}
         - name: {{ include "casa.name" . }}-pass
           secret:
             secretName: {{ include "casa.name" . }}-pass

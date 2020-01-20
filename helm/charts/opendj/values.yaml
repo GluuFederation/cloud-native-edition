@@ -24,7 +24,7 @@ replicas: 1
 
 image:
   repository: gluufederation/wrends
-  tag: 4.0.1_02
+  tag: 4.1
   pullPolicy: Always
 
 persistence:

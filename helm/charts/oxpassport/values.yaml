@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/oxpassport
-  tag: 4.0.1_03
+  tag: 4.1
   pullPolicy: Always
 
 nameOverride: ""
