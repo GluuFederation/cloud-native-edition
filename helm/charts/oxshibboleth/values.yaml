@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/oxshibboleth
-  tag: 4.1.0_dev
+  tag: 4.0.1_04
   pullPolicy: Always
 
 nameOverride: ""

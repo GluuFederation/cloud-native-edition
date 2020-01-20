@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/oxd-server
-  tag: 4.0.0_01
+  tag: 4.1.0_dev
   pullPolicy: Always
 
 nameOverride: ""
