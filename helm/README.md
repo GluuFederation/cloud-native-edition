@@ -76,9 +76,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.configAdapterName`    | The config backend adapter                                 | `Kubernetes`                        |
 | `global.configSecretAdapter`  | The secrets adapter                                        | `Kubernetes`                        |
 | `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
-| `global.gluuCouchbaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb.demo.gluu`   |
-| `global.gluuCouchbaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cb_user`       |
-| `global.gluuCouchbasePass`    | Password used to connect to couchbase                      | `password`                          |
+| `global.gluuCouchbaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cbgluu.cbns.svc.cluster.local`   |
+| `global.gluuCouchbaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `admin`       |
+| `global.gluuCouchbasePass`    | Password used to connect to couchbase                      | `P@ssw0rd`                          |
 | `global.gluuCouchbaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
 | `global.oxshibboleth.enabled` | Whether to allow installation of oxshibboleth chart        | `false`                             |
 | `global.key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
