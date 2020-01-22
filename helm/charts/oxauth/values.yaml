@@ -13,10 +13,6 @@ persistence:
   accessModes: ReadWriteOnce
   storageClassName: ""
 
-# VolumeClaim values
-volumeClaim:
-  storage: 50M
-
 #ConfigMap values
 gluuLdapUrl: opendj:1636
 gluuMaxRamFraction: 1

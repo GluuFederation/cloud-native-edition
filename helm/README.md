@@ -117,7 +117,6 @@ If during installation the release was not defined, release name is checked by r
 | `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
 | `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
 | `oxd-server.secret.keyStorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                   |
-| `casa.persistence.size`       | Storage size to be used                                    | `5Gi`                               |
 | `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
 | `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
 

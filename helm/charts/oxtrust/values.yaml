@@ -15,10 +15,6 @@ service:
   port: 8080
   clusterIp: None
 
-# PVC storage
-volumeClaim:
-  storage: 10M
-
 #resources: 
 limits:
   memory: 128Mi
