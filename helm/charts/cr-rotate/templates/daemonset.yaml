@@ -25,18 +25,3 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "cr-rotate.fullname" . }}
-          volumeMounts:
-            - name: cb-pass 
-              mountPath: "/etc/gluu/conf/couchbase_password"
-              subPath: couchbase_password
-            - name: cb-cert
-              mountPath: "/etc/certs/couchbase.crt"
-              subPath: couchbase.crt 
-      volumes: 
-        - name: cb-pass
-          secret:
-            secretName: {{ include "cr-rotate.fullname" . }}-cb-pass
-        - name: cb-cert
-          secret: 
-            secretName: {{ include "cr-rotate.fullname" . }}-cb-cert
-

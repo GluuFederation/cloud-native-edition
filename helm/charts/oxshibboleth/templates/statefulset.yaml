@@ -46,12 +46,6 @@ spec:
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
-          - name: cb-pass
-            mountPath: "/etc/gluu/conf/couchbase_password"
-            subPath: couchbase_password
-          - name: cb-cert
-            mountPath: "/etc/certs/couchbase.crt"
-            subPath: couchbase.crt
         livenessProbe:
           httpGet:
             path: /idp
@@ -84,10 +78,4 @@ spec:
           claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- else }}
           claimName: nfs
-          {{- end }}
-      - name: cb-pass 
-        secret:
-          secretName: {{ include "oxshibboleth.name" . }}-cb-pass
-      - name: cb-cert 
-        secret: 
-          secretName: {{ include "oxshibboleth.name" . }}-cb-cert 
+          {{- end }} 
