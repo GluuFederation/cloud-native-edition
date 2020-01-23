@@ -16,7 +16,7 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
 
-  namespace: default
+  namespace: gluu 
   nginxNamespace: ingress
   
   #service names to be used globally/by other charts
@@ -59,13 +59,13 @@ global:
 
   # Enable installation of services
   oxauth:
-    enabled: true
+    enabled: false
 
   persistence:
     enabled: true
 
   oxtrust:
-    enabled: true
+    enabled: false 
 
   config:
     enabled: true

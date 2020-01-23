@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "config.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   template:
     metadata:
