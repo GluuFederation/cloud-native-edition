@@ -42,7 +42,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap
+  gluuPersistenceType: ldap  
   # options: default/user/site/cache/statistic
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   gluuPersistenceLdapMapping: default

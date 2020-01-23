@@ -1,3 +1,4 @@
+{{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -19,4 +20,5 @@ data:
   # must the same as the opendj service name
   GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
 
+{{- end }}
   

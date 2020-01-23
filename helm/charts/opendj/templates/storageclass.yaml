@@ -1,3 +1,4 @@
+{{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -24,3 +25,5 @@ allowVolumeExpansion: true
 reclaimPolicy: {{ .Values.global.reclaimPolicy }}
 mountOptions:
   - debug
+
+{{- end }}
