@@ -2,6 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ include "config.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   storageClassName: {{ include "config.fullname" . }}
   accessModes:

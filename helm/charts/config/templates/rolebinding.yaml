@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.global.namespace }}
 subjects:
 - kind: User
-  name: system:serviceaccount:default:default # Name is case sensitive
+  name: system:serviceaccount:{{ .Values.global.namespace }}:default # Name is case sensitive
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role # this must be Role or ClusterRole
