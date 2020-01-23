@@ -18,7 +18,7 @@ data:
 
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType | quote }}
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
-  {{- if eq .Values.global.gluuPersistenceType "hybrid" }}
+  {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}
   {{- end }}
   {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid")  }}
