@@ -49,13 +49,14 @@ data:
 
     #global vars
     name = "tls-certificate"
-    namespace = {{ .Values.global.namespace }}
+    gluu_namespace = 'default'
+    user_defined_namespace = {{ .Values.global.namespace | quote }} 
 
     # check if gluu secret exists
     def get_certs():
-        if ( v1.read_namespaced_secret( 'gluu', namespace ) ):
-            ssl_cert = v1.read_namespaced_secret( 'gluu', namespace ).data['ssl_cert']
-            ssl_key = v1.read_namespaced_secret( "gluu", namespace ).data['ssl_key']
+        if ( v1.read_namespaced_secret( 'gluu', gluu_namespace ) ):
+            ssl_cert = v1.read_namespaced_secret( 'gluu', gluu_namespace ).data['ssl_cert']
+            ssl_key = v1.read_namespaced_secret( "gluu", gluu_namespace ).data['ssl_key']
             
             print('ssl_cert / {} \n ssl_key: {}'.format(ssl_cert, ssl_key) )
 
@@ -65,14 +66,14 @@ data:
 
         v1 = client.CoreV1Api()
         try:
-            secret = v1.read_namespaced_secret(name, namespace)
+            secret = v1.read_namespaced_secret(name, user_defined_namespace)
         except client.rest.ApiException as e:
             if e.status == 404:
                 print('secret/{} in ns/{} does not exist. Creating...'.format(
-                    name, namespace))
+                    name, user_defined_namespace))
                 metadata = {
                     'name': name,
-                    'namespace': namespace
+                    'namespace': user_defined_namespace
                 }
                 data = {
                     'tls.crt': cert,
@@ -82,7 +83,7 @@ data:
                 kind = 'Secret'
                 body = client.V1Secret(api_version, data , kind, metadata, 
                     type='kubernetes.io/tls')
-                api_response = v1.create_namespaced_secret(namespace, body )
+                api_response = v1.create_namespaced_secret(user_defined_namespace, body )
                 pprint(api_response)
             else:
                 logging.exception(e)
