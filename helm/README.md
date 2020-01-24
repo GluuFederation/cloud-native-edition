@@ -162,18 +162,16 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
 
   - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
     - Update `loadBalancerIP` value in `values.yaml` file.  
-          - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.metrics.service.loadBalancerIP`   
-          - `nginx-ingress.service.loadBalancerIP`  
+          - `nginx-ingress.controller.service.loadBalancerIP`
+          - `nginx-ingress.defaultBackend.service.loadBalancerIP` 
           - `global.nginxIp` 
     - Enable all the required services.
     - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .` 
 
 2. #### Mapped/registered FQDN
     - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
-          - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.metrics.service.loadBalancerIP`   
-          - `nginx-ingress.service.loadBalancerIP` 
+          - `nginx-ingress.controller.service.loadBalancerIP`
+          - `nginx-ingress.defaultBackend.service.loadBalancerIP` 
     - Enable the services that are required then install the chart by running
     `helm upgrade --install <release-name> -f values.yaml . `
 
