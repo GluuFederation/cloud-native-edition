@@ -67,9 +67,9 @@ spec:
       volumes:
       - name: {{ .Release.Name }}-shared-shib
         persistentVolumeClaim: 
-          {{- if and .Values.global.cloud.enabled (ne .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+          {{- if and .Values.global.cloud.enabled (ne .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           claimName: nfs
-          {{- else if and .Values.global.cloud.enabled (eq .Values.global.cloud.provisioner "kubernetes.io/aws-ebs") }}
+          {{- else if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           claimName: efs
           {{- else }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
