@@ -25,7 +25,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: 192.168.64.13 # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: 192.168.64.14 # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -52,7 +52,7 @@ global:
   # gluuCouchbaseUrl is the couchbase service name
   gluuCouchbaseUrl: cbgluu.cbns.svc.cluster.local 
   gluuCouchbaseUser: admin 
-  # gluuCouchbasePassFile is the location of password file. Should be name `couchbase_password` containing only password file
+  # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
   gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password 
   # gluuCouchbaseCertFile location of 
   gluuCouchbaseCertFile: /etc/gluu/conf/couchbase.crt

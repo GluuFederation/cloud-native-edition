@@ -78,9 +78,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.gluuPersistenceType`  | Which database backend to use                              | `ldap`                              |
 | `global.gluuCouchbaseUrl`     | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `cbgluu.cbns.svc.cluster.local`   |
 | `global.gluuCouchbaseUser`    | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase` | `admin`       |
-| `global.gluuCouchbasePass`    | Password used to connect to couchbase                      | `P@ssw0rd`                          |
-| `global.gluuCouchbaseCert`    | Certificate used when setting up couchbase. Either auto-generated or manually added | `random+string==`  |
-| `global.oxshibboleth.enabled` | Whether to allow installation of oxshibboleth chart        | `false`                             |
+| `global.gluuCouchbasePassFile`    | Location of `couchbase_password` file                  | `/etc/gluu/conf/couchbase_password` |
+| `global.gluuCouchbaseCertFile`    | Location of `couchbase.crt` used by cb for tls termination | `/etc/gluu/conf/couchbase.crt`  |
+| `global.oxshibboleth.enabled`     | Whether to allow installation of oxshibboleth chart        | `false`                         |
 | `global.key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
 | `global.cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
 | `global.radius.enabled`              | Enabled radius installation                                | `false`                             |
@@ -100,29 +100,26 @@ If during installation the release was not defined, release name is checked by r
 | `config.countryCode`          | Country code of where the Org is located                   | `US`                                |
 | `config.state`                | State                                                      | `TX`                                |
 | `config.ldapType`             | Type of LDAP server to use.                                | `opendj`                            |
-| `global.oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`               |
-| `global.opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                              |
+| `global.oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`        |
+| `global.opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                       |
 | `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE` |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
-| `global.persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                            |
-| `persistence.secrets`         | Couchbase credentials - password and ssl cert to connect to CB. `dummy-pass` and `dummy-cert`    |
+| `global.persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                     |
 | `persistence.configmap.gluuCasaEnabled`     | Enable auto install of casa chart/service while installing Gluu server chart | `false` |
 | `persistence.configmap.gluuPassportEnabled` | Auto install passport service chart          | `false`                             |
 | `persistence.configmap.gluuRadiusEnabled`   | Auto install radius service chart            | `false`                             |
 | `persistence.configmap.gluuSamlEnabled`     | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not. | `true` |
 | `oxd-server.enabled`          | Enable or disable installation of OXD server               | `false`                             |
-| `oxd-server.secret.keystore`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
-| `oxd-server.secret.keyStorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                   |
+| `oxd-server.configmap.adminKeystorePassword`  | Keystore used to initialise the key manager. User should change this  | Random key used here.    |
+| `oxd-server.configmap.applicationKeystorePassword` | Password used to decrypt the keystore generated above  | `example-P@ss`                       |  
 | `nginx.ingress.enabled`       | Set routing rules to different services                    | `true`                              |
 | `nginx.ingress.hosts`         | Domain name to be used while accessing the server          | `demoexample.gluu.org`              |
 
 ## Persistence
 
 ### couchbase
-To use couchbase as the backend persistence option, change the following values to use your own.
-`global.gluuCouchbaseUser`,`global.encodedCouchbasePass` and `global.encodedCouchbaseCrt`.
-
-To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase server, use the command `kubectl get secret -n cbns couchbase-operator-tls -o yaml`. This assumes that couchbase was set up using Gluu Installation scripts.
+To use couchbase as the backend persistence option, please install helm using the installation script by running the command
+`./pygluu-kuberenetes.pyz install-couchbase`.
 
 ## Deployments
 
