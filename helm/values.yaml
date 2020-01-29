@@ -16,7 +16,7 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
 
-  namespace: gluu 
+  namespace: default 
   nginxNamespace: ingress
   
   #service names to be used globally/by other charts
@@ -25,7 +25,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: 192.168.64.12 # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: 192.168.64.13 # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -59,22 +59,19 @@ global:
 
   # Enable installation of services
   oxauth:
-    enabled: false
-
-  persistence:
     enabled: true
-
-  oxtrust:
-    enabled: false 
 
   config:
-    enabled: true
+    enabled: true 
+
+  persistence:
+    enabled: true 
+
+  oxtrust:
+    enabled: true   
 
   opendj:
     enabled: true
-
-  rbac:
-    enabled: false 
 
   oxshibboleth:
     enabled: false

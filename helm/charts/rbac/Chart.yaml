@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "4.0.0"
-description: Role Base Access Control Helm chart
-name: rbac
-version: 1.0.0

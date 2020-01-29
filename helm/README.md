@@ -94,9 +94,6 @@ If during installation the release was not defined, release name is checked by r
 | `efs-provisioner.efsProvisioner.dnsName` | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com | `" "`                 |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`  | EFS id        | `" "`                                                        |
 | `efs-provisioner.efsProvisioner.awsRegion`        | AWS region which the deployment is taking place | `us-west-2`                |
-| `nginx-ingress.controller.service.loadBalancerIP` | This is used if cloud deployment is used. It is the IP address associated with the FQDN `global.domain` to be used | `34.70.112.93` |
-| `nginx-ingress.metrics.service.loadBalancerIP`    | As described above                     | `34.70.112.93`                      |
-| `nginx-ingress.service.loadBalancerIP`            | As described above                     | `34.70.112.93`                      |
 | `config.orgName`              | Organisation Name                                          | `Gluu`                              |
 | `config.email`                | Email to be registered with ssl                            | `support@gluu.org`                  |
 | `config.adminPass`            | Admin password to log in to the UI                         | `P@ssw0rd`                          |
@@ -134,20 +131,12 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
 
    ### Common instructions on all Cloud providers (Both AWS and GKE)
     - Change `global.provisioner` value in `values.yaml` to `kubernetes.io/gce-pd` 
-    - Enabling RBAC in the cluster before deploying the chart. This has to be done first.  
-      To do this deploy the `tiller.yaml` file   
-      `$ kubectl apply -f tiller.yaml`
     - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
     - Disable `rbac` sub-chart installation. Instructions can be found in the config table above.  
       `rbac.enabled: false`
-    - Disable all services except `nginx-ingress` services. For example, to disable `config` service    
-      ```
-        global
-          config:
-            enabled: false 
-      ```
-        > **_NOTE:_** If FQDN is registered, no need to disable these services. Just forward the FQDN to the LB address.
-    - Install the chart by running   
+    - Install `nginx-ingress` Helm chart that can be found [nginx-ingress](https://github.com/kubernetes/ingress-nginx).
+    - Make sure to forward the FQDN to the LB address. 
+    - Install the main Gluu server chart by running   
     `helm install <release-name> -f values.yaml .`  
 
   ### GCE
@@ -160,16 +149,16 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
       `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 
   - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
-    - Update `loadBalancerIP` value in `values.yaml` file.  
+    - Update `loadBalancerIP` value in both `nginx-ingress` Chart's and Gluu Server Chart `values.yaml` files.  
+    - In `nginx-ingress`
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
           - `nginx-ingress.service.loadBalancerIP`  
+    - For Gluu Server chart
           - `global.nginxIp` 
-    - Enable all the required services.
-    - Upgrade the chart with the new values `helm upgrade --install <release-name> -f values.yaml .` 
 
 2. #### Mapped/registered FQDN
-    - Update `loadBalancerIP` value in `values.yaml` file with IP that is already mapped to a domain. 
+    - Update `loadBalancerIP` value in `nginx-ingress` `values.yaml`'s file with IP that is already mapped to a domain. 
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.metrics.service.loadBalancerIP`   
           - `nginx-ingress.service.loadBalancerIP` 
@@ -306,7 +295,21 @@ oxd-server:
     keystorePassword: "example-pass"
 ```
 
-If one doesn't have a key store it must be generated and place to the variable mentioned above. To generate, find the instructions [here](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore)
+To generate a keystore one can run this command, making sure to change the relevant values.
+```
+    keytool -genkey -noprompt \
+      -alias oxd-server \
+      -dname "CN=oxd-server, OU=ID, O=Gluu, L=Gluu, S=TX, C=US" \
+      -keystore oxd-server.keystore \
+      -storepass <pass>\
+      -keypass <pass>\
+      -deststoretype pkcs12 \
+      -keysize 2048
+```
+
+### Casa
+
+- Casa is dependant on `oxd-server`. Make sure it's enabled if one wants to use `Casa`.
 
 ### Redis
 
