@@ -80,7 +80,7 @@ global:
     enabled: false
 
   oxd-server:
-    enabled: false
+    enabled: true 
 
   # redis should be enabled only when cacheType is REDIS
   redis:
@@ -116,19 +116,6 @@ efs-provisioner:
     persistentVolume:
       accessModes: ReadWriteMany
       storage: 5Gi
-
-nginx-ingress:
-  controller:
-    service:
-      loadBalancerIP: ""
-  ## default 404 backend
-  defaultBackend:
-    service:
-      loadBalancerIP: ""
-      ## Set external traffic policy to: "Local" to preserve source IP on
-      ## providers supporting it
-      ## Ref: https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-typeloadbalancer
-      externalTrafficPolicy: "Local"
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
