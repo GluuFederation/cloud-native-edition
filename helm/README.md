@@ -84,7 +84,6 @@ If during installation the release was not defined, release name is checked by r
 | `global.key-rotation.enabled`        | Allow key rotation                                         | `false`                             |
 | `global.cr-rotate.enabled`           | Allow cache rotation deployment                            | `false`                             |
 | `global.radius.enabled`              | Enabled radius installation                                | `false`                             |
-| `global.rbac.enabled`                | Enable/disable tiller RBAC in the cluster. it should be disabled when deploying to cloud  | `true` |
 | `global.redis.enabled`               | Whether to allow installation of redis chart.              | `false`                             |
 | `global.shared-shib.enabled`         | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services. | `true`                             |
 | `global.oxtrust.enabled`             | Allow installation of oxtrust                              |  `true`                             |
@@ -132,9 +131,7 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
    ### Common instructions on all Cloud providers (Both AWS and GKE)
     - Change `global.provisioner` value in `values.yaml` to `kubernetes.io/gce-pd` 
     - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
-    - Disable `rbac` sub-chart installation. Instructions can be found in the config table above.  
-      `rbac.enabled: false`
-    - Install `nginx-ingress` Helm chart that can be found [nginx-ingress](https://github.com/kubernetes/ingress-nginx).
+    - Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress) 
     - Make sure to forward the FQDN to the LB address. 
     - Install the main Gluu server chart by running   
     `helm install <release-name> -f values.yaml .`  
@@ -288,21 +285,9 @@ one only needs to set `true` or ``false` in the persistence configs as shown bel
 > **_NOTE:_** If these two are not provided `oxd-server` will fail to start.
 ```
 oxd-server:
-  secret:
-    keystore: nkjnjnkjJBJBKndjBHNJxxxx
-    keystorePassword: "example-pass"
-```
-
-To generate a keystore one can run this command, making sure to change the relevant values.
-```
-    keytool -genkey -noprompt \
-      -alias oxd-server \
-      -dname "CN=oxd-server, OU=ID, O=Gluu, L=Gluu, S=TX, C=US" \
-      -keystore oxd-server.keystore \
-      -storepass <pass>\
-      -keypass <pass>\
-      -deststoretype pkcs12 \
-      -keysize 2048
+  configmap:
+    adminKeystorePassword: admin-example-password
+    applicationKeystorePassword: app-example-pass
 ```
 
 ### Casa

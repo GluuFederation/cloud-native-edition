@@ -24,10 +24,8 @@ data:
   DB_FILE_LOCATION: "/opt/oxd-server/data/oxd_db"
   APPLICATION_CONNECTOR_HTTPS_PORT: "8443"
   APPLICATION_KEYSTORE_PATH: "/opt/oxd-server/conf/oxd-server.keystore"
-  APPLICATION_KEYSTORE_PASSWORD: {{ .Values.secret.keystorePassword | quote }}
   ADMIN_CONNECTOR_HTTPS_PORT: "8444"
   ADMIN_KEYSTORE_PATH: "/opt/oxd-server/conf/oxd-server.keystore"
-  ADMIN_KEYSTORE_PASSWORD: {{ .Values.secret.keystorePassword | quote }}
   GLUU_LOG_LEVEL: "TRACE"
   XDI_LOG_LEVEL: "TRACE"
   THRESHOLD: "TRACE"
@@ -44,4 +42,6 @@ data:
   DEFAULT_SITE_CONFIG_UI_LOCALES: "['en']"
   DEFAULT_SITE_CONFIG_CLAIMS_LOCALES: "['en']"
   DEFAULT_SITE_CONFIG_CONTACTS: "[]"
+  APPLICATION_KEYSTORE_PASSWORD: {{ .Values.configmap.applicationKeystorePassword | quote }}
+  ADMIN_KEYSTORE_PASSWORD: {{ .Values.configmap.adminKeystorePassword | quote }}
   LB_ADDR: {{ .Values.global.lbAddr | quote }}
