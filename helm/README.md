@@ -152,14 +152,14 @@ To get the `encodedCouchbaseCrt` certificate used to authenticate to couchbase s
     - Update `loadBalancerIP` value in both `nginx-ingress` Chart's and Gluu Server Chart `values.yaml` files.  
     - In `nginx-ingress`
           - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.defaulBackend.service.loadBalancerIP`
+          - `nginx-ingress.defaultBackend.service.loadBalancerIP`
     - For Gluu Server chart
           - `global.nginxIp` 
 
 2. #### Mapped/registered FQDN
     - Update `loadBalancerIP` value in `nginx-ingress` `values.yaml`'s file with IP that is already mapped to a domain. 
           - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.defaulBackend.service.loadBalancerIP` 
+          - `nginx-ingress.defaultBackend.service.loadBalancerIP` 
     - Enable the services that are required then install the chart by running
     `helm upgrade --install <release-name> -f values.yaml . `
 
