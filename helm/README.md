@@ -15,14 +15,12 @@ It also packages other components/services that makeup Gluu Server.
 
 - Kubernetes 1.x 
 - PV provisioner support in the underlying infrastructure
-- Helm 
+- Helm3
 
 ### Instructions to set up Helm in a kubernetes cluster.
 1. To install kubernetes follow the official guide found at [kubernetes](https://kubernetes.io/docs/setup/).  
-2. After that, install Helm by following the guide [here](https://helm.sh/docs/using_helm/)  
-3. Once one has access to a cluster, and installed Helm. Next step is to initialize Helm.   
-`$ helm init `
-
+2. After that, install Helm by following the guide [here](https://helm.sh/docs/using_helm/) 
+3. If one wants to deploy to a different namespace apart from `default`, it should be created first. 
 
 ## Instructions on installing the chart
 
@@ -36,9 +34,10 @@ For both deployments, different configurations needs to be changed depending on 
 
 The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
 
-`helm install <release-name> -f values.yaml .`  
+`helm install <release-name> -f values.yaml -n <namespace> .`  
 
-`< . >` means that this command is run in the root directory of the helm directory.
+**_NOTE_** `< . >` means that this command is run in the root directory of the helm directory.  
+**_NOTE_** If default namespace is used, no need to include it in the install or upgrade commands.
 
 
 Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
@@ -55,7 +54,7 @@ To install the chart on different platforms follow individual instructions.
 
 To uninstall/delete `my-release` deployment:
 
-`$ helm delete my-release`
+`$ helm delete <my-release>`
 
 If during installation the release was not defined, release name is checked by running `$ helm ls` then deleted using the previous command and the default release name.
 
@@ -133,7 +132,7 @@ To use couchbase as the backend persistence option, please install helm using th
     - Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress) 
     - Make sure to forward the FQDN to the LB address. 
     - Install the main Gluu server chart by running   
-    `helm install <release-name> -f values.yaml .`  
+    `helm install <release-name> -f values.yaml -n <namespace> . `  
 
   ### GCE
   Two options from here.
@@ -157,7 +156,7 @@ To use couchbase as the backend persistence option, please install helm using th
           - `nginx-ingress.controller.service.loadBalancerIP`  
           - `nginx-ingress.defaultBackend.service.loadBalancerIP` 
     - Enable the services that are required then install the chart by running
-    `helm upgrade --install <release-name> -f values.yaml . `
+    `helm upgrade --install <release-name> -f values.yaml -n <namespace> . `
 
 
   ### AWS   
@@ -226,7 +225,7 @@ To use couchbase as the backend persistence option, please install helm using th
            enabled: false    -----> changed from false to true
       ```
    - Enable the services that are required then install the chart by running
-    `helm upgrade --install <release-name> -f values.yaml . `
+    `helm upgrade --install <release-name> -f values.yaml -n <namespace>. `
     
     
 2. ## Local deployments
