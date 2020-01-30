@@ -65,6 +65,7 @@ If during installation the release was not defined, release name is checked by r
 |:------------------------------|:-----------------------------------------------------------|:------------------------------------|
 | `global.cloud.enabled`        | Whether to enable cloud provisioning.                      | `false`                             |
 | `global.provisioner`          | Which cloud provisioner to use when deploying              | `k8s.io/minikube-hostpath`          |
+| `global.provisioner.awsLocalStorage`  | Deploy to AWS cloud but use localstorage           | `true`                              |
 | `global.namespace`            | namespace in which to deploy the server                    | `default`                           |
 | `global.ldapServiceName`      | ldap service name. Used to connect other services to ldap  | `opendj`                            |
 | `global.nginxIp`              | IP address to be used with a FQDN                          | `192.168.99.100` (for minikube)     |
@@ -162,7 +163,8 @@ To use couchbase as the backend persistence option, please install helm using th
   ### AWS   
   #### Domain Name not registered   
 
-   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.provisioner`
+   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.provisioner`   
+   - Also define if you want to use `localstorage` or EFS by setting `global.provisioner.awsLocalStorage` to the appropriate value. Set it to true if you would    like to use localstorage and vice versa.    
    - Get the `loadBalancer` DNS hostname provisioned by the `nginx-ingress` e.g
    ```
     $ kubectl get svc | grep ingress-controller

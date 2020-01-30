@@ -12,3 +12,4 @@ spec:
     - {{ .Values.persistence.accessMode }}
   hostPath:
     path: "/data/shared-shibboleth-idp"
+    type: DirectoryOrCreate

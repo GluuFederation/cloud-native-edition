@@ -78,6 +78,8 @@ spec:
             claimName: {{ .Release.Name }}-shared-shib-pvc
             {{- else if eq .Values.global.provisioner "microk8s.io/hostpath" }}
             claimName: {{ .Release.Name }}-shared-shib-pvc
+            {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.provisioner.awsLocalStorage ) }}
+            claimName: {{ .Release.Name }}-shared-shib-pvc
             {{- else }}
             claimName: nfs
             {{- end }}

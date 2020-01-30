@@ -5,7 +5,8 @@ global:
     enabled: false
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
-  provisioner: k8s.io/minikube-hostpath   
+  provisioner: k8s.io/minikube-hostpath
+    awsLocalStorage: true 
   encrypted: true
   pool: default
   fsType: ext4
