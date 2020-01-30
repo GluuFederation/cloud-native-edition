@@ -43,6 +43,11 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "radius.fullname" . }}
+        volumeMounts:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          - name: {{ include "radius.fullname" .}}-updatelbip
+            mountPath: /scripts
+        {{- end }}
         livenessProbe:
           exec:
             command:
@@ -59,6 +64,12 @@ spec:
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
+      volumes:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "radius.fullname" .}}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+        {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
         - ip: {{ .Values.global.nginxIp }}
