@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "casa.name" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
 {{ include "casa.labels" . | indent 4 }}
 spec:

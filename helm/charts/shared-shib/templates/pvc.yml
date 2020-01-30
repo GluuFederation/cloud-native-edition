@@ -2,6 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-shared-shib-pvc
+  namespace: {{ .Values.global.namespace }}
 spec:
   storageClassName: ""
   volumeName: {{ template "shared-shib.fullname" . }} 

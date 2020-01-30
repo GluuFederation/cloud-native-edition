@@ -2,9 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "oxauth.fullname" . }}-cm
+  namespace: {{ .Values.global.namespace }}
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
+  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
+  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
   LB_ADDR: {{ .Values.global.lbAddr }}

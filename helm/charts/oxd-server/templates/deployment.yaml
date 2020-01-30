@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "oxd-server.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "oxd-server.name" . }}
     chart: {{ include "oxd-server.chart" . }}
@@ -19,10 +20,6 @@ spec:
         app: {{ include "oxd-server.name" . }}
         release: {{ .Release.Name }}
     spec:
-      volumes:
-        - name: {{ include "oxd-server.name" . }}
-          persistentVolumwGame:
-            claimName: {{ include "oxd-server.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

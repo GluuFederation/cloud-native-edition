@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "key-rotation.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "key-rotation.name" . }}
     chart: {{ include "key-rotation.chart" . }}

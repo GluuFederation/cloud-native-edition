@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: {{ template "shared-shib.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
       shared-shib: shib
 spec:

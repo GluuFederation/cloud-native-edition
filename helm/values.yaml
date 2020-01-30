@@ -5,7 +5,7 @@ global:
     enabled: false
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
-  provisioner: microk8s.io/hostpath   
+  provisioner: k8s.io/minikube-hostpath   
   encrypted: true
   pool: default
   fsType: ext4
@@ -15,7 +15,7 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
 
-  namespace: default 
+  namespace: gluu  
   nginxNamespace: ingress
   
   #service names to be used globally/by other charts
@@ -24,7 +24,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: 192.168.64.14 # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: 192.168.64.13 # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"

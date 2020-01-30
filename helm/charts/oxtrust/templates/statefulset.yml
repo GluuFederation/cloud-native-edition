@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "oxtrust.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "oxtrust.fullname" . }}
     APP_NAME: oxtrust

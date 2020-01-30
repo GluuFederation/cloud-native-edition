@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: oxtrust
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "oxtrust.fullname" . }}
     APP_NAME: oxtrust

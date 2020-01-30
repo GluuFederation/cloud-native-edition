@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "redis.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "redis.name" . }}
     chart: {{ include "redis.chart" . }}

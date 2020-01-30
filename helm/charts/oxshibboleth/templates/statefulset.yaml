@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "oxshibboleth.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "oxshibboleth.name" . }}
     chart: {{ include "oxshibboleth.chart" . }}

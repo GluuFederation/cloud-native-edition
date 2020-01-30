@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "oxpassport.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ include "oxpassport.name" . }}
     chart: {{ include "oxpassport.chart" . }}
@@ -63,7 +64,7 @@ spec:
           configMap:
             name: {{ .Release.Name }}-updatelbip
       {{- end }}
-          resources:
+        resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
