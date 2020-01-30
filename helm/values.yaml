@@ -115,6 +115,11 @@ efs-provisioner:
     persistentVolume:
       accessModes: ReadWriteMany
       storage: 5Gi
+casa:
+  image:
+    repository: gluufederation/casa
+    tag: 4.2.0_dev
+    pullPolicy: Always
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -131,6 +136,28 @@ config:
   # ldapType only OpenDJ is supported
   ldapType: opendj
 
+  image:
+    repository: gluufederation/config-init
+    tag: 4.0.1_04
+
+cr-rotate:
+  image:
+    repository: gluufederation/cr-rotate
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+key-rotation:
+  image:
+    repository: gluufederation/key-rotation
+    tag: 4.0.1_05
+    pullPolicy: Always
+
+nfs:
+  image:
+    repository: k8s.gcr.io/volume-nfs
+    tag: 0.8
+    pullPolicy: IfNotPresent
+
 opendj:
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
@@ -140,23 +167,43 @@ opendj:
   persistence:
     size: 5Gi
 
+  image:
+    repository: gluufederation/wrends
+    tag: 4.0.0_dev
+    pullPolicy: Always
+
 # persistence layer
 persistence:
+  image:
+    repository: gluufederation/persistence
+    tag: 4.0.1_04
+    pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false 
     gluuOxtrustApiTestMode: false 
     # Auto install other services. If enabled the respective service chart will be installed
+    gluuPassportEnabled: false 
     gluuCasaEnabled: false 
-    gluuPassportEnabled: false
     gluuRadiusEnabled: false 
     gluuSamlEnabled: true
+
+oxauth:
+  image:
+    repository: gluufederation/oxauth
+    tag: 4.1.0_dev
+    pullPolicy: Always
 
 oxd-server:
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
   configmap:
     adminKeystorePassword: Passw0rd
     applicationKeystorePassword: Passw0rd
-    
+
+  image:
+    repository: gluufederation/oxd-server
+    tag: 4.1.0_dev
+    pullPolicy: Always
+  
   resources: {}
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -181,6 +228,11 @@ nginx:
 
 # oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
+  image:
+    repository: gluufederation/oxpassport
+    tag: 4.0.1_03
+    pullPolicy: Always
+
   resources: {}
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -190,3 +242,27 @@ oxpassport:
   # requests:
   #  cpu: 100m
   #  memory: 128Mi 
+
+oxshibboleth:
+  image:
+    repository: gluufederation/oxshibboleth
+    tag: 4.0.1_04
+    pullPolicy: Always
+
+oxtrust:
+  image:
+    repository: gluufederation/oxtrust
+    tag: 4.0.1_06
+    pullPolicy: Always
+
+radius:
+  image:
+    repository: gluufederation/radius
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+redis:
+  image:
+    repository: redis
+    tag: alpine
+    pullPolicy: IfNotPresent
