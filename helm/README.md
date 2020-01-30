@@ -231,19 +231,19 @@ To use couchbase as the backend persistence option, please install helm using th
     ### minikube
     - Most of the default args are meant to install the chart to a local environment.
     - One should not forget to add the domain to local machine in `/etc/hosts` file pointing to the minikube IP as shown below.
-    ```
-    ~ cat /etc/hosts
-    ##
-    # Host Database
-    #
-    # localhost is used to configure the loopback interface
-    # when the system is booting.  Do not change this entry.
-    ##
-    192.168.99.100	demoexample.gluu.org #minikube IP and example domain
-    127.0.0.1	localhost
-    255.255.255.255	broadcasthost
-    ::1             localhost
-    ```
+      ```
+      ~ cat /etc/hosts
+      ##
+      # Host Database
+      #
+      # localhost is used to configure the loopback interface
+      # when the system is booting.  Do not change this entry.
+      ##
+      192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+      127.0.0.1	localhost
+      255.255.255.255	broadcasthost
+      ::1             localhost
+      ```
 
     ### microk8s
     - Use microk8s configfile with a local installation of `kubectl` to access the VM-k8s. For example in Mac
@@ -259,7 +259,7 @@ To use couchbase as the backend persistence option, please install helm using th
 
     - Get the IP of microk8s VM `multipass list` and include it in the `hosts` file.
     - From here, things are all the same.
-      `helm install <release-name> .`
+      `helm install <release-name> -f values.yaml .`
     
 **_NOTE_** Enabling support of `oxtrust API` and `oxtrust TEST_MODE`
  To enable `oxtrust API` support, user should set the variable `gluuOxtrustApiEnabled` in the persistence service to true.
@@ -297,7 +297,7 @@ one only needs to set `true` or ``false` in the persistence configs as shown bel
 ### OXD-server
 
 > **_NOTE:_** When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
-> **_NOTE:_** If these two are not provided `oxd-server` will fail to start.
+> **_NOTE:_** If these two are not provided `oxd-server` will fail to start.   
 > **_NOTE:_** For these passwords, stick to digits and numbers only.
 ```
 oxd-server:
