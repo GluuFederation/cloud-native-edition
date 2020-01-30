@@ -49,6 +49,7 @@ To install the chart on different platforms follow individual instructions.
  - [GCP](#GCE)
  - [AWS](#AWS)
  - [Minikube](#minikube)
+ - [Microk8s](#micrk8s)
 
 ## Uninstalling the Chart
 
@@ -243,6 +244,23 @@ To use couchbase as the backend persistence option, please install helm using th
     255.255.255.255	broadcasthost
     ::1             localhost
     ```
+
+    ### microk8s
+    - Use microk8s configfile with a local installation of `kubectl` to access the VM-k8s. For example in Mac
+      `multipass exec microk8s-vm -- /snap/bin/microk8s.config > $HOME/.kube/config`
+    - For microk8s there are some services we need to enable.
+        - Enable Helm3    - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable helm3`
+
+        - Enable storrage - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable storage`
+
+        - Enable ingress  - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable ingress`
+
+        - Enable DNS      - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable dns`
+
+    - Get the IP of microk8s VM `multipass list` and include it in the `hosts` file.
+    - From here, things are all the same.
+      `helm install <release-name> .`
+    
 **_NOTE_** Enabling support of `oxtrust API` and `oxtrust TEST_MODE`
  To enable `oxtrust API` support, user should set the variable `gluuOxtrustApiEnabled` in the persistence service to true.
   ```
@@ -280,6 +298,7 @@ one only needs to set `true` or ``false` in the persistence configs as shown bel
 
 > **_NOTE:_** When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
 > **_NOTE:_** If these two are not provided `oxd-server` will fail to start.
+> **_NOTE:_** For these passwords, stick to digits and numbers only.
 ```
 oxd-server:
   configmap:

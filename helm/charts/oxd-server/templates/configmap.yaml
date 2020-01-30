@@ -44,4 +44,6 @@ data:
   DEFAULT_SITE_CONFIG_CONTACTS: "[]"
   APPLICATION_KEYSTORE_PASSWORD: {{ .Values.configmap.applicationKeystorePassword | quote }}
   ADMIN_KEYSTORE_PASSWORD: {{ .Values.configmap.adminKeystorePassword | quote }}
-  LB_ADDR: {{ .Values.global.lbAddr | quote }}
+  {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+  LB_ADDR: {{ .Values.global.lbAddr }}
+  {{- end }}

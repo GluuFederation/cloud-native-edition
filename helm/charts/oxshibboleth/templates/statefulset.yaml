@@ -76,6 +76,8 @@ spec:
           claimName: efs
           {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
+          {{- else if eq eq .Values.global.provisioner "microk8s.io/hostpath" }}
+          claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- else }}
           claimName: nfs
           {{- end }} 

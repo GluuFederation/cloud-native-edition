@@ -3,10 +3,9 @@ global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
     enabled: false
-    # provisioner: kubernetes.io/aws-ebs
 
-  # values used to define the StorageClass template
-  provisioner: k8s.io/minikube-hostpath # kubernetes.io/aws-ebs 
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
+  provisioner: microk8s.io/hostpath   
   encrypted: true
   pool: default
   fsType: ext4
@@ -155,8 +154,8 @@ persistence:
 oxd-server:
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
   configmap:
-    adminKeystorePassword: admin-example-password
-    applicationKeystorePassword: app-example-pass
+    adminKeystorePassword: Passw0rd
+    applicationKeystorePassword: Passw0rd
     
   resources: {}
   # If you do want to specify resources, uncomment the following

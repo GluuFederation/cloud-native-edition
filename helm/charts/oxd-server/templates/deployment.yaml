@@ -42,17 +42,11 @@ spec:
             - configMapRef:
                 name: {{ include "oxd-server.fullname" . }}
           volumeMounts:
-            - name: oxd-keystore-file
-              mountPath: /opt/oxd-server/conf/oxd-server.keystore    
-              subPath: oxd-server.keystore
             {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
             - name: {{ include "oxd-server.name" . }}-updatelbip
               mountPath: /scripts
             {{- end }}
       volumes:
-        - name: oxd-keystore-file
-          secret:
-            secretName: {{ include "oxd-server.fullname" . }}
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxd-server.name" . }}-updatelbip
           configMap:
