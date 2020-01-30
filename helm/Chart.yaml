@@ -47,6 +47,12 @@ dependencies:
       condition: persistence.configmap.gluuPassportEnabled
       tags:
         - oxpassport
+
+    - name: casa
+      condtion: persistence.configmap.gluuCasaEnabled
+      version: 1.0.0
+      tags:
+        - casa 
   
     - name: key-rotation
       condition: global.key-rotation.enabled
@@ -76,10 +82,6 @@ dependencies:
   
     - name: oxd-server
       condition: global.oxd-server.enabled
-      version: 1.0.0
-    
-    - name: casa
-      condtion: persistence.configmap.gluuCasaEnabled
       version: 1.0.0
   
     - name: persistence
