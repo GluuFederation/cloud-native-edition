@@ -13,42 +13,244 @@ It also packages other components/services that makeup Gluu Server.
 
 ## Prerequisites
 
-- Kubernetes 1.x 
+- Kubernetes 1.x
 - PV provisioner support in the underlying infrastructure
 - Helm3
 
 ### Instructions to set up Helm in a kubernetes cluster.
 1. To install kubernetes follow the official guide found at [kubernetes](https://kubernetes.io/docs/setup/).  
-2. After that, install Helm by following the guide [here](https://helm.sh/docs/using_helm/) 
-3. If one wants to deploy to a different namespace apart from `default`, it should be created first. 
+2. Install Helm using the following [guide](https://helm.sh/docs/using_helm/)
+
+## Quickstart
+- Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/tree/4.1).
+
+- Run :
+
+  ```bash
+  ./pygluu-kubernetes.pyz helm-install
+  ```
+
+## Installing using Helm manually
+
+1) Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
+
+   ```bash
+   helm repo add stable https://helm.nginx.com/stable
+   helm repo update
+   helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
+   ```
+
+1)  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
+
+    - If the FQDN is not registered aquire the loadbalancers ip if on **GCE**, or **Azure** using `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'` and if on **AWS** get the loadbalancers addresss using `kubectl -n ingress-nginx get svc ingress-nginx \--output jsonpath='{.status.loadBalancer.ingress[0].hostname}'`.
+
+1)  - If deploying on the cloud make sure to take a look at the cloud specific notes before continuing.
+
+      * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
+      * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
+      * [Azure - AKS](#azure---aks) ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
+
+    - If deploying locally make sure to take a look at the specific notes bellow before continuing.
+
+      * [Minikube](#minikube)
+      * [MicroK8s](#microk8s)
+
+1)  Make sure you are in the same directory as the `values.yaml` file and run:
+
+   ```bash
+   helm install <release-name> -f values.yaml -n <namespace> .
+   ```
+
+  ## Amazon Web Services (AWS) - EKS
+
+  ### If using EFS make sure of the following:
+
+  1. EFS created
+
+  1. EFS must be inside the same region as the EKS cluster
+
+  1. VPC of EKS and EFS are the same
+
+  1. Security group of EFS allows all connections from EKS nodes
+
+  ### Required changes to the `values.yaml`
+
+  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+
+  ```yaml
+  #global values to be used across charts
+  global:
+      awsLocalStorage: true #CHANGE-THIS if not in production ,hence not using EFS set awsLocalStorage to true to use for shared shibboleth files.
+    provisioner: kubernetes.io/aws-ebs #CHANGE-THIS
+    lbAddr: "" #CHANGE-THIS to the address recieved in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
+    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+    isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
+
+  # If using EFS change the marked values from your EFS below:
+  efs-provisioner:
+    efsProvisioner:
+
+      # Change the following:
+      dnsName: "" #CHANGE-THIS if efs is used to fs-xxxxxx.efs.us-east-1.amazonaws.com
+      efsFileSystemId: "" #CHANGE-THIS if efs is used to  fs-xxx
+      awsRegion: "" #CHANGE-THIS if efs is used to us-east-1
+      path: /opt/shared-shibboleth-idp
+      provisionerName: example.com/gcp-efs
+      storageClass:
+        name: gcp-efs
+        isDefault: false
+      persistentVolume:
+        accessModes: ReadWriteMany
+        storage: 5Gi
+
+  nginx:
+    ingress:
+      enabled: true
+      path: /
+      hosts:
+        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      tls:
+        - secretName: tls-certificate
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+  ```    
+
+  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+
+  ## GCE (Google Cloud Engine) - GKE
+
+  ### Required changes to the `values.yaml`
+
+  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+
+  ```yaml
+  #global values to be used across charts
+  global:
+      awsLocalStorage: true
+    provisioner: kubernetes.io/gce-pd #CHANGE-THIS
+    lbAddr: ""
+    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      # Networking configs
+    nginxIp: "" #CHANGE-THIS  to the IP recieved from the previous step
+    domain: demoexample.gluu.org
+    isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
+  nginx:
+    ingress:
+      enabled: true
+      path: /
+      hosts:
+        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      tls:
+        - secretName: tls-certificate
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+  ```
+
+  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+
+  ## Minikube
+
+  - Enable ingress on minikube
+
+  ```bash
+  minikube addons enable ingress
+  ```
+
+  ### Required changes to the `values.yaml`
+
+  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+
+  ```yaml
+  #global values to be used across charts
+  global:
+      awsLocalStorage: true
+    provisioner: k8s.io/minikube-hostpath #CHANGE-THIS
+    lbAddr: ""
+    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+    nginxIp: "" #CHANGE-THIS  to the IP of minikube <minikube ip>
+
+  nginx:
+    ingress:
+      enabled: true
+      path: /
+      hosts:
+        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      tls:
+        - secretName: tls-certificate
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+  ```
+
+  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+
+  - Map gluus FQDN at `/etc/hosts` file  to the minikube IP as shown below.
+
+  ```bash
+  ##
+  # Host Database
+  #
+  # localhost is used to configure the loopback interface
+  # when the system is booting.  Do not change this entry.
+  ##
+  192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+  127.0.0.1	localhost
+  255.255.255.255	broadcasthost
+  ::1             localhost
+  ```
+
+  ## Microk8s
+
+  - Enable `helm3`, `storage`, `ingress` and `dns`.
+
+  ```bash
+  sudo microk8s.enable helm3 storage ingress dns
+  ```
+
+  ### Required changes to the `values.yaml`
+
+  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+
+  ```yaml
+  #global values to be used across charts
+  global:
+      awsLocalStorage: true
+    provisioner: microk8s.io/hostpath #CHANGE-THIS
+    lbAddr: ""
+    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+    nginxIp: "" #CHANGE-THIS  to the IP of the microk8s vm
+
+  nginx:
+    ingress:
+      enabled: true
+      path: /
+      hosts:
+        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      tls:
+        - secretName: tls-certificate
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+  ```
+
+  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+
+  - Map gluus FQDN at `/etc/hosts` file  to the microk8s vm IP as shown below.
+
+  ```bash
+  ##
+  # Host Database
+  #
+  # localhost is used to configure the loopback interface
+  # when the system is booting.  Do not change this entry.
+  ##
+  192.168.99.100	demoexample.gluu.org #microk8s IP and example domain
+  127.0.0.1	localhost
+  255.255.255.255	broadcasthost
+  ::1             localhost
+  ```
 
 ## Instructions on installing the chart
 
-> **_NOTE:_** If one is planning to use Couchbase as the Backend persistent storage, one should make sure to read instructions found at [Couchbase for persistent storage](#Couchbase) are read first before installing the chart.
-
-### Deployments are of 2 types 
-- `Cloud`
-- `Local` 
-
-For both deployments, different configurations needs to be changed depending on the deployment type as describe in [Deployments](#Deployments)
-
-The recommended way to install the chart is with a custom `values.yaml` to specify the values required to install the chart. 
-
-`helm install <release-name> -f values.yaml -n <namespace> .`  
-
-**_NOTE_** `< . >` means that this command is run in the root directory of the helm directory.  
-**_NOTE_** If default namespace is used, no need to include it in the install or upgrade commands.
-
-
-Tip! One can use the default [values.yaml](values.yaml) for installation and change it accordingly.
-
-The command deploys Gluu Server on Kubernetes cluster using the default configurations. The [Configuration](#configuration) section lists the parameters that can be configured during installation.
-
-To install the chart on different platforms follow individual instructions.  
- - [GCP](#GCE)
- - [AWS](#AWS)
- - [Minikube](#minikube)
- - [Microk8s](#micrk8s)
+> **_NOTE:_** If Couchbase is the backend persistent storage, follow [Couchbase for persistent storage](#Couchbase).
 
 ## Uninstalling the Chart
 
@@ -122,201 +324,69 @@ If during installation the release was not defined, release name is checked by r
 To use couchbase as the backend persistence option, please install helm using the installation script by running the command
 `./pygluu-kuberenetes.pyz install-couchbase`.
 
-## Deployments
 
-1. ## Cloud deployments.
-
-   ### Common instructions on all Cloud providers (Both AWS and GKE)
-    - Change `global.provisioner` value in `values.yaml` to `kubernetes.io/gce-pd` 
-    - Enable cloud deployment in `global.cloud.enabled` by setting it to `true`.
-    - Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress) 
-    - Make sure to forward the FQDN to the LB address. 
-    - Install the main Gluu server chart by running   
-    `helm install <release-name> -f values.yaml -n <namespace> . `  
-
-  ### GCE
-  Two options from here.
-  1. #### Domain Name not registred
-
-  #### Important
-
-  Get the `loadBalancerIP` or external IP. Wait till the loadBalancer is provisioned and get the IP address by running.  
-      `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`
-
-  - Map the IP address with a domain name. One can check out this article [here](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe) as a reference guide.
-    - Update `loadBalancerIP` value in both `nginx-ingress` Chart's and Gluu Server Chart `values.yaml` files.  
-    - In `nginx-ingress`
-          - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.defaultBackend.service.loadBalancerIP`
-    - For Gluu Server chart
-          - `global.nginxIp` 
-
-2. #### Mapped/registered FQDN
-    - Update `loadBalancerIP` value in `nginx-ingress` `values.yaml`'s file with IP that is already mapped to a domain. 
-          - `nginx-ingress.controller.service.loadBalancerIP`  
-          - `nginx-ingress.defaultBackend.service.loadBalancerIP` 
-    - Enable the services that are required then install the chart by running
-    `helm upgrade --install <release-name> -f values.yaml -n <namespace> . `
-
-
-  ### AWS   
-  #### Domain Name not registered   
-
-   - Change cloud provisioner to `kubernetes.io/aws-ebs` in `global.provisioner`   
-   - Also define if you want to use `localstorage` or EFS by setting `global.cloud.awsLocalStorage` to the appropriate value. Set it to true if you would    like to use localstorage and vice versa.    
-   - Get the `loadBalancer` DNS hostname provisioned by the `nginx-ingress` e.g
-   ```
-    $ kubectl get svc | grep ingress-controller
-        flippant-robin-nginx-ingress-controller        LoadBalancer   10.100.10.11     a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com   80:32489/TCP,443:30276/TCP     82m
-   ```
-   - Update the value of `global.lbAddr` with the DNS name from the loadBalancer. i.e  
-   
-    ```   
-      global:
-        ;
-        ;
-        lbAddr: a96e6e325ee7d11e9xxxxx49691a220-752226592.us-west-2.elb.amazonaws.com
-    ```
-
-   - Create a `CNAME` that points to the ELB hostname (which won't change ).  
-    i.e `aws.gluu.org -> a96e6e325ee7d11e9a7510a49691a220-752226592.us-west-2.elb.amazonaws.com`   
-    This would allow integration of the scalable Gluu server behind the ELB with your domain.
-
-   - Update `nginxIp` in `values.yaml` file with IP that is now mapped to your domain and also the domain.      
-          - `global.nginxIp` 
-          - `global.domain`
-
-  #### Mapped/Registered FQDN   
-
-   - Update the value of domain name in `nginx` section as shown below   
-      ```
-          global:
-             nginx: true
-
-          nginx:
-            ingress:
-              enabled: true
-              path: /
-              hosts:
-                - demoexample.gluu.org # REPLACE THIS
-              tls: 
-                - secretName: tls-certificate
-                  hosts:
-                    - demoexample.gluu.org # REPLACE THIS
-        
-      ```
-   - Because this chart is going to use `EFS-Provisioner` there are some preparations that are NEEDED before deploying as  described
-     [here](https://github.com/helm/charts/tree/master/stable/efs-provisioner).
-     Some notes on the same to keep in mind.
-        - To be able to use a DNS name of the efs in the mount command, the following must be true:
-
-        - The connecting EC2 instance must be inside a VPC and must be configured to use the DNS server provided by Amazon. ✅
-
-        - The VPC of the connecting EC2 instance must have both DNS Resolution and DNS Hostnames enabled. ✅
-
-        - The connecting EC2 instance must be inside the same VPC as the EFS file system. ✅ 
-
-        - Mount targets must include the security groups that allow EFS to be connected ✅
-
-   - After creating efs file system, update `efs-provisioner.efsProvisioner.dnsName` with the efs DNS name.
-   - Enable `efs-provisioner` chart to be installed by setting `enabled` to `true` 
-      ```
-        efs-provisioner:
-           enabled: false    -----> changed from false to true
-      ```
-   - Enable the services that are required then install the chart by running
-    `helm upgrade --install <release-name> -f values.yaml -n <namespace>. `
-    
-    
-2. ## Local deployments
-    ### minikube
-    - Most of the default args are meant to install the chart to a local environment.
-    - One should not forget to add the domain to local machine in `/etc/hosts` file pointing to the minikube IP as shown below.
-      ```
-      ~ cat /etc/hosts
-      ##
-      # Host Database
-      #
-      # localhost is used to configure the loopback interface
-      # when the system is booting.  Do not change this entry.
-      ##
-      192.168.99.100	demoexample.gluu.org #minikube IP and example domain
-      127.0.0.1	localhost
-      255.255.255.255	broadcasthost
-      ::1             localhost
-      ```
-
-    ### microk8s
-    - Use microk8s configfile with a local installation of `kubectl` to access the VM-k8s. For example in Mac
-      `multipass exec microk8s-vm -- /snap/bin/microk8s.config > $HOME/.kube/config`
-    - For microk8s there are some services we need to enable.
-        - Enable Helm3    - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable helm3`
-
-        - Enable storrage - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable storage`
-
-        - Enable ingress  - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable ingress`
-
-        - Enable DNS      - `multipass exec microk8s-vm -- /snap/bin/microk8s.enable dns`
-
-    - Get the IP of microk8s VM `multipass list` and include it in the `hosts` file.
-    - From here, things are all the same.
-      `helm install <release-name> -f values.yaml .`
-    
 **_NOTE_** Enabling support of `oxtrust API` and `oxtrust TEST_MODE`
- To enable `oxtrust API` support, user should set the variable `gluuOxtrustApiEnabled` in the persistence service to true.
-  ```
-  # persistence layer
-  persistence:
-    configmap:
-       gluuOxtrustApiEnabled: true
+ To enable `oxtrust API` support and or `oxtrust TEST_MODE` , set  `gluuOxtrustApiEnabled`  and `gluuOxtrustApiTestMode` true respectivley.
 
-  ```
+ ```yaml
+ # persistence layer
+ persistence:
+   configmap:
+      gluuOxtrustApiEnabled: true
+
+ ```
+
  Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
-   ```
-  # persistence layer
-  persistence:
-    configmap:
-       gluuOxtrustApiTestMode: true
 
-  ```
+ ```yaml
+# persistence layer
+persistence:
+  configmap:
+     gluuOxtrustApiTestMode: true
+
+```
 
 ## Instructions on how to install different services
 
-There are some services that have auto install enabled while installing the overall Gluu server Helm chart. This configuration is made on the persistence level. To enable/disable them  
-one only needs to set `true` or ``false` in the persistence configs as shown below.  
-  ```
-  # persistence layer
-  persistence:
-    enabled: true
-    configmap:
-      # Auto install other services. If enabled the respective service chart will be installed
-      gluuCasaEnabled: true 
-      gluuPassportEnabled: false
-      gluuRadiusEnabled: false
-  ```
+Enabeling the following services automatically install the corespnding associated chart. To enable/disable them set `true` or `false` in the persistence configs as shown below.  
+
+```yaml
+# persistence layer
+persistence:
+  enabled: true
+  configmap:
+    # Auto install other services. If enabled the respective service chart will be installed
+    gluuPassportEnabled: false
+    gluuCasaEnabled: false
+    gluuRadiusEnabled: false
+    gluuSamlEnabled: false
+```
 
 ### OXD-server
 
-> **_NOTE:_** When installing `oxd-server` chart/service, the user should change the value of the following two variables.   
 > **_NOTE:_** If these two are not provided `oxd-server` will fail to start.   
 > **_NOTE:_** For these passwords, stick to digits and numbers only.
-```
+
+```yaml
 oxd-server:
   configmap:
     adminKeystorePassword: admin-example-password
     applicationKeystorePassword: app-example-pass
+
 ```
 
 ### Casa
 
-- Casa is dependant on `oxd-server`. Make sure it's enabled if one wants to use `Casa`.
+- Casa is dependant on `oxd-server`. To install it `oxd-server` must be enabled.
 
 ### Redis
 
 To enable usage of Redis, change the following values.
 
-```
+```yaml
 opendj:
+  # options REDIS/NATIVE_PERSISTENCE
+  gluuCacheType: REDIS
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: true
 
@@ -330,12 +400,12 @@ global:
 
 ### Other optional services
 
-Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values - more like the previous 2 - to true under the global block.
+Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values to `true` under the global block.
 
 For example, to enable `cr-rotate` set
-```
+
+```yaml
 global:
   cr-rotate:
     enabled: true
-
 ```
