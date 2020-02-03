@@ -48,3 +48,15 @@
     ```
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
+
+### Known bug
+
+- Bug in line 101   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 101, in conditions.
+  The error will look similar to the following :
+  ```bash
+    File "/root/.shiv/pygluu-kubernetes_3e5bddf4d309be28790a1b035ab5d72d0b9f33dfaade59da1bb9ec0bcd0165a4/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 54, in __init__
+    self.conditions = conditions
+  File "/root/.shiv/pygluu-kubernetes_3e5bddf4d309be28790a1b035ab5d72d0b9f33dfaade59da1bb9ec0bcd0165a4/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 101, in conditions
+    ValueError: Invalid value for `conditions`, must not be `None`
+  ```
+  To fix this error just rerun the installation command `./pygluu-kubernetes.pyz <command>` again.
