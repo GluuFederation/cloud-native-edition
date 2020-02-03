@@ -7,7 +7,7 @@ resources:
   - roles.yaml
 images:
   - name: gluufederation/config-init
-    newTag: 4.0.1_05
+    newTag: 4.0.1_08
 configMapGenerator:
   - name: config-cm
     literals:
