@@ -17,8 +17,6 @@ data:
   {{- if and (.Values.gluuRedisEnabled) (eq .Values.global.gluuCacheType "REDIS") }}
   GLUU_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
-  {{- else }}
-  GLUU_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
   {{- end }}
   # must the same as the opendj service name
   GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
