@@ -1,4 +1,4 @@
-# pygluu-kuberenets
+# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/PreRelease-v1.0alpha-red.svg?style=for-the-badge)
 
 ## Gluu Installation
 
@@ -7,7 +7,7 @@
 - Install Using [helm](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates/helm)
 
 
-## Build `pygluu-kubernetes.pyz` manually.
+## Build `pygluu-kubernetes.pyz` manually
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@
     make install
     ```
 
-    This command will install executable called `pygluu-compose` available in virtual environment `PATH`.
+    This command will install executable called `pygluu-kubernetes` available in virtual environment `PATH`.
 
 ### Python zipapp
 
@@ -47,4 +47,4 @@
     make zipapp
     ```
 
-    This command will generate executable called `pygluu-compose.pyz` under the same directory.
+    This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
