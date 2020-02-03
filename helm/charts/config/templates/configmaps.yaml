@@ -4,14 +4,6 @@ metadata:
   name: {{ include "config.fullname" . }}-config-cm
   namespace: {{ .Values.global.namespace }}
 data:
-  ADMIN_PW:  {{ .Values.adminPass }}
-  EMAIL: {{ .Values.email }}
-  ORG_NAME: {{ .Values.orgName }}
-  COUNTRY_CODE: {{ .Values.countryCode }}
-  STATE: {{ .Values.state }}
-  CITY: {{ .Values.city }}
-  LDAP_TYPE: {{ .Values.ldapType }}
-  DOMAIN: {{ .Values.global.domain }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
@@ -32,6 +24,7 @@ data:
       "state": {{ .Values.state | quote }},
       "city": {{ .Values.city | quote }},
       "admin_pw": {{ .Values.adminPass | quote }},
+      "ldap_pw": {{ .Values.ldapPass | quote }},
       "email": {{ .Values.email | quote }},
       "org_name": {{ .Values.orgName | quote }}
     }
