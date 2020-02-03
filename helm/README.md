@@ -103,7 +103,7 @@ If during installation the release was not defined, release name is checked by r
 | `config.ldapType`             | Type of LDAP server to use.                                | `opendj`                            |
 | `global.oxauth.enabled`              | Whether to allow installation of oxauth subchart. Should be left as true |  `true`        |
 | `global.opendj.enabled`              | Allow installation of ldap Should left as true             | `true`                       |
-| `opendj.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE` |
+| `global.gluuCacheType`        | Which type of cache to use.2 options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE` |
 | `opendj.gluuRedisEnabled`     | Used if cache type is redis                                | `false`                             |
 | `global.persistence.enabled`         | Whether to enable persistence layer. Must ALWAYS remain true | `true`                     |
 | `persistence.configmap.gluuCasaEnabled`     | Enable auto install of casa chart/service while installing Gluu server chart | `false` |
@@ -317,8 +317,6 @@ To enable usage of Redis, change the following values.
 
 ```
 opendj:
-  # options REDIS/NATIVE_PERSISTENCE
-  gluuCacheType: REDIS
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: true
 
