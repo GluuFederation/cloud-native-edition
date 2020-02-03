@@ -43,6 +43,9 @@ data:
   DEFAULT_SITE_CONFIG_UI_LOCALES: "['en']"
   DEFAULT_SITE_CONFIG_CLAIMS_LOCALES: "['en']"
   DEFAULT_SITE_CONFIG_CONTACTS: "[]"
+  APPLICATION_KEYSTORE_CN: {{ .Values.configmap.applicationKeystoreCn | quote }}
+  ADMIN_KEYSTORE_CN: {{ .Values.configmap.adminKeystoreCn | quote }}
+  GLUU_SERVER_HOST: {{ .Values.global.domain | quote }}
   APPLICATION_KEYSTORE_PASSWORD: {{ .Values.configmap.applicationKeystorePassword | quote }}
   ADMIN_KEYSTORE_PASSWORD: {{ .Values.configmap.adminKeystorePassword | quote }}
   {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
