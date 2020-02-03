@@ -13,13 +13,15 @@
 -   If deploying with Couchbase as the persistence layer on AWS EKS or GCE GKE take a look at the following [Couchbase notes. ](#use-couchbase-soley-as-the-persistence-layer)  ![CDNJS](https://img.shields.io/badge/AWS-supported-green.svg) ![CDNJS](https://img.shields.io/badge/GKE-supported-green.svg)![CDNJS](https://img.shields.io/badge/microk8s-supported-green.svg)![CDNJS](https://img.shields.io/badge/minikube-supported-green.svg)
 
 
-- Get the source code:
+- Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/blob/4.1/README.md#build-pygluu-kubernetespyz-manually).
 
-        wget -q https://github.com/GluuFederation/enterprise-edition/archive/4.0.zip
-        unzip 4.0.zip
-        cd enterprise-edition-4.0/kubernetes
+- Run :
 
-- Run `bash create.sh` to initialize the installation. Prompts will ask for the rest of the information needed. You may generate the manifests (yamls) and continue to deployment or just generate the  manifests (yamls) during the execution of `create.sh`. `create.sh` will output a file called `previous-installation-variables` holding all the answers to the prompts and can be later used by renaming the file to `installation-variables` and running `bash create.sh`. More information about this file and the vars it holds is [below](#previous-installation-variables-file-contents) but you shouldn't have to manually create this file as the script generates it for you. 
+  ```bash
+  ./pygluu-kubernetes.pyz install
+  ```
+
+Prompts will ask for the rest of the information needed. You may generate the manifests (yamls) and continue to deployment or just generate the  manifests (yamls) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters and can be used for a non-interactive setup. More information about this file and the vars it holds is [below](#previous-installation-variables-file-contents) but you shouldn't have to manually create this file as the script generates it for you. 
 
 ## Previous installation variables file contents
 
@@ -125,7 +127,7 @@
   
   - An `m5.xlarge` EKS cluster with 3 nodes at the minimum or `n2-standard-4` GKE cluster with 3 nodes. We advice contacting Gluu regarding in production setups.
 
-- [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `create.sh`.
+- [Install couchbase kubernetes](https://www.couchbase.com/downloads) and place the tar.gz file inside the same directory as the `pygluu-kubernetes.pyz`.
 
 - Please modify the file `couchbase/couchbase-cluster.yaml` to fit your instituional needs. Currently the file is setup with an example setup of a total of 6 nodes as seen in `spec.servers`. Each set of services is replicating in two different zones. According to your setup these zones might be different and hence should be changed. Do not change the labels of these services such as `couchbase_services: index` the setup requires these labels to track the status of the couchbase setup.Do not change the buckets as they are required for Gluu setup. More information on the properties of this file is found [here](https://docs.couchbase.com/operator/1.2/couchbase-cluster-config.html).
 
@@ -133,7 +135,7 @@
 
 **If you wish to get started fast just change the values of `spec.servers.name` and `spec.servers.serverGroups` inside `couchbase/couchbase-cluster.yaml` to the zones of your EKS nodes and continue.**
 
-- Run `create.sh` and follow the prompts to install couchbase soley with Gluu.
+- Run `./pygluu-kubernetes.pyz install-couchbase` and follow the prompts to install couchbase soley with Gluu.
 
 
 # Use remote Couchbase as the persistence layer
@@ -144,7 +146,7 @@
 
 - Head to the FQDN of the couchbase node to [setup](https://docs.couchbase.com/server/current/manage/manage-nodes/create-cluster.html) your couchbase cluster. When setting up please use the FQDN as the hostname of the new cluster.
 
-- Couchbase URL base , user, and password will be needed for installation when running `create.sh`
+- Couchbase URL base , user, and password will be needed for installation when running `pygluu-kubernetes.pyz`
 
 ## Scaling pods
 
