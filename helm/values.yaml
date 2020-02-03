@@ -25,7 +25,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: 192.168.64.13 # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org 
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -83,7 +83,7 @@ global:
     enabled: false
 
   oxd-server:
-    enabled: true 
+    enabled: false 
 
   # redis should be enabled only when cacheType is REDIS
   redis:
@@ -102,7 +102,7 @@ global:
     enabled: false 
   
   shared-shib:
-    enabled: true
+    enabled: false
   
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -144,7 +144,7 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.0.1_04
+    tag: 4.1.0_dev
 
 cr-rotate:
   image:
@@ -155,7 +155,7 @@ cr-rotate:
 key-rotation:
   image:
     repository: gluufederation/key-rotation
-    tag: 4.0.1_05
+    tag: 4.1.0_dev
     pullPolicy: Always
 
 nfs:
@@ -173,14 +173,14 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.0.0_dev
+    tag: 4.1.0_dev
     pullPolicy: Always
 
 # persistence layer
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.0.1_04
+    tag: 4.1.0_dev
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false 
@@ -189,7 +189,7 @@ persistence:
     gluuPassportEnabled: false 
     gluuCasaEnabled: false 
     gluuRadiusEnabled: false 
-    gluuSamlEnabled: true
+    gluuSamlEnabled: false
 
 oxauth:
   image:
@@ -252,13 +252,13 @@ oxpassport:
 oxshibboleth:
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.0.1_04
+    tag: 4.1.0_dev
     pullPolicy: Always
 
 oxtrust:
   image:
     repository: gluufederation/oxtrust
-    tag: 4.0.1_06
+    tag: 4.1.0_dev
     pullPolicy: Always
 
 radius:
