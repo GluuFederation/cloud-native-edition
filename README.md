@@ -1,4 +1,4 @@
-# pygluu-compose
+# pygluu-kuberenets
 
 ## Prerequisites
 
