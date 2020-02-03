@@ -3,22 +3,22 @@ global:
   # cloud.enabled creates the nginx-ingress chart
   cloud:
     enabled: false
-    awsLocalStorage: true 
+    awsLocalStorage: true
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
   provisioner: k8s.io/minikube-hostpath
   encrypted: true
   pool: default
   fsType: ext4
-  gcpZone: us-west1 
+  gcpZone: us-west1
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
   reclaimPolicy: Retain
 
-  namespace: default   
+  namespace: default
   nginxNamespace: ingress
-  
+
   #service names to be used globally/by other charts
   oxAuthServiceName: oxauth
   oxTrustServiceName: oxtrust
@@ -26,7 +26,7 @@ global:
 
   # Networking configs
   nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
-  domain: demoexample.gluu.org 
+  domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
 
@@ -36,7 +36,7 @@ global:
   gluuOxtrustBackend: oxtrust:8080
   gluuOxauthBackend: oxauth:8080
   gluuOxdServerUrl: oxd-server:8443
-  
+
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
   configSecretAdapter: kubernetes
@@ -53,11 +53,11 @@ global:
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   # NOTE: For the CB instalation please check the documentation
   # gluuCouchbaseUrl is the couchbase service name
-  gluuCouchbaseUrl: cbgluu.cbns.svc.cluster.local 
-  gluuCouchbaseUser: admin 
+  gluuCouchbaseUrl: cbgluu.cbns.svc.cluster.local
+  gluuCouchbaseUser: admin
   # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
-  gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password 
-  # gluuCouchbaseCertFile location of 
+  gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+  # gluuCouchbaseCertFile location of
   gluuCouchbaseCertFile: /etc/gluu/conf/couchbase.crt
 
   # Enable installation of services
@@ -65,13 +65,13 @@ global:
     enabled: true
 
   config:
-    enabled: true 
+    enabled: true
 
   persistence:
-    enabled: true 
+    enabled: true
 
   oxtrust:
-    enabled: true   
+    enabled: true
 
   opendj:
     enabled: true
@@ -83,7 +83,7 @@ global:
     enabled: false
 
   oxd-server:
-    enabled: false 
+    enabled: false
 
   # redis should be enabled only when cacheType is REDIS
   redis:
@@ -94,16 +94,16 @@ global:
 
   cr-rotate:
     enabled: false
-  
+
   key-rotation:
     enabled: false
-    
-  nfs: 
-    enabled: false 
-  
+
+  nfs:
+    enabled: false
+
   shared-shib:
     enabled: false
-  
+
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
   efsProvisioner:
@@ -131,7 +131,7 @@ config:
   orgName: Gluu
   # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
-  # adminPass is administrator password for oxTrust 
+  # adminPass is administrator password for oxTrust
   adminPass: P@ssw0rd
   # ldapPass is the password for LDAP
   ldapPass: P@ssw0rd
@@ -166,7 +166,7 @@ nfs:
 
 opendj:
   # options true/false : must be enabled if cache type is REDIS
-  gluuRedisEnabled: false 
+  gluuRedisEnabled: false
   replicas: 1
   persistence:
     size: 5Gi
@@ -183,12 +183,12 @@ persistence:
     tag: 4.1.0_dev
     pullPolicy: Always
   configmap:
-    gluuOxtrustApiEnabled: false 
-    gluuOxtrustApiTestMode: false 
+    gluuOxtrustApiEnabled: false
+    gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
-    gluuPassportEnabled: false 
-    gluuCasaEnabled: false 
-    gluuRadiusEnabled: false 
+    gluuPassportEnabled: false
+    gluuCasaEnabled: false
+    gluuRadiusEnabled: false
     gluuSamlEnabled: false
 
 oxauth:
@@ -209,7 +209,7 @@ oxd-server:
     repository: gluufederation/oxd-server
     tag: 4.1.0_dev
     pullPolicy: Always
-  
+
   resources: {}
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -227,8 +227,8 @@ nginx:
     path: /
     hosts:
       - demoexample.gluu.org
-    tls: 
-    - secretName: tls-certificate # DON'T change 
+    tls:
+    - secretName: tls-certificate # DON'T change
       hosts:
         - demoexample.gluu.org
 
@@ -238,8 +238,6 @@ oxpassport:
     repository: gluufederation/oxpassport
     tag: 4.0.1_03
     pullPolicy: Always
-
-  resources: {}
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
@@ -247,7 +245,7 @@ oxpassport:
   #  memory: 128Mi
   # requests:
   #  cpu: 100m
-  #  memory: 128Mi 
+  #  memory: 128Mi
 
 oxshibboleth:
   image:

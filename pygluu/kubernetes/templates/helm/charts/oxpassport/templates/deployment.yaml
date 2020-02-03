@@ -58,14 +58,14 @@ spec:
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       volumes:
         - name: {{ include "oxpassport.name" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
       {{- end }}
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
