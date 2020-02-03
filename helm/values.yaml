@@ -128,8 +128,10 @@ config:
   orgName: Gluu
   # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
-  # adminPass is administrator password for oxTrust and LDAP
+  # adminPass is administrator password for oxTrust 
   adminPass: P@ssw0rd
+  # ldapPass is the password for LDAP
+  ldapPass: P@ssw0rd
   # organisation location details
   countryCode: US
   state: TX
