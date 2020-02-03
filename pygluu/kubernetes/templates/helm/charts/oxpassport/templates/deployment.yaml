@@ -64,7 +64,7 @@ spec:
           configMap:
             name: {{ .Release.Name }}-updatelbip
       {{- end }}
-        resources:
+          resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
