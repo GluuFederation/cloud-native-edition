@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "persistence.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  template:
+    metadata:
+      name: {{ include "persistence.name" . }}
+      labels:
+        app: {{ include "persistence.name" . }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ include "persistence.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        envFrom:
+        - configMapRef:
+            name: {{ include "persistence.fullname" . }}

@@ -1,0 +1,8 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+bases:
+  - ../../../base
+patchesStrategicMerge:
+  - statefulsets.yaml

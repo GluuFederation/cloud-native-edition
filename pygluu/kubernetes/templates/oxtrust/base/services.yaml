@@ -1,0 +1,12 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxtrust
+spec:
+  ports:
+  - port: 8080
+    name: oxtrust
+  selector:
+    app: oxtrust

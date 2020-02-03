@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "oxshibboleth.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ include "oxshibboleth.name" . }}
+    chart: {{ include "oxshibboleth.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: oxshibboleth
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "oxshibboleth.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "oxshibboleth.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        command:
+          - /bin/sh
+          - /-c
+          - |
+              /usr/bin/python /scripts/updatelb.py &
+              /apps/scripts/entrypoint.sh
+        {{- end }}
+        ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: {{ include "oxshibboleth.fullname" . }}
+        volumeMounts:
+          - name: {{ .Release.Name }}-shared-shib
+            mountPath: "/opt/shared-shibboleth-idp"
+          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          - name: {{ include "oxshibboleth.name" .}}-updatelbip
+            mountPath: /scripts
+          {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /idp
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /idp
+            port: http
+          initialDelaySeconds: 25
+          periodSeconds: 25
+      {{- if eq .Values.global.isDomainRegistered "false" }}
+      hostAliases:
+      - ip: {{ .Values.global.nginxIp }}
+        hostnames:
+        - {{ .Values.global.domain }}
+      {{- end }}
+      volumes:
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+      - name: {{ include "oxshibboleth.name" .}}-updatelbip
+        configMap:
+          name: {{ .Release.Name }}-updatelbip
+      {{- end }}
+      - name: {{ .Release.Name }}-shared-shib
+        persistentVolumeClaim:
+          {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          claimName: efs
+          {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
+          claimName: {{ .Release.Name }}-shared-shib-pvc
+          {{- else if eq eq .Values.global.provisioner "microk8s.io/hostpath" }}
+          claimName: {{ .Release.Name }}-shared-shib-pvc
+          {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.cloud.awsLocalStorage ) }}
+          claimName: {{ .Release.Name }}-shared-shib-pvc
+          {{- else }}
+          claimName: nfs
+          {{- end }} 

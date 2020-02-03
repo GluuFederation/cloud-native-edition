@@ -1,0 +1,30 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: key-rotation
+resources:
+  - services.yaml
+  - deployments.yaml
+images:
+  - name: gluufederation/key-rotation
+    newTag: 4.0.1_04
+configMapGenerator:
+  - name: key-rotation-cm
+    literals:
+      - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
+      - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
+      - GLUU_CONFIG_ADAPTER="kubernetes"
+      - GLUU_SECRET_ADAPTER="kubernetes"
+      # options: ldap/couchbase/hybrid
+      - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE
+      # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+      - GLUU_PERSISTENCE_LDAP_MAPPING=LDAPMAPPING
+      # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+      - GLUU_LDAP_URL="opendj:1636"
+      # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+      - GLUU_COUCHBASE_URL=COUCHBASEURL
+      - GLUU_COUCHBASE_USER=CBUSER
+      - GLUU_COUCHBASE_CERT_FILE="/etc/certs/couchbase.crt"
+      - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"

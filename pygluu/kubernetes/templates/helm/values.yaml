@@ -1,0 +1,274 @@
+#global values to be used across charts
+global:
+  # cloud.enabled creates the nginx-ingress chart
+  cloud:
+    enabled: false
+    awsLocalStorage: true 
+
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
+  provisioner: k8s.io/minikube-hostpath
+  encrypted: true
+  pool: default
+  fsType: ext4
+  gcpZone: us-west1 
+  gcePdStorageType: pd-standard
+  azureStorageAccountType: Standard_LRS
+  azureStorageKind: Managed
+  reclaimPolicy: Retain
+
+  namespace: default   
+  nginxNamespace: ingress
+  
+  #service names to be used globally/by other charts
+  oxAuthServiceName: oxauth
+  oxTrustServiceName: oxtrust
+  ldapServiceName: opendj
+
+  # Networking configs
+  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
+  domain: demoexample.gluu.org 
+  # specify if the domain above is registered or not.
+  isDomainRegistered: "false" # "true" or "false"
+
+  lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
+
+  gluuLdapUrl: opendj:1636
+  gluuOxtrustBackend: oxtrust:8080
+  gluuOxauthBackend: oxauth:8080
+  gluuOxdServerUrl: oxd-server:8443
+  
+  gluuMaxRamPercent: "75.0"
+  configAdapterName: kubernetes
+  configSecretAdapter: kubernetes
+  #persistence types and options
+  # options: ldap/couchbase/hybrid
+  gluuPersistenceType: ldap
+
+  # options REDIS/NATIVE_PERSISTENCE
+  gluuCacheType: NATIVE_PERSISTENCE
+  # options: default/user/site/cache/statistic
+  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  gluuPersistenceLdapMapping: default
+
+  # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  # NOTE: For the CB instalation please check the documentation
+  # gluuCouchbaseUrl is the couchbase service name
+  gluuCouchbaseUrl: cbgluu.cbns.svc.cluster.local 
+  gluuCouchbaseUser: admin 
+  # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
+  gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password 
+  # gluuCouchbaseCertFile location of 
+  gluuCouchbaseCertFile: /etc/gluu/conf/couchbase.crt
+
+  # Enable installation of services
+  oxauth:
+    enabled: true
+
+  config:
+    enabled: true 
+
+  persistence:
+    enabled: true 
+
+  oxtrust:
+    enabled: true   
+
+  opendj:
+    enabled: true
+
+  oxshibboleth:
+    enabled: false
+
+  efs-provisioner:
+    enabled: false
+
+  oxd-server:
+    enabled: false 
+
+  # redis should be enabled only when cacheType is REDIS
+  redis:
+    enabled: false
+
+  nginx:
+    enabled: true
+
+  cr-rotate:
+    enabled: false
+  
+  key-rotation:
+    enabled: false
+    
+  nfs: 
+    enabled: false 
+  
+  shared-shib:
+    enabled: false
+  
+#efs-provisioner used for creating shared file system in AWS
+efs-provisioner:
+  efsProvisioner:
+    # If specified, use this DNS or IP to connect the EFS
+    dnsName: "" # fs-xxxxxx.efs.us-east-1.amazonaws.com
+    efsFileSystemId: ""
+    awsRegion: us-west-2
+    path: /opt/shared-shibboleth-idp
+    provisionerName: example.com/gcp-efs
+    storageClass:
+      name: gcp-efs
+      isDefault: false
+    persistentVolume:
+      accessModes: ReadWriteMany
+      storage: 5Gi
+casa:
+  image:
+    repository: gluufederation/casa
+    tag: 4.2.0_dev
+    pullPolicy: Always
+
+# Required environment variables for generating Gluu server initial config
+# values for config-init sub-chart
+config:
+  orgName: Gluu
+  # email address of the administrator usually. Used for certificate creation
+  email: support@gluu.com
+  # adminPass is administrator password for oxTrust 
+  adminPass: P@ssw0rd
+  # ldapPass is the password for LDAP
+  ldapPass: P@ssw0rd
+  # organisation location details
+  countryCode: US
+  state: TX
+  city: SLC
+  # ldapType only OpenDJ is supported
+  ldapType: opendj
+
+  image:
+    repository: gluufederation/config-init
+    tag: 4.1.0_dev
+
+cr-rotate:
+  image:
+    repository: gluufederation/cr-rotate
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+key-rotation:
+  image:
+    repository: gluufederation/key-rotation
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+nfs:
+  image:
+    repository: k8s.gcr.io/volume-nfs
+    tag: 0.8
+    pullPolicy: IfNotPresent
+
+opendj:
+  # options true/false : must be enabled if cache type is REDIS
+  gluuRedisEnabled: false 
+  replicas: 1
+  persistence:
+    size: 5Gi
+
+  image:
+    repository: gluufederation/wrends
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+# persistence layer
+persistence:
+  image:
+    repository: gluufederation/persistence
+    tag: 4.1.0_dev
+    pullPolicy: Always
+  configmap:
+    gluuOxtrustApiEnabled: false 
+    gluuOxtrustApiTestMode: false 
+    # Auto install other services. If enabled the respective service chart will be installed
+    gluuPassportEnabled: false 
+    gluuCasaEnabled: false 
+    gluuRadiusEnabled: false 
+    gluuSamlEnabled: false
+
+oxauth:
+  image:
+    repository: gluufederation/oxauth
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+oxd-server:
+  # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
+  configmap:
+    adminKeystorePassword: Passw0rd
+    applicationKeystorePassword: Passw0rd
+    applicationKeystoreCn: oxd_server
+    adminKeystoreCn: oxd_server
+
+  image:
+    repository: gluufederation/oxd-server
+    tag: 4.1.0_dev
+    pullPolicy: Always
+  
+  resources: {}
+  # If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nginx:
+  # ingress resources
+  ingress:
+    enabled: true
+    path: /
+    hosts:
+      - demoexample.gluu.org
+    tls: 
+    - secretName: tls-certificate # DON'T change 
+      hosts:
+        - demoexample.gluu.org
+
+# oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
+oxpassport:
+  image:
+    repository: gluufederation/oxpassport
+    tag: 4.0.1_03
+    pullPolicy: Always
+
+  resources: {}
+  # If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi 
+
+oxshibboleth:
+  image:
+    repository: gluufederation/oxshibboleth
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+oxtrust:
+  image:
+    repository: gluufederation/oxtrust
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+radius:
+  image:
+    repository: gluufederation/radius
+    tag: 4.1.0_dev
+    pullPolicy: Always
+
+redis:
+  image:
+    repository: redis
+    tag: alpine
+    pullPolicy: IfNotPresent

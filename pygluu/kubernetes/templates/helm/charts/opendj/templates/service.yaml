@@ -1,0 +1,19 @@
+{{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.global.ldapServiceName }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Values.global.ldapServiceName }}
+spec:
+  ports:
+    {{- range $key, $value := .Values.ports }}
+    - port: {{ $value.port }}
+      targetPort: {{ $value.targetPort }}
+      name: {{ $key }}
+    {{- end }}
+  clusterIP: None
+  selector:
+    app: {{ .Values.global.ldapServiceName }}
+{{- end }}

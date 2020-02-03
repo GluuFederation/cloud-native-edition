@@ -1,0 +1,16 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shared-shib-pv
+  labels:
+      app: shared-shib
+spec:
+  capacity:
+    storage: STORAGESHAREDSHIB
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/shared-shibboleth-idp"
+    type: DirectoryOrCreate

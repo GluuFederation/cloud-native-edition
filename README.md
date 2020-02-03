@@ -1,16 +1,41 @@
-# Gluu Server Enterprise Edition
+# pygluu-compose
 
-Multi-hosts Gluu Server deployment.
+## Prerequisites
 
-## Docs
+1.  Python 3.6+.
+1.  Python `pip` package.
 
-[Gluu Server Enterprise Edition Documentation](https://gluu.org/docs/de/4.0)
+## Installation
 
-## Deployment options
+### Standard Python package
 
-- [Kustomize](./kustomize/)
-- [Helm](./helm/) ![CDNJS](https://img.shields.io/badge/BETA-red.svg?style=for-the-badge)
+1.  Create virtual environment and activate:
 
-## Issues
+    ```sh
+    python -m venv .venv
+    source ./venv/bin/activate
+    ```
 
-If you find any issues, please post them on the customer support portal, [support.gluu.org](https://support.gluu.org).
+1.  Install the package:
+
+    ```
+    make install
+    ```
+
+    This command will install executable called `pygluu-compose` available in virtual environment `PATH`.
+
+### Python zipapp
+
+1.  Install [shiv](https://shiv.readthedocs.io/) using `pip`:
+
+    ```sh
+    pip install shiv
+    ```
+
+1.  Install the package:
+
+    ```sh
+    make zipapp
+    ```
+
+    This command will generate executable called `pygluu-compose.pyz` under the same directory.

@@ -1,0 +1,14 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxpassport
+spec:
+  ports:
+  - port: 8090
+    name: oxpassport
+  selector:
+    app: oxpassport
+  # type: NodePort
+  # clusterIP: None

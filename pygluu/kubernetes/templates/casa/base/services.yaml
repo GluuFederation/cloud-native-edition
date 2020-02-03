@@ -1,0 +1,12 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa
+spec:
+  ports:
+  - port: 8080
+    name: casa
+  selector:
+    app: casa

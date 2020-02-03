@@ -1,0 +1,16 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: opendj-pv
+  labels:
+    app: opendj
+spec:
+  capacity:
+    storage: STORAGELDAP
+  accessModes:
+    - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: LDAPVOLUMEID
+    fsType: ext4

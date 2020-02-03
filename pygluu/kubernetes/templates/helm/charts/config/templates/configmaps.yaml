@@ -1,0 +1,180 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: {{ include "config.fullname" . }}-config-cm
+  namespace: {{ .Values.global.namespace }}
+data:
+  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
+  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
+  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "config.fullname" . }}-gen-json-file
+  namespace: {{ .Values.global.namespace }}
+data:
+  generate.json: |-
+    {
+      "hostname": {{ .Values.global.domain | quote }},
+      "country_code": {{ .Values.countryCode | quote }},
+      "state": {{ .Values.state | quote }},
+      "city": {{ .Values.city | quote }},
+      "admin_pw": {{ .Values.adminPass | quote }},
+      "ldap_pw": {{ .Values.ldapPass | quote }},
+      "email": {{ .Values.email | quote }},
+      "org_name": {{ .Values.orgName | quote }}
+    }
+
+---
+
+apiVersion: v1
+data:
+  tls_generator.py: |-
+    from pprint import pprint
+    from kubernetes import config, client
+    import logging
+
+    #use the serviceAccount k8s gives to pods
+    config.load_incluster_config() 
+    v1 = client.CoreV1Api()
+
+    #global vars
+    name = "tls-certificate"
+    namespace = {{ .Values.global.namespace | quote }} 
+
+    # check if gluu secret exists
+    def get_certs():
+        if ( v1.read_namespaced_secret( 'gluu', namespace ) ):
+            ssl_cert = v1.read_namespaced_secret( 'gluu', namespace ).data['ssl_cert']
+            ssl_key = v1.read_namespaced_secret( "gluu", namespace ).data['ssl_key']
+            
+            print('ssl_cert / {} \n ssl_key: {}'.format(ssl_cert, ssl_key) )
+
+        return ssl_cert, ssl_key
+
+    def create_tls(cert, key):
+
+        v1 = client.CoreV1Api()
+        try:
+            secret = v1.read_namespaced_secret(name, namespace)
+        except client.rest.ApiException as e:
+            if e.status == 404:
+                print('secret/{} in ns/{} does not exist. Creating...'.format(
+                    name, namespace))
+                metadata = {
+                    'name': name,
+                    'namespace': namespace
+                }
+                data = {
+                    'tls.crt': cert,
+                    'tls.key' : key,
+                }
+                api_version = 'v1'
+                kind = 'Secret'
+                body = client.V1Secret(api_version, data , kind, metadata, 
+                    type='kubernetes.io/tls')
+                api_response = v1.create_namespaced_secret(namespace, body )
+                pprint(api_response)
+            else:
+                logging.exception(e)
+            return False
+        else:
+            print('tls-certificate already exists as /{}'. format(
+                secret
+            ))
+            
+    def main():
+        cert, key = get_certs()
+        create_tls(cert, key)
+
+    if __name__ == "__main__":
+        main()
+
+kind: ConfigMap
+metadata:
+  name: {{ include "config.fullname" . }}-tls-script
+  namespace: {{ .Values.global.namespace }}
+
+---
+
+apiVersion: v1
+data:
+  updatelbip.py: |-
+    #!/usr/bin/env python
+    """
+    Update the IP of the load balancer automatically
+    """
+    import socket
+    import sys
+    import os
+    import logging
+    import time
+
+    logger = logging.getLogger("update-lb-ip")
+    logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    fmt = logging.Formatter('%(levelname)s - %(asctime)s - %(message)s')
+    ch.setFormatter(fmt)
+    logger.addHandler(ch)
+
+    def backup(hosts):
+        timenow = time.strftime("%c")
+        timestamp = "Backup occured %s \n" % timenow
+        with open('/etc/hosts.back', 'a+') as f:
+            f.write(timestamp)
+            for line in hosts:
+                f.write(line)
+
+
+    def get_hosts(LB_ADDR, DOMAIN):
+        ip_list = []
+        hosts_list = []
+        ais = socket.getaddrinfo(LB_ADDR, 0, 0, 0, 0)
+        for result in ais:
+            ip_list.append(result[-1][0])
+        ip_list = list(set(ip_list))
+        for ip in ip_list:
+            add_host = ip + " " + DOMAIN
+            hosts_list.append(add_host)
+
+        return hosts_list
+
+
+    def main():
+        try:
+            while True:
+                LB_ADDR = os.environ.get("LB_ADDR", "")
+                DOMAIN = os.environ.get("DOMAIN", "demoexample.gluu.org")
+                host_file = open('/etc/hosts', 'r').readlines()
+                hosts = get_hosts(LB_ADDR, DOMAIN)
+                stop = []
+                for host in hosts:
+                    for i in host_file:
+                        if host.replace(" ", "") in i.replace(" ", ""):
+                            stop.append("found")
+                if len(stop) != len(hosts):
+                    backup(host_file)
+                    logger.info("Writing new hosts file")
+                    with open('/etc/hosts', 'w') as f:
+                        for line in host_file:
+                            if DOMAIN not in line:
+                                f.write(line)
+                        for host in hosts:
+                            f.write(host)
+                            f.write("\n")
+                        f.write("\n")
+                time.sleep(300)
+        except KeyboardInterrupt:
+            logger.warn("Canceled by user; exiting ...")
+
+
+    if __name__ == "__main__":
+        main()
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-updatelbip
+  namespace: {{ .Values.global.namespace }}

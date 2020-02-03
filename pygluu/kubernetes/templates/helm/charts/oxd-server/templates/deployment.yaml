@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oxd-server.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ include "oxd-server.name" . }}
+    chart: {{ include "oxd-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "oxd-server.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "oxd-server.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          command:
+            - /bin/sh
+            - -c 
+            - |
+                /usr/bin/python /scripts/update-lb-ip.py &
+                /app/scripts/entrypoint.sh
+          {{- end }}
+          ports:
+            - containerPort: 8444
+            - containerPort: 8443   
+          envFrom:
+            - configMapRef:
+                name: {{ include "oxd-server.fullname" . }}
+          volumeMounts:
+            {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            - name: {{ include "oxd-server.name" . }}-updatelbip
+              mountPath: /scripts
+            {{- end }}
+      volumes:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "oxd-server.name" . }}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+        {{- end }}
+      {{- if eq .Values.global.isDomainRegistered "false" }}
+      hostAliases:
+        - ip: {{ .Values.global.nginxIp }}
+          hostnames:
+            - {{ .Values.global.domain }}
+      {{- end }}
+

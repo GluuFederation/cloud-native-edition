@@ -1,0 +1,28 @@
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+dynamicStorage: true
+
+image:
+  repository: gluufederation/oxauth
+  tag: 4.1.0_dev
+  pullPolicy: Always
+
+persistence:
+  size: 10M
+  accessModes: ReadWriteOnce
+  storageClassName: ""
+
+#ConfigMap values
+gluuLdapUrl: opendj:1636
+gluuMaxRamFraction: 1
+
+#Resources for the deployment
+requests:
+  memory: 1000Mi
+limits:
+  memory: 1536Mi
+
+#ports for the deployment
+ports:
+  containerPort: 8080

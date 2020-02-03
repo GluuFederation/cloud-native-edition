@@ -1,0 +1,18 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+  name: radius
+  labels:
+    app: radius
+spec:
+  ports:
+  - port: 1812
+    name: radius-authentication
+  - port: 1813
+    name: radius-accounting
+  - port: 8080
+    name: jetty-service
+  selector:
+    app: radius

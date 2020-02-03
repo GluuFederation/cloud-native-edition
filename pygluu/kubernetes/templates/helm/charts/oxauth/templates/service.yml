@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.global.oxAuthServiceName }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Values.global.oxAuthServiceName }}
+spec:
+  ports:
+  - port: {{ .Values.ports.containerPort }}
+    name: {{ .Values.global.oxAuthServiceName }}
+  selector:
+    app: {{ .Values.global.oxAuthServiceName }} #oxauth
+    

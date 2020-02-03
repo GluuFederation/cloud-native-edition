@@ -1,0 +1,12 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: update-lb-ip
+configMapGenerator:
+- name: updatelbip
+  files:
+    - update-lb-ip.py
+generatorOptions:
+  disableNameSuffixHash: true

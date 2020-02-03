@@ -1,0 +1,13 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxshibboleth
+spec:
+  ports:
+  - port: 8080
+    name: oxshibboleth
+  selector:
+    app: oxshibboleth
+  clusterIP: None

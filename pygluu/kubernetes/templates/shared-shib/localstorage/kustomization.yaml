@@ -1,0 +1,9 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: shared-shib
+resources:
+  - persistentvolumes.yaml
+  - persistentvolumeclaims.yaml

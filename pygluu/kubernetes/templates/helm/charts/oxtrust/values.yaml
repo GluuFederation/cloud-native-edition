@@ -1,0 +1,27 @@
+# Default values for oxtrust.
+# Declare variables to be passed into your templates.
+
+replicas: 1
+
+dynamicStorage: true
+
+image:
+  repository: gluufederation/oxtrust
+  tag: 4.0.1_06
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  clusterIp: None
+
+#resources: 
+limits:
+  memory: 128Mi
+requests:
+  memory: 300Mi
+
+#containerPOrt ot connect the container with
+containerPort: 8080
+
+    

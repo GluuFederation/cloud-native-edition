@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "shared-shib.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+      shared-shib: shib
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  hostPath:
+    path: "/data/shared-shibboleth-idp"
+    type: DirectoryOrCreate
