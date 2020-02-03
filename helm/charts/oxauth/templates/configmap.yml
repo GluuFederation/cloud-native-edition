@@ -14,6 +14,7 @@ data:
   {{- end }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
+  GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid or ldap 
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}

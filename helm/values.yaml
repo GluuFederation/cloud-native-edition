@@ -42,7 +42,10 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap  
+  gluuPersistenceType: ldap
+
+  # options REDIS/NATIVE_PERSISTENCE
+  gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
   gluuPersistenceLdapMapping: default
@@ -162,8 +165,6 @@ nfs:
     pullPolicy: IfNotPresent
 
 opendj:
-  # options REDIS/NATIVE_PERSISTENCE
-  gluuCacheType: NATIVE_PERSISTENCE
   # options true/false : must be enabled if cache type is REDIS
   gluuRedisEnabled: false 
   replicas: 1

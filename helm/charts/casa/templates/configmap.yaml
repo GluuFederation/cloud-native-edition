@@ -9,6 +9,7 @@ data:
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
+  GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
   GLUU_OXD_SERVER_URL: {{ .Values.global.gluuOxdServerUrl | quote }}

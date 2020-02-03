@@ -13,8 +13,8 @@ data:
   GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
   GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
-  {{- if and (.Values.gluuRedisEnabled) (eq .Values.gluuCacheType "REDIS") }}
-  GLUU_CACHE_TYPE: {{ .Values.gluuRedisCacheType | quote }}
+  GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
+  {{- if and (.Values.gluuRedisEnabled) (eq .Values.global.gluuCacheType "REDIS") }}
   GLUU_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
   {{- else }}

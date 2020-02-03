@@ -10,7 +10,6 @@ gluuRedisEnabled: false
 gluuRedisCacheType: REDIS
 gluuRedisUrl: redis:6379
 gluuRedisType: STANDALONE
-gluuCacheType: NATIVE_PERSISTENCE
 
 gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
