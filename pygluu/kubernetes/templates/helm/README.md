@@ -22,7 +22,7 @@ It also packages other components/services that makeup Gluu Server.
 2. Install Helm using the following [guide](https://helm.sh/docs/using_helm/)
 
 ## Quickstart
-- Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/tree/4.1).
+- Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/blob/4.1/README.md#build-pygluu-kubernetespyz-manually).
 
 - Run :
 
