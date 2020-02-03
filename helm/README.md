@@ -144,6 +144,8 @@ It also packages other components/services that makeup Gluu Server.
         - secretName: tls-certificate
           hosts:
             - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+  nfs: 
+    enabled: true
   ```
 
   Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
