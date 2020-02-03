@@ -236,6 +236,8 @@ class Helm(object):
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
+        self.kubernetes.delete_persistent_volume("app=shared-shib")
+        self.kubernetes.delete_persistent_volume_claim(self.settings["GLUU_NAMESPACE"], "app=shared-shib")
         self.kubernetes.delete_storage_class(self.settings["GLUU_NAMESPACE"] + "opendj")
         self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
