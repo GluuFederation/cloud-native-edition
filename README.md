@@ -7,7 +7,7 @@
 - Install Using [helm](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates/helm)
 
 
-## To build `pygluu-kubernetes.pyz` manually.
+## Build `pygluu-kubernetes.pyz` manually.
 
 ## Prerequisites
 
