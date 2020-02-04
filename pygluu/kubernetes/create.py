@@ -860,7 +860,7 @@ class App(object):
         self.kustomize_redis()
         self.kustomize_update_lb_ip()
         if install_couchbase:
-            if self.settings["PERSISTENCE_BACKEND"] != "ldap":
+            if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
                 couchbase_app = Couchbase(self.settings)
                 couchbase_app.uninstall()
                 couchbase_app = Couchbase(self.settings)

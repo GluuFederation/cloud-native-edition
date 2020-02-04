@@ -239,9 +239,7 @@ class Helm(object):
         self.kubernetes.delete_persistent_volume("app=shared-shib")
         self.kubernetes.delete_persistent_volume_claim(self.settings["GLUU_NAMESPACE"], "app=shared-shib")
         self.kubernetes.delete_storage_class(self.settings["GLUU_NAMESPACE"] + "opendj")
-        self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
-        if self.settings["PERSISTENCE_BACKEND"] != "ldap":
+        if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
             couchbase_app.uninstall()
             couchbase_app = Couchbase(self.settings)
