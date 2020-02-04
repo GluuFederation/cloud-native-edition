@@ -6,10 +6,7 @@ metadata:
   name: {{ include "key-rotation.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "key-rotation.name" . }}
-    chart: {{ include "key-rotation.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "key-rotation.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

@@ -4,10 +4,7 @@ metadata:
   name: {{ include "redis.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "redis.name" . }}
-    chart: {{ include "redis.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "redis.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "casa.labels" -}}
-app.kubernetes.io/name: {{ include "casa.name" . }}
+app: {{ include "casa.name" . }}
 helm.sh/chart: {{ include "casa.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

@@ -6,10 +6,7 @@ metadata:
   name: {{ include "radius.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "radius.name" . }}
-    chart: {{ include "radius.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "radius.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

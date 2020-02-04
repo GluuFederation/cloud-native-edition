@@ -4,9 +4,7 @@ metadata:
   name: {{ include "nfs.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "nfs.name" . }}
-    chart: {{ include "nfs.chart" . }}
-    heritage: {{ .Release.Service }}
+{{ include "nfs.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

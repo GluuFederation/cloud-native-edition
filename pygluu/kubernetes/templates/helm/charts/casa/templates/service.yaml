@@ -14,5 +14,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "casa.name" . }}
+    app: {{ include "casa.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
