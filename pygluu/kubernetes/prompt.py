@@ -532,7 +532,8 @@ class Prompt(object):
                 prompt = "N"
             self.settings["COUCHBASE_USE_LOW_RESOURCES"] = prompt
         if self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "N" and \
-                self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
+                self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N" and \
+                self.settings["INSTALL_COUCHBASE"] == "Y":
             # Attempt to Calculate resources needed
             if not self.settings["NUMBER_OF_EXPECTED_USERS"]:
                 prompt = input("Please enter the number of expected users [1000000]")

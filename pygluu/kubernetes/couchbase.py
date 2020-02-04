@@ -312,6 +312,8 @@ class Couchbase(object):
         parser.dump_it()
 
     def install(self):
+        self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         self.analyze_couchbase_cluster_yaml()
         cb_namespace = self.settings["COUCHBASE_NAMESPACE"]
         storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
