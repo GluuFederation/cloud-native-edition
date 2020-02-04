@@ -38,10 +38,18 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "oxpassport.name" . }}
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         volumeMounts:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxpassport.name" . }}-updatelbip
             mountPath: /scripts
+        {{- end }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          - name: cb-pass
+            mountPath: mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt 
         {{- end }}
         livenessProbe:
           httpGet:
@@ -59,11 +67,19 @@ spec:
           failureThreshold: 20
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
       volumes:
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxpassport.name" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
+      {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        - name: cb-pass 
+          secret:
+            secretName: cb-pass 
+        - name: cb-crt 
+          secretName: cb-crt 
+            secretName: cb-crt 
       {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:

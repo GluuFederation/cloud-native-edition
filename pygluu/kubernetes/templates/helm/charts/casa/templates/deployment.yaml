@@ -46,6 +46,15 @@ spec:
           envFrom:
             - configMapRef: 
                 name: {{ include "casa.fullname" . }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          volumeMounts:
+            - name: cb-pass
+              mountPath: "/etc/gluu/conf/couchbase_password"
+              subPath: couchbase_password
+            - name: cb-crt 
+              mountPath: "/etc/certs/couchbase.crt"
+              subPath: couchbase.crt
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /casa
@@ -58,6 +67,15 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+      volumes:
+        - name: cb-pass
+          secret:
+            secretName: cb-pass
+        - name: cb-crt 
+          secret:
+            secretName: cb-crt 
+      {{- end }}
           resources:
 {{- toYaml .Values.resources | nindent 12 }}
       {{- if eq .Values.global.isDomainRegistered "false"}}

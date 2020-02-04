@@ -46,6 +46,14 @@ spec:
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+            - name: cb-pass
+              mountPath: mountPath: "/etc/gluu/conf/couchbase_password"
+              subPath: couchbase_password
+            - name: cb-crt 
+              mountPath: "/etc/certs/couchbase.crt"
+              subPath: couchbase.crt 
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /idp
@@ -69,6 +77,14 @@ spec:
       - name: {{ include "oxshibboleth.name" .}}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip
+      {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+      - name: cb-pass
+        secret:
+          secretName: cb-pass
+      - name: cb-crt 
+        secret:
+          secretName: cb-crt 
       {{- end }}
       - name: {{ .Release.Name }}-shared-shib
         persistentVolumeClaim:
