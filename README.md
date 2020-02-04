@@ -1,11 +1,8 @@
 # pygluu-kubernetes![CDNJS](https://img.shields.io/badge/PreRelease-v1.0alpha-red.svg?style=for-the-badge)
 
-## Gluu Installation
+## Kubernetes recipes
 
-- Install Using [kustomize](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates)
-
-- Install Using [helm](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates/helm)
-
+- Install [Gluu](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates/)
 
 ## Build `pygluu-kubernetes.pyz` manually
 
