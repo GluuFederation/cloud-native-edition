@@ -4,16 +4,18 @@ kind: StatefulSet
 metadata:
   name: {{ include "opendj.fullname" . }}
   namespace: {{ .Values.global.namespace }}
+  labels:
+{{ include "opendj.labels" . | indent 4}}
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.global.ldapServiceName }} 
-  serviceName: {{ .Values.global.ldapServiceName }}
+      app: {{ include "opendj.name" . }} 
+  serviceName: {{ include "opendj.name" . }}
   replicas: {{ .Values.replicas }} 
   template:
     metadata:
       labels:
-        app: {{ .Values.global.ldapServiceName }} 
+        app: {{ include "opendj.name" . }} 
     spec:
       containers:
       - name: {{ include "opendj.fullname" . }}

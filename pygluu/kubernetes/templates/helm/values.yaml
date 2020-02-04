@@ -1,6 +1,6 @@
 #global values to be used across charts
 global:
-  # cloud.enabled creates the nginx-ingress chart
+  # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
     enabled: false
     awsLocalStorage: true
@@ -83,7 +83,7 @@ global:
     enabled: false
 
   oxd-server:
-    enabled: false
+    enabled: false 
 
   # redis should be enabled only when cacheType is REDIS
   redis:
@@ -102,7 +102,7 @@ global:
     enabled: false
 
   shared-shib:
-    enabled: false
+    enabled: true 
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -186,9 +186,9 @@ persistence:
     gluuOxtrustApiEnabled: false
     gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
-    gluuPassportEnabled: false
+    gluuPassportEnabled: false 
     gluuCasaEnabled: false
-    gluuRadiusEnabled: false
+    gluuRadiusEnabled: false 
     gluuSamlEnabled: false
 
 oxauth:

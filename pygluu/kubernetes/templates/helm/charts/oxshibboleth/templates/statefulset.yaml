@@ -4,10 +4,7 @@ metadata:
   name: {{ include "oxshibboleth.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxshibboleth.name" . }}
-    chart: {{ include "oxshibboleth.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "oxshibboleth.labels" . | indent 4 }}
 spec:
   serviceName: oxshibboleth
   replicas: {{ .Values.replicaCount }}

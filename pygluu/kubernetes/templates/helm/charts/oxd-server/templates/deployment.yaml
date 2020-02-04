@@ -4,10 +4,7 @@ metadata:
   name: {{ include "oxd-server.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxd-server.name" . }}
-    chart: {{ include "oxd-server.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "oxd-server.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

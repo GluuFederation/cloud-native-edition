@@ -14,11 +14,7 @@ apiVersion: apps/v1
 metadata:
   name: {{ template "efs-provisioner.fullname" . }}
   labels:
-    app: {{ template "efs-provisioner.name" . }}
-    env: {{ .Values.global.deployEnv }}
-    chart: {{ template "efs-provisioner.chartname" . }}
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+{{ include "efs-provisioner.labels" . | indent 4}}
   annotations:
 {{ toYaml .Values.annotations | indent 4 }}
 spec:

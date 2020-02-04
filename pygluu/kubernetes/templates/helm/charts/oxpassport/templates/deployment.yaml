@@ -4,10 +4,7 @@ metadata:
   name: {{ include "oxpassport.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxpassport.name" . }}
-    chart: {{ include "oxpassport.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "oxpassport.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
