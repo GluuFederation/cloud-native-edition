@@ -999,15 +999,19 @@ class App(object):
                 elif self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
-                    if self.settings["DEPLOYMENT_ARCH"] == "eks":
-                        ssh_and_remove(self.settings["NODE_SSH_KEY"], "ec2-user", node_ip, "/data")
-                    elif self.settings["DEPLOYMENT_ARCH"] == "aks":
-                        ssh_and_remove(self.settings["NODE_SSH_KEY"], "opc", node_ip, "/data")
-            if self.settings["DEPLOYMENT_ARCH"] == "gke":
-                for node_name in self.settings["NODES_NAMES"]:
-                    for zone in self.settings["NODES_ZONES"]:
-                        subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
-                                       format(node_name, zone))
+                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
+                            self.settings["LDAP_VOLUME_TYPE"] == 16:
+                        if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                            ssh_and_remove(self.settings["NODE_SSH_KEY"], "ec2-user", node_ip, "/data")
+                        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+                            ssh_and_remove(self.settings["NODE_SSH_KEY"], "opc", node_ip, "/data")
+            if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
+                    self.settings["LDAP_VOLUME_TYPE"] == 16:
+                if self.settings["DEPLOYMENT_ARCH"] == "gke":
+                    for node_name in self.settings["NODES_NAMES"]:
+                        for zone in self.settings["NODES_ZONES"]:
+                            subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
+                                           format(node_name, zone))
         self.kubernetes.delete_namespace("ingress-nginx")
         if not self.settings["GLUU_NAMESPACE"] == "default":
             self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])

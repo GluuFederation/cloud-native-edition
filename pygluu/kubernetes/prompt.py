@@ -11,6 +11,7 @@ import subprocess
 import ipaddress
 import re
 import string
+import shutil
 import random
 import json
 from getpass import getpass
@@ -35,7 +36,7 @@ class Prompt(object):
 
     @property
     def default_settings(self):
-        default_settings = dict(ACCEPT_GLUU_SUPPORT_LICENSE="",
+        default_settings = dict(ACCEPT_GLUU_LICENSE="",
                                 GLUU_HELM_RELEASE_NAME="",
                                 NGINX_INGRESS_RELEASE_NAME="",
                                 NGINX_INGRESS_NAMESPACE="",
@@ -60,6 +61,7 @@ class Prompt(object):
                                 COUCHBASE_USER="",
                                 COUCHBASE_PASSWORD="",
                                 COUCHBASE_SUBJECT_ALT_NAME="",
+                                COUCHBASE_CLUSTER_FILE_OVERRIDE="",
                                 COUCHBASE_USE_LOW_RESOURCES="",
                                 COUCHBASE_DATA_NODES="",
                                 COUCHBASE_QUERY_NODES="",
@@ -505,6 +507,21 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
+        if not self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"]:
+            prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]")
+            if prompt == "Y" or prompt == "y":
+                prompt = "Y"
+                try:
+                    shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
+                except FileNotFoundError:
+                    logger.error("An override option has been chosen but couchbase-cluster.yaml file "
+                                 "could not be found at the current path. Please place the override file under the name"
+                                 " couchbase-cluster.yaml in the same directory pygluu-kubernetes.pyz exists ")
+                    raise SystemExit(1)
+            else:
+                prompt = "N"
+            self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] = prompt
+
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             self.settings["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
         if not self.settings["COUCHBASE_USE_LOW_RESOURCES"]:
@@ -514,7 +531,8 @@ class Prompt(object):
             else:
                 prompt = "N"
             self.settings["COUCHBASE_USE_LOW_RESOURCES"] = prompt
-        if self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "N":
+        if self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "N" and \
+                self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
             # Attempt to Calculate resources needed
             if not self.settings["NUMBER_OF_EXPECTED_USERS"]:
                 prompt = input("Please enter the number of expected users [1000000]")
@@ -822,14 +840,14 @@ class Prompt(object):
 
     @property
     def check_settings_and_prompt(self):
-        if not self.settings["ACCEPT_GLUU_SUPPORT_LICENSE"]:
+        if not self.settings["ACCEPT_GLUU_LICENSE"]:
             with open("./LICENSE") as f:
                 print(f.read())
-            prompt = input("Do you accept the Gluu Support License[Y/N].[N]")
+            prompt = input("Do you accept the Gluu license stated above[Y/N].[N]")
             if not prompt:
                 prompt = "N"
-            self.settings["ACCEPT_GLUU_SUPPORT_LICENSE"] = prompt
-            if self.settings["ACCEPT_GLUU_SUPPORT_LICENSE"] != "Y":
+            self.settings["ACCEPT_GLUU_LICENSE"] = prompt
+            if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
                 logger.info("License not accepted.")
                 raise SystemExit(1)
 
@@ -1082,8 +1100,7 @@ class Prompt(object):
                 if not prompt:
                     prompt = "Y"
                 self.settings["INSTALL_COUCHBASE"] = prompt
-            if self.settings["INSTALL_COUCHBASE"] != "N" and self.settings["INSTALL_COUCHBASE"] != "n":
-                self.prompt_couchbase()
+            self.prompt_couchbase()
 
         self.prompt_config()
         self.prompt_image_name_tag()
