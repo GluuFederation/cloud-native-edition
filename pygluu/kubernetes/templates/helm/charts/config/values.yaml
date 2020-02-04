@@ -1,3 +1,5 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 # Required environment variables for generating Gluu server initial config
 #values for environment variables
 orgName: Gluu

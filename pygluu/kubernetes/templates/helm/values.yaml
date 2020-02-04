@@ -1,3 +1,5 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 #global values to be used across charts
 global:
   # cloud.enabled creates the nginx-ingress chart

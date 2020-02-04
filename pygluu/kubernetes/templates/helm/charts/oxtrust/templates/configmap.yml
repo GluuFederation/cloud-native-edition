@@ -1,3 +1,5 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 kind: ConfigMap
 apiVersion: v1
 metadata:

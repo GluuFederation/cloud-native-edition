@@ -1,3 +1,5 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
 apiVersion: apps/v1
 kind: StatefulSet

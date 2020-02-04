@@ -1,6 +1,6 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 # Default values for oxtrust.
-# Declare variables to be passed into your templates.
-
 replicas: 1
 
 dynamicStorage: true

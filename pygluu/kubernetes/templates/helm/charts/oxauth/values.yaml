@@ -1,5 +1,5 @@
-# Declare variables to be passed into your templates.
-
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 replicaCount: 1
 dynamicStorage: true
 

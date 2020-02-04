@@ -1,3 +1,5 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
 # opendj Environament Variables
 # common ConfigMap values
 gluuLdapInit: true
