@@ -1102,6 +1102,8 @@ def main():
             prompts = Prompt()
             settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
+            app = App()
+            app.uninstall()
             helm = Helm(settings)
             helm.install_gluu()
 
@@ -1112,11 +1114,15 @@ def main():
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
+            app = App()
+            app.uninstall()
 
         elif args.subparser_name == "helm-install-gluu":
             prompts = Prompt()
             settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
+            app = App()
+            app.uninstall()
             helm = Helm(settings)
             helm.install_gluu(install_ingress=False)
 
@@ -1126,6 +1132,8 @@ def main():
             settings = prompts.prompt_helm
             helm = Helm(settings)
             helm.uninstall_gluu()
+            app = App()
+            app.uninstall()
 
         else:
             print(parser.print_help())
