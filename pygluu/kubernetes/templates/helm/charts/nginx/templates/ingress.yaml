@@ -1,6 +1,6 @@
 # License terms and conditions:
 # https://www.gluu.org/license/enterprise-edition/
-{{- if .Values.ingress.enabled -}}
+{{ if .Values.ingress.enabled -}}
 {{- $fullName := include "nginx.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
