@@ -3,13 +3,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oxshibboleth
+  name: {{ include "oxshibboleth.name" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxshibboleth.name" . }}
-    chart: {{ include "oxshibboleth.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "oxshibboleth.labels" . | indent 4}}
 spec:
   ports:
     - port: {{ .Values.service.port }}

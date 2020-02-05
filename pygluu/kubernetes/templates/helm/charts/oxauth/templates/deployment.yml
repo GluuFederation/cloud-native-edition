@@ -6,16 +6,16 @@ metadata:
   name: {{ include "oxauth.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ .Values.global.oxAuthServiceName }}
+{{ include "oxauth.labels" . | indent 4}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.global.oxAuthServiceName }}
+      app: {{ include "oxauth.name" . }}
   template:
     metadata:
       labels:
-        app: {{ .Values.global.oxAuthServiceName }}
+        app: {{ include "oxauth.name" . }}
     spec:
       containers:
       - name: {{ template "gluu.fullname" . }}

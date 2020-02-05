@@ -6,10 +6,7 @@ metadata:
   name: {{ include "cr-rotate.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "cr-rotate.name" . }}
-    chart: {{ include "cr-rotate.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "cr-rotate.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:

@@ -37,3 +37,20 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+     Common labels
+*/}}
+{{- define "efs-provisioner.labels" -}}
+helm.sh/chart: {{ include "efs-provisioner.chart" . }}
+app: {{ template "efs-provisioner.name" . }}
+env: {{ .Values.global.deployEnv }}
+chart: {{ template "efs-provisioner.chartname" . }}
+release: "{{ .Release.Name }}"
+heritage: "{{ .Release.Service }}"
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}

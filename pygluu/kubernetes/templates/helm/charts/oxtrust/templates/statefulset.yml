@@ -6,19 +6,18 @@ metadata:
   name: {{ include "oxtrust.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxtrust.fullname" . }}
-    APP_NAME: oxtrust
+{{ include "oxtrust.labels" . | indent 4 }}
 spec:
   serviceName: oxtrust
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "oxtrust.fullname" . }}
+      app: {{ include "oxtrust.name" . }}
       APP_NAME: oxtrust
   template:
     metadata:
       labels: 
-        app: {{ include "oxtrust.fullname" . }}
+        app: {{ include "oxtrust.name" . }}
         APP_NAME: oxtrust
     spec:
       containers:
