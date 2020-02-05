@@ -30,3 +30,17 @@ Create chart name and version as used by the chart label.
 {{- define "cr-rotate.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+    Common labels
+*/}}
+{{- define "cr-rotate.labels" -}}
+app: {{ include "cr-rotate.name" . }}
+helm.sh/chart: {{ include "cr-rotate.chart" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+

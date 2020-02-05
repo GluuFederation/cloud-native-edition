@@ -5,6 +5,8 @@ kind: Job
 metadata:
   name: {{ include "persistence.fullname" . }}
   namespace: {{ .Values.global.namespace }}
+  labels:
+{{ include "persistence.labels" . | indent 4 }}
 spec:
   template:
     metadata:

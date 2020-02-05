@@ -181,8 +181,8 @@ class Couchbase(object):
         search_eventing_analytics_cpu_limit = search_eventing_analytics_cpu_request + 2000
 
         # Two services because query is assumed to take the same amount of mem quota
-        total_mem_resources = data_service_memory_quota + data_service_memory_quota + \
-                              index_service_memory_quota + search_eventing_analytics_memory_quota_sum
+        total_mem_resources = data_service_memory_quota + data_service_memory_quota + index_service_memory_quota + \
+                              search_eventing_analytics_memory_quota_sum
 
         total_cpu_resources = data_cpu_limit + query_cpu_limit + index_cpu_limit + search_eventing_analytics_cpu_limit
 
@@ -224,9 +224,10 @@ class Couchbase(object):
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
             resources_servers = [{"name": "allServices", "size": "1",
-                                  "services": ["data", "index", "query", "search", "eventing", "analytics"], "pod": {
-                    "volumeMounts": {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
-                                     "analytics": ["pvc-analytics"]}}}]
+                                  "services": ["data", "index", "query", "search", "eventing", "analytics"],
+                                  "pod": {"volumeMounts":
+                                              {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
+                                               "analytics": ["pvc-analytics"]}}}]
             data_service_memory_quota = 512
             index_service_memory_quota = 256
             search_service_memory_quota = 256
@@ -242,7 +243,8 @@ class Couchbase(object):
             analytics_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"]
             memory_quota = ((resources["COUCHBASE_DATA_MEM_QUOTA"] - 500) / number_of_buckets)
             zones_list = self.settings["NODES_ZONES"]
-            data_server_spec = create_server_spec_per_cb_service(zones_list, int(resources["COUCHBASE_DATA_NODES"]), "data",
+            data_server_spec = create_server_spec_per_cb_service(zones_list, int(resources["COUCHBASE_DATA_NODES"]),
+                                                                 "data",
                                                                  str(resources["COUCHBASE_DATA_MEM_REQUEST"]),
                                                                  str(resources["COUCHBASE_DATA_MEM_LIMIT"]),
                                                                  str(resources["COUCHBASE_DATA_CPU_REQUEST"]),
@@ -262,18 +264,13 @@ class Couchbase(object):
                                                                   str(resources["COUCHBASE_INDEX_CPU_REQUEST"]),
                                                                   str(resources["COUCHBASE_INDEX_CPU_LIMIT"]))
 
-            search_eventing_analytics_server_spec = create_server_spec_per_cb_service(zones_list,
-                                                                                      int(resources[
-                                                                                          "COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]),
-                                                                                      "analytics",
-                                                                                      str(resources[
-                                                                                              "COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_REQUEST"]),
-                                                                                      str(resources[
-                                                                                              "COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_LIMIT"]),
-                                                                                      str(resources[
-                                                                                              "COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_REQUEST"]),
-                                                                                      str(resources[
-                                                                                              "COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_LIMIT"]))
+            search_eventing_analytics_server_spec = create_server_spec_per_cb_service(
+                zones_list,
+                int(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]), "analytics",
+                str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_REQUEST"]),
+                str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_LIMIT"]),
+                str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_REQUEST"]),
+                str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_LIMIT"]))
 
             resources_servers = data_server_spec + query_server_spec + \
                                 index_server_spec + search_eventing_analytics_server_spec

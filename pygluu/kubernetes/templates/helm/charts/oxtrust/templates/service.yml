@@ -6,13 +6,12 @@ metadata:
   name: oxtrust
   namespace: {{ .Values.global.namespace }}
   labels:
-    app: {{ include "oxtrust.fullname" . }}
-    APP_NAME: oxtrust
+{{ include "oxtrust.labels" . | indent 4 }}
 spec:
   ports:
   - port: {{ .Values.service.port }}
     name: {{ template "oxtrust.fullname" . }}
   selector:
-    app: {{ template "oxtrust.fullname" . }}
+    app: {{ include "oxtrust.name" . }}
   clusterIP: {{ .Values.service.clusterIp }}
     
