@@ -46,13 +46,13 @@ spec:
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
-          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
-            - name: cb-pass
-              mountPath: mountPath: "/etc/gluu/conf/couchbase_password"
-              subPath: couchbase_password
-            - name: cb-crt 
-              mountPath: "/etc/certs/couchbase.crt"
-              subPath: couchbase.crt 
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt            
           {{- end }}
         livenessProbe:
           httpGet:
