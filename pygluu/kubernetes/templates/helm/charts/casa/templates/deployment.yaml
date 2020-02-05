@@ -67,6 +67,8 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
       volumes:
         - name: cb-pass
@@ -76,8 +78,6 @@ spec:
           secret:
             secretName: cb-crt 
       {{- end }}
-          resources:
-{{- toYaml .Values.resources | nindent 12 }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
        - ip: {{ .Values.global.nginxIp }}

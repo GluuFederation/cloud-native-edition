@@ -53,13 +53,13 @@ spec:
           - name: {{ include "oxtrust.fullname" .}}-updatelbip
             mountPath: /scripts
         {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+        {{- if or ( eq .Values.global.gluuPersistenceType "couchbase" ) ( eq .Values.global.gluuPersistenceType "hybrid" ) }}
           - name: cb-pass
-            mountPath: mountPath: "/etc/gluu/conf/couchbase_password"
+            mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
-          - name: cb-crt 
+          - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
-            subPath: couchbase.crt 
+            subPath: couchbase.crt
         {{- end }}
         livenessProbe:
           httpGet:
@@ -74,19 +74,19 @@ spec:
           initialDelaySeconds: 35
           periodSeconds: 35
       volumes:
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxtrust.fullname" .}}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
-        {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+      {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
         - name: cb-pass
           secret:
             secretName: cb-pass
         - name: cb-crt 
           secret:
             secretName: cb-crt 
-        {{- end }}
+      {{- end }}
         - name: {{ .Release.Name }}-shared-shib
           persistentVolumeClaim:
             {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
