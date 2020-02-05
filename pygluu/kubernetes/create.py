@@ -212,8 +212,8 @@ class App(object):
                     cm_parser = Parser(k, "ConfigMap")
                     del cm_parser["data"]["LB_ADDR"]
                     cm_parser.dump_it()
-                    if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or self.settings[
-                        "DEPLOYMENT_ARCH"] == "gke":
+                    if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
+                            self.settings["DEPLOYMENT_ARCH"] == "minikube" or self.settings["DEPLOYMENT_ARCH"] == "gke":
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings["GLUU_FQDN"]]
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                     else:
@@ -344,7 +344,8 @@ class App(object):
                                                               value_of_second_literal=ssl_key)
 
     def kustomize_shared_shib(self):
-        if self.settings["DEPLOYMENT_ARCH"] == "eks" and self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
+        if self.settings["DEPLOYMENT_ARCH"] == "eks" and \
+                self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
             command = self.kubectl + " kustomize shared-shib/efs > " + self.shared_shib_yaml
             subprocess_cmd(command)
 
@@ -411,8 +412,8 @@ class App(object):
                 = self.settings["LDAP_STORAGE_SIZE"]
             ldap_statefulset_parser.dump_it()
 
-            if self.settings["LDAP_VOLUME_TYPE"] != 7 and self.settings["LDAP_VOLUME_TYPE"] != 12 and self.settings[
-                "LDAP_VOLUME_TYPE"] != 17:
+            if self.settings["LDAP_VOLUME_TYPE"] != 7 and self.settings["LDAP_VOLUME_TYPE"] != 12 and \
+                    self.settings["LDAP_VOLUME_TYPE"] != 17:
                 ldap_pv_parser = Parser(self.ldap_yaml, "PersistentVolume")
                 ldap_pv_parser["spec"]["capacity"]["storage"] = self.settings["LDAP_STORAGE_SIZE"]
                 if self.settings["LDAP_VOLUME_TYPE"] == 11:
@@ -752,7 +753,9 @@ class App(object):
 
         exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
 
-        self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_command_shared_shib, label="app=nfs-server")
+        self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_command_shared_shib,
+                                                        app_label="app=nfs-server",
+                                                        namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_efs(self):
         efs_deploy_parser = Parser(self.shared_shib_yaml, "Deployment")
@@ -776,8 +779,8 @@ class App(object):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
                 self.deploy_nfs()
-            elif self.settings["DEPLOYMENT_ARCH"] == "eks" and self.settings[
-                "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
+            elif self.settings["DEPLOYMENT_ARCH"] == "eks" and \
+                    self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
                 self.deploy_efs()
             else:
                 self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
@@ -928,8 +931,8 @@ class App(object):
         daemon_set_label = "app=cr-rotate"
         replication_controller_label = "app=nfs-server"
         shared_shib_label = "app=shared-shib"
-        all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label] \
-                     + [replication_controller_label] + [shared_shib_label]
+        all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label] + \
+                     [replication_controller_label] + [shared_shib_label]
         gluu_config_maps_names = ["casacm", "updatelbip", "gluu"]
         nginx_config_maps_names = ["nginx-configuration", "tcp-services", "udp-services"]
         gluu_cluster_role_bindings_name = "cluster-admin-binding"
@@ -1049,12 +1052,11 @@ def create_parser():
     subparsers.add_parser("helm-install", help="Install Gluu Enterprise Edition using helm. "
                                                "This also installs the nginx-ingress chart")
     subparsers.add_parser("helm-uninstall", help="Uninstall Gluu Enterprise Edition using helm. "
-                                               "This also uninstalls the nginx-ingress chart")
+                                                 "This also uninstalls the nginx-ingress chart")
     subparsers.add_parser("helm-install-gluu", help="Install Gluu Enterprise Edition using helm. "
                                                     "This assumes nginx-ingress is installed")
     subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Enterprise Edition using helm. "
-                                               "This only uninstalls Gluu")
-
+                                                      "This only uninstalls Gluu")
 
     return parser
 
