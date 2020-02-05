@@ -82,10 +82,10 @@ spec:
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
         - name: cb-pass
           secret:
-            secretName: cb-pass
+            secretName: {{ include "oxtrust.name" . }}-pass 
         - name: cb-crt 
           secret:
-            secretName: cb-crt 
+            secretName: {{ include "oxtrust.name" . }}-crt 
       {{- end }}
         - name: {{ .Release.Name }}-shared-shib
           persistentVolumeClaim:

@@ -74,10 +74,10 @@ spec:
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
-            secretName: cb-pass
+            secretName: {{ include "oxauth.name" . }}-pass
         - name: cb-crt 
           secret:
-            secretName: cb-crt
+            secretName: {{ include "oxauth.name" . }}-crt
       {{- end }}
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxauth.fullname" . }}-updatelbip

@@ -39,8 +39,8 @@ spec:
       volumes:
         - name: cb-crt 
           secret:
-            secretName: cb-crt
+            secretName: {{ include "key-rotation.name" . }}-crt
         - name: cb-pass
           secret:
-            secretName: cb-pass 
+            secretName: {{ include "key-rotation.name" . }}-pass 
       {{- end }}
