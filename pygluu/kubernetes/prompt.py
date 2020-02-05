@@ -14,6 +14,7 @@ import string
 import shutil
 import random
 import json
+import base64
 from getpass import getpass
 from .kubeapi import Kubernetes, get_logger
 
@@ -60,6 +61,7 @@ class Prompt(object):
                                 COUCHBASE_URL="",
                                 COUCHBASE_USER="",
                                 COUCHBASE_PASSWORD="",
+                                COUCHBASE_CRT="",
                                 COUCHBASE_SUBJECT_ALT_NAME="",
                                 COUCHBASE_CLUSTER_FILE_OVERRIDE="",
                                 COUCHBASE_USE_LOW_RESOURCES="",
@@ -210,6 +212,7 @@ class Prompt(object):
             if not prompt:
                 prompt = "ingress-nginx"
             self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
+        self.write_variables_to_file()
         return self.settings
 
     def prompt_image_name_tag(self):
@@ -507,8 +510,19 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
+        if self.settings["INSTALL_COUCHBASE"] == "N":
+            if not self.settings["COUCHBASE_CRT"]:
+                prompt = input("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
+                               "the same location as the installation script. Continue?"
+                               "This can also be found in your couchbase UI Security > Root Certificate: ")
+                with open(Path("./couchbase.crt")) as content_file:
+                    ca_crt = content_file.read()
+                    encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
+                    encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
+                self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
+
         if not self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"]:
-            prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]")
+            prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]: ")
             if prompt == "Y" or prompt == "y":
                 prompt = "Y"
                 try:

@@ -13,8 +13,24 @@ from .couchbase import Couchbase
 import time
 import subprocess
 import socket
+import shlex
 
 logger = get_logger("gluu-helm          ")
+
+
+def exec_cmd(cmd):
+    args = shlex.split(cmd)
+    popen = subprocess.Popen(args,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    stdout, stderr = popen.communicate()
+    retcode = popen.returncode
+
+    if retcode != 0:
+        logger.error(str(stderr, "utf-8"))
+    logger.info(str(stdout, "utf-8"))
+    return stdout, stderr, retcode
 
 
 class Helm(object):
@@ -31,19 +47,19 @@ class Helm(object):
             self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.delete_cluster_role(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress")
             self.kubernetes.delete_cluster_role_binding(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress")
-            subprocess.check_call("helm repo add stable https://helm.nginx.com/stable", shell=True)
-            subprocess.check_call("helm repo update", shell=True)
+            exec_cmd("helm repo add stable https://helm.nginx.com/stable")
+            exec_cmd("helm repo update")
         command = "helm install {} stable/nginx-ingress --namespace={}".format(
             self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"])
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
-            subprocess.check_call("minikube addons enable ingress", shell=True)
+            exec_cmd("minikube addons enable ingress")
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             lb_hostname = None
             if self.settings["AWS_LB_TYPE"] == "nlb":
                 if install_ingress:
                     nlb_annotation = "--set controller.service.annotations={" \
                                      "'service.beta.kubernetes.io/aws-load-balancer-type':'nlb'} "
-                    subprocess.check_call(command + nlb_annotation, shell=True)
+                    exec_cmd(command + nlb_annotation)
                 while True:
                     try:
                         lb_hostname = self.kubernetes.read_namespaced_service(
@@ -68,11 +84,11 @@ class Helm(object):
                                         "':'https', " \
                                         "'service.beta.kubernetes.io/aws-load-balancer-connection" \
                                         "-idle-timeout':'3600'} "
-                        subprocess.check_call(command + "--set controller.service.annotations=" +
-                                              l7_annotation, shell=True)
+                        exec_cmd(command + "--set controller.service.annotations=" +
+                                 l7_annotation)
                 else:
                     if install_ingress:
-                        subprocess.check_call(command, shell=True)
+                        exec_cmd(command)
             while True:
                 try:
                     if lb_hostname:
@@ -87,7 +103,7 @@ class Helm(object):
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
             if install_ingress:
-                subprocess.check_call(command, shell=True)
+                exec_cmd(command)
             ip = None
             while True:
                 try:
@@ -132,6 +148,8 @@ class Helm(object):
         values_file_parser["global"]["gluuPersistenceLdapMapping"] = self.settings["HYBRID_LDAP_HELD_DATA"]
         values_file_parser["global"]["gluuCouchbaseUrl"] = self.settings["COUCHBASE_URL"]
         values_file_parser["global"]["gluuCouchbaseUser"] = self.settings["COUCHBASE_USER"]
+        values_file_parser["global"]["gluuCouchbaseCrt"] = self.settings["COUCHBASE_CRT"]
+        values_file_parser["global"]["gluuCouchbasePass"] = self.settings["COUCHBASE_PASSWORD"]
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True
@@ -239,9 +257,7 @@ class Helm(object):
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
-        self.kubernetes.delete_persistent_volume("app=shared-shib")
-        self.kubernetes.delete_persistent_volume_claim(self.settings["GLUU_NAMESPACE"], "app=shared-shib")
-        self.kubernetes.delete_storage_class(self.settings["GLUU_NAMESPACE"] + "opendj")
+        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
             couchbase_app.uninstall()
@@ -249,15 +265,13 @@ class Helm(object):
             couchbase_app.install()
         self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
-        subprocess.check_call("helm install {} -f ./helm/values.yaml ./helm --namespace={}".format(
-            self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]), shell=True)
+        exec_cmd("helm install {} -f ./helm/values.yaml ./helm --namespace={}".format(
+            self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_gluu(self):
-        self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
-        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
-                                                                     self.settings["GLUU_NAMESPACE"]), shell=True)
+        exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
+                                                                            self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_nginx_ingress(self):
-        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'],
-                                                                     self.settings["NGINX_INGRESS_NAMESPACE"]),
-                              shell=True)
+        exec_cmd("helm delete {} --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'],
+                                                        self.settings["NGINX_INGRESS_NAMESPACE"]))
