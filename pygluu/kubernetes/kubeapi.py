@@ -27,8 +27,8 @@ def fix_kubernetes_client_11_0_0b2():
                     if os.path.isdir(os.path.join(a_dir, name))]
 
         all_shiv_dirs = get_immediate_subdirectories()
-        for dir in all_shiv_dirs:
-            bug_file = Path("/root/.shiv/" + dir +
+        for directory in all_shiv_dirs:
+            bug_file = Path("/root/.shiv/" + directory +
                             "/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py")
 
             with open(bug_file, 'r+') as fh:
@@ -44,7 +44,8 @@ def fix_kubernetes_client_11_0_0b2():
                 lines = fh.readlines()
                 fh.seek(0)
                 for line in lines:
-                    if "if conditions is None:" not in line and "Invalid value for `conditions`, must not be `None`" not in line:
+                    if "if conditions is None:" not in line and \
+                            "Invalid value for `conditions`, must not be `None`" not in line:
                         fh.write(line)
                 fh.truncate()
 

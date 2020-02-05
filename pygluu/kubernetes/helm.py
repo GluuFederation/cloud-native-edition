@@ -33,7 +33,8 @@ class Helm(object):
             self.kubernetes.delete_cluster_role_binding(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress")
             subprocess.check_call("helm repo add stable https://helm.nginx.com/stable", shell=True)
             subprocess.check_call("helm repo update", shell=True)
-        command = "helm install {} stable/nginx-ingress --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"])
+        command = "helm install {} stable/nginx-ingress --namespace={}".format(
+            self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"])
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
             subprocess.check_call("minikube addons enable ingress", shell=True)
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
@@ -45,10 +46,9 @@ class Helm(object):
                     subprocess.check_call(command + nlb_annotation, shell=True)
                 while True:
                     try:
-                        lb_hostname = self.kubernetes.read_namespaced_service(name=self.settings
-                                                                                   ['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
-                                                                              namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[
-                            0].hostname
+                        lb_hostname = self.kubernetes.read_namespaced_service(
+                            name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                            namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
                         ip_static = socket.gethostbyname(str(lb_hostname))
                         if ip_static:
                             break
@@ -60,13 +60,16 @@ class Helm(object):
                     if install_ingress:
                         arn_annotation = "'service.beta.kubernetes.io/aws-load-balancer-ssl-cert':'{}'" \
                             .format(self.settings["ARN_AWS_IAM"])
-                        l7_annotation = "{" + arn_annotation + ", 'service.beta.kubernetes.io/aws-load-balancer-backend" \
-                                                               "-protocol':'http', " \
-                                                               "'service.beta.kubernetes.io/aws-load-balancer-ssl-ports" \
-                                                               "':'https', " \
-                                                               "'service.beta.kubernetes.io/aws-load-balancer-connection" \
-                                                               "-idle-timeout':'3600'} "
-                        subprocess.check_call(command + "--set controller.service.annotations=" + l7_annotation, shell=True)
+                        l7_annotation = "{" + \
+                                        arn_annotation + \
+                                        ", 'service.beta.kubernetes.io/aws-load-balancer-backend" \
+                                        "-protocol':'http', " \
+                                        "'service.beta.kubernetes.io/aws-load-balancer-ssl-ports" \
+                                        "':'https', " \
+                                        "'service.beta.kubernetes.io/aws-load-balancer-connection" \
+                                        "-idle-timeout':'3600'} "
+                        subprocess.check_call(command + "--set controller.service.annotations=" +
+                                              l7_annotation, shell=True)
                 else:
                     if install_ingress:
                         subprocess.check_call(command, shell=True)
@@ -74,10 +77,9 @@ class Helm(object):
                 try:
                     if lb_hostname:
                         break
-                    lb_hostname = self.kubernetes.read_namespaced_service(name=self.settings['NGINX_INGRESS_RELEASE_NAME'] +
-                                                                               "-nginx-ingress",
-                                                                          namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[
-                        0].hostname
+                    lb_hostname = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
                 except (TypeError, AttributeError):
                     logger.info("Waiting for loadbalancer address..")
                     time.sleep(10)
@@ -92,7 +94,8 @@ class Helm(object):
                     if ip:
                         break
                     ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress", namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
                 except (TypeError, AttributeError):
                     logger.info("Waiting for the ip of the Loadbalancer")
                     time.sleep(10)
@@ -246,11 +249,15 @@ class Helm(object):
             couchbase_app.install()
         self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
-        subprocess.check_call("helm install {} -f ./helm/values.yaml ./helm --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]), shell=True)
+        subprocess.check_call("helm install {} -f ./helm/values.yaml ./helm --namespace={}".format(
+            self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]), shell=True)
 
     def uninstall_gluu(self):
         self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
-        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]), shell=True)
+        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
+                                                                     self.settings["GLUU_NAMESPACE"]), shell=True)
 
     def uninstall_nginx_ingress(self):
-        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"]), shell=True)
+        subprocess.check_call("helm delete {} --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'],
+                                                                     self.settings["NGINX_INGRESS_NAMESPACE"]),
+                              shell=True)

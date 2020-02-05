@@ -638,9 +638,8 @@ class App(object):
                 self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nlb-service.yaml"))
                 while True:
                     try:
-                        lb_hostname = self.kubernetes.read_namespaced_service(name="ingress-nginx",
-                                                                              namespace="ingress-nginx").status.load_balancer.ingress[
-                            0].hostname
+                        lb_hostname = self.kubernetes.read_namespaced_service(
+                            name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
                         ip_static = socket.gethostbyname(str(lb_hostname))
                         if ip_static:
                             break
@@ -671,9 +670,8 @@ class App(object):
                 try:
                     if lb_hostname:
                         break
-                    lb_hostname = self.kubernetes.read_namespaced_service(name="ingress-nginx",
-                                                                          namespace="ingress-nginx").status.load_balancer.ingress[
-                        0].hostname
+                    lb_hostname = self.kubernetes.read_namespaced_service(
+                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
                 except TypeError:
                     logger.info("Waiting for loadbalancer address..")
                     time.sleep(10)

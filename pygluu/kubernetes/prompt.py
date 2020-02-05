@@ -886,8 +886,8 @@ class Prompt(object):
                 else:
                     prompt = "local_storage"
                 self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] = prompt
-            if not self.settings["ACCEPT_EFS_NOTES"] and self.settings[
-                "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
+            if not self.settings["ACCEPT_EFS_NOTES"] and \
+                    self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
                 prompt = input("Make sure EFS is created, EFS must be inside the same region as the EKS cluster, "
                                "VPC of EKS and EFS are the same, and security group of EFS allows all connections "
                                "from EKS nodes[Y/N].[Y]")
