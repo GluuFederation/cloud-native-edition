@@ -99,7 +99,7 @@ class Couchbase(object):
         flows_string = self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] + self.settings[
             "USING_CODE_FLOW"] + \
                        self.settings["USING_SCIM_FLOW"]
-        tps = self.settings["EXPECTED_TRANSACTIONS_PER_SEC"]
+        tps = int(self.settings["EXPECTED_TRANSACTIONS_PER_SEC"])
         number_of_flows = flows_string.count("Y")
         if number_of_flows < 1:
             number_of_flows = 1
@@ -374,10 +374,12 @@ class Couchbase(object):
             encoded_tls_key_bytes = base64.b64encode(tls_key_content.encode("utf-8"))
             encoded_tls_key_string = str(encoded_tls_key_bytes, "utf-8")
 
-        with open(ca_cert_filepath) as content_file:
-            ca_crt_content = content_file.read()
-            encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
-            encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
+        ca_crt_content = self.settings["COUCHBASE_CRT"]
+        if not ca_crt_content:
+            with open(ca_cert_filepath) as content_file:
+                ca_crt_content = content_file.read()
+                encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
+                encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
 
         with open(chain_pem_filepath) as content_file:
             chain_pem_content = content_file.read()
