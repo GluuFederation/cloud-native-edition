@@ -147,7 +147,8 @@ class App(object):
                 parser["provisioner"] = "kubernetes.io/aws-ebs"
                 parser["parameters"]["encrypted"] = "true"
                 parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_eks_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 8:
@@ -169,7 +170,8 @@ class App(object):
                 parser["provisioner"] = "kubernetes.io/gce-pd"
                 del parser["parameters"]["encrypted"]
                 parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_gke_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 13:
@@ -186,7 +188,8 @@ class App(object):
                 del parser["parameters"]["encrypted"]
                 del parser["parameters"]["type"]
                 parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_azure_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 18:
