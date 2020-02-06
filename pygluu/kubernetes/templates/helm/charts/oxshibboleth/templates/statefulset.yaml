@@ -92,7 +92,7 @@ spec:
           claimName: efs
           {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
-          {{- else if eq eq .Values.global.provisioner "microk8s.io/hostpath" }}
+          {{- else if eq .Values.global.provisioner "microk8s.io/hostpath" }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.cloud.awsLocalStorage ) }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
