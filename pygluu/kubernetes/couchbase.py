@@ -50,7 +50,7 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
 
     for n in range(number_of_zones):
         node_zone = zones[n]
-        spec = {"name": cb_service_name + "-" + node_zone, "size": "1", "serverGroups": [node_zone],
+        spec = {"name": cb_service_name + "-" + node_zone, "size": size[n], "serverGroups": [node_zone],
                 "services": [cb_service_name],
                 "pod": {
                     "volumeMounts": {"default": "pvc-general", cb_service_name: "pvc-" + cb_service_name},
@@ -67,7 +67,6 @@ class Couchbase(object):
     def __init__(self, settings):
         self.kubernetes = Kubernetes()
         self.storage_class_file = Path("./couchbase/storageclasses.yaml")
-        self.low_couchbase_cluster_file = Path("./couchbase/low-resource-couchbase-cluster.yaml")
         self.couchbase_cluster_file = Path("./couchbase/couchbase-cluster.yaml")
         self.couchbase_source_folder_pattern, self.couchbase_source_file = self.get_couchbase_files
         self.couchbase_admission_file = self.couchbase_source_file.joinpath("admission.yaml")
@@ -233,10 +232,11 @@ class Couchbase(object):
 
     def analyze_couchbase_cluster_yaml(self):
         parser = Parser("./couchbase/couchbase-cluster.yaml", "CouchbaseCluster")
+        parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
         number_of_buckets = len(parser["spec"]["buckets"])
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
-            resources_servers = [{"name": "allServices", "size": "1",
+            resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
                                   "pod": {"volumeMounts":
                                               {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
@@ -247,6 +247,12 @@ class Couchbase(object):
             eventing_service_memory_quota = 256
             analytics_service_memory_quota = 1024
             memory_quota = 100
+            self.settings["COUCHBASE_GENERAL_STORAGE"] = "5Gi"
+            self.settings["COUCHBASE_DATA_STORAGE"] = "5Gi"
+            self.settings["COUCHBASE_INDEX_STORAGE"] = "5Gi"
+            self.settings["COUCHBASE_QUERY_STORAGE"] = "5Gi"
+            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = "5Gi"
+
         else:
             resources = self.calculate_couchbase_resources
             data_service_memory_quota = resources["COUCHBASE_DATA_MEM_QUOTA"]
@@ -469,20 +475,8 @@ class Couchbase(object):
                                                               value_of_second_literal=encoded_cb_pass_string)
 
         self.kubernetes.create_objects_from_dict(self.storage_class_file, namespace=cb_namespace)
-
-        if self.settings['DEPLOYMENT_ARCH'] == "gke":
-            couchbase_cluster_file_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
-            couchbase_cluster_file_parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
-            couchbase_cluster_file_parser.dump_it()
-            self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
-                                                            namespace=cb_namespace)
-
-        else:
-            low_couchbase_cluster_file_parser = Parser(self.low_couchbase_cluster_file, "CouchbaseCluster")
-            low_couchbase_cluster_file_parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
-            low_couchbase_cluster_file_parser.dump_it()
-            self.kubernetes.create_namespaced_custom_object(filepath=self.low_couchbase_cluster_file,
-                                                            namespace=cb_namespace)
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
+                                                        namespace=cb_namespace)
 
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled")
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_data=enabled")
