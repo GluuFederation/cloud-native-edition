@@ -294,16 +294,17 @@ class Prompt(object):
             prompt = input("Please enter valid email for Google Cloud account:")
             self.settings["GMAIL_ACCOUNT"] = prompt
 
-        for node_name in self.settings["NODES_NAMES"]:
-            for zone in self.settings["NODES_ZONES"]:
-                response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
-                                          "--command='echo $HOME'".format(node_name,
-                                                                          zone))
-                self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+        if self.settings["LDAP_VOLUME_TYPE"] == 11:
+            for node_name in self.settings["NODES_NAMES"]:
+                for zone in self.settings["NODES_ZONES"]:
+                    response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
+                                              "--command='echo $HOME'".format(node_name,
+                                                                              zone))
+                    self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                    if self.settings["GOOGLE_NODE_HOME_DIR"]:
+                        break
                 if self.settings["GOOGLE_NODE_HOME_DIR"]:
                     break
-            if self.settings["GOOGLE_NODE_HOME_DIR"]:
-                break
         self.write_variables_to_file()
 
     def prompt_config(self):

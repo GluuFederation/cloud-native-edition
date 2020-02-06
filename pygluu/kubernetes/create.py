@@ -1008,14 +1008,12 @@ class App(object):
                 elif self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
-                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
-                            self.settings["LDAP_VOLUME_TYPE"] == 16:
+                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 16:
                         if self.settings["DEPLOYMENT_ARCH"] == "eks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "ec2-user", node_ip, "/data")
                         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "opc", node_ip, "/data")
-            if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
-                    self.settings["LDAP_VOLUME_TYPE"] == 16:
+            if self.settings["LDAP_VOLUME_TYPE"] == 11:
                 if self.settings["DEPLOYMENT_ARCH"] == "gke":
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:
