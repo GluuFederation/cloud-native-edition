@@ -511,6 +511,17 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
+        if not self.settings["HOST_EXT_IP"]:
+            ip = self.gather_ip
+            self.settings["HOST_EXT_IP"] = ip
+        if not self.settings["INSTALL_COUCHBASE"]:
+            logger.info("For the following prompt  if placed [N] the couchbase is assumed to be"
+                        " installed or remotely provisioned")
+            prompt = input("Install Couchbase[Y/N]?[Y]")
+            if not prompt:
+                prompt = "Y"
+            self.settings["INSTALL_COUCHBASE"] = prompt
+
         if self.settings["INSTALL_COUCHBASE"] == "N":
             if not self.settings["COUCHBASE_CRT"]:
                 prompt = input("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
@@ -1111,13 +1122,6 @@ class Prompt(object):
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
-            if not self.settings["INSTALL_COUCHBASE"]:
-                logger.info("For the following prompt  if placed [N] the couchbase is assumed to be"
-                            " installed or remotely provisioned")
-                prompt = input("Install Couchbase[Y/N]?[Y]")
-                if not prompt:
-                    prompt = "Y"
-                self.settings["INSTALL_COUCHBASE"] = prompt
             self.prompt_couchbase()
 
         self.prompt_config()
