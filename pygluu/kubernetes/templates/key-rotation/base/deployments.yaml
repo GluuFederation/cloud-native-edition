@@ -24,7 +24,14 @@ spec:
             subPath: couchbase_password
           - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
-            subPath: couchbase.crt 
+            subPath: couchbase.crt
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "300m"
+          limits:
+            memory: "700Mi"
+            cpu: "500m"
       volumes:
       - name: cb-pass
         secret:

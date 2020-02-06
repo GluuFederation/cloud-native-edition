@@ -55,6 +55,13 @@ spec:
           - mountPath: /flag
             name: opendj-pvc
             subPath: flag
+        resources:
+          requests:
+            memory: "1500Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2000Mi"
+            cpu: "1500m"
         readinessProbe:
           tcpSocket:
             port: 1636

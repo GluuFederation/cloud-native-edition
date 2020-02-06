@@ -44,6 +44,14 @@ spec:
           - name: {{ include "oxauth.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt 
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /oxauth/.well-known/openid-configuration
@@ -63,8 +71,17 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
-      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
-      - name: {{ include "oxauth.fullname" . }}-updatelbip
-        configMap:
-          name: {{ .Release.Name }}-updatelbip
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        - name: cb-pass
+          secret:
+            secretName: {{ .Release.Name }}-cb-pass
+        - name: cb-crt 
+          secret:
+            secretName: {{ .Release.Name }}-cb-crt 
       {{- end }}
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "oxauth.fullname" . }}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+      {{- end }}
+      

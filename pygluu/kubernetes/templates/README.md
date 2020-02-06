@@ -65,7 +65,7 @@
 
     Afterwards run `kubectl cluster-info` to check whether `kubectl` is ready to interact with the cluster.
     
-1.  Create a json key [file](https://cloud.google.com/docs/authentication/getting-started).
+1.  If a connection is not made to google consul using google account the call to the api will fail. Either connect to google consul using an associated google account and run any `kubectl` command like `kubectl get pod` or create a service account using a json key [file](https://cloud.google.com/docs/authentication/getting-started).
 
 
 # Azure - AKS

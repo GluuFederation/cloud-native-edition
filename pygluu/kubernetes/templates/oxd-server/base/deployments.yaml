@@ -24,11 +24,6 @@ spec:
         ports:
         - containerPort: 8443
         - containerPort: 8444
-        resources:
-          requests:
-            memory: "500Mi"
-          limits:
-            memory: "1536Mi"
         envFrom:
         - configMapRef:
             name: oxd-server-cm
@@ -38,6 +33,13 @@ spec:
           #  subPath: oxd-server.keystore
           - mountPath: /scripts
             name: update-lb-ip
+        resources:
+          requests:
+            memory: "700Mi"
+            cpu: "300m"
+          limits:
+            memory: "1000Mi"
+            cpu: "500m"
       volumes:
       #- name: oxd-keystore-file
       #  secret:

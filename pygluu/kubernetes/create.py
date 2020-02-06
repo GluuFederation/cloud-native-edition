@@ -15,6 +15,7 @@ import time
 import errno
 import socket
 import subprocess
+import base64
 import sys
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
@@ -146,7 +147,8 @@ class App(object):
                 parser["provisioner"] = "kubernetes.io/aws-ebs"
                 parser["parameters"]["encrypted"] = "true"
                 parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_eks_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 8:
@@ -168,7 +170,8 @@ class App(object):
                 parser["provisioner"] = "kubernetes.io/gce-pd"
                 del parser["parameters"]["encrypted"]
                 parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_gke_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 13:
@@ -185,7 +188,8 @@ class App(object):
                 del parser["parameters"]["encrypted"]
                 del parser["parameters"]["type"]
                 parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = self.settings["NODES_ZONES"]
+                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
                 parser.dump_it()
                 kustomize_yaml_directory = dynamic_azure_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 18:
@@ -734,6 +738,10 @@ class App(object):
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
 
     def deploy_nfs(self):
+        nfs_service_yaml = "./shared-shib/nfs/services.yaml"
+        parser = Parser(nfs_service_yaml, "Service")
+        parser["metadata"]["namespace"] = self.settings["GLUU_NAMESPACE"]
+        parser.dump_it()
         self.kubernetes.create_objects_from_dict("shared-shib/nfs/services.yaml")
         nfs_ip = None
         while True:
@@ -747,7 +755,7 @@ class App(object):
         shared_shib_pv_parser.dump_it()
 
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "nfs-server")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server")
 
         exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
 
@@ -861,11 +869,18 @@ class App(object):
         self.kustomize_redis()
         self.kustomize_update_lb_ip()
         if install_couchbase:
-            if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
-                couchbase_app = Couchbase(self.settings)
-                couchbase_app.uninstall()
-                couchbase_app = Couchbase(self.settings)
-                couchbase_app.install()
+            if self.settings["PERSISTENCE_BACKEND"] != "ldap":
+                if self.settings["INSTALL_COUCHBASE"] == "Y":
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.uninstall()
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.install()
+                else:
+                    encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
+                    encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
+                                                                          encoded_cb_pass_string)
 
         self.deploy_shared_shib()
 
@@ -952,7 +967,6 @@ class App(object):
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
         self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
-        self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
         self.kubernetes.delete_deployment_using_name(nginx_deployemnt_app_name, "ingress-nginx")
@@ -1000,14 +1014,12 @@ class App(object):
                 elif self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
-                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
-                            self.settings["LDAP_VOLUME_TYPE"] == 16:
+                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 16:
                         if self.settings["DEPLOYMENT_ARCH"] == "eks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "ec2-user", node_ip, "/data")
                         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "opc", node_ip, "/data")
-            if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 11 or \
-                    self.settings["LDAP_VOLUME_TYPE"] == 16:
+            if self.settings["LDAP_VOLUME_TYPE"] == 11:
                 if self.settings["DEPLOYMENT_ARCH"] == "gke":
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:
@@ -1042,8 +1054,6 @@ def create_parser():
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
                                                     "Gluu Enterprise Edition non-interactively")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
-    subparsers.add_parser("install-gluu-only", help="Install Gluu Enterprise Edition with out installing Couchbase. "
-                                                    "This assunes Couchbase is already installed")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
@@ -1068,13 +1078,6 @@ def main():
             app = App()
             app.uninstall()
             app.install()
-
-        elif args.subparser_name == "install-gluu-only":
-            prompts = Prompt()
-            settings = prompts.prompt_couchbase()
-            app = App()
-            app.uninstall()
-            app.install(install_couchbase=False)
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")

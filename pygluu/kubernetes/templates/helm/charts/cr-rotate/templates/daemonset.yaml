@@ -25,3 +25,21 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "cr-rotate.fullname" . }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          volumeMounts:
+            - name: cb-pass
+              mountPath: "/etc/gluu/conf/couchbase_password"
+              subPath: couchbase_password
+            - name: cb-crt 
+              mountPath: "/etc/certs/couchbase.crt"
+              subPath: couchbase.crt
+          {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+      volumes:
+        - name: cb-pass
+          secret:
+            secretName: {{ .Release.Name }}-cb-pass 
+        - name: cb-crt 
+          secret:
+            secretName: {{ .Release.Name }}-cb-crt
+      {{- end }}    

@@ -294,16 +294,17 @@ class Prompt(object):
             prompt = input("Please enter valid email for Google Cloud account:")
             self.settings["GMAIL_ACCOUNT"] = prompt
 
-        for node_name in self.settings["NODES_NAMES"]:
-            for zone in self.settings["NODES_ZONES"]:
-                response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
-                                          "--command='echo $HOME'".format(node_name,
-                                                                          zone))
-                self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+        if self.settings["LDAP_VOLUME_TYPE"] == 11:
+            for node_name in self.settings["NODES_NAMES"]:
+                for zone in self.settings["NODES_ZONES"]:
+                    response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
+                                              "--command='echo $HOME'".format(node_name,
+                                                                              zone))
+                    self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                    if self.settings["GOOGLE_NODE_HOME_DIR"]:
+                        break
                 if self.settings["GOOGLE_NODE_HOME_DIR"]:
                     break
-            if self.settings["GOOGLE_NODE_HOME_DIR"]:
-                break
         self.write_variables_to_file()
 
     def prompt_config(self):
@@ -510,6 +511,17 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
+        if not self.settings["HOST_EXT_IP"]:
+            ip = self.gather_ip
+            self.settings["HOST_EXT_IP"] = ip
+        if not self.settings["INSTALL_COUCHBASE"]:
+            logger.info("For the following prompt  if placed [N] the couchbase is assumed to be"
+                        " installed or remotely provisioned")
+            prompt = input("Install Couchbase[Y/N]?[Y]")
+            if not prompt:
+                prompt = "Y"
+            self.settings["INSTALL_COUCHBASE"] = prompt
+
         if self.settings["INSTALL_COUCHBASE"] == "N":
             if not self.settings["COUCHBASE_CRT"]:
                 print("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
@@ -521,6 +533,8 @@ class Prompt(object):
                     encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
                     encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
                 self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
+        else:
+            self.settings["COUCHBASE_CRT"] = ""
 
         if not self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"]:
             prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]: ")
@@ -674,6 +688,7 @@ class Prompt(object):
                         self.settings["COUCHBASE_NAMESPACE"], self.settings["COUCHBASE_CLUSTER_NAME"],
                         self.settings["COUCHBASE_FQDN"])
         self.write_variables_to_file()
+        self.settings["INSTALL_COUCHBASE"] = "N"
         return self.settings
 
     def prompt_arch(self):
@@ -1109,13 +1124,6 @@ class Prompt(object):
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
-            if not self.settings["INSTALL_COUCHBASE"]:
-                logger.info("For the following prompt if responding [N] the couchbase is assumed to be"
-                            " installed or remotely provisioned")
-                prompt = input("Install Couchbase[Y/N]?[Y]")
-                if not prompt:
-                    prompt = "Y"
-                self.settings["INSTALL_COUCHBASE"] = prompt
             self.prompt_couchbase()
 
         self.prompt_config()

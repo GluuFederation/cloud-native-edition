@@ -37,11 +37,11 @@ spec:
             name: update-lb-ip
         resources:
           requests:
-            memory: "1500Mi"
-            cpu: "1000m"
+            memory: "500Mi"
+            cpu: "300m"
           limits:
-            memory: "2000Mi"
-            cpu: "1500m"
+            memory: "700Mi"
+            cpu: "500m"
         ports:
         - containerPort: 8080
         envFrom:
