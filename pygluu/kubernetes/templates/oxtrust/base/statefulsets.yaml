@@ -27,9 +27,11 @@ spec:
               /app/scripts/entrypoint.sh
         resources:
           requests:
-            memory: "1000Mi"
+            memory: "500Mi"
+            cpu: "500m"
           limits:
-            memory: "1536Mi"
+            memory: "700Mi"
+            cpu: "1000m"
         ports:
         - containerPort: 8080
         envFrom:
