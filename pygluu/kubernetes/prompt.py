@@ -517,7 +517,7 @@ class Prompt(object):
                                "This can also be found in your couchbase UI Security > Root Certificate: ")
                 with open(Path("./couchbase.crt")) as content_file:
                     ca_crt = content_file.read()
-                    encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
+                    encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
                     encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
                 self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
 

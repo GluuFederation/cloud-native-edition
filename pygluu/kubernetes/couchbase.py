@@ -94,6 +94,19 @@ class Couchbase(object):
 
         return couchbase_tar_file, couchbase_source_folder
 
+    def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string):
+        # Remove this if its not needed
+        self.kubernetes.create_namespaced_secret_from_literal(name="cb-crt",
+                                                              namespace=self.settings["GLUU_NAMESPACE"],
+                                                              literal="couchbase.crt",
+                                                              value_of_literal=encoded_ca_crt_string)
+
+        # Remove this if its not needed
+        self.kubernetes.create_namespaced_secret_from_literal(name="cb-pass",
+                                                              namespace=self.settings["GLUU_NAMESPACE"],
+                                                              literal="couchbase_password",
+                                                              value_of_literal=encoded_cb_pass_string)
+
     @property
     def calculate_couchbase_resources(self):
         flows_string = self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] + self.settings[
@@ -434,17 +447,7 @@ class Couchbase(object):
         encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
         encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
 
-        # Remove this if its not needed
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-crt",
-                                                              namespace=self.settings["GLUU_NAMESPACE"],
-                                                              literal="couchbase.crt",
-                                                              value_of_literal=encoded_ca_crt_string)
-
-        # Remove this if its not needed
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-pass",
-                                                              namespace=self.settings["GLUU_NAMESPACE"],
-                                                              literal="couchbase_password",
-                                                              value_of_literal=encoded_cb_pass_string)
+        self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
         self.kubernetes.create_objects_from_dict(self.couchbase_admission_file, namespace=cb_namespace)
         self.kubernetes.create_objects_from_dict(self.couchbbase_custom_resource_definition_file,

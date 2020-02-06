@@ -15,6 +15,7 @@ import time
 import errno
 import socket
 import subprocess
+import base64
 import sys
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
@@ -861,11 +862,18 @@ class App(object):
         self.kustomize_redis()
         self.kustomize_update_lb_ip()
         if install_couchbase:
-            if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
-                couchbase_app = Couchbase(self.settings)
-                couchbase_app.uninstall()
-                couchbase_app = Couchbase(self.settings)
-                couchbase_app.install()
+            if self.settings["PERSISTENCE_BACKEND"] != "ldap":
+                if self.settings["INSTALL_COUCHBASE"] == "Y":
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.uninstall()
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.install()
+                else:
+                    encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
+                    encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+                    couchbase_app = Couchbase(self.settings)
+                    couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
+                                                                          encoded_cb_pass_string)
 
         self.deploy_shared_shib()
 
