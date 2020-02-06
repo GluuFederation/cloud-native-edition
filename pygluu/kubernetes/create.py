@@ -737,7 +737,7 @@ class App(object):
     def deploy_nfs(self):
         nfs_service_yaml = "./shared-shib/nfs/services.yaml"
         parser = Parser(nfs_service_yaml, "Service")
-        parser["namespace"] = self.settings["GLUU_NAMESPACE"]
+        parser["metadata"]["namespace"] = self.settings["GLUU_NAMESPACE"]
         parser.dump_it()
         self.kubernetes.create_objects_from_dict("shared-shib/nfs/services.yaml")
         nfs_ip = None
@@ -752,7 +752,7 @@ class App(object):
         shared_shib_pv_parser.dump_it()
 
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "nfs-server")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server")
 
         exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
 
