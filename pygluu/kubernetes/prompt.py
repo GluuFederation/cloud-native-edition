@@ -688,7 +688,6 @@ class Prompt(object):
                         self.settings["COUCHBASE_NAMESPACE"], self.settings["COUCHBASE_CLUSTER_NAME"],
                         self.settings["COUCHBASE_FQDN"])
         self.write_variables_to_file()
-        self.settings["INSTALL_COUCHBASE"] = "N"
         return self.settings
 
     def prompt_arch(self):
