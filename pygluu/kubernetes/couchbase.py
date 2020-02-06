@@ -65,6 +65,7 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
 
 class Couchbase(object):
     def __init__(self, settings):
+        self.settings = settings
         self.kubernetes = Kubernetes()
         self.storage_class_file = Path("./couchbase/storageclasses.yaml")
         self.couchbase_cluster_file = Path("./couchbase/couchbase-cluster.yaml")
@@ -74,24 +75,26 @@ class Couchbase(object):
         self.couchbase_operator_role_file = self.couchbase_source_file.joinpath("operator-role.yaml")
         self.couchbase_operator_deployment_file = self.couchbase_source_file.joinpath("operator-deployment.yaml")
         self.filename = ""
-        self.settings = settings
 
     @property
     def get_couchbase_files(self):
-        couchbase_tar_pattern = "couchbase-autonomous-operator-kubernetes_*.tar.gz"
-        directory = Path('.')
-        try:
-            couchbase_tar_file = list(directory.glob(couchbase_tar_pattern))[0]
-        except IndexError:
-            logger.fatal("Couchbase package not found.")
-            logger.info("Please download the couchbase kubernetes package and place it inside the same directory "
-                        "containing the create.py script.https://www.couchbase.com/downloads")
-            sys.exit()
-        extract_couchbase_tar(couchbase_tar_file)
-        couchbase_source_folder_pattern = "./couchbase-source-folder/couchbase-autonomous-operator-kubernetes_*"
-        couchbase_source_folder = list(directory.glob(couchbase_source_folder_pattern))[0]
+        if self.settings["INSTALL_COUCHBASE"] == "Y":
+            couchbase_tar_pattern = "couchbase-autonomous-operator-kubernetes_*.tar.gz"
+            directory = Path('.')
+            try:
+                couchbase_tar_file = list(directory.glob(couchbase_tar_pattern))[0]
+            except IndexError:
+                logger.fatal("Couchbase package not found.")
+                logger.info("Please download the couchbase kubernetes package and place it inside the same directory "
+                            "containing the create.py script.https://www.couchbase.com/downloads")
+                sys.exit()
+            extract_couchbase_tar(couchbase_tar_file)
+            couchbase_source_folder_pattern = "./couchbase-source-folder/couchbase-autonomous-operator-kubernetes_*"
+            couchbase_source_folder = list(directory.glob(couchbase_source_folder_pattern))[0]
 
-        return couchbase_tar_file, couchbase_source_folder
+            return couchbase_tar_file, couchbase_source_folder
+        # Couchbase is installed.
+        return Path("."), Path(".")
 
     def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string):
         # Remove this if its not needed
