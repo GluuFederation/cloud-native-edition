@@ -34,8 +34,8 @@ spec:
       volumes:
         - name: cb-pass
           secret:
-            secretName: {{ include "persistence.name" . }}-pass
+            secretName: {{ .Release.Name }}-cb-pass
         - name: cb-crt 
           secret:
-            secretName: {{ include "persistence.name" . }}-crt
+            secretName: {{ .Release.Name }}-cb-crt
       {{- end }}
