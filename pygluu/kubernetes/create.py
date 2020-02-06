@@ -735,6 +735,10 @@ class App(object):
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
 
     def deploy_nfs(self):
+        nfs_service_yaml = "./shared-shib/nfs/services.yaml"
+        parser = Parser(nfs_service_yaml, "Service")
+        parser["namespace"] = self.settings["GLUU_NAMESPACE"]
+        parser.dump_it()
         self.kubernetes.create_objects_from_dict("shared-shib/nfs/services.yaml")
         nfs_ip = None
         while True:
@@ -959,7 +963,6 @@ class App(object):
         aks_yamls_folder = Path("./gluuaksyamls")
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
