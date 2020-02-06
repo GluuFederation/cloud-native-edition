@@ -191,9 +191,9 @@ persistence:
     gluuOxtrustApiEnabled: false
     gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
-    gluuPassportEnabled: true 
+    gluuPassportEnabled: false 
     gluuCasaEnabled: false
-    gluuRadiusEnabled: true 
+    gluuRadiusEnabled: false 
     gluuSamlEnabled: true
 
 oxauth:
