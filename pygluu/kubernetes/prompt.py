@@ -514,13 +514,15 @@ class Prompt(object):
         if self.settings["INSTALL_COUCHBASE"] == "N":
             if not self.settings["COUCHBASE_CRT"]:
                 prompt = input("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
-                               "the same location as the installation script. Continue?"
-                               "This can also be found in your couchbase UI Security > Root Certificate: ")
+                               "the same location as the installation script."
+                               "This can also be found in your couchbase UI Security > Root Certificate:  Continue? ")
                 with open(Path("./couchbase.crt")) as content_file:
                     ca_crt = content_file.read()
                     encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
                     encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
                 self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
+        else:
+            self.settings["COUCHBASE_CRT"] = ""
 
         if not self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"]:
             prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]: ")
