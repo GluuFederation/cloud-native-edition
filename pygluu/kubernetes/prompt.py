@@ -512,11 +512,12 @@ class Prompt(object):
         self.prompt_gluu_namespace()
         if self.settings["INSTALL_COUCHBASE"] == "N":
             if not self.settings["COUCHBASE_CRT"]:
-                prompt = input("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
-                               "the same location as the installation script. Continue?"
-                               "This can also be found in your couchbase UI Security > Root Certificate: ")
+                print("Place the Couchbase certificate authority certificate in a file called couchbase.crt at "
+                      "the same location as the installation script.")
+                print("This can also be found in your couchbase UI Security > Root Certificate")
+                prompt = input("Hit 'enter' or 'return' when ready.")
                 with open(Path("./couchbase.crt")) as content_file:
-                    ca_crt = content_file.read()
+                    ca_crt_content = content_file.read()
                     encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
                     encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
                 self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
@@ -1072,14 +1073,14 @@ class Prompt(object):
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" \
                     or self.settings["PERSISTENCE_BACKEND"] == "couchbase":
                 print("|------------------------------------------------------------------|")
-                print("|         Is this a multi-cloud/region setup[N] ?[Y/N]             |")
+                print("|         Is this a multi-cloud/region setup[N] ? [Y/N]            |")
                 print("|------------------------------------------------------------------|")
                 print("|                             Notes                                |")
                 print("|------------------------------------------------------------------|")
                 print("If you are planning for a multi-cloud/region setup and this is the first cluster answer N or"
-                      "leave blank. You will answer Y for the second and more cluster setup   ")
+                      " leave blank. You will answer Y for the second and more cluster setup   ")
                 print("|------------------------------------------------------------------|")
-                prompt = input("Is this a multi-cloud/region setup[N]")
+                prompt = input("Is this a multi-cloud/region setup[Y/N]?[N]")
                 if prompt == "Y" or prompt == "y":
                     prompt = "Y"
                 else:
@@ -1109,7 +1110,7 @@ class Prompt(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
             if not self.settings["INSTALL_COUCHBASE"]:
-                logger.info("For the following prompt  if placed [N] the couchbase is assumed to be"
+                logger.info("For the following prompt if responding [N] the couchbase is assumed to be"
                             " installed or remotely provisioned")
                 prompt = input("Install Couchbase[Y/N]?[Y]")
                 if not prompt:
