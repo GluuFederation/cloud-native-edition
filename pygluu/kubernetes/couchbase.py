@@ -242,10 +242,10 @@ class Couchbase(object):
                                   "pod": {"volumeMounts":
                                               {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
                                                "analytics": ["pvc-analytics"]}}}]
-            data_service_memory_quota = 512
-            index_service_memory_quota = 256
-            search_service_memory_quota = 256
-            eventing_service_memory_quota = 256
+            data_service_memory_quota = 1024
+            index_service_memory_quota = 512
+            search_service_memory_quota = 512
+            eventing_service_memory_quota = 512
             analytics_service_memory_quota = 1024
             memory_quota = 100
             self.settings["COUCHBASE_GENERAL_STORAGE"] = "5Gi"
