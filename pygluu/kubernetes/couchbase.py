@@ -16,6 +16,7 @@ from zipfile import ZipFile
 import subprocess
 import sys
 import base64
+import random
 
 logger = get_logger("gluu-couchbase     ")
 
@@ -33,27 +34,24 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
     server_spec = []
     zones = zones
     number_of_zones = len(zones)
-    size = []
-    if number_of_zones < number_of_cb_service_nodes:
-        # there are more cb nodes than whole kuberenetes cluster nodes. This means two or more cb nodes will
-        # exist in the same kubernetes node so increase size
+    size = dict()
+    # Create defualt size 1 for all the zones available
+    for n in range(number_of_cb_service_nodes):
+        random_zone_index = random.randint(0, number_of_zones - 1)
+        try:
+            size[zones[random_zone_index]] = size[zones[random_zone_index]] + 1
+        except KeyError:
+            size[zones[random_zone_index]] = 1
 
-        # Create defualt size 1 for all the zones available
-        for n in range(number_of_zones):
-            size.append(1)
-        diff = number_of_cb_service_nodes - number_of_zones
-
-        for n in range(diff):
-            size[n] = size[n] + 1
-    else:
-        number_of_zones = number_of_cb_service_nodes
-
-    for n in range(number_of_zones):
-        node_zone = zones[n]
-        spec = {"name": cb_service_name + "-" + node_zone, "size": size[n], "serverGroups": [node_zone],
+    for k, v in size.items():
+        node_zone = k
+        name = "pvc-" + cb_service_name
+        if cb_service_name == "analytics":
+            name = ["pvc-" + cb_service_name]
+        spec = {"name": cb_service_name + "-" + node_zone, "size": v, "serverGroups": [node_zone],
                 "services": [cb_service_name],
                 "pod": {
-                    "volumeMounts": {"default": "pvc-general", cb_service_name: "pvc-" + cb_service_name},
+                    "volumeMounts": {"default": "pvc-general", cb_service_name: name},
                     "resources": {"limits": {"cpu": str(cpu_limit) + "m", "memory": str(mem_limit) + "Mi"},
                                   "requests": {"cpu": str(cpu_req) + "m", "memory": str(mem_req) + "Mi"}}
 
@@ -126,20 +124,20 @@ class Couchbase(object):
             number_of_eventing_service_memory_nodes = 1
 
         if not self.settings["COUCHBASE_GENERAL_STORAGE"]:
-            self.settings["COUCHBASE_GENERAL_STORAGE"] = str(((tps / 2000) * 200 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5) + "Gi"
+            self.settings["COUCHBASE_GENERAL_STORAGE"] = str(int(((tps / 2000) * 200 * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_DATA_STORAGE"]:
-            self.settings["COUCHBASE_DATA_STORAGE"] = str(((tps / 2000) * 500 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5) + "Gi"
+            self.settings["COUCHBASE_DATA_STORAGE"] = str(int(((tps / 2000) * 500 * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_INDEX_STORAGE"]:
-            self.settings["COUCHBASE_INDEX_STORAGE"] = str(((tps / 2000) * 150 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5) + "Gi"
+            self.settings["COUCHBASE_INDEX_STORAGE"] = str(int(((tps / 2000) * 150 * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_QUERY_STORAGE"]:
-            self.settings["COUCHBASE_QUERY_STORAGE"] = str(((tps / 2000) * 150 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5) + "Gi"
+            self.settings["COUCHBASE_QUERY_STORAGE"] = str(int(((tps / 2000) * 150 * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_ANALYTICS_STORAGE"]:
-            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = str(((tps / 2000) * 100 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5) + "Gi"
+            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = str(int(((tps / 2000) * 100 * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
 
         if self.settings["COUCHBASE_DATA_NODES"]:
             number_of_data_nodes = self.settings["COUCHBASE_DATA_NODES"]
@@ -151,7 +149,7 @@ class Couchbase(object):
             number_of_eventing_service_memory_nodes = self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]
 
         data_service_memory_quota = ((tps / 2000) * 12800 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 512
+                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 512
         if data_service_memory_quota > 12800:
             number_of_data_nodes = round(data_service_memory_quota / 12800)
             number_of_query_nodes = number_of_data_nodes - 1
@@ -167,7 +165,7 @@ class Couchbase(object):
         query_cpu_limit = query_cpu_request + 2000
 
         index_service_memory_quota = ((tps / 2000) * 25600 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 256
+                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
         if index_service_memory_quota > 25600:
             number_of_index_nodes = round(index_service_memory_quota / 25600)
             index_service_memory_quota = 25600
@@ -177,11 +175,11 @@ class Couchbase(object):
         index_cpu_limit = index_cpu_request + 2000
 
         search_service_memory_quota = ((tps / 2000) * 4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 256
+                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
         eventing_service_memory_quota = (4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 256
+                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
         analytics_service_memory_quota = (4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 1024
+                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 1024
         if search_service_memory_quota > 4266:
             number_of_eventing_service_memory_nodes = round(search_service_memory_quota / 4266)
             search_service_memory_quota = 4266
@@ -262,7 +260,7 @@ class Couchbase(object):
             index_service_memory_quota = resources["COUCHBASE_INDEX_MEM_QUOTA"]
             search_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"]
             eventing_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"]
-            analytics_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"]
+            analytics_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"] + 1024
             memory_quota = ((resources["COUCHBASE_DATA_MEM_QUOTA"] - 500) / number_of_buckets)
             zones_list = self.settings["NODES_ZONES"]
             data_server_spec = create_server_spec_per_cb_service(zones_list, int(resources["COUCHBASE_DATA_NODES"]),
@@ -307,7 +305,7 @@ class Couchbase(object):
         parser["spec"]["cluster"]["analyticsServiceMemoryQuota"] = analytics_service_memory_quota
 
         for i in range(number_of_buckets):
-            parser["spec"]["buckets"][i]["memoryQuota"] = memory_quota
+            parser["spec"]["buckets"][i]["memoryQuota"] = int(memory_quota + 100)
         parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
         parser["spec"]["servers"] = resources_servers
 
