@@ -236,7 +236,7 @@ class Couchbase(object):
         number_of_buckets = len(parser["spec"]["buckets"])
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
-            resources_servers = [{"name": "allServices", "size": 1,
+            resources_servers = [{"name": "allServices", "size": 2,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
                                   "pod": {"volumeMounts":
                                               {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
@@ -295,7 +295,8 @@ class Couchbase(object):
                                 index_server_spec + search_eventing_analytics_server_spec
 
         if self.settings["NODES_ZONES"]:
-            parser["spec"]["serverGroups"] = self.settings["NODES_ZONES"]
+            unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+            parser["spec"]["serverGroups"] = unique_zones
         parser["spec"]["cluster"]["dataServiceMemoryQuota"] = data_service_memory_quota
         parser["spec"]["cluster"]["indexServiceMemoryQuota"] = index_service_memory_quota
         parser["spec"]["cluster"]["searchServiceMemoryQuota"] = search_service_memory_quota
@@ -393,8 +394,8 @@ class Couchbase(object):
             encoded_tls_key_bytes = base64.b64encode(tls_key_content.encode("utf-8"))
             encoded_tls_key_string = str(encoded_tls_key_bytes, "utf-8")
 
-        ca_crt_content = self.settings["COUCHBASE_CRT"]
-        if not ca_crt_content:
+        encoded_ca_crt_string = self.settings["COUCHBASE_CRT"]
+        if not encoded_ca_crt_string:
             with open(ca_cert_filepath) as content_file:
                 ca_crt_content = content_file.read()
                 encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
