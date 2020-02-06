@@ -1054,8 +1054,6 @@ def create_parser():
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
                                                     "Gluu Enterprise Edition non-interactively")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
-    subparsers.add_parser("install-gluu-only", help="Install Gluu Enterprise Edition with out installing Couchbase. "
-                                                    "This assunes Couchbase is already installed")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
@@ -1080,13 +1078,6 @@ def main():
             app = App()
             app.uninstall()
             app.install()
-
-        elif args.subparser_name == "install-gluu-only":
-            prompts = Prompt()
-            settings = prompts.prompt_couchbase()
-            app = App()
-            app.uninstall()
-            app.install(install_couchbase=False)
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
