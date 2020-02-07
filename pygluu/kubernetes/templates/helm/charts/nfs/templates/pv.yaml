@@ -11,5 +11,5 @@ spec:
   mountOptions:
     - nfsvers=4.1
   nfs:
-    server: nfs.default.svc.cluster.local # nfs is from svc {{ include "nfs.name" .}}
+    server: nfs.{{ .Values.global.namespace }}.svc.cluster.local  # nfs is from svc {{ include "nfs.name" .}}
     path: "/opt/shared-shibboleth-idp"
