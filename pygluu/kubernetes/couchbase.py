@@ -10,7 +10,7 @@ from pathlib import Path
 import shutil
 import tarfile
 from .kubeapi import Kubernetes
-from .yamlparser import Parser, get_logger
+from .yamlparser import Parser, get_logger, update_settings_json_file
 import urllib.request
 from zipfile import ZipFile
 import subprocess
@@ -202,7 +202,7 @@ class Couchbase(object):
         resources_info = dict(COUCHBASE_DATA_NODES=int(number_of_data_nodes),
                               COUCHBASE_QUERY_NODES=int(number_of_query_nodes),
                               COUCHBASE_INDEX_NODES=int(number_of_index_nodes),
-                              COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES=number_of_eventing_service_memory_nodes,
+                              COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES=int(number_of_eventing_service_memory_nodes),
                               COUCHBASE_DATA_MEM_QUOTA=round(data_service_memory_quota),
                               COUCHBASE_DATA_MEM_REQUEST=round(data_memory_request),
                               COUCHBASE_DATA_MEM_LIMIT=round(data_memory_limit),
@@ -229,6 +229,10 @@ class Couchbase(object):
                               TOTAL_RAM_NEEDED=round(total_mem_resources),
                               TOTAL_CPU_NEEDED=round(total_cpu_resources)
                               )
+        self.settings["COUCHBASE_DATA_NODES"] = number_of_data_nodes
+        self.settings["COUCHBASE_QUERY_NODES"] = number_of_query_nodes
+        self.settings["COUCHBASE_INDEX_NODES"] = number_of_index_nodes
+        self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"] = number_of_eventing_service_memory_nodes
         return resources_info
 
     def analyze_couchbase_cluster_yaml(self):
@@ -401,6 +405,7 @@ class Couchbase(object):
                 ca_crt_content = content_file.read()
                 encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
                 encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
+            self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
 
         with open(chain_pem_filepath) as content_file:
             chain_pem_content = content_file.read()
@@ -412,6 +417,7 @@ class Couchbase(object):
             encoded_pkey_bytes = base64.b64encode(pkey_content.encode("utf-8"))
             encoded_pkey_string = str(encoded_pkey_bytes, "utf-8")
 
+        update_settings_json_file(self.settings)
         self.kubernetes.create_namespaced_secret_from_literal(name="couchbase-server-tls",
                                                               namespace=cb_namespace,
                                                               literal=chain_pem_filepath.name,
