@@ -9,10 +9,18 @@
 from pathlib import Path
 import contextlib
 import os
+import json
 import logging
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 from collections import OrderedDict
+
+
+def update_settings_json_file(settings):
+    """Write settings out to a json file
+    """
+    with open(Path('./settings.json'), 'w+') as file:
+        json.dump(settings, file, indent=2)
 
 
 def get_logger(name):

@@ -17,6 +17,7 @@ import json
 import base64
 from getpass import getpass
 from .kubeapi import Kubernetes, get_logger
+from .yamlparser import update_settings_json_file
 
 logger = get_logger("gluu-prompt        ")
 
@@ -161,12 +162,6 @@ class Prompt(object):
                                 )
         return default_settings
 
-    def write_variables_to_file(self):
-        """Write settings out toa file
-        """
-        with open(Path('./settings.json'), 'w+') as file:
-            json.dump(self.settings, file, indent=2)
-
     def get_settings(self):
         """Get merged settings (default and custom settings from local Python file).
         """
@@ -212,7 +207,7 @@ class Prompt(object):
             if not prompt:
                 prompt = "ingress-nginx"
             self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
         return self.settings
 
     def prompt_image_name_tag(self):
@@ -266,7 +261,7 @@ class Prompt(object):
             if self.settings["ENABLE_RADIUS"] == "Y":
                 prompt_and_set_setting("Radius", "RADIUS_IMAGE_NAME", "RADIUS_IMAGE_TAG")
             self.settings["EDIT_IMAGE_NAMES_TAGS"] = "N"
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_volumes_identitfier(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
@@ -277,7 +272,7 @@ class Prompt(object):
                             "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
                 prompt = input("Please enter Persistent Disk Name or EBS Volume ID for LDAP:")
                 self.settings["LDAP_STATIC_VOLUME_ID"] = prompt
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_disk_uris(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
@@ -287,7 +282,7 @@ class Prompt(object):
                             "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
                 prompt = input("Please enter the disk uri for LDAP:")
                 self.settings["LDAP_STATIC_DISK_URI"] = prompt
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_gke(self):
         if not self.settings["GMAIL_ACCOUNT"]:
@@ -305,7 +300,7 @@ class Prompt(object):
                         break
                 if self.settings["GOOGLE_NODE_HOME_DIR"]:
                     break
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_config(self):
         check_fqdn_provided = False
@@ -389,7 +384,7 @@ class Prompt(object):
         self.config_settings["org_name"] = self.settings["ORG_NAME"]
         with open(Path('./config/base/generate.json'), 'w+') as file:
             json.dump(self.config_settings, file)
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_storage(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
@@ -408,7 +403,7 @@ class Prompt(object):
                 self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"] = prompt
         else:
             self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"] = "4Gi"
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_replicas(self):
         if not self.settings["OXAUTH_REPLICAS"]:
@@ -473,7 +468,7 @@ class Prompt(object):
                     prompt = 1
                 prompt = int(prompt)
                 self.settings["RADIUS_REPLICAS"] = prompt
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
     def prompt_password(self, password):
         chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
@@ -688,7 +683,7 @@ class Prompt(object):
                 .format(self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"],
                         self.settings["COUCHBASE_NAMESPACE"], self.settings["COUCHBASE_CLUSTER_NAME"],
                         self.settings["COUCHBASE_FQDN"])
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
         return self.settings
 
     def prompt_arch(self):
@@ -1133,6 +1128,6 @@ class Prompt(object):
         self.settings["NFS_STORAGE_SIZE"] = self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
         if self.settings["CONFIRM_PARAMS"] != "Y":
             self.confirm_params()
-        self.write_variables_to_file()
+        update_settings_json_file(self.settings)
 
         return self.settings
