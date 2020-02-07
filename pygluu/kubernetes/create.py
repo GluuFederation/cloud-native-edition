@@ -294,7 +294,7 @@ class App(object):
                                    "./ldap/base", "./oxauth/base", "./oxd-server/base", "./oxpassport/base",
                                    "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base"]
         other_kustomization_yamls = ["./update-lb-ip/base", "./shared-shib/efs", "./shared-shib/localstorage",
-                                     "./shared-shib/nfs"]
+                                     "./shared-shib/nfs", "./redis/base"]
         all_kustomization_yamls = app_kustomization_yamls + other_kustomization_yamls
         for yaml in all_kustomization_yamls:
             kustomization_yaml = yaml + "/kustomization.yaml"
@@ -406,6 +406,9 @@ class App(object):
             ldap_cm_parser = Parser(self.ldap_yaml, "ConfigMap")
             ldap_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
             ldap_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings["HYBRID_LDAP_HELD_DATA"]
+            if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
+                ldap_cm_parser["data"]["GLUU_REDIS_URL"] = "redis:6379"
+                ldap_cm_parser["data"]["GLUU_REDIS_TYPE"] = "STANDALONE"
             ldap_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
             ldap_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             ldap_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
@@ -431,6 +434,9 @@ class App(object):
         persistence_cm_parser = Parser(self.persistence_yaml, "ConfigMap")
         persistence_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         persistence_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
+        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
+            persistence_cm_parser["data"]["GLUU_REDIS_URL"] = "redis:6379"
+            persistence_cm_parser["data"]["GLUU_REDIS_TYPE"] = "STANDALONE"
         persistence_cm_parser["data"]["GLUU_CASA_ENABLED"] = self.settings["ENABLE_CASA_BOOLEAN"]
         persistence_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
         persistence_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings["COUCHBASE_USER"]

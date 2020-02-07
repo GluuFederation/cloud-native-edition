@@ -479,6 +479,7 @@ class Prompt(object):
         chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
         keystore_chars = string.ascii_letters + string.digits
         chars = chars.replace('"', '')
+        chars = chars.replace("'", "")
         while True:
             while True:
                 random_password = ''.join(random.choice(chars) for _ in range(6))
