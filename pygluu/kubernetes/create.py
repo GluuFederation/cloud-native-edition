@@ -747,7 +747,8 @@ class App(object):
         while True:
             if nfs_ip:
                 break
-            nfs_ip = self.kubernetes.read_namespaced_service(name="nfs-server").spec.cluster_ip
+            nfs_ip = self.kubernetes.read_namespaced_service(name="nfs-server",
+                                                             namespace=self.settings["GLUU_NAMESPACE"]).spec.cluster_ip
             time.sleep(10)
 
         shared_shib_pv_parser = Parser(self.shared_shib_yaml, "PersistentVolume", "shared-shib-pv")
