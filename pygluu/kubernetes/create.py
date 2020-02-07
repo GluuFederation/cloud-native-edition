@@ -406,9 +406,6 @@ class App(object):
             ldap_cm_parser = Parser(self.ldap_yaml, "ConfigMap")
             ldap_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
             ldap_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings["HYBRID_LDAP_HELD_DATA"]
-            if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-                ldap_cm_parser["data"]["GLUU_REDIS_URL"] = "redis:6379"
-                ldap_cm_parser["data"]["GLUU_REDIS_TYPE"] = "STANDALONE"
             ldap_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
             ldap_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             ldap_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
