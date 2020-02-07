@@ -22,6 +22,10 @@ data:
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType | quote }}
+  {{ if eq .Values.global.gluuCacheType "REDIS" }}
+  GLUU_REDIS_URL: {{ .Values.global.gluuRedisUrl | quote }}
+  GLUU_REDIS_TYPE: {{ .Values.global.gluuRedisType | quote }}
+  {{- end }}
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}

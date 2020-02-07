@@ -38,6 +38,8 @@ global:
   gluuOxtrustBackend: oxtrust:8080
   gluuOxauthBackend: oxauth:8080
   gluuOxdServerUrl: oxd-server:8443
+  # If REDIS is the Cache Type
+  gluuRedisUrl: redis:6379
 
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
@@ -45,7 +47,8 @@ global:
   #persistence types and options
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: couchbase
-
+  # If REDIS is the Cache Type
+  gluuRedisType: STANDALONE
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
