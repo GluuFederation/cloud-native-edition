@@ -142,6 +142,9 @@ class Helm(object):
         values_file_parser["global"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
             values_file_parser["global"]["isDomainRegistered"] = "true"
+        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
+            values_file_parser["global"]["gluuRedisUrl"] = "redis:6379"
+            values_file_parser["global"]["gluuRedisType"] = "STANDALONE"
         values_file_parser["global"]["lbAddr"] = self.settings["LB_ADD"]
         values_file_parser["global"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["global"]["gluuPersistenceLdapMapping"] = "default"
