@@ -67,6 +67,12 @@ spec:
           failureThreshold: 20
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
+      {{- if eq .Values.global.isDomainRegistered "false"}}
+      hostAliases:
+       - ip: {{ .Values.global.nginxIp }}
+         hostnames:
+         - {{ .Values.global.domain }}
+      {{- end }}
       volumes:
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxpassport.name" . }}-updatelbip
