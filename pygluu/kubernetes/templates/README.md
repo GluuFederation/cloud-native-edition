@@ -729,4 +729,3 @@ Examples:
     ```
     kubectl scale --replicas=2 statefulset oxtrust
     ```
-
