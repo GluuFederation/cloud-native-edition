@@ -66,7 +66,7 @@ global:
   # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
   gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
   # gluuCouchbaseCertFile location of
-  gluuCouchbaseCertFile: /etc/gluu/conf/couchbase.crt
+  gluuCouchbaseCertFile: /etc/certs/couchbase.crt
 
   # Enable installation of services
   oxauth:
