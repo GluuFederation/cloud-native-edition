@@ -100,17 +100,17 @@ global:
   nginx:
     enabled: true
 
-  cr-rotate:
-    enabled: false
-
   key-rotation:
     enabled: false
 
   nfs:
-    enabled: false
+    enabled: false  
 
   shared-shib:
     enabled: true 
+ 
+  cr-rotate:
+    enabled: false  
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -195,7 +195,7 @@ persistence:
     gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
     gluuPassportEnabled: false 
-    gluuCasaEnabled: false
+    gluuCasaEnabled: false   
     gluuRadiusEnabled: false 
     gluuSamlEnabled: true
 
