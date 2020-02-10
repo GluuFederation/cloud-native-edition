@@ -51,7 +51,6 @@ dependencies:
         - oxpassport
 
     - name: casa
-      condtion: persistence.configmap.gluuCasaEnabled
       version: 1.0.0
       tags:
         - casa 
@@ -63,7 +62,6 @@ dependencies:
         - key-rotation
   
     - name: cr-rotate
-      condtion: global.cr-rotate.enabled
       version: 1.0.0
       tags:
         - cr-rotate

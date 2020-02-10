@@ -548,6 +548,8 @@ If during installation the release was not defined, release name is checked by r
 | `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
 | `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
 | `global.config.enabled`                            | Either to install config chart or not.                                                                                           | `true`                              |   
+| `tags.casa.enabled`                                | Either to install casa chart or not
+                    | `false`                             |
 | `efs-provisioner.enabled`                          | Enable EFS provisioning for AWS deployments ONLY                                                                                 | `false`                             |
 | `efs-provisioner.efsProvisioner.dnsName`           | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com                                                                    | `" "`                               |
 | `efs-provisioner.efsProvisioner.efsFileSystemId`   | EFS id                                                                                                                           | `" "`                               |
@@ -629,6 +631,10 @@ oxd-server:
 ### Casa
 
 - Casa is dependant on `oxd-server`. To install it `oxd-server` must be enabled.
+- Set `tags.casa.enable` to `true`.
+
+### cr-rotate
+- Set `tags.cr-rotate.enable` to `true`.
 
 ### Redis
 
@@ -651,13 +657,13 @@ global:
 
 ### Other optional services
 
-Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values to `true` under the global block.
+Other optional services like `key-rotation`, and `radius` are enabled by setting their corresponding values to `true` under the global block.
 
 For example, to enable `cr-rotate` set
 
 ```yaml
 global:
-  cr-rotate:
+  key-rotation:
     enabled: true
 ```
 
