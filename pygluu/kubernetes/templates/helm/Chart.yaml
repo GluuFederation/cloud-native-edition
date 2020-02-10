@@ -52,6 +52,7 @@ dependencies:
 
     - name: casa
       version: 1.0.0
+      condition: persistence.configmap.gluuCasaEnabled
       tags:
         - casa 
   
@@ -63,6 +64,7 @@ dependencies:
   
     - name: cr-rotate
       version: 1.0.0
+      condition: global.cr-rotate.enabled
       tags:
         - cr-rotate
   

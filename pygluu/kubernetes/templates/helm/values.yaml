@@ -108,10 +108,9 @@ global:
 
   shared-shib:
     enabled: true 
-
-tags:
-  cr-rotate: false  
-  casa: false
+ 
+  cr-rotate:
+    enabled: false  
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -196,7 +195,7 @@ persistence:
     gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
     gluuPassportEnabled: false 
-    gluuCasaEnabled: false 
+    gluuCasaEnabled: false   
     gluuRadiusEnabled: false 
     gluuSamlEnabled: true
 
