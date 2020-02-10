@@ -17,8 +17,6 @@ dependencies:
     - name: redis
       condition: global.redis.enabled
       version: 1.0.0
-      tags:
-        - redis
   
     - name: opendj
       condition: global.opendj.enabled
@@ -47,32 +45,22 @@ dependencies:
     - name: oxpassport
       version: 1.0.0
       condition: persistence.configmap.gluuPassportEnabled
-      tags:
-        - oxpassport
 
     - name: casa
       version: 1.0.0
       condition: persistence.configmap.gluuCasaEnabled
-      tags:
-        - casa 
   
     - name: key-rotation
       condition: global.key-rotation.enabled
       version: 1.0.0
-      tags:
-        - key-rotation
   
     - name: cr-rotate
       version: 1.0.0
       condition: global.cr-rotate.enabled
-      tags:
-        - cr-rotate
   
     - name: radius
       condition: persistence.configmap.gluuRadiusEnabled
       version: 1.0.0
-      tags:
-        - radius
   
     - name: nfs
       condition: global.nfs.enabled

@@ -27,7 +27,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: "192.168.64.13" # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
