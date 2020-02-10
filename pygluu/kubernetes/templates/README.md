@@ -130,7 +130,7 @@
     ./pygluu-kubernetes.pyz install
     ```
     
- > **_NOTE:_**  Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters and can be used for a non-interactive setup. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases). 
+ > **_NOTE:_**  Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `previous-settings.json` holding all the parameters and can be used for a non-interactive setup by changing its name to `settings.json`. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases). 
 
 ## `settings.json` parameters file contents
 
@@ -139,6 +139,7 @@
 | Parameter                                       | Description                                                                      | Options                                                                                     |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.gluu.org/license/enterprise-edition/)           | `"Y"` or `"N"`                                                                              |
+| `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.0"` or `"4.1"`                                                                              |
 | `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |
 | `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Ingress release name                                                       | `"<name>"`                                                                                  |
 | `NODES_IPS`                                     | List of kubernetes cluster node ips                                              | `["<ip>", "<ip2>", "<ip3>"]`                                                                |
@@ -254,6 +255,8 @@
 | `PERSISTENCE_IMAGE_TAG`                         | Persistence image tag                                                            | i.e `"4.1.0_01"`                                                                            |
 | `RADIUS_IMAGE_NAME`                             | Radius image repository name                                                     | i.e `"gluufederation/radius"`                                                               |
 | `RADIUS_IMAGE_TAG`                              | Radius image tag                                                                 | i.e `"4.1.0_01"`                                                                            |
+| `UPGRADE_IMAGE_NAME`                            | Gluu upgrade image repository name                                               | i.e `"gluufederation/upgrade"`                                                              |
+| `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.1.0_01"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
 
 ### `LDAP_VOLUME_TYPE`-options

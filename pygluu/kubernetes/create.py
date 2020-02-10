@@ -90,11 +90,9 @@ def copy_templates():
 
 
 class App(object):
-    def __init__(self):
+    def __init__(self, settings):
         self.kubernetes = Kubernetes()
-        prompts = Prompt()
-        self.settings = prompts.check_settings_and_prompt
-
+        self.settings = settings
         if self.settings["DEPLOYMENT_ARCH"] != "microk8s":
             for port in [80, 443]:
                 port_available = check_port("0.0.0.0", port)
@@ -110,6 +108,7 @@ class App(object):
         self.persistence_yaml = str(self.output_yaml_directory.joinpath("persistence.yaml").resolve())
         self.oxauth_yaml = str(self.output_yaml_directory.joinpath("oxauth.yaml").resolve())
         self.oxtrust_yaml = str(self.output_yaml_directory.joinpath("oxtrust.yaml").resolve())
+        self.gluu_upgrade_yaml = str(self.output_yaml_directory.joinpath("upgrade.yaml").resolve())
         self.oxshibboleth_yaml = str(self.output_yaml_directory.joinpath("oxshibboleth.yaml").resolve())
         self.oxpassport_yaml = str(self.output_yaml_directory.joinpath("oxpassport.yaml").resolve())
         self.key_rotate_yaml = str(self.output_yaml_directory.joinpath("key-rotation.yaml").resolve())
@@ -212,7 +211,7 @@ class App(object):
                 volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
                 volume_list = parser["spec"]["template"]["spec"]["volumes"]
 
-                if k != self.cr_rotate_yaml and k != self.key_rotate_yaml:
+                if k != self.cr_rotate_yaml and k != self.key_rotate_yaml and k != self.gluu_upgrade_yaml:
                     cm_parser = Parser(k, "ConfigMap")
                     del cm_parser["data"]["LB_ADDR"]
                     cm_parser.dump_it()
@@ -275,7 +274,7 @@ class App(object):
                         (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "cb-crt"), None)
                     del volume_mount_list[couchbase_crt_vm_index]
 
-                if k != self.key_rotate_yaml and k != self.cr_rotate_yaml:
+                if k != self.key_rotate_yaml and k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
                     parser["spec"]["template"]["spec"]["containers"][0]["command"] = \
                         ['/bin/sh', '-c', '/usr/bin/python /scripts/update-lb-ip.py & \n/app/scripts/entrypoint.sh\n']
                     volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -292,7 +291,8 @@ class App(object):
 
         app_kustomization_yamls = ["./casa/base", "./config/base", "./cr-rotate/base", "./key-rotation/base",
                                    "./ldap/base", "./oxauth/base", "./oxd-server/base", "./oxpassport/base",
-                                   "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base"]
+                                   "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base",
+                                   "./upgrade/base"]
         other_kustomization_yamls = ["./update-lb-ip/base", "./shared-shib/efs", "./shared-shib/localstorage",
                                      "./shared-shib/nfs", "./redis/base"]
         all_kustomization_yamls = app_kustomization_yamls + other_kustomization_yamls
@@ -470,6 +470,28 @@ class App(object):
         oxauth_cm_parser.dump_it()
 
         self.adjust_yamls_for_fqdn_status[self.oxauth_yaml] = "Deployment"
+
+    def kustomize_gluu_upgrade(self):
+        command = self.kubectl + " kustomize upgrade/base > " + self.gluu_upgrade_yaml
+        subprocess_cmd(command)
+        upgrade_cm_parser = Parser(self.gluu_upgrade_yaml, "ConfigMap")
+        upgrade_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
+        upgrade_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
+        upgrade_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
+        upgrade_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings["COUCHBASE_USER"]
+        upgrade_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings["HYBRID_LDAP_HELD_DATA"]
+        upgrade_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
+        upgrade_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        upgrade_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        upgrade_cm_parser.dump_it()
+
+        upgrade_job_parser = Parser(self.gluu_upgrade_yaml, "Job")
+        upgrade_job_parser["spec"]["template"]["spec"]["containers"][0]["args"] = \
+            ["--source", self.settings["GLUU_VERSION"],
+             "--target", self.settings["GLUU_UPGRADE_TARGET_VERSION"]]
+        upgrade_job_parser.dump_it()
+
+        self.adjust_yamls_for_fqdn_status[self.gluu_upgrade_yaml] = "Job"
 
     def kustomize_oxtrust(self):
         command = self.kubectl + " kustomize oxtrust/base > " + self.oxtrust_yaml
@@ -854,6 +876,44 @@ class App(object):
         time.sleep(10)
         self.kubernetes.create_objects_from_dict(self.cr_rotate_yaml)
 
+    def upgrade(self):
+        self.update_kustomization_yaml()
+        self.kustomize_gluu_upgrade()
+        self.adjust_fqdn_yaml_entries()
+        self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade")
+        casa_image = self.settings["CASA_IMAGE_NAME"] + ":" + self.settings["CASA_IMAGE_TAG"]
+        cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings["CACHE_REFRESH_ROTATE_IMAGE_TAG"]
+        key_rotate_image = self.settings["KEY_ROTATE_IMAGE_NAME"] + ":" + self.settings["KEY_ROTATE_IMAGE_TAG"]
+        ldap_image = self.settings["LDAP_IMAGE_NAME"] + ":" + self.settings["LDAP_IMAGE_TAG"]
+        oxauth_image = self.settings["OXAUTH_IMAGE_NAME"] + ":" + self.settings["OXAUTH_IMAGE_TAG"]
+        oxd_image = self.settings["OXD_IMAGE_NAME"] + ":" + self.settings["OXD_IMAGE_TAG"]
+        oxpassport_image = self.settings["OXPASSPORT_IMAGE_NAME"] + ":" + self.settings["OXPASSPORT_IMAGE_TAG"]
+        oxshibboleth_image = self.settings["OXSHIBBOLETH_IMAGE_NAME"] + ":" + self.settings["OXSHIBBOLETH_IMAGE_TAG"]
+        oxtrust_image = self.settings["OXTRUST_IMAGE_NAME"] + ":" + self.settings["OXTRUST_IMAGE_TAG"]
+        radius_image = self.settings["RADIUS_IMAGE_NAME"] + ":" + self.settings["RADIUS_IMAGE_TAG"]
+
+        self.kubernetes.patch_namespaced_deployment(name="casa",
+                                                    image=casa_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_daemonset(name="cr-rotate",
+                                                   image=cr_rotate_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="key-rotation",
+                                                    image=key_rotate_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_statefulset(name="opendj",
+                                                     image=ldap_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="oxauth",
+                                                    image=oxauth_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="oxd-server",
+                                                    image=oxd_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="oxpassport",
+                                                    image=oxpassport_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_statefulset(name="oxshibboleth",
+                                                     image=oxshibboleth_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_statefulset(name="oxtrust",
+                                                     image=oxtrust_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="radius",
+                                                    image=radius_image, namespace=self.settings["GLUU_NAMESPACE"])
+
     def install(self, install_couchbase=True):
         self.update_kustomization_yaml()
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
@@ -932,8 +992,6 @@ class App(object):
         if self.settings["ENABLE_RADIUS"] == "Y":
             self.deploy_radius()
 
-        # storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
-
     def uninstall(self):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server"]
@@ -943,7 +1001,7 @@ class App(object):
                                       "app=radius", "app=redis", "app=efs-provisioner", "app=key-rotation"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth"]
-        jobs_labels = ["app=config-init-load", "app=persistence-load"]
+        jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
         secrets = ["oxdkeystorecm", "gluu", "tls-certificate", "cb-pass", "cb-crt"]
         daemon_set_label = "app=cr-rotate"
         replication_controller_label = "app=nfs-server"
@@ -1037,17 +1095,23 @@ class App(object):
         shutil.rmtree(Path("./previousgluueksyamls"), ignore_errors=True)
         shutil.rmtree(Path("./previousgluuaksyamls"), ignore_errors=True)
         shutil.rmtree(Path("./previousgluugkeyamls"), ignore_errors=True)
-        try:
+        with contextlib.suppress(FileNotFoundError):
             shutil.copytree(minkube_yamls_folder, Path("./previousgluuminikubeyamls"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.copytree(microk8s_yamls_folder, Path("./previousgluumicrok8yamls"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.copytree(eks_yamls_folder, Path("./previousgluueksyamls"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.copytree(aks_yamls_folder, Path("./previousgluuaksyamls"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.copytree(gke_yamls_folder, Path("./previousgluugkeyamls"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.move(Path("./ingress.crt"), Path("./previous-ingress.crt"))
+        with contextlib.suppress(FileNotFoundError):
             shutil.move(Path("./ingress.key"), Path("./previous-ingress.key"))
-            shutil.move(Path("./settings.json"), Path("./previous-settings.json"))
-        except FileNotFoundError:
-            logger.warning("Folder or file not found")
+        with contextlib.suppress(FileNotFoundError):
+            time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
+            shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
 
 
 def create_parser():
@@ -1059,6 +1123,7 @@ def create_parser():
                                                     "Gluu Enterprise Edition non-interactively")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
+    subparsers.add_parser("upgrade", help="Upgrade Gluu Enterprise Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
     subparsers.add_parser("helm-install", help="Install Gluu Enterprise Edition using helm. "
@@ -1077,69 +1142,65 @@ def main():
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
     copy_templates()
+    prompts = Prompt()
+    settings = prompts.check_settings_and_prompt
     try:
         if args.subparser_name == "install":
-            app = App()
+            app = App(settings)
             app.uninstall()
             app.install()
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
-            app = App()
+            app = App(settings)
             app.uninstall()
 
+        elif args.subparser_name == "upgrade":
+            logger.info("Starting upgrade...")
+            settings = prompts.prompt_upgrade
+            app = App(settings)
+            app.upgrade()
+
         elif args.subparser_name == "install-couchbase":
-            prompts = Prompt()
             settings = prompts.prompt_couchbase()
             couchbase = Couchbase(settings)
             couchbase.install()
 
         elif args.subparser_name == "uninstall-couchbase":
-            prompts = Prompt()
             settings = prompts.prompt_couchbase()
             couchbase = Couchbase(settings)
             couchbase.uninstall()
 
         elif args.subparser_name == "generate-settings":
-            prompts = Prompt()
-            settings = prompts.check_settings_and_prompt
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "helm-install":
-            prompts = Prompt()
-            settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
-            app = App()
+            app = App(settings)
             app.uninstall()
             helm = Helm(settings)
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
-            prompts = Prompt()
-            settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
-            app = App()
+            app = App(settings)
             app.uninstall()
 
         elif args.subparser_name == "helm-install-gluu":
-            prompts = Prompt()
-            settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
-            app = App()
+            app = App(settings)
             app.uninstall()
             helm = Helm(settings)
             helm.install_gluu(install_ingress=False)
 
         elif args.subparser_name == "helm-uninstall-gluu":
-            prompts = Prompt()
-            settings = prompts.check_settings_and_prompt
             settings = prompts.prompt_helm
             helm = Helm(settings)
             helm.uninstall_gluu()
-            app = App()
+            app = App(settings)
             app.uninstall()
 
         else:

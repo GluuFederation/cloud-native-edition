@@ -35,10 +35,14 @@ class Prompt(object):
         self.get_settings()
         self.config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
                                 "ldap_pw": "", "email": "", "org_name": ""}
+        self.prompt_license()
+        self.prompt_version()
 
     @property
     def default_settings(self):
         default_settings = dict(ACCEPT_GLUU_LICENSE="",
+                                GLUU_VERSION="",
+                                GLUU_UPGRADE_TARGET_VERSION="",
                                 GLUU_HELM_RELEASE_NAME="",
                                 NGINX_INGRESS_RELEASE_NAME="",
                                 NGINX_INGRESS_NAMESPACE="",
@@ -134,30 +138,32 @@ class Prompt(object):
                                 ENABLE_CASA_BOOLEAN="false",
                                 ENABLE_SAML_BOOLEAN="false",
                                 EDIT_IMAGE_NAMES_TAGS="",
-                                CASA_IMAGE_NAME="gluufederation/casa",
-                                CASA_IMAGE_TAG="4.2.0_dev",
-                                CONFIG_IMAGE_NAME="gluufederation/config-init",
-                                CONFIG_IMAGE_TAG="4.1.0_dev",
-                                CACHE_REFRESH_ROTATE_IMAGE_NAME="gluufederation/cr-rotate",
-                                CACHE_REFRESH_ROTATE_IMAGE_TAG="4.1.0_dev",
-                                KEY_ROTATE_IMAGE_NAME="gluufederation/key-rotation",
-                                KEY_ROTATE_IMAGE_TAG="4.1.0_dev",
-                                LDAP_IMAGE_NAME="gluufederation/wrends",
-                                LDAP_IMAGE_TAG="4.1.0_dev",
-                                OXAUTH_IMAGE_NAME="gluufederation/oxauth",
-                                OXAUTH_IMAGE_TAG="4.1.0_dev",
-                                OXD_IMAGE_NAME="gluufederation/oxd-server",
-                                OXD_IMAGE_TAG="4.1.0_dev",
-                                OXPASSPORT_IMAGE_NAME="gluufederation/oxpassport",
-                                OXPASSPORT_IMAGE_TAG="4.1.0_dev",
-                                OXSHIBBOLETH_IMAGE_NAME="gluufederation/oxshibboleth",
-                                OXSHIBBOLETH_IMAGE_TAG="4.1.0_dev",
-                                OXTRUST_IMAGE_NAME="gluufederation/oxtrust",
-                                OXTRUST_IMAGE_TAG="4.1.0_dev",
-                                PERSISTENCE_IMAGE_NAME="gluufederation/persistence",
-                                PERSISTENCE_IMAGE_TAG="4.1.0_dev",
-                                RADIUS_IMAGE_NAME="gluufederation/radius",
-                                RADIUS_IMAGE_TAG="4.1.0_dev",
+                                CASA_IMAGE_NAME="",
+                                CASA_IMAGE_TAG="",
+                                CONFIG_IMAGE_NAME="",
+                                CONFIG_IMAGE_TAG="",
+                                CACHE_REFRESH_ROTATE_IMAGE_NAME="",
+                                CACHE_REFRESH_ROTATE_IMAGE_TAG="",
+                                KEY_ROTATE_IMAGE_NAME="",
+                                KEY_ROTATE_IMAGE_TAG="",
+                                LDAP_IMAGE_NAME="",
+                                LDAP_IMAGE_TAG="",
+                                OXAUTH_IMAGE_NAME="",
+                                OXAUTH_IMAGE_TAG="",
+                                OXD_IMAGE_NAME="",
+                                OXD_IMAGE_TAG="",
+                                OXPASSPORT_IMAGE_NAME="",
+                                OXPASSPORT_IMAGE_TAG="",
+                                OXSHIBBOLETH_IMAGE_NAME="",
+                                OXSHIBBOLETH_IMAGE_TAG="",
+                                OXTRUST_IMAGE_NAME="",
+                                OXTRUST_IMAGE_TAG="",
+                                PERSISTENCE_IMAGE_NAME="",
+                                PERSISTENCE_IMAGE_TAG="",
+                                RADIUS_IMAGE_NAME="",
+                                RADIUS_IMAGE_TAG="",
+                                UPGRADE_IMAGE_NAME="",
+                                UPGRADE_IMAGE_TAG="",
                                 CONFIRM_PARAMS="N",
                                 )
         return default_settings
@@ -172,6 +178,36 @@ class Prompt(object):
             self.settings.update(custom_settings)
         except FileNotFoundError:
             pass
+
+    @property
+    def get_supported_versions(self):
+        """Get merged settings (default and custom settings from local Python file).
+        """
+        filename = Path("./gluu_versions.json")
+        try:
+            with open(filename) as f:
+                versions = json.load(f)
+            logger.info("Currently supported versions are : ")
+            version_number = 0
+            for k, v in versions.items():
+                logger.info(k)
+                if float(k) > version_number:
+                    version_number = float(k)
+            version_number = str(version_number)
+            return versions, version_number
+        except FileNotFoundError:
+            pass
+
+    def prompt_version(self):
+        versions, version_number = self.get_supported_versions
+        if not self.settings["GLUU_VERSION"]:
+            prompt = input("Please enter the current version of Gluu or the version to be installed [{}]"
+                           .format(version_number))
+            if not prompt:
+                prompt = version_number
+            self.settings["GLUU_VERSION"] = prompt
+        image_names_and_tags = versions[self.settings["GLUU_VERSION"]]
+        self.settings.update(image_names_and_tags)
 
     def confirm_params(self):
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
@@ -207,6 +243,20 @@ class Prompt(object):
             if not prompt:
                 prompt = "ingress-nginx"
             self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
+        update_settings_json_file(self.settings)
+        return self.settings
+
+    @property
+    def prompt_upgrade(self):
+        versions, version_number = self.get_supported_versions
+        if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
+            prompt = input("Please enter the version to upgrade Gluu to [{}]"
+                           .format(version_number))
+            if not prompt:
+                prompt = version_number
+            self.settings["GLUU_UPGRADE_TARGET_VERSION"] = prompt
+        image_names_and_tags = versions[self.settings["GLUU_UPGRADE_TARGET_VERSION"]]
+        self.settings.update(image_names_and_tags)
         update_settings_json_file(self.settings)
         return self.settings
 
@@ -713,6 +763,19 @@ class Prompt(object):
                 prompt = "microk8s"
             self.settings["DEPLOYMENT_ARCH"] = prompt
 
+    def prompt_license(self):
+        if not self.settings["ACCEPT_GLUU_LICENSE"]:
+            with open("./LICENSE") as f:
+                print(f.read())
+            prompt = input("Do you accept the Gluu license stated above[Y/N].[N]")
+            if not prompt:
+                prompt = "N"
+            self.settings["ACCEPT_GLUU_LICENSE"] = prompt
+            if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
+                logger.info("License not accepted.")
+                raise SystemExit(1)
+        update_settings_json_file(self.settings)
+
     def prompt_gluu_namespace(self):
         if not self.settings["GLUU_NAMESPACE"]:
             prompt = input("Namespace to deploy Gluu in [gluu]:")
@@ -866,17 +929,6 @@ class Prompt(object):
 
     @property
     def check_settings_and_prompt(self):
-        if not self.settings["ACCEPT_GLUU_LICENSE"]:
-            with open("./LICENSE") as f:
-                print(f.read())
-            prompt = input("Do you accept the Gluu license stated above[Y/N].[N]")
-            if not prompt:
-                prompt = "N"
-            self.settings["ACCEPT_GLUU_LICENSE"] = prompt
-            if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
-                logger.info("License not accepted.")
-                raise SystemExit(1)
-
         self.prompt_arch()
         self.prompt_gluu_namespace()
         self.prompt_optional_services()

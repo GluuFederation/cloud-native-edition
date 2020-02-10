@@ -565,6 +565,100 @@ class Kubernetes(object):
             logger.exception(e)
             return False
 
+    def patch_namespaced_deployment(self, name, image, namespace="default"):
+        """Scale deployment using name in namespace to replicas"""
+        # Configureate Pod template container
+        container = client.V1Container(name=name)
+        # Create and configurate a spec section
+        template = client.V1PodTemplateSpec(
+            metadata=client.V1ObjectMeta(labels={"app": name}),
+            spec=client.V1PodSpec(containers=[container]))
+        # Create the specification of deployment
+        spec = client.V1DeploymentSpec(
+            template=template,
+            selector={'matchLabels': {'app': name}})
+        # Instantiate the deployment object
+        deployment = client.V1Deployment(
+            api_version="apps/v1",
+            kind="Deployment",
+            metadata=client.V1ObjectMeta(name=name),
+            spec=spec)
+        deployment.spec.template.spec.containers[0].image = image
+        try:
+            self.apps_cli.patch_namespaced_deployment(name, namespace, deployment)
+            logger.info('Image of deployemnt {} in namespace {} has been updated to {}'.format(name, namespace, image))
+            return
+        except client.rest.ApiException as e:
+            if e.status == 404 or not e.status:
+                logger.info(
+                    'Deployment {} in namespace {} is not found'.format(name, namespace))
+                return
+            logger.exception(e)
+            return False
+
+    def patch_namespaced_statefulset(self, name, image, namespace="default"):
+        """Scale deployment using name in namespace to replicas"""
+        # Configureate Pod template container
+        container = client.V1Container(name=name)
+        # Create and configurate a spec section
+        template = client.V1PodTemplateSpec(
+            metadata=client.V1ObjectMeta(labels={"app": name}),
+            spec=client.V1PodSpec(containers=[container]))
+        # Create the specification of statefulset
+        spec = client.V1StatefulSetSpec(
+            template=template,
+            selector={'matchLabels': {'app': name}},
+            service_name=name)
+        # Instantiate the statefulset object
+        statefulset = client.V1StatefulSet(
+            api_version="apps/v1",
+            kind="StatefulSet",
+            metadata=client.V1ObjectMeta(name=name),
+            spec=spec)
+        statefulset.spec.template.spec.containers[0].image = image
+        try:
+            self.apps_cli.patch_namespaced_stateful_set(name, namespace, statefulset)
+            logger.info('Image of statefulset {} in namespace {} has been updated to {}'.format(name, namespace, image))
+            return
+        except client.rest.ApiException as e:
+            if e.status == 404 or not e.status:
+                logger.info(
+                    'Statefulset {} in namespace {} is not found'.format(name, namespace))
+                return
+            logger.exception(e)
+            return False
+
+    def patch_namespaced_daemonset(self, name, image, namespace="default"):
+        """Scale deployment using name in namespace to replicas"""
+        # Configureate Pod template container
+        container = client.V1Container(name=name)
+        # Create and configurate a spec section
+        template = client.V1PodTemplateSpec(
+            metadata=client.V1ObjectMeta(labels={"app": name}),
+            spec=client.V1PodSpec(containers=[container]))
+        # Create the specification of DaemonSet
+        spec = client.V1DaemonSetSpec(
+            template=template,
+            selector={'matchLabels': {'app': name}})
+        # Instantiate the DaemonSet object
+        daemonset = client.V1DaemonSet(
+            api_version="apps/v1",
+            kind="DaemonSet",
+            metadata=client.V1ObjectMeta(name=name),
+            spec=spec)
+        daemonset.spec.template.spec.containers[0].image = image
+        try:
+            self.apps_cli.patch_namespaced_daemon_set(name, namespace, daemonset)
+            logger.info('Image of daemonset {} in namespace {} has been updated to {}'.format(name, namespace, image))
+            return
+        except client.rest.ApiException as e:
+            if e.status == 404 or not e.status:
+                logger.info(
+                    'Daemonset {} in namespace {} is not found'.format(name, namespace))
+                return
+            logger.exception(e)
+            return False
+
     def patch_namespaced_stateful_set_scale(self, name, replicas, namespace="default"):
         """Scale statefulset using name in namespace to replicas"""
         body = {
