@@ -22,9 +22,6 @@ spec:
             - name: cb-crt
               mountPath: "/etc/certs/couchbase.crt"
               subPath: couchbase.crt
-            - name: ox-ldif-cm
-              mountPath: "/opt/opendj/config/schema/101-ox.ldif"
-              subPath: 101-ox.ldif
       volumes:
       - name: cb-pass
         secret:
@@ -32,6 +29,3 @@ spec:
       - name: cb-crt
         secret:
           secretName: cb-crt
-      - name: ox-ldif-cm
-        configMap:
-          name: ox-ldif-cm
