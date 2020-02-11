@@ -32,4 +32,3 @@ configMapGenerator:
       #- GLUU_CACHE_TYPE="REDIS"
       #-  GLUU_REDIS_URL="redis:6379"
       #-  GLUU_REDIS_TYPE="STANDALONE"
-      -
