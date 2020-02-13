@@ -723,6 +723,18 @@ class Kubernetes(object):
             except client.rest.ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
+    def read_namespaced_ingress(self, name, namespace="default"):
+        """Read service with name in namespace"""
+        starting_time = time.time()
+        response = True
+        while response:
+            try:
+                ingress = self.extenstion_cli.read_namespaced_ingress(name=name, namespace=namespace)
+                logger.info('Reading ingress {}'.format(name))
+                return ingress
+            except client.rest.ApiException as e:
+                response = self.check_read_error_and_response(starting_time, e)
+
     def read_namespaced_pod_status(self, name, namespace="default"):
         """Read pod status with name in namespace"""
 
