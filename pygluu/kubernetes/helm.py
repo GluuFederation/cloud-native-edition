@@ -45,9 +45,9 @@ class Helm(object):
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
             self.kubernetes.delete_namespace(self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
-            self.kubernetes.delete_cluster_role(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress")
-            self.kubernetes.delete_cluster_role_binding(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress")
-            exec_cmd("helm repo add stable https://helm.nginx.com/stable")
+            self.kubernetes.delete_cluster_role(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
+            self.kubernetes.delete_cluster_role_binding(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
+            exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com")
             exec_cmd("helm repo update")
         command = "helm install {} stable/nginx-ingress --namespace={}".format(
             self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"])
@@ -63,7 +63,7 @@ class Helm(object):
                 while True:
                     try:
                         lb_hostname = self.kubernetes.read_namespaced_service(
-                            name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                            name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
                             namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
                         ip_static = socket.gethostbyname(str(lb_hostname))
                         if ip_static:
@@ -94,7 +94,7 @@ class Helm(object):
                     if lb_hostname:
                         break
                     lb_hostname = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
                         namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
                 except (TypeError, AttributeError):
                     logger.info("Waiting for loadbalancer address..")
@@ -110,7 +110,7 @@ class Helm(object):
                     if ip:
                         break
                     ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress",
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
                         namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
                 except (TypeError, AttributeError):
                     logger.info("Waiting for the ip of the Loadbalancer")

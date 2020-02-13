@@ -308,7 +308,7 @@
 1) Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
 
    ```bash
-   helm repo add stable https://helm.nginx.com/stable
+   helm repo add stable https://kubernetes-charts.storage.googleapis.com
    helm repo update
    helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
    ```
