@@ -284,6 +284,23 @@ class App(object):
                     parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                 parser.dump_it()
 
+    def prepare_alb(self):
+        services = [self.oxauth_yaml, self.oxtrust_yaml, self.casa_yaml,
+                    self.oxpassport_yaml, self.oxshibboleth_yaml, self.oxpassport_yaml]
+        for service in services:
+            service_parser = Parser(service, "Service")
+            service_parser["spec"]["type"] = "NodePort"
+            service_parser["spec"]["ports"][0]["protocol"] = "TCP"
+            service_parser["spec"]["ports"][0]["targetPort"] = "8080"
+            if service == self.oxpassport_yaml:
+                service_parser["spec"]["ports"][0]["targetPort"] = "8090"
+            service_parser.dump_it()
+        if not self.settings["ARN_AWS_IAM"]:
+            ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
+            ingress_parser["spec"]["rules"][0]["host"] = self.settings["GLUU_FQDN"]
+            del ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"]
+            ingress_parser.dump_it()
+
     def update_kustomization_yaml(self):
         def update_image_name_tag(image_name_key, image_tag_key):
             parser["images"][0]["name"] = self.settings[image_name_key]
@@ -656,6 +673,23 @@ class App(object):
                 command = self.kubectl + " kustomize update-lb-ip/base > " + self.update_lb_ip_yaml
                 subprocess_cmd(command)
 
+    def deploy_alb(self):
+        shutil.copy(Path("./alb/ingress.yaml"), self.output_yaml_directory.joinpath("ingress.yaml"))
+        self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("ingress.yaml"),
+                                                 self.settings["GLUU_NAMESPACE"])
+        prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI")
+        lb_hostname = prompt
+        while True:
+            try:
+                if lb_hostname:
+                    break
+                lb_hostname = self.kubernetes.read_namespaced_ingress(
+                    name="gluu", namespace="gluu").status.load_balancer.ingress[0].hostname
+            except TypeError:
+                logger.info("Waiting for loadbalancer address..")
+                time.sleep(10)
+        self.settings["LB_ADD"] = lb_hostname
+
     def deploy_nginx(self):
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
@@ -960,7 +994,11 @@ class App(object):
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             self.deploy_ldap()
 
-        self.deploy_nginx()
+        if self.settings["AWS_LB_TYPE"] == "alb":
+            self.prepare_alb()
+            self.deploy_alb()
+        else:
+            self.deploy_nginx()
         self.adjust_fqdn_yaml_entries()
         self.deploy_persistence()
 

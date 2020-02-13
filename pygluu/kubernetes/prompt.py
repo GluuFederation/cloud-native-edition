@@ -984,13 +984,14 @@ class Prompt(object):
                     prompt = input("Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):")
                     self.settings["EFS_DNS"] = prompt
 
-            aws_lb_type = ["nlb", "clb"]
+            aws_lb_type = ["nlb", "clb", "alb"]
             if self.settings["AWS_LB_TYPE"] not in aws_lb_type:
                 print("|-----------------------------------------------------------------|")
                 print("|                     AWS Loadbalancer type                       |")
                 print("|-----------------------------------------------------------------|")
                 print("| [1] Classic Load Balancer (CLB) [default]                       |")
                 print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
+                print("| [3] Application Load Balancer (ALB - Alpha)                     |")
                 print("|-----------------------------------------------------------------|")
                 prompt = input("Loadbalancer type?[1]")
                 if not prompt:
@@ -998,6 +999,9 @@ class Prompt(object):
                 prompt = int(prompt)
                 if prompt == 2:
                     self.settings["AWS_LB_TYPE"] = "nlb"
+                elif prompt == 3:
+                    self.settings["AWS_LB_TYPE"] = "alb"
+                    logger.info("A prompt later during installation will appear to input the ALB DNS address")
                 else:
                     self.settings["AWS_LB_TYPE"] = "clb"
 

@@ -10,4 +10,3 @@ spec:
     name: oxshibboleth
   selector:
     app: oxshibboleth
-  clusterIP: None
