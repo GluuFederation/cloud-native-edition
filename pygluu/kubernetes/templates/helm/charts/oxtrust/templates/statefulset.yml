@@ -89,7 +89,7 @@ spec:
       {{- end }}
         - name: {{ .Release.Name }}-shared-shib
           persistentVolumeClaim:
-            {{- if and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            {{- if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( not .Values.global.cloud.awsLocalStorage ) }}
             claimName: efs
             {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
             claimName: {{ .Release.Name }}-shared-shib-pvc
