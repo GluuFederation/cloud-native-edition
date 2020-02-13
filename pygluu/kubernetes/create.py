@@ -286,20 +286,23 @@ class App(object):
 
     def prepare_alb(self):
         services = [self.oxauth_yaml, self.oxtrust_yaml, self.casa_yaml,
-                    self.oxpassport_yaml, self.oxshibboleth_yaml, self.oxpassport_yaml]
+                    self.oxpassport_yaml, self.oxshibboleth_yaml]
         for service in services:
-            service_parser = Parser(service, "Service")
-            service_parser["spec"]["type"] = "NodePort"
-            service_parser["spec"]["ports"][0]["protocol"] = "TCP"
-            service_parser["spec"]["ports"][0]["targetPort"] = "8080"
-            if service == self.oxpassport_yaml:
-                service_parser["spec"]["ports"][0]["targetPort"] = "8090"
-            service_parser.dump_it()
+            if Path(service).is_file():
+                service_parser = Parser(service, "Service")
+                service_parser["spec"].update({"type": "NodePort"})
+                service_parser["spec"]["ports"][0].update({"protocol": "TCP"})
+                service_parser["spec"]["ports"][0].update({"targetPort": 8080})
+                if service == self.oxpassport_yaml:
+                    service_parser["spec"]["ports"][0]["targetPort"] = 8090
+                service_parser.dump_it()
+        ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
+        ingress_parser["spec"]["rules"][0]["host"] = self.settings["GLUU_FQDN"]
+        ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"] = \
+            self.settings["ARN_AWS_IAM"]
         if not self.settings["ARN_AWS_IAM"]:
-            ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
-            ingress_parser["spec"]["rules"][0]["host"] = self.settings["GLUU_FQDN"]
             del ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"]
-            ingress_parser.dump_it()
+        ingress_parser.dump_it()
 
     def update_kustomization_yaml(self):
         def update_image_name_tag(image_name_key, image_tag_key):
@@ -677,7 +680,7 @@ class App(object):
         shutil.copy(Path("./alb/ingress.yaml"), self.output_yaml_directory.joinpath("ingress.yaml"))
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("ingress.yaml"),
                                                  self.settings["GLUU_NAMESPACE"])
-        prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI")
+        prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
         lb_hostname = prompt
         while True:
             try:
