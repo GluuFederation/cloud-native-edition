@@ -1197,6 +1197,7 @@ def create_parser():
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("upgrade", help="Upgrade Gluu Enterprise Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
+    subparsers.add_parser("install-couchbase-backup", help="Install Couchbase backup only.")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
     subparsers.add_parser("helm-install", help="Install Gluu Enterprise Edition using helm. "
                                                "This also installs the nginx-ingress chart")
@@ -1237,6 +1238,11 @@ def main():
             settings = prompts.prompt_couchbase()
             couchbase = Couchbase(settings)
             couchbase.install()
+
+        elif args.subparser_name == "install-couchbase-backup":
+            settings = prompts.prompt_couchbase()
+            couchbase = Couchbase(settings)
+            couchbase.setup_backup_couchbase()
 
         elif args.subparser_name == "uninstall-couchbase":
             settings = prompts.prompt_couchbase()

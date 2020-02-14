@@ -1,0 +1,13 @@
+# Create storage class for backup/restore operations
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    k8s-addon: storage-aws.addons.k8s.io
+  name: gp2-backup-storage
+parameters:
+  type: gp2
+  fsType: xfs
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
