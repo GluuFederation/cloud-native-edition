@@ -991,7 +991,7 @@ class Prompt(object):
                 print("|-----------------------------------------------------------------|")
                 print("| [1] Classic Load Balancer (CLB) [default]                       |")
                 print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
-                print("| [3] Application Load Balancer (ALB - Alpha)                     |")
+                print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
                 print("|-----------------------------------------------------------------|")
                 prompt = input("Loadbalancer type?[1]")
                 if not prompt:

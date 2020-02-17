@@ -701,12 +701,21 @@ class App(object):
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             lb_hostname = None
             if self.settings["AWS_LB_TYPE"] == "nlb":
+                if self.settings["USE_ARN"] == "Y":
+                    svc_nlb_yaml = self.output_yaml_directory.joinpath("nginx/nlb-service.yaml")
+                    svc_nlb_yaml_parser = Parser(svc_nlb_yaml, "Service")
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings["ARN_AWS_IAM"]})
+                    svc_nlb_yaml_parser.dump_it()
                 self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nlb-service.yaml"))
                 while True:
                     try:
+                        ip_static = None
                         lb_hostname = self.kubernetes.read_namespaced_service(
                             name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
-                        ip_static = socket.gethostbyname(str(lb_hostname))
+                        try:
+                            ip_static = socket.gethostbyname(str(lb_hostname))
+                        except socket.gaierror:
+                            logger.warning("IP not assigned yet")
                         if ip_static:
                             break
                     except TypeError:
