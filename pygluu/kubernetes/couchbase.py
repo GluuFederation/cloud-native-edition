@@ -21,6 +21,13 @@ import random
 logger = get_logger("gluu-couchbase     ")
 
 
+def subprocess_cmd(command):
+    """Execute command"""
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    proc_stdout = process.communicate()[0].strip()
+    return proc_stdout
+
+
 def extract_couchbase_tar(tar_file):
     extract_folder = Path("./couchbase-source-folder")
     logger.info("Extracting {} in {} ".format(tar_file, extract_folder))
@@ -106,6 +113,49 @@ class Couchbase(object):
                                                               namespace=self.settings["GLUU_NAMESPACE"],
                                                               literal="couchbase_password",
                                                               value_of_literal=encoded_cb_pass_string)
+
+    def setup_backup_couchbase(self):
+        encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
+        encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+        encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
+        encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
+        self.kubernetes.create_namespaced_secret_from_literal(name="cb-auth",
+                                                              namespace=self.settings["COUCHBASE_NAMESPACE"],
+                                                              literal="username",
+                                                              value_of_literal=encoded_cb_user_string,
+                                                              second_literal="password",
+                                                              value_of_second_literal=encoded_cb_pass_string)
+        subprocess_cmd("alias kubectl='microk8s.kubectl'")
+        kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
+        kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
+        kustomize_parser.dump_it()
+        command = "kubectl kustomize couchbase/backup > ./couchbase-backup.yaml"
+        subprocess_cmd(command)
+        cron_job_parser = Parser("./couchbase-backup.yaml", "CronJob")
+        init_containers = cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"]
+        for init_container in init_containers:
+            if init_container["name"] == "periodic-merge":
+                init_container_index = cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"].index(init_container)
+                cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"][
+                    init_container_index]["command"] = ["/bin/sh", "-c", "/backups/backup-with-periodic-merge.sh --cluster " + self.settings["COUCHBASE_URL"]]
+        cron_job_parser.dump_it()
+
+        storage_class_parser = Parser("./couchbase-backup.yaml", "StorageClass")
+
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            storage_class_parser["provisioner"] = "kubernetes.io/gce-pd"
+            del storage_class_parser["parameters"]["fsType"]
+            del storage_class_parser["metadata"]["labels"]["k8s-addon"]
+            storage_class_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+
+        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+            storage_class_parser["provisioner"] = "kubernetes.io/gce-pd"
+            del storage_class_parser["parameters"]["fsType"]
+            del storage_class_parser["metadata"]["labels"]["k8s-addon"]
+            storage_class_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+        storage_class_parser.dump_it()
+
+        self.kubernetes.create_objects_from_dict("./couchbase-backup.yaml")
 
     @property
     def calculate_couchbase_resources(self):
@@ -492,6 +542,8 @@ class Couchbase(object):
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_index=enabled")
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled")
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled")
+        # Setup couchbase backups
+        self.setup_backup_couchbase()
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] == "Y":

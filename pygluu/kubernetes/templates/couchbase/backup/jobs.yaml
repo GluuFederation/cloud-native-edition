@@ -1,0 +1,20 @@
+# Create a backup repository
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: couchbase-cluster-backup-config
+spec:
+  template:
+    spec:
+      containers:
+        - name: backup-config
+          image: couchbase/server:enterprise-6.5.0
+          command: ["cbbackupmgr", "config", "--archive", "/backups", "--repo", "couchbase"]
+          volumeMounts:
+            - name: "couchbase-cluster-backup-volume"
+              mountPath: "/backups"
+      volumes:
+        - name: couchbase-cluster-backup-volume
+          persistentVolumeClaim:
+            claimName: backup-pvc
+      restartPolicy: Never

@@ -1,0 +1,12 @@
+# Define backup storage volume
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: backup-pvc
+spec:
+  storageClassName: gp2-backup-storage
+  resources:
+    requests:
+      storage: 50Gi
+  accessModes:
+    - ReadWriteOnce

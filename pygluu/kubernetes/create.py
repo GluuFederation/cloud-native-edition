@@ -302,6 +302,20 @@ class App(object):
             self.settings["ARN_AWS_IAM"]
         if not self.settings["ARN_AWS_IAM"]:
             del ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"]
+
+        for path in ingress_parser["spec"]["rules"][0]["http"]["paths"]:
+            service_name = path["backend"]["serviceName"]
+            if self.settings["ENABLE_CASA"] != "Y" and service_name == "casa":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings["ENABLE_OXSHIBBOLETH"] != "Y" and service_name == "oxshibboleth":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings["ENABLE_OXPASSPORT"] != "Y" and service_name == "oxpassport":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
         ingress_parser.dump_it()
 
     def update_kustomization_yaml(self):
@@ -785,28 +799,33 @@ class App(object):
 
     def deploy_redis(self):
         self.kubernetes.create_objects_from_dict(self.redis_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis")
 
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=config-init-load")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=config-init-load")
 
     def deploy_ldap(self):
         self.kubernetes.create_objects_from_dict(self.ldap_yaml)
         logger.info("Deploying LDAP.Please wait..")
         time.sleep(10)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
 
     def deploy_persistence(self):
         self.kubernetes.create_objects_from_dict(self.persistence_yaml)
         logger.info("Trying to import ldifs...")
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=persistence-load")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=persistence-load")
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             self.kubernetes.patch_namespaced_stateful_set_scale(name="opendj",
                                                                 replicas=self.settings["LDAP_REPLICAS"],
                                                                 namespace=self.settings["GLUU_NAMESPACE"])
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
+            if not self.settings["AWS_LB_TYPE"] == "alb":
+                self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
 
     def deploy_nfs(self):
         nfs_service_yaml = "./shared-shib/nfs/services.yaml"
@@ -827,7 +846,8 @@ class App(object):
         shared_shib_pv_parser.dump_it()
 
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server")
 
         exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
 
@@ -850,7 +870,8 @@ class App(object):
 
         efs_deploy_parser["spec"]["template"]["spec"]["volumes"][0]["nfs"]["server"] = self.settings["EFS_DNS"]
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner")
         efs_deploy_parser.dump_it()
 
     def deploy_shared_shib(self):
@@ -868,50 +889,58 @@ class App(object):
 
     def deploy_oxauth(self):
         self.kubernetes.create_objects_from_dict(self.oxauth_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxauth")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxauth")
         self.kubernetes.patch_namespaced_deployment_scale(name="oxauth", replicas=self.settings["OXAUTH_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxd(self):
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server")
         self.kubernetes.patch_namespaced_deployment_scale(name="oxd-server",
                                                           replicas=self.settings["OXD_SERVER_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_casa(self):
         self.kubernetes.create_objects_from_dict(self.casa_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=casa")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=casa")
         self.kubernetes.patch_namespaced_deployment_scale(name="casa", replicas=self.settings["CASA_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxtrust(self):
         self.kubernetes.create_objects_from_dict(self.oxtrust_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxtrust")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxtrust")
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxtrust", replicas=self.settings["OXTRUST_REPLICAS"],
                                                             namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxshibboleth(self):
         self.kubernetes.create_objects_from_dict(self.oxshibboleth_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth")
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxshibboleth",
                                                             replicas=self.settings["OXSHIBBOLETH_REPLICAS"],
                                                             namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxpassport(self):
         self.kubernetes.create_objects_from_dict(self.oxpassport_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxpassport")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxpassport")
         self.kubernetes.patch_namespaced_deployment_scale(name="oxpassport",
                                                           replicas=self.settings["OXPASSPORT_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_key_rotation(self):
         self.kubernetes.create_objects_from_dict(self.key_rotate_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation")
 
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=radius")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=radius")
         self.kubernetes.patch_namespaced_deployment_scale(name="radius", replicas=self.settings["RADIUS_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
@@ -927,7 +956,8 @@ class App(object):
         self.kustomize_gluu_upgrade()
         self.adjust_fqdn_yaml_entries()
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade")
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade")
         casa_image = self.settings["CASA_IMAGE_NAME"] + ":" + self.settings["CASA_IMAGE_TAG"]
         cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings["CACHE_REFRESH_ROTATE_IMAGE_TAG"]
         key_rotate_image = self.settings["KEY_ROTATE_IMAGE_NAME"] + ":" + self.settings["KEY_ROTATE_IMAGE_TAG"]
@@ -997,7 +1027,8 @@ class App(object):
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             self.deploy_config()
 
-        self.setup_tls()
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.setup_tls()
 
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
             self.deploy_redis()
@@ -1175,6 +1206,7 @@ def create_parser():
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("upgrade", help="Upgrade Gluu Enterprise Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
+    subparsers.add_parser("install-couchbase-backup", help="Install Couchbase backup only.")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
     subparsers.add_parser("helm-install", help="Install Gluu Enterprise Edition using helm. "
                                                "This also installs the nginx-ingress chart")
@@ -1215,6 +1247,11 @@ def main():
             settings = prompts.prompt_couchbase()
             couchbase = Couchbase(settings)
             couchbase.install()
+
+        elif args.subparser_name == "install-couchbase-backup":
+            settings = prompts.prompt_couchbase()
+            couchbase = Couchbase(settings)
+            couchbase.setup_backup_couchbase()
 
         elif args.subparser_name == "uninstall-couchbase":
             settings = prompts.prompt_couchbase()
