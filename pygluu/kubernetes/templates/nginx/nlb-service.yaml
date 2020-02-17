@@ -11,7 +11,6 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
 spec:
   # this setting is to make sure the source IP address is preserved.
-  externalTrafficPolicy: Local
   type: LoadBalancer
   selector:
     app.kubernetes.io/name: ingress-nginx

@@ -719,6 +719,10 @@ class App(object):
                     svc_nlb_yaml = self.output_yaml_directory.joinpath("nginx/nlb-service.yaml")
                     svc_nlb_yaml_parser = Parser(svc_nlb_yaml, "Service")
                     svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings["ARN_AWS_IAM"]})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled": '"true"'})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy": "ELBSecurityPolicy-TLS-1-1-2017-01"})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": "http"})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "https"})
                     svc_nlb_yaml_parser.dump_it()
                 self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nlb-service.yaml"))
                 while True:
