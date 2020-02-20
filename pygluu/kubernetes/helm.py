@@ -135,7 +135,6 @@ class Helm(object):
         else:
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner
-        values_file_parser["global"]["namespace"] = self.settings["GLUU_NAMESPACE"]
         values_file_parser["global"]["nginxNamespace"] = self.settings["NGINX_INGRESS_NAMESPACE"]
         values_file_parser["global"]["nginxIp"] = self.settings["HOST_EXT_IP"]
         values_file_parser["global"]["domain"] = self.settings["GLUU_FQDN"]
