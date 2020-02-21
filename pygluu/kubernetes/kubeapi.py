@@ -484,25 +484,6 @@ class Kubernetes(object):
             logger.exception(e)
             return False
 
-    def create_namespaced_secret_from_literal(self, name, literal, value_of_literal, namespace="default",
-                                              secret_type="Opaque", second_literal=None, value_of_second_literal=None):
-        """Create secret from literal, second_literal=optional and encoded value_of_literal
-        ,value_of_second_literal=optional using name in namespace"""
-        body = client.V1Secret()
-        metadata = client.V1ObjectMeta(name=name)
-        body.data = {literal: value_of_literal}
-        body.metadata = metadata
-        body.type = secret_type
-        if second_literal:
-            body.data = {literal: value_of_literal, second_literal: value_of_second_literal}
-        try:
-            self.core_cli.create_namespaced_secret(namespace=namespace, body=body)
-            logger.info('Created secret {} of type {} in namespace {}'.format(name, secret_type, namespace))
-            return True
-        except client.rest.ApiException as e:
-            logger.exception(e)
-            return False
-
     def create_namespaced_service_account(self, name, namespace="default"):
         """Create service account using name in namespace"""
         body = client.V1ServiceAccount()
@@ -550,6 +531,34 @@ class Kubernetes(object):
             except client.rest.ApiException as e:
                 logger.exception(e)
 
+    def patch_or_create_namespaced_configmap(self, name, literal=None, value_of_literal=None, namespace="default",
+                                             second_literal=None, value_of_second_literal=None, data=None):
+        """Patch configmap and if not exist create"""
+        # Instantiate the configmap object
+        body = client.V1ConfigMap()
+        metadata = client.V1ObjectMeta(name=name)
+        body.data = data
+        if not data:
+            body.data = {literal: value_of_literal}
+        body.metadata = metadata
+        if second_literal:
+            body.data = {literal: value_of_literal, second_literal: value_of_second_literal}
+        try:
+            self.core_cli.patch_namespaced_config_map(name, namespace, body)
+            logger.info('Configmap  {} in namespace {} has been patched'.format(name, namespace))
+            return
+        except client.rest.ApiException as e:
+            if e.status == 404 or not e.status:
+                try:
+                    self.core_cli.create_namespaced_config_map(namespace=namespace, body=body)
+                    logger.info('Created configmap {} in namespace {}'.format(name, namespace))
+                    return True
+                except client.rest.ApiException as e:
+                    logger.exception(e)
+                    return False
+            logger.exception(e)
+            return False
+
     def patch_namespaced_deployment_scale(self, name, replicas, namespace="default"):
         """Scale deployment using name in namespace to replicas"""
         body = {
@@ -562,6 +571,35 @@ class Kubernetes(object):
             logger.info('Deployemnt {} in namespace {} has been scaled to {}'.format(name, namespace, replicas))
             return
         except client.rest.ApiException as e:
+            logger.exception(e)
+            return False
+
+    def patch_or_create_namespaced_secret(self, name, literal, value_of_literal, namespace="default",
+                                          secret_type="Opaque", second_literal=None, value_of_second_literal=None, data=None):
+        """Patch secret and if not exist create"""
+        # Instantiate the Secret object
+        body = client.V1Secret()
+        metadata = client.V1ObjectMeta(name=name)
+        body.data = data
+        if not data:
+            body.data = {literal: value_of_literal}
+        body.metadata = metadata
+        body.type = secret_type
+        if second_literal:
+            body.data = {literal: value_of_literal, second_literal: value_of_second_literal}
+        try:
+            self.core_cli.patch_namespaced_secret(name, namespace, body)
+            logger.info('Secret  {} in namespace {} has been patched'.format(name, namespace))
+            return
+        except client.rest.ApiException as e:
+            if e.status == 404 or not e.status:
+                try:
+                    self.core_cli.create_namespaced_secret(namespace=namespace, body=body)
+                    logger.info('Created secret {} of type {} in namespace {}'.format(name, secret_type, namespace))
+                    return True
+                except client.rest.ApiException as e:
+                    logger.exception(e)
+                    return False
             logger.exception(e)
             return False
 
@@ -720,6 +758,18 @@ class Kubernetes(object):
                 service = self.core_cli.read_namespaced_service(name=name, namespace=namespace)
                 logger.info('Reading service {}'.format(name))
                 return service
+            except client.rest.ApiException as e:
+                response = self.check_read_error_and_response(starting_time, e)
+
+    def read_namespaced_configmap(self, name, namespace="default"):
+        """Read configmap with name in namespace"""
+        starting_time = time.time()
+        response = True
+        while response:
+            try:
+                configmap = self.core_cli.read_namespaced_config_map(name=name, namespace=namespace)
+                logger.info('Reading configmap {}'.format(name))
+                return configmap
             except client.rest.ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
