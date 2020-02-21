@@ -709,6 +709,19 @@ class App(object):
                     time.sleep(10)
             self.settings["LB_ADD"] = lb_hostname
 
+    def check_lb(self):
+        lb_hostname = None
+        while True:
+            try:
+                if lb_hostname:
+                    break
+                lb_hostname = self.kubernetes.read_namespaced_service(
+                    name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
+            except TypeError:
+                logger.info("Waiting for loadbalancer address..")
+                time.sleep(10)
+        self.settings["LB_ADD"] = lb_hostname
+
     def deploy_nginx(self):
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
@@ -766,16 +779,7 @@ class App(object):
                     self.kubernetes.create_objects_from_dict(self.output_yaml_directory.
                                                              joinpath("nginx/patch-configmap-l4.yaml"))
 
-            while True:
-                try:
-                    if lb_hostname:
-                        break
-                    lb_hostname = self.kubernetes.read_namespaced_service(
-                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
-                except TypeError:
-                    logger.info("Waiting for loadbalancer address..")
-                    time.sleep(10)
-            self.settings["LB_ADD"] = lb_hostname
+            self.check_lb()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
@@ -980,6 +984,17 @@ class App(object):
                                                              namespace=self.settings["GLUU_NAMESPACE"],
                                                              data=self.gluu_config)
 
+    def run_backup_command(self):
+        try:
+            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "-n", "userRoot",
+                                    "-l", "/opt/opendj/ldif/backup-this-copy.ldif",
+                                 "--bindPassword", self.settings["LDAP_PW"]]
+            self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
+                                                        app_label="app=opendj",
+                                                        namespace=self.settings["GLUU_NAMESPACE"])
+        except:
+            pass
+
     def setup_backup_ldap(self):
         subprocess_cmd("alias kubectl='microk8s.kubectl'")
         encoded_ldap_pw_bytes = base64.b64encode(self.settings["LDAP_PW"].encode("utf-8"))
@@ -1094,7 +1109,9 @@ class App(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if restore:
+                self.run_backup_command()
                 self.mount_config()
+                self.check_lb()
             else:
                 self.deploy_ldap()
                 self.setup_backup_ldap()
@@ -1176,6 +1193,11 @@ class App(object):
         eks_yamls_folder = Path("./gluueksyamls")
         gke_yamls_folder = Path("./gluugkeyamls")
         aks_yamls_folder = Path("./gluuaksyamls")
+        if restore:
+            gluu_service_names.pop(3)
+            gluu_storage_class_names.pop(1)
+            stateful_set_labels.pop(0)
+
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
         if not restore:
