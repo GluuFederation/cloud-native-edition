@@ -15,7 +15,7 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.scim-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/identity/restv1/scim-configuration", "StatusCode": "HTTP_301"}}'
-    alb.ingress.kubernetes.io/actions.openid-redirect: '{"Type": "forward", "ForwardConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/openid-configuration", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/actions.openid-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/openid-configuration", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.uma-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/restv1/uma2-configuration", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.webfinger-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/webfinger", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.simple-web-discovery-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/simple-web-discovery", "StatusCode": "HTTP_301"}}'
