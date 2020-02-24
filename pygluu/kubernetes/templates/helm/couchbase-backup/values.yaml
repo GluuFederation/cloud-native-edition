@@ -1,0 +1,37 @@
+# Default values for couchbase-backup.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: couchbase/server
+  tag: enterprise-6.5.0
+
+restartPolicy: Never
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+
+cbUrl: cbgluu.default.svc.cluster.local #CHANGE THIS
+concurrencyPolicy: Forbid
+
+persistence:
+  storage: 50Gi
+  accessModes: ReadWriteOnce
+
+  # storageclass params
+  type: gp2
+  fsType: xfs
+  provisioner: kubernetes.io/aws-ebs
+  reclaimPolicy: Retain
+  volumeBindingMode: WaitForFirstConsumer
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
