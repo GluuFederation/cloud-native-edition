@@ -1325,6 +1325,11 @@ def create_parser():
 def main():
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
+
+    if not args.subparser_name:
+        parser.print_help()
+        return
+
     copy_templates()
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
@@ -1401,9 +1406,6 @@ def main():
             helm.uninstall_gluu()
             app = App(settings)
             app.uninstall()
-
-        else:
-            print(parser.print_help())
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")
