@@ -9,15 +9,13 @@ global:
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
   provisioner: k8s.io/minikube-hostpath
-  encrypted: true
   pool: default
   fsType: ext4
-  gcpZone: us-west1
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
   reclaimPolicy: Retain
-
+  
   namespace: default
   nginxNamespace: ingress
 
@@ -244,7 +242,7 @@ nginx:
 oxpassport:
   image:
     repository: gluufederation/oxpassport
-    tag: 4.0.1_03
+    tag: 4.0.1_dev
     pullPolicy: Always
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.

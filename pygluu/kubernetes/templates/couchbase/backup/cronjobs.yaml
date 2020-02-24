@@ -45,7 +45,12 @@ spec:
                     secretKeyRef:
                       name: cb-auth
                       key: password
-              command: ["/bin/sh", "-c" ,"/backups/backup-with-periodic-merge.sh", "--cluster", "cbgluu.cns.svc.cluster.local"]
+                - name: CLUSTER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cb-url
+                      key: url
+              command: ["/bin/sh", "-c" ,"/backups/backup-with-periodic-merge.sh"]
               volumeMounts:
                 - name: "couchbase-cluster-backup-volume"
                   mountPath: "/backups"

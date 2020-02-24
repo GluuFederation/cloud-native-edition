@@ -255,8 +255,8 @@ class Helm(object):
         values_file_parser["oxshibboleth"]["image"]["tag"] = self.settings["OXSHIBBOLETH_IMAGE_TAG"]
         values_file_parser["oxtrust"]["image"]["repository"] = self.settings["OXTRUST_IMAGE_NAME"]
         values_file_parser["oxtrust"]["image"]["tag"] = self.settings["OXTRUST_IMAGE_TAG"]
-        values_file_parser["redis"]["image"]["repository"] = self.settings["RADIUS_IMAGE_NAME"]
-        values_file_parser["redis"]["image"]["tag"] = self.settings["RADIUS_IMAGE_TAG"]
+        values_file_parser["radius"]["image"]["repository"] = self.settings["RADIUS_IMAGE_NAME"]
+        values_file_parser["radius"]["image"]["tag"] = self.settings["RADIUS_IMAGE_TAG"]
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
