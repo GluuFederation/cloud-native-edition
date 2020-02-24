@@ -4,6 +4,7 @@ metadata:
   name: couchbase-cluster-backup-create
 spec:
   schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
