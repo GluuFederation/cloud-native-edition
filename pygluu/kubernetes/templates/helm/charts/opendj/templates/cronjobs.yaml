@@ -43,7 +43,7 @@ spec:
                 - name: LDAP_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ldap-auth
+                      name: {{ include "opendj.name" . }}-auth
                       key: password
               #  while true; do sleep 60; ldaplog=$(cat /opt/opendj/logs/server.out); startedstr="The Directory Server has started successfully";  if [ -z "${ldaplog##*$startedstr*}" ]; then break; fi; echo "Waiting for opendj server to start"; done
               command:
