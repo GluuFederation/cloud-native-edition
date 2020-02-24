@@ -7,7 +7,7 @@ dynamicStorage: true
 
 image:
   repository: gluufederation/oxtrust
-  tag: 4.0.1_06
+  tag: 4.1.0_dev
   pullPolicy: Always
 
 service:

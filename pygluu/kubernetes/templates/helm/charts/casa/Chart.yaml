@@ -1,7 +1,7 @@
 # License terms and conditions:
 # https://www.gluu.org/license/enterprise-edition/
 apiVersion: v1
-appVersion: "4.0.0_01"
+appVersion: "4.2.0_01"
 description: A Helm chart for casa
 name: casa
 version: 1.0.0

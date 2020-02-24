@@ -1,8 +1,8 @@
 # License terms and conditions:
 # https://www.gluu.org/license/enterprise-edition/
 apiVersion: v2
-appVersion: 4.0.0
-home: https://www.gluu.org/de
+appVersion: "4.1.0_01"
+home: https://www.gluu.org/ee
 maintainers:
 - name: Gluu
 email: support@gluu.org
