@@ -119,6 +119,8 @@ class App(object):
         self.redis_yaml = str(self.output_yaml_directory.joinpath("redis.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("updatelbip.yaml").resolve())
         self.adjust_yamls_for_fqdn_status = dict()
+        self.gluu_secret = ""
+        self.gluu_config = ""
 
     @property
     def detect_kubectl(self):
@@ -373,13 +375,13 @@ class App(object):
                 logger.info("Waiting for Gluu secret...")
                 time.sleep(10)
 
-        self.kubernetes.create_namespaced_secret_from_literal(name="tls-certificate",
-                                                              namespace=self.settings["GLUU_NAMESPACE"],
-                                                              literal="tls.crt",
-                                                              value_of_literal=ssl_cert,
-                                                              secret_type="kubernetes.io/tls",
-                                                              second_literal="tls.key",
-                                                              value_of_second_literal=ssl_key)
+        self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="tls.crt",
+                                                          value_of_literal=ssl_cert,
+                                                          secret_type="kubernetes.io/tls",
+                                                          second_literal="tls.key",
+                                                          value_of_second_literal=ssl_key)
 
     def kustomize_shared_shib(self):
         if self.settings["DEPLOYMENT_ARCH"] == "eks" and \
@@ -418,7 +420,6 @@ class App(object):
         else:
             if "cluster-role-bindings.yaml" in list_of_config_resource_files:
                 list_of_config_resource_files.remove("cluster-role-bindings.yaml")
-
         parser["resources"] = list_of_config_resource_files
         parser.dump_it()
         command = self.kubectl + " kustomize config/base > " + self.config_yaml
@@ -685,7 +686,7 @@ class App(object):
             subprocess_cmd(command)
 
     def kustomize_update_lb_ip(self):
-        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" or self.settings["IS_GLUU_FQDN_REGISTERED"] != "y":
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y":
             if self.settings["DEPLOYMENT_ARCH"] == "eks":
                 command = self.kubectl + " kustomize update-lb-ip/base > " + self.update_lb_ip_yaml
                 subprocess_cmd(command)
@@ -694,14 +695,28 @@ class App(object):
         shutil.copy(Path("./alb/ingress.yaml"), self.output_yaml_directory.joinpath("ingress.yaml"))
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("ingress.yaml"),
                                                  self.settings["GLUU_NAMESPACE"])
-        prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
-        lb_hostname = prompt
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y":
+            prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
+            lb_hostname = prompt
+            while True:
+                try:
+                    if lb_hostname:
+                        break
+                    lb_hostname = self.kubernetes.read_namespaced_ingress(
+                        name="gluu", namespace="gluu").status.load_balancer.ingress[0].hostname
+                except TypeError:
+                    logger.info("Waiting for loadbalancer address..")
+                    time.sleep(10)
+            self.settings["LB_ADD"] = lb_hostname
+
+    def check_lb(self):
+        lb_hostname = None
         while True:
             try:
                 if lb_hostname:
                     break
-                lb_hostname = self.kubernetes.read_namespaced_ingress(
-                    name="gluu", namespace="gluu").status.load_balancer.ingress[0].hostname
+                lb_hostname = self.kubernetes.read_namespaced_service(
+                    name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
             except TypeError:
                 logger.info("Waiting for loadbalancer address..")
                 time.sleep(10)
@@ -718,11 +733,16 @@ class App(object):
                 if self.settings["USE_ARN"] == "Y":
                     svc_nlb_yaml = self.output_yaml_directory.joinpath("nginx/nlb-service.yaml")
                     svc_nlb_yaml_parser = Parser(svc_nlb_yaml, "Service")
-                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings["ARN_AWS_IAM"]})
-                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled": '"true"'})
-                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy": "ELBSecurityPolicy-TLS-1-1-2017-01"})
-                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": "http"})
-                    svc_nlb_yaml_parser["metadata"]["annotations"].update({"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "https"})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update(
+                        {"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings["ARN_AWS_IAM"]})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update(
+                        {"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled": '"true"'})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update({
+                                                                              "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy": "ELBSecurityPolicy-TLS-1-1-2017-01"})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update(
+                        {"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": "http"})
+                    svc_nlb_yaml_parser["metadata"]["annotations"].update(
+                        {"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "https"})
                     svc_nlb_yaml_parser.dump_it()
                 self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nlb-service.yaml"))
                 while True:
@@ -759,16 +779,7 @@ class App(object):
                     self.kubernetes.create_objects_from_dict(self.output_yaml_directory.
                                                              joinpath("nginx/patch-configmap-l4.yaml"))
 
-            while True:
-                try:
-                    if lb_hostname:
-                        break
-                    lb_hostname = self.kubernetes.read_namespaced_service(
-                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
-                except TypeError:
-                    logger.info("Waiting for loadbalancer address..")
-                    time.sleep(10)
-            self.settings["LB_ADD"] = lb_hostname
+            self.check_lb()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
@@ -922,8 +933,7 @@ class App(object):
 
     def deploy_oxshibboleth(self):
         self.kubernetes.create_objects_from_dict(self.oxshibboleth_yaml)
-        if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth")
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxshibboleth",
                                                             replicas=self.settings["OXSHIBBOLETH_REPLICAS"],
                                                             namespace=self.settings["GLUU_NAMESPACE"])
@@ -938,8 +948,7 @@ class App(object):
 
     def deploy_key_rotation(self):
         self.kubernetes.create_objects_from_dict(self.key_rotate_yaml)
-        if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation")
 
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
@@ -955,6 +964,59 @@ class App(object):
         time.sleep(10)
         self.kubernetes.create_objects_from_dict(self.cr_rotate_yaml)
 
+    def copy_configs_before_restore(self):
+        self.gluu_secret = self.kubernetes.read_namespaced_secret("gluu", self.settings["GLUU_NAMESPACE"]).data
+        self.gluu_config = self.kubernetes.read_namespaced_configmap("gluu", self.settings["GLUU_NAMESPACE"]).data
+
+    def save_a_copy_of_config(self):
+        self.kubernetes.patch_or_create_namespaced_secret(name="secret-params", literal=None, value_of_literal=None,
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          data=self.gluu_secret)
+        self.kubernetes.patch_or_create_namespaced_configmap(name="config-params",
+                                                             namespace=self.settings["GLUU_NAMESPACE"],
+                                                             data=self.gluu_config)
+
+    def mount_config(self):
+        self.kubernetes.patch_or_create_namespaced_secret(name="gluu", literal=None, value_of_literal=None,
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          data=self.gluu_secret)
+        self.kubernetes.patch_or_create_namespaced_configmap(name="gluu",
+                                                             namespace=self.settings["GLUU_NAMESPACE"],
+                                                             data=self.gluu_config)
+
+    def run_backup_command(self):
+        try:
+            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "-n", "userRoot",
+                                    "-l", "/opt/opendj/ldif/backup-this-copy.ldif",
+                                 "--bindPassword", self.settings["LDAP_PW"]]
+            self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
+                                                        app_label="app=opendj",
+                                                        namespace=self.settings["GLUU_NAMESPACE"])
+        except:
+            pass
+
+    def setup_backup_ldap(self):
+        subprocess_cmd("alias kubectl='microk8s.kubectl'")
+        encoded_ldap_pw_bytes = base64.b64encode(self.settings["LDAP_PW"].encode("utf-8"))
+        encoded_ldap_pw_string = str(encoded_ldap_pw_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="ldap-auth",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="password",
+                                                          value_of_literal=encoded_ldap_pw_string)
+        kustomize_parser = Parser("ldap/backup/kustomization.yaml", "Kustomization")
+        kustomize_parser["namespace"] = self.settings["GLUU_NAMESPACE"]
+        kustomize_parser["configMapGenerator"][0]["literals"] = ["GLUU_LDAP_AUTO_REPLICATE=" + self.settings[
+            "GLUU_CACHE_TYPE"], "GLUU_CONFIG_KUBERNETES_NAMESPACE=" + self.settings["GLUU_NAMESPACE"],
+            "GLUU_SECRET_KUBERNETES_NAMESPACE=" + self.settings["GLUU_NAMESPACE"],
+            "GLUU_CONFIG_ADAPTER=kubernetes", "GLUU_SECRET_ADAPTER=kubernetes", "GLUU_LDAP_INIT='true'",
+            "GLUU_LDAP_INIT_HOST='opendj'", "GLUU_LDAP_INIT_PORT='1636'", "GLUU_CERT_ALT_NAME='opendj'",
+            "GLUU_PERSISTENCE_LDAP_MAPPING=" + self.settings["HYBRID_LDAP_HELD_DATA"],
+            "GLUU_PERSISTENCE_TYPE=" + self.settings["PERSISTENCE_BACKEND"]]
+        kustomize_parser.dump_it()
+        command = "kubectl kustomize ldap/backup > ./ldap-backup.yaml"
+        subprocess_cmd(command)
+        self.kubernetes.create_objects_from_dict("./ldap-backup.yaml")
+
     def upgrade(self):
         self.update_kustomization_yaml()
         self.kustomize_gluu_upgrade()
@@ -963,7 +1025,8 @@ class App(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade")
         casa_image = self.settings["CASA_IMAGE_NAME"] + ":" + self.settings["CASA_IMAGE_TAG"]
-        cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings["CACHE_REFRESH_ROTATE_IMAGE_TAG"]
+        cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings[
+            "CACHE_REFRESH_ROTATE_IMAGE_TAG"]
         key_rotate_image = self.settings["KEY_ROTATE_IMAGE_NAME"] + ":" + self.settings["KEY_ROTATE_IMAGE_TAG"]
         ldap_image = self.settings["LDAP_IMAGE_NAME"] + ":" + self.settings["LDAP_IMAGE_TAG"]
         oxauth_image = self.settings["OXAUTH_IMAGE_NAME"] + ":" + self.settings["OXAUTH_IMAGE_TAG"]
@@ -988,15 +1051,17 @@ class App(object):
         self.kubernetes.patch_namespaced_deployment(name="oxpassport",
                                                     image=oxpassport_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_statefulset(name="oxshibboleth",
-                                                     image=oxshibboleth_image, namespace=self.settings["GLUU_NAMESPACE"])
+                                                     image=oxshibboleth_image,
+                                                     namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_statefulset(name="oxtrust",
                                                      image=oxtrust_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_deployment(name="radius",
                                                     image=radius_image, namespace=self.settings["GLUU_NAMESPACE"])
 
-    def install(self, install_couchbase=True):
+    def install(self, install_couchbase=True, restore=False):
         self.update_kustomization_yaml()
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
+        if not restore:
+            self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         self.kustomize_shared_shib()
         self.kustomize_config()
         self.kustomize_ldap()
@@ -1029,7 +1094,11 @@ class App(object):
         self.deploy_shared_shib()
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
-            self.deploy_config()
+            if restore:
+                self.mount_config()
+                self.save_a_copy_of_config()
+            else:
+                self.deploy_config()
 
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.setup_tls()
@@ -1039,15 +1108,23 @@ class App(object):
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            self.deploy_ldap()
+            if restore:
+                self.run_backup_command()
+                self.mount_config()
+                self.check_lb()
+            else:
+                self.deploy_ldap()
+                self.setup_backup_ldap()
 
-        if self.settings["AWS_LB_TYPE"] == "alb":
-            self.prepare_alb()
-            self.deploy_alb()
-        else:
-            self.deploy_nginx()
+        if not restore:
+            if self.settings["AWS_LB_TYPE"] == "alb":
+                self.prepare_alb()
+                self.deploy_alb()
+            else:
+                self.deploy_nginx()
         self.adjust_fqdn_yaml_entries()
-        self.deploy_persistence()
+        if not restore:
+            self.deploy_persistence()
 
         if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" and self.settings["IS_GLUU_FQDN_REGISTERED"] != "y":
             if self.settings["DEPLOYMENT_ARCH"] == "eks":
@@ -1064,6 +1141,8 @@ class App(object):
 
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             self.deploy_oxshibboleth()
+            if restore:
+                self.mount_config()
 
         if self.settings["ENABLE_OXPASSPORT"] == "Y":
             self.deploy_oxpassport()
@@ -1073,11 +1152,13 @@ class App(object):
 
         if self.settings["ENABLE_KEY_ROTATE"] == "Y":
             self.deploy_key_rotation()
+            if restore:
+                self.mount_config()
 
         if self.settings["ENABLE_RADIUS"] == "Y":
             self.deploy_radius()
 
-    def uninstall(self):
+    def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server"]
         gluu_storage_class_names = ["aws-efs", "opendj-sc"]
@@ -1087,7 +1168,8 @@ class App(object):
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
-        secrets = ["oxdkeystorecm", "gluu", "tls-certificate", "cb-pass", "cb-crt"]
+        secrets = ["oxdkeystorecm", "gluu", "tls-certificate"]
+        cb_secrets = ["cb-pass", "cb-crt"]
         daemon_set_label = "app=cr-rotate"
         replication_controller_label = "app=nfs-server"
         shared_shib_label = "app=shared-shib"
@@ -1111,25 +1193,36 @@ class App(object):
         eks_yamls_folder = Path("./gluueksyamls")
         gke_yamls_folder = Path("./gluugkeyamls")
         aks_yamls_folder = Path("./gluuaksyamls")
+        if restore:
+            gluu_service_names.pop(3)
+            gluu_storage_class_names.pop(1)
+            stateful_set_labels.pop(0)
+
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
+        if not restore:
+            self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
-        self.kubernetes.delete_deployment_using_name(nginx_deployemnt_app_name, "ingress-nginx")
+        if not restore:
+            self.kubernetes.delete_deployment_using_name(nginx_deployemnt_app_name, "ingress-nginx")
         for stateful_set in stateful_set_labels:
             self.kubernetes.delete_stateful_set(self.settings["GLUU_NAMESPACE"], stateful_set)
         for job in jobs_labels:
             self.kubernetes.delete_job(self.settings["GLUU_NAMESPACE"], job)
         for secret in secrets:
             self.kubernetes.delete_secret(secret, self.settings["GLUU_NAMESPACE"])
+        if not restore:
+            for secret in cb_secrets:
+                self.kubernetes.delete_secret(secret, self.settings["GLUU_NAMESPACE"])
         self.kubernetes.delete_daemon_set(self.settings["GLUU_NAMESPACE"], daemon_set_label)
         self.kubernetes.delete_collection_namespaced_replication_controller(self.settings["GLUU_NAMESPACE"],
                                                                             replication_controller_label)
         for config_map in gluu_config_maps_names:
             self.kubernetes.delete_config_map_using_name(config_map, self.settings["GLUU_NAMESPACE"])
-        for config_map in nginx_config_maps_names:
-            self.kubernetes.delete_config_map_using_name(config_map, "ingress-nginx")
+        if not restore:
+            for config_map in nginx_config_maps_names:
+                self.kubernetes.delete_config_map_using_name(config_map, "ingress-nginx")
         for cm_pv_pvc in all_labels:
             self.kubernetes.delete_config_map_using_label(self.settings["GLUU_NAMESPACE"], cm_pv_pvc)
             self.kubernetes.delete_persistent_volume(cm_pv_pvc)
@@ -1137,17 +1230,21 @@ class App(object):
         for storage_class in gluu_storage_class_names:
             self.kubernetes.delete_storage_class(storage_class)
 
-        self.kubernetes.delete_role("gluu-role", self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.delete_role(nginx_roles_name, "ingress-nginx")
-        self.kubernetes.delete_cluster_role_binding("gluu-rolebinding")
-        self.kubernetes.delete_role_binding(nginx_role_bindings_name, "ingress-nginx")
-        self.kubernetes.delete_cluster_role_binding(gluu_cluster_role_bindings_name)
-        self.kubernetes.delete_cluster_role_binding(nginx_cluster_role_bindings_name)
-        self.kubernetes.delete_service_account(nginx_service_account_name, "ingress-nginx")
-        self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
-        for extension in nginx_ingress_extensions_names:
-            self.kubernetes.delete_ingress(extension)
+        if not restore:
+            self.kubernetes.delete_role("gluu-role", self.settings["GLUU_NAMESPACE"])
+            self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings["GLUU_NAMESPACE"])
+            self.kubernetes.delete_role(nginx_roles_name, "ingress-nginx")
+            self.kubernetes.delete_cluster_role_binding("gluu-rolebinding")
+            self.kubernetes.delete_cluster_role_binding(gluu_cluster_role_bindings_name)
+            self.kubernetes.delete_role_binding(nginx_role_bindings_name, "ingress-nginx")
+            self.kubernetes.delete_cluster_role_binding(nginx_cluster_role_bindings_name)
+            self.kubernetes.delete_service_account(nginx_service_account_name, "ingress-nginx")
+            self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
+            for extension in nginx_ingress_extensions_names:
+                self.kubernetes.delete_ingress(extension)
+            self.kubernetes.delete_namespace("ingress-nginx")
+            if not self.settings["GLUU_NAMESPACE"] == "default":
+                self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         with contextlib.suppress(FileNotFoundError):
             os.remove("oxd-server.keystore")
         with contextlib.suppress(FileNotFoundError):
@@ -1172,31 +1269,29 @@ class App(object):
                         for zone in self.settings["NODES_ZONES"]:
                             subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
                                            format(node_name, zone))
-        self.kubernetes.delete_namespace("ingress-nginx")
-        if not self.settings["GLUU_NAMESPACE"] == "default":
-            self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
-        shutil.rmtree(Path("./previousgluuminikubeyamls"), ignore_errors=True)
-        shutil.rmtree(Path("./previousgluumicrok8yamls"), ignore_errors=True)
-        shutil.rmtree(Path("./previousgluueksyamls"), ignore_errors=True)
-        shutil.rmtree(Path("./previousgluuaksyamls"), ignore_errors=True)
-        shutil.rmtree(Path("./previousgluugkeyamls"), ignore_errors=True)
-        with contextlib.suppress(FileNotFoundError):
-            shutil.copytree(minkube_yamls_folder, Path("./previousgluuminikubeyamls"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.copytree(microk8s_yamls_folder, Path("./previousgluumicrok8yamls"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.copytree(eks_yamls_folder, Path("./previousgluueksyamls"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.copytree(aks_yamls_folder, Path("./previousgluuaksyamls"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.copytree(gke_yamls_folder, Path("./previousgluugkeyamls"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.move(Path("./ingress.crt"), Path("./previous-ingress.crt"))
-        with contextlib.suppress(FileNotFoundError):
-            shutil.move(Path("./ingress.key"), Path("./previous-ingress.key"))
-        with contextlib.suppress(FileNotFoundError):
-            time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
-            shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
+        if not restore:
+            shutil.rmtree(Path("./previousgluuminikubeyamls"), ignore_errors=True)
+            shutil.rmtree(Path("./previousgluumicrok8yamls"), ignore_errors=True)
+            shutil.rmtree(Path("./previousgluueksyamls"), ignore_errors=True)
+            shutil.rmtree(Path("./previousgluuaksyamls"), ignore_errors=True)
+            shutil.rmtree(Path("./previousgluugkeyamls"), ignore_errors=True)
+            with contextlib.suppress(FileNotFoundError):
+                shutil.copytree(minkube_yamls_folder, Path("./previousgluuminikubeyamls"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.copytree(microk8s_yamls_folder, Path("./previousgluumicrok8yamls"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.copytree(eks_yamls_folder, Path("./previousgluueksyamls"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.copytree(aks_yamls_folder, Path("./previousgluuaksyamls"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.copytree(gke_yamls_folder, Path("./previousgluugkeyamls"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.move(Path("./ingress.crt"), Path("./previous-ingress.crt"))
+            with contextlib.suppress(FileNotFoundError):
+                shutil.move(Path("./ingress.key"), Path("./previous-ingress.key"))
+            with contextlib.suppress(FileNotFoundError):
+                time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
+                shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
 
 
 def create_parser():
@@ -1207,6 +1302,9 @@ def create_parser():
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
                                                     "Gluu Enterprise Edition non-interactively")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
+    subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
+    subparsers.add_parser("restore", help="Install Gluu Enterprise Edition with a "
+                                          "running database and previous configuration")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("upgrade", help="Upgrade Gluu Enterprise Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
@@ -1236,6 +1334,10 @@ def main():
             app.uninstall()
             app.install()
 
+        if args.subparser_name == "install-ldap-backup":
+            app = App(settings)
+            app.setup_backup_ldap()
+
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
             app = App(settings)
@@ -1246,6 +1348,12 @@ def main():
             settings = prompts.prompt_upgrade
             app = App(settings)
             app.upgrade()
+
+        elif args.subparser_name == "restore":
+            app = App(settings)
+            app.copy_configs_before_restore()
+            app.uninstall(restore=True)
+            app.install(install_couchbase=False, restore=True)
 
         elif args.subparser_name == "install-couchbase":
             settings = prompts.prompt_couchbase()

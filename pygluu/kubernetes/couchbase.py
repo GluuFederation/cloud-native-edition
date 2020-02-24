@@ -103,42 +103,40 @@ class Couchbase(object):
 
     def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string):
         # Remove this if its not needed
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-crt",
-                                                              namespace=self.settings["GLUU_NAMESPACE"],
-                                                              literal="couchbase.crt",
-                                                              value_of_literal=encoded_ca_crt_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="couchbase.crt",
+                                                          value_of_literal=encoded_ca_crt_string)
 
         # Remove this if its not needed
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-pass",
-                                                              namespace=self.settings["GLUU_NAMESPACE"],
-                                                              literal="couchbase_password",
-                                                              value_of_literal=encoded_cb_pass_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="couchbase_password",
+                                                          value_of_literal=encoded_cb_pass_string)
 
     def setup_backup_couchbase(self):
         encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
         encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
         encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
         encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-auth",
-                                                              namespace=self.settings["COUCHBASE_NAMESPACE"],
-                                                              literal="username",
-                                                              value_of_literal=encoded_cb_user_string,
-                                                              second_literal="password",
-                                                              value_of_second_literal=encoded_cb_pass_string)
+        encoded_cb_url_bytes = base64.b64encode(self.settings["COUCHBASE_URL"].encode("utf-8"))
+        encoded_cb_url_string = str(encoded_cb_url_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
+                                                          namespace=self.settings["COUCHBASE_NAMESPACE"],
+                                                          literal="username",
+                                                          value_of_literal=encoded_cb_user_string,
+                                                          second_literal="password",
+                                                          value_of_second_literal=encoded_cb_pass_string)
         subprocess_cmd("alias kubectl='microk8s.kubectl'")
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
         kustomize_parser.dump_it()
         command = "kubectl kustomize couchbase/backup > ./couchbase-backup.yaml"
         subprocess_cmd(command)
-        cron_job_parser = Parser("./couchbase-backup.yaml", "CronJob")
-        init_containers = cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"]
-        for init_container in init_containers:
-            if init_container["name"] == "periodic-merge":
-                init_container_index = cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"].index(init_container)
-                cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["initContainers"][
-                    init_container_index]["command"] = ["/bin/sh", "-c", "/backups/backup-with-periodic-merge.sh --cluster " + self.settings["COUCHBASE_URL"]]
-        cron_job_parser.dump_it()
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-url",
+                                                          namespace=self.settings["COUCHBASE_NAMESPACE"],
+                                                          literal="url",
+                                                          value_of_literal=encoded_cb_url_string)
 
         storage_class_parser = Parser("./couchbase-backup.yaml", "StorageClass")
 
@@ -386,7 +384,8 @@ class Couchbase(object):
     def install(self):
         self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
-        self.analyze_couchbase_cluster_yaml()
+        if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
+            self.analyze_couchbase_cluster_yaml()
         cb_namespace = self.settings["COUCHBASE_NAMESPACE"]
         storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
         if self.settings['DEPLOYMENT_ARCH'] == "gke":
@@ -468,16 +467,16 @@ class Couchbase(object):
             encoded_pkey_string = str(encoded_pkey_bytes, "utf-8")
 
         update_settings_json_file(self.settings)
-        self.kubernetes.create_namespaced_secret_from_literal(name="couchbase-server-tls",
-                                                              namespace=cb_namespace,
-                                                              literal=chain_pem_filepath.name,
-                                                              value_of_literal=encoded_chain_string,
-                                                              second_literal=pkey_filepath.name,
-                                                              value_of_second_literal=encoded_pkey_string)
-        self.kubernetes.create_namespaced_secret_from_literal(name="couchbase-operator-tls",
-                                                              namespace=cb_namespace,
-                                                              literal=ca_cert_filepath.name,
-                                                              value_of_literal=encoded_ca_crt_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="couchbase-server-tls",
+                                                          namespace=cb_namespace,
+                                                          literal=chain_pem_filepath.name,
+                                                          value_of_literal=encoded_chain_string,
+                                                          second_literal=pkey_filepath.name,
+                                                          value_of_second_literal=encoded_pkey_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="couchbase-operator-tls",
+                                                          namespace=cb_namespace,
+                                                          literal=ca_cert_filepath.name,
+                                                          value_of_literal=encoded_ca_crt_string)
 
         couchbase_admission_file_secret_parser = Parser(self.couchbase_admission_file, "Secret")
         couchbase_admission_file_secret_parser["data"]["tls-cert-file"] = encoded_tls_crt_string
@@ -525,12 +524,12 @@ class Couchbase(object):
         self.kubernetes.create_objects_from_dict(self.couchbase_operator_deployment_file, namespace=cb_namespace)
         self.kubernetes.check_pods_statuses(cb_namespace, "app=couchbase-operator")
 
-        self.kubernetes.create_namespaced_secret_from_literal(name="cb-auth",
-                                                              namespace=cb_namespace,
-                                                              literal="username",
-                                                              value_of_literal=encoded_cb_user_string,
-                                                              second_literal="password",
-                                                              value_of_second_literal=encoded_cb_pass_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
+                                                          namespace=cb_namespace,
+                                                          literal="username",
+                                                          value_of_literal=encoded_cb_user_string,
+                                                          second_literal="password",
+                                                          value_of_second_literal=encoded_cb_pass_string)
 
         self.kubernetes.create_objects_from_dict(self.storage_class_file, namespace=cb_namespace)
         self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,

@@ -97,5 +97,5 @@ spec:
           {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.cloud.awsLocalStorage ) }}
           claimName: {{ .Release.Name }}-shared-shib-pvc
           {{- else }}
-          claimName: nfs
+          claimName: {{ .Release.Name }}-nfs
           {{- end }} 
