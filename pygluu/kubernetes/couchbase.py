@@ -289,7 +289,7 @@ class Couchbase(object):
         number_of_buckets = len(parser["spec"]["buckets"])
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
-            resources_servers = [{"name": "allServices", "size": 2,
+            resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
                                   "pod": {"volumeMounts":
                                               {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
