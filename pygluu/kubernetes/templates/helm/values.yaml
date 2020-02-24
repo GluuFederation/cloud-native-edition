@@ -42,7 +42,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap 
   # If REDIS is the Cache Type
   gluuRedisType: STANDALONE
   # options REDIS/NATIVE_PERSISTENCE

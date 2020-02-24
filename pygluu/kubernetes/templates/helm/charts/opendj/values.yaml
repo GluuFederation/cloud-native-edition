@@ -27,7 +27,7 @@ image:
   repository: gluufederation/wrends
   tag: 4.1.0_dev
   pullPolicy: Always
-
+  
 persistence:
   size: 5Gi
   accessModes: ReadWriteOnce
