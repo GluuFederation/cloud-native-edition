@@ -1,0 +1,62 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: {{ include "couchbase-backup.fullname" . }}
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            #Delete backup-with-periodic-merge script so that new one can be pulled with each run
+            - name: delete-script
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["rm", "/backups/backup-with-periodic-merge.sh"]
+              volumeMounts:
+                - name: {{ include "couchbase-backup.name" . }}-config-volume
+                  mountPath: "/backups"
+          initContainers:
+            #Download the backup script from the git repo
+            - name: wget-backup-script
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["wget", "https://raw.githubusercontent.com/couchbaselabs/cboperator-hol/master/eks/cb-operator-guide/files/sh/backup-with-periodic-merge.sh", "-P", "/backups/."]
+              volumeMounts:
+                - name: {{ include "couchbase-backup.name" . }}-config-volume
+                  mountPath: "/backups"
+            #Change the mod of the backup script to execution
+            - name: chmod-script
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["chmod", "700", "/backups/backup-with-periodic-merge.sh"]
+              volumeMounts:
+                - name: {{ include "couchbase-backup.name" . }}-config-volume
+                  mountPath: "/backups"
+            #Run the script so it can do a) Backup b) Compaction c) Merge with each snapshot
+            - name: periodic-merge
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              env:
+                - name: CB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: cb-auth
+                      key: username
+                - name: CB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cb-auth
+                      key: password
+                - name: CLUSTER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "couchbase-backup.fullname" . }}
+                      key: url
+              command: ["/bin/sh", "-c" ,"/backups/backup-with-periodic-merge.sh"]
+              volumeMounts:
+                - name: {{ include "couchbase-backup.name" . }}-config-volume
+                  mountPath: "/backups"
+          volumes:
+            - name: {{ include "couchbase-backup.name" . }}-config-volume
+              persistentVolumeClaim:
+                claimName: {{ include "couchbase-backup.fullname" . }}
+          restartPolicy: {{ .Values.restartPolicy }}

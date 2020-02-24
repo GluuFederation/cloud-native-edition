@@ -1,0 +1,20 @@
+# Create a backup repository
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: {{ include "couchbase-backup.name" . }}-config
+spec:
+  template:
+    spec:
+      containers:
+        - name: backup-config
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["cbbackupmgr", "config", "--archive", "/backups", "--repo", "couchbase"]
+          volumeMounts:
+            - name: {{ include "couchbase-backup.name" . }}-config-volume
+              mountPath: "/backups"
+      volumes:
+        - name: {{ include "couchbase-backup.name" . }}-config-volume
+          persistentVolumeClaim:
+            claimName: {{ include "couchbase-backup.fullname" . }}
+      restartPolicy: {{ .Values.restartPolicy }}
