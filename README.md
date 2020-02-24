@@ -9,7 +9,6 @@ Multi-hosts Gluu Server deployment.
 ## Deployment options
 
 - [Kustomize](./kustomize/)
-- [Helm](./helm/) ![CDNJS](https://img.shields.io/badge/BETA-red.svg?style=for-the-badge)
 
 ## Issues
 
