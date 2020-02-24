@@ -4,11 +4,11 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ template "oxtrust.fullname" . }}-cm
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Release.Namespace }}
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
-  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
-  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
+  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}

@@ -15,8 +15,6 @@ global:
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
   reclaimPolicy: Retain
-  
-  namespace: default
   nginxNamespace: ingress
 
   #service names to be used globally/by other charts

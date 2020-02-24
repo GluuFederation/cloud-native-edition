@@ -4,12 +4,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata: 
   name: {{ include "config.fullname" . }}-config-cm
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Release.Namespace }}
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
-  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
-  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Values.global.namespace | quote }}
+  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
 
 ---
 
@@ -17,7 +17,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "config.fullname" . }}-gen-json-file
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Release.Namespace }}
 data:
   generate.json: |-
     {
@@ -46,7 +46,7 @@ data:
 
     #global vars
     name = "tls-certificate"
-    namespace = {{ .Values.global.namespace | quote }} 
+    namespace = {{ .Release.Namespace | quote }} 
 
     # check if gluu secret exists
     def get_certs():
@@ -99,7 +99,7 @@ data:
 kind: ConfigMap
 metadata:
   name: {{ include "config.fullname" . }}-tls-script
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Release.Namespace }}
 
 ---
 
@@ -179,4 +179,4 @@ data:
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-updatelbip
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Release.Namespace }}
