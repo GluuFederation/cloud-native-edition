@@ -1,0 +1,65 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+# opendj Environament Variables
+# common ConfigMap values
+gluuLdapInit: true
+gluuOxtrustConfigGeneration: true
+
+gluuLdapInitHost: localhost
+gluuLdapInitPort: 1636
+
+gluuCertAltName: opendj
+ldapServiceName: opendj
+
+ldapPass: P@assw0rd
+concurrencyPolicy: Forbid
+
+# gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
+gluuRedisEnabled: false
+gluuLdapAutoReplicate: false
+
+gluuRedisCacheType: REDIS
+gluuRedisUrl: redis:6379
+# options REDIS/NATIVE_PERSISTENCE
+gluuCacheType: NATIVE_PERSISTENCE
+gluuRedisType: STANDALONE
+
+configAdapterName: kubernetes
+configSecretAdapter: kubernetes
+
+gluuLdapInitRepl: false
+gluuOxtrustConfigGenerationRepl: false
+
+nameOverride: ""
+fullnameOverride: ""
+
+restartPolicy: Never
+image:
+  repository: gluufederation/wrends
+  tag: 4.1.0_dev
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+#servicePorts values used in StatefulSet container
+ports:
+  ldaps:
+    port: 1636
+    targetPort: 1636
+  ldap:
+    port: 1389
+    targetPort: 1389
+  replication:
+    port: 8989
+    targetPort: 8989
+  admin:
+    port: 4444
+    targetPort: 4444

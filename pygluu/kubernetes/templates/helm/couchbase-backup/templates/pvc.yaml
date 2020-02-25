@@ -1,0 +1,12 @@
+# Define backup storage volume
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "couchbase-backup.fullname" . }}
+spec:
+  storageClassName: {{ include "couchbase-backup.name" . }}-gp2-storage
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storage }} #50Gi
+  accessModes:
+    - {{ .Values.persistence.accessModes }} # ReadWriteOnce
