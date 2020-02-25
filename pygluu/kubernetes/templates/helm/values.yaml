@@ -44,7 +44,6 @@ global:
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: ldap 
 
-  ldapPass: P@assw0rd
   # If REDIS is the Cache Type
   gluuRedisType: STANDALONE
   # options REDIS/NATIVE_PERSISTENCE
@@ -139,6 +138,7 @@ config:
   email: support@gluu.com
   # adminPass is administrator password for oxTrust
   adminPass: P@ssw0rd
+  ldapPass: P@assw0rd
   # organisation location details
   countryCode: US
   state: TX

@@ -26,7 +26,7 @@ data:
       "state": {{ .Values.state | quote }},
       "city": {{ .Values.city | quote }},
       "admin_pw": {{ .Values.adminPass | quote }},
-      "ldap_pw": {{ .Values.global.ldapPass | quote }},
+      "ldap_pw": {{ .Values.ldapPass | quote }},
       "email": {{ .Values.email | quote }},
       "org_name": {{ .Values.orgName | quote }}
     }

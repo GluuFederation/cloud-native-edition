@@ -4,6 +4,7 @@
 #values for environment variables
 orgName: Gluu
 adminPass: P@ssw0rd
+ldapPass: P@assw0rd
 email: support@gluu.com
 countryCode: US
 state: TE
