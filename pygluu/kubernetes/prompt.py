@@ -420,7 +420,7 @@ class Prompt(object):
             self.settings["IS_GLUU_FQDN_REGISTERED"] = prompt
 
         logger.info("You can mount your FQDN certification and key by placing them inside "
-                    "ingress.crt and ingress.key respectivley")
+                    "gluu.crt and gluu.key respectivley at the locaation of pygluu-kuberentest.pyz")
         # Prepare generate.json and output it
         self.config_settings["hostname"] = self.settings["GLUU_FQDN"]
         self.config_settings["country_code"] = self.settings["COUNTRY_CODE"]

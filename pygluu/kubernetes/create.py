@@ -17,6 +17,7 @@ import socket
 import subprocess
 import base64
 import sys
+import OpenSSL
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 from .prompt import Prompt
@@ -41,6 +42,34 @@ static_gke_folder = Path("./ldap/overlays/gke/static-pd/")
 local_azure_folder = Path("./ldap/overlays/azure/local-storage/")
 dynamic_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
 static_azure_folder = Path("./ldap/overlays/azure/static-dn/")
+
+
+def check_cert_with_private_key(cert, private_key):
+    """
+    :type cert: str
+    :type private_key: str
+    :rtype: bool
+    """
+    try:
+        private_key_obj = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key)
+    except OpenSSL.crypto.Error:
+        raise logger.exception("Private ley is not correct: {}".format(private_key))
+
+    try:
+        cert_obj = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+    except OpenSSL.crypto.Error:
+        raise logger.exception("Certificate is not correct: {}".format(cert))
+
+    context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+    context.use_privatekey(private_key_obj)
+    context.use_certificate(cert_obj)
+    try:
+        context.check_privatekey()
+        logger.info("Private key matches certificate")
+        return True
+    except OpenSSL.SSL.Error:
+        logger.error("Private key does not match certificate")
+        return False
 
 
 def subprocess_cmd(command):
@@ -421,6 +450,27 @@ class App(object):
             if "cluster-role-bindings.yaml" in list_of_config_resource_files:
                 list_of_config_resource_files.remove("cluster-role-bindings.yaml")
         parser["resources"] = list_of_config_resource_files
+        # if gluu crt and key were provided by user
+        custom_gluu_crt = Path("./gluu.crt")
+        custom_gluu_key = Path("./gluu.key")
+        if custom_gluu_crt.exists() and custom_gluu_key.exists():
+            cert = open(custom_gluu_crt).read()
+            key = open(custom_gluu_key).read()
+            if not check_cert_with_private_key(cert, key):
+                logger.error("Custom crt and key were provided but were incorrect")
+                raise SystemExit(1)
+            shutil.copy(custom_gluu_crt, Path("./config/base"))
+            shutil.copy(custom_gluu_key, Path("./config/base"))
+            parser.update({"secretGenerator": [{"name": "gluu-cert-key-override", "files": ["gluu.crt", "gluu.key"]}]})
+            jobs_parser = Parser("./config/base/jobs.yaml", "Job")
+            # Add volume mount
+            jobs_parser["spec"]["template"]["spec"]["volumes"].append({"name": "gluu-cert-override", "secret": {"secretName": "gluu-cert-key-override", "items": [{"key": "gluu.crt", "path": "gluu_https.crt"}]}})
+            jobs_parser["spec"]["template"]["spec"]["volumes"].append({"name": "gluu-key-override", "secret": {"secretName": "gluu-cert-key-override", "items": [{"key": "gluu.key", "path": "gluu_https.key"}]}})
+            # Add volumeMounts
+            jobs_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append({"name": "gluu-cert-override", "mountPath": "/etc/certs/gluu_https.crt", "subPath": "gluu_https.crt"})
+            jobs_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append({"name": "gluu-key-override", "mountPath": "/etc/certs/gluu_https.key", "subPath": "gluu_https.key"})
+            jobs_parser.dump_it()
+
         parser.dump_it()
         command = self.kubectl + " kustomize config/base > " + self.config_yaml
         subprocess_cmd(command)
@@ -1380,8 +1430,6 @@ def main():
 
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
-            app = App(settings)
-            app.uninstall()
             helm = Helm(settings)
             helm.install_gluu()
 
@@ -1390,22 +1438,20 @@ def main():
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
+            time.sleep(30)
             app = App(settings)
             app.uninstall()
 
         elif args.subparser_name == "helm-install-gluu":
             settings = prompts.prompt_helm
-            app = App(settings)
-            app.uninstall()
             helm = Helm(settings)
+            helm.uninstall_gluu()
             helm.install_gluu(install_ingress=False)
 
         elif args.subparser_name == "helm-uninstall-gluu":
             settings = prompts.prompt_helm
             helm = Helm(settings)
             helm.uninstall_gluu()
-            app = App(settings)
-            app.uninstall()
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")
