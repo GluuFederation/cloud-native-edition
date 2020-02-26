@@ -3,36 +3,44 @@
 # opendj Environament Variables
 # common ConfigMap values
 gluuLdapInit: true
-gluuLdapInitHost: localhost
-gluuLdapInitPort: 1636
 gluuOxtrustConfigGeneration: true
-gluuCertAltName: opendj
+
+gluuLdapInitPort: 1636
+
+ldapServiceName: opendj
+
+ldapPass: P@assw0rd
+concurrencyPolicy: Forbid
+
 # gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
 gluuRedisEnabled: false
-gluuRedisCacheType: REDIS
+gluuLdapAutoReplicate: false
+
 gluuRedisUrl: redis:6379
+# options REDIS/NATIVE_PERSISTENCE
+gluuCacheType: NATIVE_PERSISTENCE
 gluuRedisType: STANDALONE
 
-gluuLdapInitRepl: false
+configAdapterName: kubernetes
+configSecretAdapter: kubernetes
+
 gluuOxtrustConfigGenerationRepl: false
 
 nameOverride: ""
 fullnameOverride: ""
 
-# StatefulSet
-# values declaration
-replicas: 1
-
+restartPolicy: Never
 image:
   repository: gluufederation/wrends
   tag: 4.1.0_dev
   pullPolicy: Always
-  
-persistence:
-  size: 5Gi
-  accessModes: ReadWriteOnce
-  type: DirectoryOrCreate
-  dbStorageSize: 5Gi
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
 
 #servicePorts values used in StatefulSet container
 ports:
@@ -48,21 +56,3 @@ ports:
   admin:
     port: 4444
     targetPort: 4444
-# VolumeMounts for StatefulSet
-# opendj-init vm
-volumeMounts:
-  config:
-    mountPath: /opt/opendj/config
-    name: opendj-volume
-  ldif: 
-    mountPath: /opt/opendj/ldif
-    name: opendj-volume
-  logs: 
-    mountPath: /opt/opendj/logs
-    name: opendj-volume
-  db: 
-    mountPath: /opt/opendj/db
-    name: opendj-volume
-  flag: 
-    mountPath: /flag
-    name: opendj-volume

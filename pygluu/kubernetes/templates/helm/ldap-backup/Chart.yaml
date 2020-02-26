@@ -1,0 +1,12 @@
+apiVersion: v2
+name: ldap-backup
+description: A backup strategy for LDAP
+type: application
+version: 1.0.0
+appVersion: 4.1.0
+maintainers:
+- name: GLUU
+email: support@gluu.org
+home: https://www.gluu.org/ee
+
+

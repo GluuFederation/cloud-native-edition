@@ -1,0 +1,6 @@
+apiVersion: v2
+name: couchbase-backup
+description: A backup strategy for Couchbase
+type: application
+version: 1.0.0
+appVersion: 4.1.0

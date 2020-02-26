@@ -1,0 +1,56 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: {{ include "ldap-backup.fullname" . }}
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              envFrom:
+                - configMapRef:
+                    name: {{ include "ldap-backup.fullname" . }}
+              ports:
+              {{- range $key, $value := .Values.ports }}
+                - containerPort: {{ $value.targetPort }}
+                  name: {{ $key }}
+              {{- end }}
+              env:
+                - name: LDAP_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gluu
+                      key: ldap_init_host
+                - name: LDAP_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gluu
+                      key: ldap_init_port
+                - name: LDAP_BIND_DN
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gluu
+                      key: ldap_site_binddn
+                - name: LDAP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "ldap-backup.name" . }}-auth
+                      key: password
+              #  while true; do sleep 60; ldaplog=$(cat /opt/opendj/logs/server.out); startedstr="The Directory Server has started successfully";  if [ -z "${ldaplog##*$startedstr*}" ]; then break; fi; echo "Waiting for opendj server to start"; done
+              command:
+              - /bin/sh
+              - -c
+              - |
+                /app/scripts/entrypoint.sh &
+                sleep 300
+                RANDOM_NUM=$(cat /dev/urandom | tr -cd '0-5' | head -c 1)
+                LDAP_BACKUP_FILE=backup-$RANDOM_NUM.ldif
+                /opt/opendj/bin/export-ldif --hostname "$LDAP_HOST" --port 4444 --bindDN "$LDAP_BIND_DN" --bindPassword "$LDAP_PASSWORD" --backendID userRoot --ldifFile /opt/opendj/ldif/$LDAP_BACKUP_FILE --trustAll
+          restartPolicy: {{ .Values.restartPolicy }}
