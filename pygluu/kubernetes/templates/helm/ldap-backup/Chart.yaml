@@ -1,6 +1,6 @@
 apiVersion: v2
 name: ldap-backup
-description: A Helm chart for Kubernetes
+description: A backup strategy for LDAP
 type: application
 version: 1.0.0
 appVersion: 4.1.0
