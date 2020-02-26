@@ -5,10 +5,8 @@
 gluuLdapInit: true
 gluuOxtrustConfigGeneration: true
 
-gluuLdapInitHost: localhost
 gluuLdapInitPort: 1636
 
-gluuCertAltName: opendj
 ldapServiceName: opendj
 
 ldapPass: P@assw0rd
@@ -18,7 +16,6 @@ concurrencyPolicy: Forbid
 gluuRedisEnabled: false
 gluuLdapAutoReplicate: false
 
-gluuRedisCacheType: REDIS
 gluuRedisUrl: redis:6379
 # options REDIS/NATIVE_PERSISTENCE
 gluuCacheType: NATIVE_PERSISTENCE
@@ -27,7 +24,6 @@ gluuRedisType: STANDALONE
 configAdapterName: kubernetes
 configSecretAdapter: kubernetes
 
-gluuLdapInitRepl: false
 gluuOxtrustConfigGenerationRepl: false
 
 nameOverride: ""
@@ -38,9 +34,6 @@ image:
   repository: gluufederation/wrends
   tag: 4.1.0_dev
   pullPolicy: Always
-
-nameOverride: ""
-fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
