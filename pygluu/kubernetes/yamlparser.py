@@ -13,7 +13,7 @@ import json
 import logging
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
-from collections import OrderedDict
+from collections import OrderedDict, Mapping
 
 
 def update_settings_json_file(settings):
@@ -109,5 +109,11 @@ class Parser(dict):
         except KeyError as e:
             logger.error(e)
 
-    def update(self, **kwargs):
-        super(Parser, self).update(**kwargs)
+    def update(self, other=None, **kwargs):
+        if other is not None:
+            for k, v in other.items() if isinstance(other, Mapping) else other:
+                self[k] = v
+        for k, v in kwargs.items():
+            self[k] = v
+        super(Parser, self).update(self)
+
