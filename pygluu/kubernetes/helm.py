@@ -35,9 +35,10 @@ def exec_cmd(cmd):
 
 class Helm(object):
     def __init__(self, settings):
-        self.values_file = Path("./helm/values.yaml")
+        self.values_file = Path("./helm/gluu/values.yaml").resolve()
         self.settings = settings
         self.kubernetes = Kubernetes()
+        self.ldap_backup_release_name = self.settings['GLUU_HELM_RELEASE_NAME'] + "-ldap-backup"
 
     def check_install_nginx_ingress(self, install_ingress=True):
         if install_ingress:
@@ -119,7 +120,7 @@ class Helm(object):
             self.settings["HOST_EXT_IP"] = ip
 
     def analyze_global_values(self):
-        values_file_parser = Parser("./helm/values.yaml", True)
+        values_file_parser = Parser(self.values_file, True)
         values_file_parser["global"]["cloud"]["enabled"] = False
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
             provisioner = "k8s.io/minikube-hostpath"
@@ -267,11 +268,24 @@ class Helm(object):
             couchbase_app.install()
         self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
-        exec_cmd("helm install {} -f ./helm/values.yaml ./helm --namespace={}".format(
-            self.settings['GLUU_HELM_RELEASE_NAME'], self.settings["GLUU_NAMESPACE"]))
+        exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
+            self.settings['GLUU_HELM_RELEASE_NAME'], self.values_file, self.settings["GLUU_NAMESPACE"]))
+
+        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
+                self.settings["PERSISTENCE_BACKEND"] == "ldap":
+            values_file = Path("./helm/ldap-backup/values.yaml").resolve()
+            values_file_parser = Parser(values_file, True)
+            values_file_parser["ldapPass"] = self.settings["LDAP_PW"]
+            values_file_parser.dump_it()
+
+
+            exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
+                self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
+                                                                            self.settings["GLUU_NAMESPACE"]))
+        exec_cmd("helm delete {} --namespace={}".format(self.ldap_backup_release_name,
                                                                             self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_nginx_ingress(self):
