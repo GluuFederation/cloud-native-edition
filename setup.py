@@ -41,6 +41,7 @@ setup(
     install_requires=[
         "kubernetes>=11.0.0b2",
         "ruamel.yaml>=0.16.5",
+        "pyOpenSSL>=19.1.0",
     ],
     classifiers=[
         "Intended Audience :: Developers",
