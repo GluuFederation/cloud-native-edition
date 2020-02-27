@@ -691,6 +691,10 @@ class App(object):
             oxd_server_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             oxd_server_cm_parser.dump_it()
 
+            oxd_server_service_parser = Parser(self.oxd_server_yaml, "Service")
+            oxd_server_service_parser["metadata"]["name"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
+            oxd_server_service_parser.dump_it()
+
             self.adjust_yamls_for_fqdn_status[self.oxd_server_yaml] = "Deployment"
 
     def kustomize_casa(self):
@@ -707,6 +711,7 @@ class App(object):
             casa_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
             casa_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             casa_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+            casa_cm_parser["data"]["GLUU_OXD_SERVER_URL"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"] + ":8443"
 
             casa_cm_parser.dump_it()
 

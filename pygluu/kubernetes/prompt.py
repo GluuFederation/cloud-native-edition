@@ -844,14 +844,14 @@ class Prompt(object):
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:
-                prompt = input("oxd server application keystore name [oxd_server]?")
+                prompt = input("oxd server application keystore name [oxd-server]?")
                 if not prompt:
-                    prompt = "oxd_server"
+                    prompt = "oxd-server"
                 self.settings["OXD_APPLICATION_KEYSTORE_CN"] = prompt
             if not self.settings["OXD_ADMIN_KEYSTORE_CN"]:
-                prompt = input("oxd server admin keystore name [oxd_server]?")
+                prompt = input("oxd server admin keystore name [oxd-server]?")
                 if not prompt:
-                    prompt = "oxd_server"
+                    prompt = "oxd-server"
                 self.settings["OXD_ADMIN_KEYSTORE_CN"] = prompt
             if not self.settings["OXD_SERVER_PW"]:
                 self.settings["OXD_SERVER_PW"] = self.prompt_password("OXD-server")
