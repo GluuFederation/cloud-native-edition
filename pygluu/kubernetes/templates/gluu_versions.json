@@ -41,7 +41,7 @@
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
     "OXAUTH_IMAGE_TAG": "4.0.1_07",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
-    "OXD_IMAGE_TAG": "4.0.0_dev",
+    "OXD_IMAGE_TAG": "4.0.0_02",
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
     "OXPASSPORT_IMAGE_TAG": "4.0.1_03",
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
