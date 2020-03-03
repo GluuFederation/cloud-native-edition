@@ -17,7 +17,7 @@ import socket
 import subprocess
 import base64
 import sys
-import OpenSSL
+from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 from .prompt import Prompt
@@ -42,34 +42,6 @@ static_gke_folder = Path("./ldap/overlays/gke/static-pd/")
 local_azure_folder = Path("./ldap/overlays/azure/local-storage/")
 dynamic_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
 static_azure_folder = Path("./ldap/overlays/azure/static-dn/")
-
-
-def check_cert_with_private_key(cert, private_key):
-    """
-    :type cert: str
-    :type private_key: str
-    :rtype: bool
-    """
-    try:
-        private_key_obj = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key)
-    except OpenSSL.crypto.Error:
-        raise logger.exception("Private ley is not correct: {}".format(private_key))
-
-    try:
-        cert_obj = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-    except OpenSSL.crypto.Error:
-        raise logger.exception("Certificate is not correct: {}".format(cert))
-
-    context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
-    context.use_privatekey(private_key_obj)
-    context.use_certificate(cert_obj)
-    try:
-        context.check_privatekey()
-        logger.info("Private key matches certificate")
-        return True
-    except OpenSSL.SSL.Error:
-        logger.error("Private key does not match certificate")
-        return False
 
 
 def subprocess_cmd(command):
@@ -499,6 +471,9 @@ class App(object):
             ldap_statefulset_parser = Parser(self.ldap_yaml, "StatefulSet")
             ldap_statefulset_parser["spec"]["volumeClaimTemplates"][0]["spec"]["resources"]["requests"]["storage"] \
                 = self.settings["LDAP_STORAGE_SIZE"]
+            # Remove resource limits on local installations
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del ldap_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
             ldap_statefulset_parser.dump_it()
 
             if self.settings["LDAP_VOLUME_TYPE"] != 7 and self.settings["LDAP_VOLUME_TYPE"] != 12 and \
@@ -554,6 +529,12 @@ class App(object):
         oxauth_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
         oxauth_cm_parser.dump_it()
 
+        # Remove resource limits on local installations
+        oxauth_deployment_parser = Parser(self.oxauth_yaml, "Deployment")
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            del oxauth_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+        oxauth_deployment_parser.dump_it()
+
         self.adjust_yamls_for_fqdn_status[self.oxauth_yaml] = "Deployment"
 
     def kustomize_gluu_upgrade(self):
@@ -594,8 +575,13 @@ class App(object):
 
         self.adjust_yamls_for_fqdn_status[self.oxtrust_yaml] = "StatefulSet"
 
+        # Remove resource limits on local installations
+        oxtrust_statefulset_parser = Parser(self.oxtrust_yaml, "StatefulSet")
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            del oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+
         if self.settings["ENABLE_OXSHIBBOLETH"] != "Y" or self.settings["ENABLE_OXSHIBBOLETH"] != "y":
-            oxtrust_statefulset_parser = Parser(self.oxtrust_yaml, "StatefulSet")
+
             volume_mount_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
             volume_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["volumes"]
             shared_shib_vm_index = next(
@@ -604,7 +590,7 @@ class App(object):
                 (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "shared-shib"), None)
             del volume_mount_list[shared_shib_vm_index]
             del volume_list[shared_shib_v_index]
-            oxtrust_statefulset_parser.dump_it()
+        oxtrust_statefulset_parser.dump_it()
 
     def kustomize_oxshibboleth(self):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
@@ -622,6 +608,11 @@ class App(object):
             oxshibboleth_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.oxshibboleth_yaml] = "StatefulSet"
+            # Remove resource limits on local installations
+            oxshibboleth_statefulset_parser = Parser(self.oxshibboleth_yaml, "StatefulSet")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del oxshibboleth_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            oxshibboleth_statefulset_parser.dump_it()
 
     def kustomize_oxpassport(self):
         if self.settings["ENABLE_OXPASSPORT"] == "Y":
@@ -639,6 +630,11 @@ class App(object):
             oxpassport_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.oxpassport_yaml] = "Deployment"
+            # Remove resource limits on local installations
+            oxpassport_deployment_parser = Parser(self.oxpassport_yaml, "Deployment")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del oxpassport_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            oxpassport_deployment_parser.dump_it()
 
     def kustomize_key_rotation(self):
         if self.settings["ENABLE_KEY_ROTATE"] == "Y":
@@ -655,6 +651,11 @@ class App(object):
             key_rotate_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.key_rotate_yaml] = "Deployment"
+            # Remove resource limits on local installations
+            key_rotation_deployment_parser = Parser(self.oxpassport_yaml, "Deployment")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del key_rotation_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            key_rotation_deployment_parser.dump_it()
 
     def kustomize_cr_rotate(self):
         if self.settings["ENABLE_CACHE_REFRESH"] == "Y":
@@ -671,6 +672,11 @@ class App(object):
             cr_rotate_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.cr_rotate_yaml] = "DaemonSet"
+            # Remove resource limits on local installations
+            cr_rotate_daemonset_parser = Parser(self.cr_rotate_yaml, "DaemonSet")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del cr_rotate_daemonset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            cr_rotate_daemonset_parser.dump_it()
 
     def kustomize_oxd_server(self):
         if self.settings["ENABLE_OXD"] == "Y":
@@ -694,6 +700,11 @@ class App(object):
             oxd_server_service_parser = Parser(self.oxd_server_yaml, "Service")
             oxd_server_service_parser["metadata"]["name"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
             oxd_server_service_parser.dump_it()
+            # Remove resource limits on local installations
+            oxd_server_deployment_parser = Parser(self.oxd_server_yaml, "Deployment")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del oxd_server_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            oxd_server_deployment_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.oxd_server_yaml] = "Deployment"
 
@@ -716,6 +727,11 @@ class App(object):
             casa_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.casa_yaml] = "Deployment"
+            # Remove resource limits on local installations
+            casa_server_deployment_parser = Parser(self.casa_yaml, "Deployment")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del casa_server_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            casa_server_deployment_parser.dump_it()
 
     def kustomize_radius(self):
         if self.settings["ENABLE_RADIUS"] == "Y":
@@ -734,6 +750,11 @@ class App(object):
             radius_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.radius_yaml] = "Deployment"
+            # Remove resource limits on local installations
+            radius_server_deployment_parser = Parser(self.radius_yaml, "Deployment")
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                del radius_server_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            radius_server_deployment_parser.dump_it()
 
     def kustomize_redis(self):
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":

@@ -67,6 +67,7 @@ class Prompt(object):
                                 COUCHBASE_USER="",
                                 COUCHBASE_PASSWORD="",
                                 COUCHBASE_CRT="",
+                                COUCHBASE_CN="",
                                 COUCHBASE_SUBJECT_ALT_NAME="",
                                 COUCHBASE_CLUSTER_FILE_OVERRIDE="",
                                 COUCHBASE_USE_LOW_RESOURCES="",
@@ -211,7 +212,7 @@ class Prompt(object):
 
     def confirm_params(self):
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
-                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW"]
+                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "COUCHBASE_SUBJECT_ALT_NAME"]
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
             if k not in hidden_settings:
@@ -731,11 +732,21 @@ class Prompt(object):
         if not self.settings["COUCHBASE_PASSWORD"]:
             self.settings["COUCHBASE_PASSWORD"] = self.prompt_password("Couchbase")
 
-        if not self.settings['COUCHBASE_SUBJECT_ALT_NAME']:
-            self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = "DNS:*.{}.{}.svc,DNS:*.{}.svc,DNS:*.{}.{}" \
-                .format(self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"],
-                        self.settings["COUCHBASE_NAMESPACE"], self.settings["COUCHBASE_CLUSTER_NAME"],
-                        self.settings["COUCHBASE_FQDN"])
+        custom_cb_ca_crt = Path("./ca.crt")
+        custom_cb_crt = Path("./chain.pem")
+        custom_cb_key = Path("./pkey.key")
+        if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+            if not self.settings['COUCHBASE_SUBJECT_ALT_NAME']:
+                self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = ["*.{}.{}.svc".format(
+                    self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
+                                                              "*.{}.svc".format(self.settings["COUCHBASE_NAMESPACE"]),
+                                                              "*.{}.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                                                               self.settings["COUCHBASE_FQDN"])]
+            if not self.settings["COUCHBASE_CN"]:
+                prompt = input("Enter Couchbase certificate common name.[Couchbase CA]")
+                if not prompt:
+                    prompt = "Couchbase CA"
+                self.settings["COUCHBASE_CN"] = prompt
         update_settings_json_file(self.settings)
         return self.settings
 

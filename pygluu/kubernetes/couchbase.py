@@ -11,8 +11,7 @@ import shutil
 import tarfile
 from .kubeapi import Kubernetes
 from .yamlparser import Parser, get_logger, update_settings_json_file
-import urllib.request
-from zipfile import ZipFile
+from .pycert import check_cert_with_private_key, setup_crts
 import subprocess
 import sys
 import base64
@@ -66,7 +65,6 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
         server_spec.append(spec)
 
     return server_spec
-
 
 class Couchbase(object):
     def __init__(self, settings):
@@ -420,24 +418,20 @@ class Couchbase(object):
             storage_class_file_parser.dump_it()
 
         logger.info("Installing Couchbase...")
+        custom_cb_ca_crt = Path("./ca.crt")
+        custom_cb_crt = Path("./chain.pem")
+        custom_cb_key = Path("./pkey.key")
+        if not custom_cb_ca_crt.exists() and not custom_cb_crt.exists() and not custom_cb_key.exists():
+            setup_crts(self.settings["COUCHBASE_CN"], "couchbase-server", self.settings["COUCHBASE_SUBJECT_ALT_NAME"])
         self.kubernetes.create_namespace(name=cb_namespace)
-        logger.info("Downloading easyrsa...")
-        urllib.request.urlretrieve('https://github.com/OpenVPN/easy-rsa/archive/master.zip', 'easyrsa.zip')
-        logger.info("Extracting easyrsa.zip...")
-        with ZipFile(Path("easyrsa.zip"), 'r') as zip_ref:
-            zip_ref.extractall()
-        easyrsa3 = "easy-rsa-master/easyrsa3"
-        chain_pem_filepath = Path(easyrsa3).joinpath("chain.pem")
-        pkey_filepath = Path(easyrsa3).joinpath("pkey.key")
-        tls_cert_filepath = Path(easyrsa3).joinpath("tls-cert-file")
-        tls_private_key_filepath = Path(easyrsa3).joinpath("tls-private-key-file")
-        ca_cert_filepath = Path("./pki/ca.crt")
-        subprocess.check_call("chmod +x easyrsa.sh", shell=True)
-        subprocess.check_call("./easyrsa.sh install {}".format(self.settings['COUCHBASE_SUBJECT_ALT_NAME']), shell=True)
-        shutil.copyfile(Path('pki/issued/couchbase-server.crt'), chain_pem_filepath)
+        chain_pem_filepath = Path("chain.pem")
+        pkey_filepath = Path("pkey.key")
+        tls_cert_filepath = Path("tls-cert-file")
+        tls_private_key_filepath = Path("tls-private-key-file")
+        ca_cert_filepath = Path("ca.crt")
+        shutil.copyfile(ca_cert_filepath, Path("./couchbase.crt"))
         shutil.copyfile(chain_pem_filepath, tls_cert_filepath)
         shutil.copyfile(pkey_filepath, tls_private_key_filepath)
-        shutil.copyfile(ca_cert_filepath, Path("./couchbase.crt"))
         with open(tls_cert_filepath) as content_file:
             tls_crt_content = content_file.read()
             encoded_tls_crt_bytes = base64.b64encode(tls_crt_content.encode("utf-8"))
@@ -568,6 +562,4 @@ class Couchbase(object):
         self.kubernetes.delete_secret("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_secret("couchbase-operator-tls", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_namespace(self.settings["COUCHBASE_NAMESPACE"])
-        shutil.rmtree(Path("./easy-rsa-master"), ignore_errors=True)
-        shutil.rmtree(Path("./pki"), ignore_errors=True)
         shutil.rmtree(Path("./couchbase-source-folder"), ignore_errors=True)
