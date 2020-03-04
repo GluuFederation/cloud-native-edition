@@ -649,7 +649,7 @@ class App(object):
 
             self.adjust_yamls_for_fqdn_status[self.key_rotate_yaml] = "Deployment"
             # Remove resource limits on local installations
-            key_rotation_deployment_parser = Parser(self.oxpassport_yaml, "Deployment")
+            key_rotation_deployment_parser = Parser(self.key_rotate_yaml, "Deployment")
             if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
                 del key_rotation_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
             key_rotation_deployment_parser.dump_it()
