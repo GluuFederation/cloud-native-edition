@@ -1,4 +1,4 @@
-name: pygluu kubernetes
+name: microk8s
 # This builds, packages and tests pygluu-kubernetes
 on: [push]
 jobs:
