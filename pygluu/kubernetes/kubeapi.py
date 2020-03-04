@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
  License terms and conditions:
  https://www.gluu.org/license/enterprise-edition/
