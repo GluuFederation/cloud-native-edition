@@ -577,7 +577,7 @@ class App(object):
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             del oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
 
-        if self.settings["ENABLE_OXSHIBBOLETH"] != "Y" or self.settings["ENABLE_OXSHIBBOLETH"] != "y":
+        if self.settings["ENABLE_OXSHIBBOLETH"] != "Y":
 
             volume_mount_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
             volume_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["volumes"]

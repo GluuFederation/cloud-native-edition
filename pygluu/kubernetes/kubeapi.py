@@ -785,9 +785,12 @@ class Kubernetes(object):
     def read_namespaced_pod_status(self, name, namespace="default"):
         """Read pod status with name in namespace"""
 
+        starting_time = time.time()
         try:
             finished_prep_boolean = False
             while not finished_prep_boolean:
+                end_time = time.time()
+                running_time = end_time - starting_time
                 time.sleep(5)
                 response = self.core_cli.read_namespaced_pod_status(name=name, namespace=namespace)
                 all_statuses = response.status.conditions
@@ -806,7 +809,9 @@ class Kubernetes(object):
                                 break
                 except TypeError:
                     logger.warning("Pod might not exist or was evicted.")
-
+                if running_time > 300:
+                    logger.exception(response)
+                    return False
                 logger.info("Waiting for pod {} to get ready".format(name))
         except client.rest.ApiException as e:
             logger.exception(e)

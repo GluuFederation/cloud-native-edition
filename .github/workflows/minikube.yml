@@ -1,4 +1,4 @@
-name: microk8s
+name: minikube
 # This builds, packages and tests pygluu-kubernetes
 on: [push]
 jobs:
@@ -44,10 +44,20 @@ jobs:
         cd /home/runner/work/test/
         sudo make zipapp
 
+    - name: Install Minikube
+      uses: manusa/actions-setup-minikube@v1.0.0
+      with:
+        minikube version: 'v1.7.3'
+        kubernetes version: 'v1.17.0'   
+
+
     - name: Test 1 settings(LDAP)
       id: test1_settings
       run: |
-        ip=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+        sudo chmod -R 777 /etc/kubernetes
+        minikube addons enable ingress
+        ip=$(minikube ip)
+        kubectl describe nodes
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
@@ -68,7 +78,7 @@ jobs:
           "USE_ARN": "",
           "ARN_AWS_IAM": "",
           "LB_ADD": "",
-          "DEPLOYMENT_ARCH": "microk8s",
+          "DEPLOYMENT_ARCH": "minikube",
           "PERSISTENCE_BACKEND": "ldap",
           "INSTALL_COUCHBASE": "",
           "COUCHBASE_NAMESPACE": "",
@@ -99,7 +109,7 @@ jobs:
           "DEPLOY_MULTI_CLUSTER": "",
           "HYBRID_LDAP_HELD_DATA": "",
           "LDAP_VOLUME": "",
-          "LDAP_VOLUME_TYPE": 1,
+          "LDAP_VOLUME_TYPE": 2,
           "LDAP_STATIC_VOLUME_ID": "",
           "LDAP_STATIC_DISK_URI": "",
           "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE": "",
@@ -154,16 +164,10 @@ jobs:
         }
         EOF
 
-
-    - name: Install microk8s
-      run: |
-        sudo snap install microk8s --classic
-        sudo microk8s.status --wait-ready
-        sudo microk8s.enable dns registry ingress
-
     - name: Test Pygluu kubernetes
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz install
           cat /home/runner/work/test/settings.json
+          kubectl get po -n gluu
