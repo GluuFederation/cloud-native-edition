@@ -9,6 +9,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7]
+        gluu-version: ['"4.0"', '"4.1"']
 
     steps:
     - name: Checkout code
@@ -24,7 +25,7 @@ jobs:
         sudo python3 -m pip install --upgrade pip
         sudo pip3 install setuptools --upgrade
         sudo pip3 install pyOpenSSL --upgrade
-        
+
     - name: Lint with flake8
       run: |
         sudo pip3 install flake8
@@ -50,7 +51,7 @@ jobs:
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
-          "GLUU_VERSION": "4.1",
+          "GLUU_VERSION": ${{ matrix.gluu-version }},
           "GLUU_UPGRADE_TARGET_VERSION": "",
           "GLUU_HELM_RELEASE_NAME": "",
           "NGINX_INGRESS_RELEASE_NAME": "",
@@ -149,44 +150,20 @@ jobs:
           "ENABLE_CASA_BOOLEAN": "true",
           "ENABLE_SAML_BOOLEAN": "true",
           "EDIT_IMAGE_NAMES_TAGS": "N",
-          "CASA_IMAGE_NAME": "gluufederation/casa",
-          "CASA_IMAGE_TAG": "4.2.0_dev",
-          "CONFIG_IMAGE_NAME": "gluufederation/config-init",
-          "CONFIG_IMAGE_TAG": "4.1.0_dev",
-          "CACHE_REFRESH_ROTATE_IMAGE_NAME": "gluufederation/cr-rotate",
-          "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.1.0_dev",
-          "KEY_ROTATE_IMAGE_NAME": "gluufederation/key-rotation",
-          "KEY_ROTATE_IMAGE_TAG": "4.1.0_dev",
-          "LDAP_IMAGE_NAME": "gluufederation/wrends",
-          "LDAP_IMAGE_TAG": "4.1.0_dev",
-          "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
-          "OXAUTH_IMAGE_TAG": "4.1.0_dev",
-          "OXD_IMAGE_NAME": "gluufederation/oxd-server",
-          "OXD_IMAGE_TAG": "4.1.0_dev",
-          "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
-          "OXPASSPORT_IMAGE_TAG": "4.1.0_dev",
-          "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
-          "OXSHIBBOLETH_IMAGE_TAG": "4.1.0_dev",
-          "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
-          "OXTRUST_IMAGE_TAG": "4.1.0_dev",
-          "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-          "PERSISTENCE_IMAGE_TAG": "4.1.0_dev",
-          "RADIUS_IMAGE_NAME": "gluufederation/radius",
-          "RADIUS_IMAGE_TAG": "4.1.0_dev",
-          "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-          "UPGRADE_IMAGE_TAG": "4.1.0_dev",
           "CONFIRM_PARAMS": "Y"
         }
         EOF
-        
+
+
     - name: Install microk8s
       run: |
         sudo snap install microk8s --classic
         sudo microk8s.status --wait-ready
         sudo microk8s.enable dns registry ingress
-        
+
     - name: Test Pygluu kubernetes
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz install
+          cat /home/runner/work/test/settings.json
