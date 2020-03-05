@@ -15,7 +15,7 @@ spec:
       containers:
       - name: oxpassport
         imagePullPolicy: Always
-        image: gluufederation/oxpassport:4.0.1_02
+        image: gluufederation/oxpassport:4.1.0_01
         resources:
           requests:
             memory: "500Mi"

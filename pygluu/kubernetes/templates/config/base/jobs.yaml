@@ -14,7 +14,7 @@ spec:
             name: config-generate-params
       containers:
         - name: config-init-load
-          image: gluufederation/config-init:4.0.0
+          image: gluufederation/config-init:4.1.0_01
           volumeMounts:
             - mountPath: /opt/config-init/db/generate.json
               name: config-generate-params

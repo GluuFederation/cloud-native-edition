@@ -26,7 +26,7 @@ spec:
       containers:
       - name: opendj
         imagePullPolicy: Always
-        image: gluufederation/wrends:4.0.0
+        image: gluufederation/wrends:4.1.0_01
         envFrom:
         - configMapRef:
             name: opendj-cm

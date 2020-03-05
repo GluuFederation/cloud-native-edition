@@ -14,7 +14,7 @@ spec:
       containers:
       - name: key-rotation
         imagePullPolicy: Always
-        image: gluufederation/key-rotation:4.0.0
+        image: gluufederation/key-rotation:4.1.0_01
         envFrom:
         - configMapRef:
             name: key-rotation-cm

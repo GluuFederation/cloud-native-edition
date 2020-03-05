@@ -20,7 +20,7 @@ volumeClaim:
 
 image:
   repository: gluufederation/config-init
-  tag: 4.1.0_dev
+  tag: 4.1.0_01
 
 persistence:
   size: 1Gi

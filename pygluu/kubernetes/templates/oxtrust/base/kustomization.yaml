@@ -9,7 +9,7 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/oxtrust
-    newTag: 4.0.1_06
+    newTag: 4.1.0_01
 configMapGenerator:
   - name: oxtrust-cm
     literals:

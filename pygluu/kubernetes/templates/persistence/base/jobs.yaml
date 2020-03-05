@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: persistence-load-job
-          image: gluufederation/persistence:4.0.0
+          image: gluufederation/persistence:4.1.0_01
           envFrom:
           - configMapRef:
               name: persistence-cm

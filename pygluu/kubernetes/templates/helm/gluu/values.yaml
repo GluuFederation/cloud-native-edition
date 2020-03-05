@@ -148,18 +148,18 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
 
 cr-rotate:
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 key-rotation:
   image:
     repository: gluufederation/key-rotation
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 nfs:
@@ -177,14 +177,14 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 # persistence layer
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false
@@ -198,7 +198,7 @@ persistence:
 oxauth:
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 oxd-server:
@@ -211,7 +211,7 @@ oxd-server:
 
   image:
     repository: gluufederation/oxd-server
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
   resources: {}
@@ -240,7 +240,7 @@ nginx:
 oxpassport:
   image:
     repository: gluufederation/oxpassport
-    tag: 4.0.1_dev
+    tag: 4.0.1_01
     pullPolicy: Always
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -254,19 +254,19 @@ oxpassport:
 oxshibboleth:
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 oxtrust:
   image:
     repository: gluufederation/oxtrust
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 radius:
   image:
     repository: gluufederation/radius
-    tag: 4.1.0_dev
+    tag: 4.1.0_01
     pullPolicy: Always
 
 redis:

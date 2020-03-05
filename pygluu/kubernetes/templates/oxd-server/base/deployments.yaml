@@ -14,7 +14,7 @@ spec:
       containers:
       - name: oxd-server
         imagePullPolicy: Always
-        image: gluufederation/oxd-server:4.0.1_02
+        image: gluufederation/oxd-server:4.1.0_01
         command:
           - /bin/sh
           - -c

@@ -9,7 +9,7 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/oxd-server
-    newTag: 4.0.0_01
+    newTag: 4.1.0_01
 configMapGenerator:
   - name: oxd-server-cm
     literals:
