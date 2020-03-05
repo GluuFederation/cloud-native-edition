@@ -6,8 +6,8 @@ home: https://www.gluu.org/ee
 maintainers:
 - name: Gluu
 email: support@gluu.org
-description: A Helm chart for Gluu server
-name: gluu-server-helm
+description: A Helm chart for Gluu IDP
+name: gluu
 version: 1.0.0
 dependencies:
     - name: config
