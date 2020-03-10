@@ -20,6 +20,9 @@ from .couchbase import Couchbase
 from .prompt import Prompt
 from .yamlparser import Parser, get_logger
 from .helm import Helm
+# TODO: Remove the following as soon as the update secret is moved to backend
+from .updatesecrets import modify_secret
+# End of section to be removed. TODO
 
 logger = get_logger("gluu-create        ")
 
@@ -399,9 +402,10 @@ class App(object):
             command = self.kubectl + " kustomize shared-shib/localstorage > " + self.shared_shib_yaml
             subprocess_cmd(command)
 
-        shared_shib_pv_parser = Parser(self.shared_shib_yaml, "PersistentVolume", "shared-shib-pv")
-        shared_shib_pv_parser["spec"]["capacity"]["storage"] = self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
-        shared_shib_pv_parser.dump_it()
+        if self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] != "efs":
+            shared_shib_pv_parser = Parser(self.shared_shib_yaml, "PersistentVolume", "shared-shib-pv")
+            shared_shib_pv_parser["spec"]["capacity"]["storage"] = self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
+            shared_shib_pv_parser.dump_it()
 
         shared_shib_pvc_parser = Parser(self.shared_shib_yaml, "PersistentVolumeClaim", "shared-shib-pvc")
         shared_shib_pvc_parser["spec"]["resources"]["requests"]["storage"] = self.settings[
@@ -1391,7 +1395,9 @@ def create_parser():
                                                     "This assumes nginx-ingress is installed")
     subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Enterprise Edition using helm. "
                                                       "This only uninstalls Gluu")
-
+    # TODO: Remove the following as soon as the update secret is moved to backend
+    subparsers.add_parser("update-secret", help="Update Gluu secret. Often used to update certificates and keys. ")
+    # End of section to be removed. TODO
     return parser
 
 
@@ -1402,7 +1408,11 @@ def main():
     if not args.subparser_name:
         parser.print_help()
         return
-
+    # TODO: Remove the following as soon as the update secret is moved to backend
+    if args.subparser_name == "update-secret":
+        modify_secret()
+        return
+    # End of section to be removed. TODO
     copy_templates()
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
