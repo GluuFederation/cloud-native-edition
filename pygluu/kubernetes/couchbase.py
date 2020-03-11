@@ -526,12 +526,12 @@ class Couchbase(object):
         self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
                                                         namespace=cb_namespace)
 
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled")
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_data=enabled")
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_eventing=enabled")
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_index=enabled")
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled")
-        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled")
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled", 700)
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_data=enabled", 700)
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_eventing=enabled", 700)
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_index=enabled", 700)
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled", 700)
+        self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled", 700)
         # Setup couchbase backups
         self.setup_backup_couchbase()
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)

@@ -782,7 +782,7 @@ class Kubernetes(object):
             except client.rest.ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
-    def read_namespaced_pod_status(self, name, namespace="default"):
+    def read_namespaced_pod_status(self, name, namespace="default", timeout=300):
         """Read pod status with name in namespace"""
 
         starting_time = time.time()
@@ -809,7 +809,7 @@ class Kubernetes(object):
                                 break
                 except TypeError:
                     logger.warning("Pod might not exist or was evicted.")
-                if running_time > 300:
+                if running_time > timeout:
                     logger.exception(response)
                     return False
                 logger.info("Waiting for pod {} to get ready".format(name))
