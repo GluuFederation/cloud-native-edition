@@ -1255,6 +1255,11 @@ class App(object):
         gluu_config_maps_names = ["casacm", "updatelbip", "gluu"]
         nginx_config_maps_names = ["nginx-configuration", "tcp-services", "udp-services"]
         gluu_cluster_role_bindings_name = "cluster-admin-binding"
+        efs_cluster_role_bindings_name = "run-efs-provisioner"
+        efs_role_binding_name = "leader-locking-efs-provisioner"
+        efs_cluster_role_name = "efs-provisioner-runner"
+        efs_role_name = "leader-locking-efs-provisioner"
+        efs_service_account_name = "efs-provisioner"
         nginx_roles_name = "nginx-ingress-role"
         nginx_cluster_role_name = "nginx-ingress-clusterrole"
         nginx_role_bindings_name = "nginx-ingress-role-nisa-binding"
@@ -1308,6 +1313,13 @@ class App(object):
             self.kubernetes.delete_storage_class(storage_class)
 
         if not restore:
+            # delete EFS
+            self.kubernetes.delete_role(efs_role_name, self.settings["GLUU_NAMESPACE"])
+            self.kubernetes.delete_role_binding(efs_role_binding_name, self.settings["GLUU_NAMESPACE"])
+            self.kubernetes.delete_cluster_role(efs_cluster_role_name)
+            self.kubernetes.delete_cluster_role_binding(efs_cluster_role_bindings_name)
+            self.kubernetes.delete_service_account(efs_service_account_name, self.settings["GLUU_NAMESPACE"])
+
             self.kubernetes.delete_role("gluu-role", self.settings["GLUU_NAMESPACE"])
             self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings["GLUU_NAMESPACE"])
             self.kubernetes.delete_role(nginx_roles_name, "ingress-nginx")
