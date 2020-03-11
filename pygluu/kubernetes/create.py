@@ -961,10 +961,10 @@ class App(object):
             #    env["value"] = self.settings["EFS_DNS"]
 
         efs_deploy_parser["spec"]["template"]["spec"]["volumes"][0]["nfs"]["server"] = self.settings["EFS_DNS"]
+        efs_deploy_parser.dump_it()
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner")
-        efs_deploy_parser.dump_it()
 
     def deploy_shared_shib(self):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
