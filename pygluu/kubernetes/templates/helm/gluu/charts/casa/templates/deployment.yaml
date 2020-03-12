@@ -20,6 +20,10 @@ spec:
         APP_NAME: casa
         app: {{ include "casa.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- if .Values.global.istio.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -42,9 +46,8 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef: 
                 name: {{ include "casa.fullname" . }}
@@ -59,14 +62,14 @@ spec:
           {{- end }}
           livenessProbe:
             httpGet:
-              path: /casa/health-check
-              port: http
+              path: /casa
+              port: http-casa
             initialDelaySeconds: 25
             periodSeconds: 25
           readinessProbe:
             httpGet:
-              path: /casa/health-check
-              port: http
+              path: /casa
+              port: http-casa
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:

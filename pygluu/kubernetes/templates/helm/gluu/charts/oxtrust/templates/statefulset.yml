@@ -19,6 +19,10 @@ spec:
       labels: 
         app: {{ include "oxtrust.name" . }}
         APP_NAME: oxtrust
+      {{- if .Values.global.istio.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ include "oxtrust.name" . }}

@@ -20,8 +20,4 @@ limits:
   memory: 128Mi
 requests:
   memory: 300Mi
-
-#containerPOrt ot connect the container with
-containerPort: 8080
-
     

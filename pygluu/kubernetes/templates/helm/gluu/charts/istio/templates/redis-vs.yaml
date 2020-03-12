@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-redis
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - redis.{{ .Release.Namespace }}.svc.cluster.local
+  gateways:
+  - {{ .Release.Name }}-global-gtw 
+  http:
+    - route:
+      - destination: 
+          host: redis.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 6379

@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-opendj
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - opendj.{{ .Release.Namespace }}.svc.cluster.local
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+    - route:
+      - destination:
+          host: opendj.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 1636
+    - route:
+      - destination:
+          host: opendj.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 1389
+    - route:
+      - destination:
+          host: opendj.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 4444
+            protocol: TCP
+    - route:
+      - destination:
+          host: opendj.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 8989

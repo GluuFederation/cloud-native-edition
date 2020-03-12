@@ -10,7 +10,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  port: 8080
+  port: 8084
 
 configMap:
   gluuContainerMetadata: kubernetes
