@@ -91,9 +91,10 @@ def copy_templates():
 
 
 class App(object):
-    def __init__(self, settings):
+    def __init__(self, settings, timeout=300):
         self.kubernetes = Kubernetes()
         self.settings = settings
+        self.timeout = timeout
         if self.settings["DEPLOYMENT_ARCH"] != "microk8s":
             for port in [80, 443]:
                 port_available = check_port("0.0.0.0", port)
@@ -892,32 +893,32 @@ class App(object):
     def deploy_redis(self):
         self.kubernetes.create_objects_from_dict(self.redis_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis", self.timeout)
 
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=config-init-load")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=config-init-load", self.timeout)
 
     def deploy_ldap(self):
         self.kubernetes.create_objects_from_dict(self.ldap_yaml)
         logger.info("Deploying LDAP.Please wait..")
         time.sleep(10)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj", self.timeout)
 
     def deploy_persistence(self):
         self.kubernetes.create_objects_from_dict(self.persistence_yaml)
         logger.info("Trying to import ldifs...")
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=persistence-load")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=persistence-load", self.timeout)
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             self.kubernetes.patch_namespaced_stateful_set_scale(name="opendj",
                                                                 replicas=self.settings["LDAP_REPLICAS"],
                                                                 namespace=self.settings["GLUU_NAMESPACE"])
             if not self.settings["AWS_LB_TYPE"] == "alb":
-                self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj")
+                self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj", self.timeout)
 
     def deploy_nfs(self):
         nfs_service_yaml = "./shared-shib/nfs/services.yaml"
@@ -939,7 +940,8 @@ class App(object):
 
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server")
+            # Timeout cannot be zero to execute commands in pod
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server", 300)
 
         exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
 
@@ -964,7 +966,7 @@ class App(object):
         efs_deploy_parser.dump_it()
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner", self.timeout)
 
     def deploy_shared_shib(self):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
@@ -982,14 +984,14 @@ class App(object):
     def deploy_oxauth(self):
         self.kubernetes.create_objects_from_dict(self.oxauth_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxauth")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxauth", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="oxauth", replicas=self.settings["OXAUTH_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxd(self):
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="oxd-server",
                                                           replicas=self.settings["OXD_SERVER_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
@@ -997,20 +999,20 @@ class App(object):
     def deploy_casa(self):
         self.kubernetes.create_objects_from_dict(self.casa_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=casa")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=casa", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="casa", replicas=self.settings["CASA_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxtrust(self):
         self.kubernetes.create_objects_from_dict(self.oxtrust_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxtrust")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxtrust", self.timeout)
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxtrust", replicas=self.settings["OXTRUST_REPLICAS"],
                                                             namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxshibboleth(self):
         self.kubernetes.create_objects_from_dict(self.oxshibboleth_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxshibboleth", self.timeout)
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxshibboleth",
                                                             replicas=self.settings["OXSHIBBOLETH_REPLICAS"],
                                                             namespace=self.settings["GLUU_NAMESPACE"])
@@ -1018,19 +1020,19 @@ class App(object):
     def deploy_oxpassport(self):
         self.kubernetes.create_objects_from_dict(self.oxpassport_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxpassport")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxpassport", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="oxpassport",
                                                           replicas=self.settings["OXPASSPORT_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_key_rotation(self):
         self.kubernetes.create_objects_from_dict(self.key_rotate_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation")
+        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation", self.timeout)
 
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=radius")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=radius", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="radius", replicas=self.settings["RADIUS_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
@@ -1100,7 +1102,7 @@ class App(object):
         self.adjust_fqdn_yaml_entries()
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade")
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=gluu-upgrade", self.timeout)
         casa_image = self.settings["CASA_IMAGE_NAME"] + ":" + self.settings["CASA_IMAGE_TAG"]
         cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings[
             "CACHE_REFRESH_ROTATE_IMAGE_TAG"]
@@ -1391,6 +1393,10 @@ def create_parser():
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
                                                     "Gluu Enterprise Edition non-interactively")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
+    subparsers.add_parser("install-no-wait", help="Install Gluu Enterprise Edition. "
+                                                  "There will be no wait time between installing services. "
+                                    "Pods may look like they are restarting but they will be waiting for hierarchy "
+                                    "pods to be running")
     subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
     subparsers.add_parser("restore", help="Install Gluu Enterprise Edition with a "
                                           "running database and previous configuration")
@@ -1428,9 +1434,13 @@ def main():
     copy_templates()
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
+
+    timeout = 300
+    if args.subparser_name == "install-no-wait":
+        timeout = 0
     try:
-        if args.subparser_name == "install":
-            app = App(settings)
+        if args.subparser_name == "install" or args.subparser_name == "install-no-wait":
+            app = App(settings, timeout)
             app.uninstall()
             app.install()
 

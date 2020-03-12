@@ -513,7 +513,7 @@ class Couchbase(object):
                                                        role_name="couchbase-operator",
                                                        namespace=cb_namespace)
         self.kubernetes.create_objects_from_dict(self.couchbase_operator_deployment_file, namespace=cb_namespace)
-        self.kubernetes.check_pods_statuses(cb_namespace, "app=couchbase-operator")
+        self.kubernetes.check_pods_statuses(cb_namespace, "app=couchbase-operator", 700)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
                                                           namespace=cb_namespace,

@@ -782,7 +782,7 @@ class Kubernetes(object):
             except client.rest.ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
-    def read_namespaced_pod_status(self, name, namespace="default", timeout=300):
+    def read_namespaced_pod_status(self, name, timeout, namespace="default"):
         """Read pod status with name in namespace"""
 
         starting_time = time.time()
@@ -810,18 +810,18 @@ class Kubernetes(object):
                 except TypeError:
                     logger.warning("Pod might not exist or was evicted.")
                 if running_time > timeout:
-                    logger.exception(response)
+                    logger.warning("Timeout exceeded. This may not be an error. Please check pods statuses.")
                     return False
                 logger.info("Waiting for pod {} to get ready".format(name))
         except client.rest.ApiException as e:
             logger.exception(e)
 
-    def check_pods_statuses(self, namespace="default", app_label=None):
+    def check_pods_statuses(self, namespace="default", app_label=None, timeout=300):
         """Loop through pod names and check statuses"""
         time.sleep(10)
         pods_name = self.list_pod_name_by_label(namespace, app_label)
         for pod_name in pods_name:
-            self.read_namespaced_pod_status(name=pod_name, namespace=namespace)
+            self.read_namespaced_pod_status(name=pod_name, namespace=namespace, timeout=timeout)
 
     def connect_get_namespaced_pod_exec(self, exec_command, app_label=None, namespace="default"):
         """Execute command in pod with app label in namespace"""
