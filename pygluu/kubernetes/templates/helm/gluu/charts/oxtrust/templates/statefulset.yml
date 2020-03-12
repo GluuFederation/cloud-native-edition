@@ -19,6 +19,10 @@ spec:
       labels: 
         app: {{ include "oxtrust.name" . }}
         APP_NAME: oxtrust
+      {{- if .Values.global.istio.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ include "oxtrust.name" . }}
@@ -38,7 +42,7 @@ spec:
           # limits:
           #   memory: {{ .Values.limits.memory }}
         ports:
-        - containerPort: {{ .Values.service.port }}
+        - containerPort: {{ .Values.service.targetPort }}
         env:
         - name: JVM_OPTS
           value: "-XshowSettings:vm -XX:MaxRAMPercentage=80"

@@ -21,7 +21,7 @@ spec:
           ports:
           {{- range $key, $value := .Values.service.ports }}
             - name: {{ $value.name }}
-              containerPort: {{ $value.port }}
+              containerPort: {{ $value.targetPort }}
           {{- end }}
           securityContext:
             privileged: true

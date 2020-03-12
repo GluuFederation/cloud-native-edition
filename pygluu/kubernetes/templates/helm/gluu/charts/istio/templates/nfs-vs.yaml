@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-nfs
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw
+  http:
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2020 # 2049 
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2021 # 2049
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2022 # 20048
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2023 # 20048
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2024 # 111
+    - route:
+      - destination:
+          host: nfs.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 2025 # 111 

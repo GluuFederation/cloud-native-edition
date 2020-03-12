@@ -10,6 +10,7 @@ spec:
   {{- range $key, $value := .Values.service.ports}}
     - name: {{ $value.name }}
       port: {{ $value.port }}
+      targetPort: {{ $value.targetPort }}
       protocol: {{ $value.protocol }}
   {{- end }}
   selector:

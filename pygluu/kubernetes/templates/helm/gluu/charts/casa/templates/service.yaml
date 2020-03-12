@@ -10,9 +10,8 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+      name: {{ .Values.service.name }}
+      targetPort: {{ .Values.service.targetPort }}
   selector:
     app: {{ include "casa.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

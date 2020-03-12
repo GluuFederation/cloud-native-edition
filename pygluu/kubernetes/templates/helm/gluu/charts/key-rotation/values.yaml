@@ -12,7 +12,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  port: 8080
+  targetPort: 8080
+  port: 8083
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

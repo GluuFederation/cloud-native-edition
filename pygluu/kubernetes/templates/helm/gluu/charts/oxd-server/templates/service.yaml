@@ -10,9 +10,9 @@ metadata:
 spec:
   ports:
     - port: 8444
-      name: {{ include "oxd-server.name" . }}-admin-gui
+      name: http-admin-gui
     - port: 8443
-      name: {{ include "oxd-server.name" . }}-app-connector
+      name: tcp-app-cone
   selector:
     app: {{ include "oxd-server.name" . }}
     release: {{ .Release.Name }}

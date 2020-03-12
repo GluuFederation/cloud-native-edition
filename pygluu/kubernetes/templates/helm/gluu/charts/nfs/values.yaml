@@ -15,29 +15,35 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   ports:
-    nfs:
-      name: nfs
-      port: 2049
+    nfs: 
+      name: tcp-nfs
+      targetPort: 2049
+      port: 2020
       protocol: TCP
     mountd:
-      name: mountd
-      port: 20048
+      name: tcp-mountd
+      targetPort: 20048
+      port: 2022
       protocol: TCP
     rpcbind:
-      name: rpcbind
-      port: 111
+      name: tcp-rpcbind
+      targetPort: 111
+      port: 2024
       protocol: TCP
     rpcnbind-udp:
-      name: rpcnbind-udp
-      port: 111
+      name: udp-rpcnbind
+      targetPort: 111
+      port: 2025
       protocol: UDP
     mountd-udp:
-      name: mountd-udp
-      port: 20048
+      name: udp-mountd
+      targetPort: 20048
+      port: 2023
       protocol: UDP
     nfs-udp:
-      name: nfs-udp
-      port: 2049
+      name: udp-nfs
+      targetPort: 2049
+      port: 2021
       protocol: UDP
     
     

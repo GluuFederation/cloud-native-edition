@@ -13,9 +13,8 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+      targetPort: {{ .Values.service.targetPort }}
+      name: http-cr-rotate
   selector:
     app: {{ include "cr-rotate.name" . }}
     release: {{ .Release.Name }}

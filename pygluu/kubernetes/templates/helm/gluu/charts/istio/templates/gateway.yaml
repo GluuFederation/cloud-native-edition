@@ -1,0 +1,168 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Release.Name }}-global-gtw
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-oxtrust
+      protocol: HTTP
+    hosts:
+      - "*"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+      - "*"
+    tls:
+      mode: SIMPLE # enable https on this port
+      credentialName: tls-certificate # fetch cert from k8s secret
+  - port:
+      number: 8080
+      name: http-oxauth
+      protocol: HTTP
+    hosts:
+      - "*"
+  # oxshibboleth
+  - port:
+      number: 8081
+      name: http-oxshibboleth
+      protocol: HTTP 
+    hosts:
+      - "*"
+  # casa
+  - port:
+      number: 8082
+      name: http-casa
+      protocol: HTTP
+    hosts:
+      - "*"
+  # key-rotation
+  - port:
+      number: 8083
+      name: http-k-rotation
+      protocol: HTTP
+    hosts:
+      - "*"
+  # cr-rotate
+  - port:
+      number: 8084
+      name: http-cr-rotate
+      protocol: HTTP
+    hosts:
+    - "*"
+  # oxpassport
+  - port:
+      number: 8090
+      name: http-oxpassport
+      protocol: HTTP
+    hosts:
+    - "*"
+  # RADIUS
+  - port:
+      number: 8085
+      name: http-jetty-svc
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 1812
+      name: tcp-rad-auth
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 1813
+      name: tcp-rad-acc
+      protocol: TCP
+    hosts:
+    - "*"
+  # OPENDJ
+  - port:
+      number: 1636
+      name: tcp-ldaps
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 1389
+      name: tcp-ldap
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 8989
+      name: tcp-repl
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 4444
+      name: tcp-admin
+      protocol: TCP
+    hosts:
+    - "*"
+  # OXD-SERVER
+  - port:
+      number: 8444
+      name: http-admin-gui
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 8443
+      name: tcp-app-cone
+      protocol: TCP
+    hosts:
+    - "*"
+  # NFS
+  - port:
+      number: 2020
+      name: tcp-nfs
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 2021
+      name: udp-nfs
+      protocol: UDP
+    hosts:
+    - "*"
+  - port:
+      number: 2022
+      name: tcp-mountd
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 2023
+      name: udp-mountd
+      protocol: UDP
+    hosts:
+    - "*"
+  - port:
+      number: 2024
+      name: tcp-rpcbind
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 2025
+      name: udp-rpcbind
+      protocol: UDP
+    hosts:
+    - "*"
+  # REDIS
+  - port:
+      number: 6379
+      name: tcp-redis
+      protocol: TCP
+    hosts:
+    - "*"

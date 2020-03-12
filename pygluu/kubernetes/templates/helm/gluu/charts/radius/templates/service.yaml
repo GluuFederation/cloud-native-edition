@@ -11,9 +11,8 @@ spec:
   ports:
     {{- range $key, $value := .Values.service.ports }}
     - port: {{ $value.port }}
-      targetPort: http
-      protocol: TCP
       name: {{$key}}
+      targetPort: {{ $value.targetPort }}
     {{- end }}
   selector:
     app: {{ include "radius.name" . }}

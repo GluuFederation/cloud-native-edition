@@ -42,7 +42,7 @@ Create the name of the service account to use
      Common labels
 */}}
 {{- define "efs-provisioner.labels" -}}
-helm.sh/chart: {{ include "efs-provisioner.chart" . }}
+{* helm.sh/chart: {{ include "efs-provisioner.chart" . }} *}
 app: {{ template "efs-provisioner.name" . }}
 env: {{ .Values.global.deployEnv }}
 chart: {{ template "efs-provisioner.chartname" . }}

@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-oxd-server
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*.{{ .Release.Namespace }}.svc.cluster.local"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+    - route:
+      - destination:
+          host: oxd-server.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 8444
+    - route:
+      - destination:
+          host: oxd-server.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 8443

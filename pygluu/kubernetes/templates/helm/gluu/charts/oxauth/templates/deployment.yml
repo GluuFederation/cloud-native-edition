@@ -16,6 +16,10 @@ spec:
     metadata:
       labels:
         app: {{ include "oxauth.name" . }}
+      {{- if .Values.global.istio.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ template "gluu.fullname" . }}

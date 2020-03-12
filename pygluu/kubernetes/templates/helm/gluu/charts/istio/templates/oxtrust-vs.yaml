@@ -1,0 +1,66 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-base
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match:
+    - uri:
+        prefix: /
+    rewrite:
+      uri: /identity
+    route:
+      - destination:
+          host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          port:
+            number: 80
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-scim-config
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match:
+    - uri:
+        prefix: /.well-known/scim-configuration
+    rewrite:
+      uri: /identity/restv1/scim-configuration
+    route:
+      - destination:
+          host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          port:
+            number: 80
+--- 
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-oxtrust-identity
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match:
+    - uri:
+        prefix: /identity
+    route:
+    - destination:
+        host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 80

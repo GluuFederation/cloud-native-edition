@@ -4,7 +4,7 @@
 global:
   # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
-    enabled: false
+    enabled: false 
     awsLocalStorage: true
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
@@ -46,7 +46,9 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap
+  # If REDIS is the Cache Type
+  gluuRedisType: STANDALONE
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
@@ -102,13 +104,16 @@ global:
     enabled: false
 
   nfs:
-    enabled: false  
+    enabled: false   
 
   shared-shib:
     enabled: true 
  
   cr-rotate:
     enabled: false  
+
+  istio:
+    enabled: true 
 
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
@@ -149,8 +154,8 @@ config:
   ldapType: opendj
 
   image:
-    repository: gluufederation/config-init
-    tag: 4.1.0_01
+    repository: kungus/config-init
+    tag: 4.1.0_istio
 
 cr-rotate:
   image:
@@ -185,8 +190,8 @@ opendj:
 # persistence layer
 persistence:
   image:
-    repository: gluufederation/persistence
-    tag: 4.1.0_01
+    repository: kungus/persistence
+    tag: 4.1.0_istio
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false

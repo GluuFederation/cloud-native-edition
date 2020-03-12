@@ -14,12 +14,15 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   ports:  
-    radius-authentication:
+    tcp-rad-auth:
       port: 1812
-    radius-accounting: 
+      targetPort: 1812
+    tcp-rad-acc: 
       port: 1813
-    jetty-service:
-      port: 8080
+      targetPort: 1813
+    http-jetty-svc:
+      targetPort: 8080
+      port: 8085
 
 configMap:
   lbAddr: ""

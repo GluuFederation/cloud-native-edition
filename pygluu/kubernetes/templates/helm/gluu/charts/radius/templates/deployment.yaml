@@ -32,13 +32,10 @@ spec:
         {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-          - name: http
-            containerPort: 8080
-            protocol: TCP
-          - name: radius-auth
-            containerPort: 1812
-          - name: radius-ac
-            containerPort: 1813
+          {{- range $key, $value := .Values.service.ports }}
+          - containerPort: {{ $value.targetPort }}
+            name: {{$key}}
+          {{- end }}
         envFrom:
           - configMapRef:
               name: {{ include "radius.fullname" . }}

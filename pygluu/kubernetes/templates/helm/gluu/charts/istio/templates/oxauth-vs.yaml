@@ -1,0 +1,137 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-openid-config
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match:
+    - uri:
+        prefix: /.well-known/openid-configuration
+    rewrite:
+      uri: /oxauth/.well-known/openid-configuration
+    route:
+      - destination:
+          host: oxauth.{{.Release.Namespace}}.svc.cluster.local
+          port:
+            number: 8080
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-uma2-config
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match:    
+    - uri:
+        prefix: /.well-known/uma2-configuration
+    rewrite:
+      uri: /oxauth/restv1/uma2-configuration
+    route:
+      - destination:
+          host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          port:
+            number: 8080
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-webdiscovery
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match: 
+    - uri:
+        prefix: /.well-known/simple-web-discovery
+    rewrite:
+      uri: /oxauth/.well-known/simple-web-discovery
+    route:
+    - destination:
+        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-gluu
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match: 
+    - uri:
+        prefix: /oxauth
+    route:
+    - destination:
+        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-webfinger
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match: 
+    - uri:
+        prefix: /.well-known/webfinger
+    rewrite:
+      uri: /oxauth/.well-known/webfinger
+    route:
+    - destination:
+        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-u2f-config
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  http:
+  - match: 
+    - uri:
+        prefix: /.well-known/fido-u2f-configuration
+    rewrite:
+      uri: /oxauth/restv1/fido-u2f-configuration
+    route:
+    - destination:
+        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+          
