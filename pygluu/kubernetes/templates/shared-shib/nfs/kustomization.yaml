@@ -9,4 +9,5 @@ resources:
   - persistentvolumeclaims.yaml
   - persistentvolumes.yaml
   - replicationcontrollers.yaml
+  - storageclasses.yaml
 #  - services.yaml

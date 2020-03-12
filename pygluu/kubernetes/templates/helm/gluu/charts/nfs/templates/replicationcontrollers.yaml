@@ -38,4 +38,4 @@ spec:
       volumes:
         - name: {{ include "nfs.name" . }}
           persistentVolumeClaim: 
-            claimName: {{ include "nfs.name" . }}-pv-provisioning-demo
+            claimName: {{ include "nfs.name" . }}-shared-shib

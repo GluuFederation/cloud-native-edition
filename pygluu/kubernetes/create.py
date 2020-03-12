@@ -938,6 +938,18 @@ class App(object):
         shared_shib_pv_parser["spec"]["nfs"]["server"] = nfs_ip
         shared_shib_pv_parser.dump_it()
 
+        shared_shib_sc_parser = Parser(self.shared_shib_yaml, "StorageClass")
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            shared_shib_sc_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+            shared_shib_sc_parser["provisioner"] = "kubernetes.io/gce-pd"
+        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+            shared_shib_sc_parser["provisioner"] = "kubernetes.io/azure-disk"
+            del shared_shib_sc_parser["parameters"]["type"]
+            shared_shib_sc_parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
+        unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+        shared_shib_sc_parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+        shared_shib_sc_parser.dump_it()
+
         self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             # Timeout cannot be zero to execute commands in pod
@@ -1240,7 +1252,7 @@ class App(object):
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server"]
-        gluu_storage_class_names = ["aws-efs", "opendj-sc"]
+        gluu_storage_class_names = ["aws-efs", "opendj-sc", "gluu-nfs-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
                                       "app=radius", "app=redis", "app=efs-provisioner", "app=key-rotation"]

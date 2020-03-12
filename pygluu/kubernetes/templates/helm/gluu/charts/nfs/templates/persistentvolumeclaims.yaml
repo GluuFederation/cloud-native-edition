@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "nfs.name" . }}-pv-provisioning-demo
+  name: {{ include "nfs.name" . }}-shared-shib
   namespace: {{ .Release.Namespace }}
   labels:
-    demo: nfs-pv-provisioner
+    app: nfs-shared-shib
 spec:
+  storageClassName: {{ include "nfs.name" . | quote }}
   accessModes: 
    - {{ .Values.persistence.nfsGce.accessModes }}
   resources:
