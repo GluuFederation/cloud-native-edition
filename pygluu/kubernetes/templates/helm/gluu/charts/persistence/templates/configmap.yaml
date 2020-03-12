@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
-  GLUU_OXTRUST_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
+  GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   # Auto enable installation of some services
