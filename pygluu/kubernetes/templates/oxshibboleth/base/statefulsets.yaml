@@ -27,6 +27,7 @@ spec:
           # name must match the volume name below
           - name: shared-shib
             mountPath: "/opt/shared-shibboleth-idp"
+            subPath: shared-shibboleth-idp
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password

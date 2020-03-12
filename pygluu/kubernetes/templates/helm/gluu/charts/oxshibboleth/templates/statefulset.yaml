@@ -42,6 +42,7 @@ spec:
         volumeMounts:
           - name: {{ .Release.Name }}-shared-shib
             mountPath: "/opt/shared-shibboleth-idp"
+            subPath: shared-shibboleth-idp
           {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxshibboleth.name" .}}-updatelbip
             mountPath: /scripts
