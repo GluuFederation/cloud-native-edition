@@ -10,8 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.service.port }}
-    name: {{ template "oxtrust.fullname" . }}
+    name: http-oxtrust
   selector:
     app: {{ include "oxtrust.name" . }}
   clusterIP: {{ .Values.service.clusterIp }}
-    

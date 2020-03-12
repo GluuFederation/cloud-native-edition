@@ -35,9 +35,8 @@ spec:
               /app/scripts/entrypoint.sh
         {{- end }}
         ports:
-          - name: http
-            containerPort: 8080
-            protocol: TCP
+          - name: {{ .Values.service.name }}
+            containerPort: {{ .Values.service.targetPort }}
         envFrom:
         - configMapRef:
             name: {{ include "oxshibboleth.fullname" . }}

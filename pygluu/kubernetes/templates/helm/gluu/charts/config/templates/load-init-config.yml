@@ -35,6 +35,6 @@ spec:
         - configMapRef:
             name: {{ include "config.fullname" . }}-config-cm
         command: ["/bin/sh", "-c"]
-        args: ["tini -g -- /app/scripts/entrypoint.sh load && /usr/bin/python /scripts/tls_generator.py"]
+        args: ["tini -g -- /app/scripts/entrypoint.sh load && /usr/bin/python /scripts/tls_generator.py && curl -X POST http://localhost:15020/quitquitquit "]
       restartPolicy: Never
           

@@ -10,9 +10,10 @@ metadata:
 {{ include "oxd-server.labels" . | indent 4 }}
 spec:
   ports:
-    - port: 8444
-      name: {{ include "oxd-server.name" . }}-admin-gui
-    - port: 8443
-      name: {{ include "oxd-server.name" . }}-app-connector
+  {{- range $key, $value := .Values.ports }}
+  - port: {{ $value.port }}
+    targetPort: {{ $value.targetPort }}
+    name: {{ $value.name }}
+  {{- end }}
   selector:
     app: {{ include "oxd-server.name" . }}
