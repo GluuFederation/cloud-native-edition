@@ -587,16 +587,17 @@ class Prompt(object):
             prompt = input("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml [N][Y/N]: ")
             if prompt == "Y" or prompt == "y":
                 prompt = "Y"
-                try:
-                    shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
-                except FileNotFoundError:
-                    logger.error("An override option has been chosen but couchbase-cluster.yaml file "
-                                 "could not be found at the current path. Please place the override file under the name"
-                                 " couchbase-cluster.yaml in the same directory pygluu-kubernetes.pyz exists ")
-                    raise SystemExit(1)
             else:
                 prompt = "N"
             self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] = prompt
+        if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
+            try:
+                shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
+            except FileNotFoundError:
+                logger.error("An override option has been chosen but couchbase-cluster.yaml file "
+                             "could not be found at the current path. Please place the override file under the name"
+                             " couchbase-cluster.yaml in the same directory pygluu-kubernetes.pyz exists ")
+                raise SystemExit(1)
 
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             self.settings["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
