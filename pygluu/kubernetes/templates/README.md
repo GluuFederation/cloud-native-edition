@@ -566,6 +566,7 @@ If during installation the release was not defined, release name is checked by r
 | `global.oxshibboleth.enabled`                      | Whether to allow installation of oxshibboleth chart                                                                              | `false`                             |
 | `global.key-rotation.enabled`                      | Allow key rotation                                                                                                               | `false`                             |
 | `global.cr-rotate.enabled`                         | Allow cache rotation deployment                                                                                                  | `false`                             |
+| `global.istio.enabled`                             | Allow Istio integration                                         | `false`                             |
 | `global.radius.enabled`                            | Enabled radius installation                                                                                                      | `false`                             |
 | `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
 | `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
@@ -659,6 +660,21 @@ global:
   cr-rotate:
     enabled: true
 ```
+
+## Integrate Istio
+
+### Install istio
+  - Initialize istio in your cluster using Helm V2
+    ` helm2 install install/kubernetes/helm/istio-init --name istio-init  --namespace istio-system`
+  - Make sure the initialization is complete
+    `kubectl -n istio-system wait --for=condition=complete job --all`
+  - Enable Istio auto injection in th namespace you are going to deploy Gluu Server
+    `kubectl label namespace <namespace-name> istio-injection=enabled`
+  - Install Istio using Helm V2
+    `helm2 install install/kubernetes/helm/istio --name istio --set gateways.istio-ingressgateway.sds.enabled=true --set sds.enabled=true --set values.global.mtls.enabled=true --set values.grafana.enabled=true --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=true --namespace istio-system `
+
+  - Before deploying Gluu server, make sure istio installation is enabled
+    `global.istio.enabled` is set to `true`
 
 ## Use Couchbase solely as the persistence layer
 

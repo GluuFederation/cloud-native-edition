@@ -65,3 +65,8 @@ dependencies:
     - name: persistence
       condition: global.persistence.enabled
       version: 1.0.0
+
+    - name: istio
+      condition: global.istio.enabled
+      version: 1.0.0
+      

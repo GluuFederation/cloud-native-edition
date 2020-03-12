@@ -14,11 +14,11 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   ports:  
-    radius-authentication:
+    tcp-rad-auth:
       port: 1812
-    radius-accounting: 
+    tcp-rad-acc: 
       port: 1813
-    jetty-service:
+    http-jetty-svc:
       port: 8080
 
 configMap:

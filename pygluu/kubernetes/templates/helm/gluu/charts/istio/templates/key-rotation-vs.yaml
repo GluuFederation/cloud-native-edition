@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.fullname" . }}-key-rotation
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
+  gateways:
+  - {{ .Release.Name }}-global-gtw 
+  http:
+    - route:
+      - destination:
+          host: {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 8080

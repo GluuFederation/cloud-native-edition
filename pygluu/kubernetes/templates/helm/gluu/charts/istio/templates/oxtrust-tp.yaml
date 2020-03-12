@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "istio.name" . }}-oxtrust-mtls
+spec:
+  host: oxtrust.{{.Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+
+---
+
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: {{ include "istio.name" . }}-oxtrust-receive-tls
+spec:
+  targets:
+  - name: oxtrust
+  peers:
+  - mtls: {}

@@ -112,6 +112,9 @@ global:
   cr-rotate:
     enabled: false  
 
+  istio:
+    enabled: false
+
 casa:
   image:
     repository: gluufederation/casa
@@ -137,7 +140,7 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.1_01
+    tag: 4.1.1_02
 
 cr-rotate:
   image:

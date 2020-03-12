@@ -1,0 +1,18 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ include "config.fullname" . }}
+    namespace: {{ .Values.global.namespace }}
+    labels:
+{{ include "config.labels" . | indent 6 }}
+spec:
+    ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+    selector:
+        app: {{ include "config.name" . }}-init-load
+    type: ClusterIP
+    

@@ -18,6 +18,8 @@ spec:
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: [ "/bin/sh", "-c" ]
+        args: [ "tini -g -- /app/scripts/entrypoint.sh && curl -X POST http://localhost:15020/quitquitquit " ]
         envFrom:
         - configMapRef:
             name: {{ include "persistence.fullname" . }}
