@@ -53,6 +53,12 @@ class Prompt(object):
                                 USE_ARN="",
                                 ARN_AWS_IAM="",
                                 LB_ADD="",
+                                REDIS_URL="",
+                                REDIS_TYPE="",
+                                REDIS_PW="",
+                                REDIS_USE_SSL="false",
+                                REDIS_SSL_TRUSTSTORE="",
+                                REDIS_SENTINEL_GROUP="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -209,7 +215,8 @@ class Prompt(object):
 
     def confirm_params(self):
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
-                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "COUCHBASE_SUBJECT_ALT_NAME"]
+                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "REDIS_PW",
+                           "COUCHBASE_SUBJECT_ALT_NAME"]
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
             if k not in hidden_settings:
@@ -426,6 +433,7 @@ class Prompt(object):
         self.config_settings["city"] = self.settings["CITY"]
         self.config_settings["admin_pw"] = self.settings["ADMIN_PW"]
         self.config_settings["ldap_pw"] = self.settings["LDAP_PW"]
+        self.config_settings["redis_pw"] = self.settings["REDIS_PW"]
         if self.settings["PERSISTENCE_BACKEND"] == "couchbase":
             self.config_settings["ldap_pw"] = self.settings["COUCHBASE_PASSWORD"]
         self.config_settings["email"] = self.settings["EMAIL"]
@@ -535,6 +543,9 @@ class Prompt(object):
             if password == "OXD-server":
                 random_password = ''.join(random.choice(keystore_chars) for _ in range(12))
 
+            if password == "Redis":
+                random_password = ''.join(random.choice(keystore_chars) for _ in range(64))
+
             string_random_password = random_password[:1] + "***" + random_password[4:]
             pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
             if not pw_prompt:
@@ -543,7 +554,7 @@ class Prompt(object):
             else:
                 confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
                 regex_bool = True
-                if not password == "OXD-server":
+                if password != "OXD-server" and password != "Redis":
                     regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
 
             if confirm_pw_prompt != pw_prompt:
@@ -939,6 +950,26 @@ class Prompt(object):
                 # raised if IP is invalid
                 logger.warning("Cannot determine IP address {}".format(exc))
 
+    def prompt_redis(self):
+        if not self.settings["REDIS_URL"]:
+            logger.info("Redis URL can be : redis:6379 in a redis deployment")
+            logger.info("Redis URL using AWS ElastiCach [Configuration Endpoint]: clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
+            logger.info("Redis URL using Google MemoryStore : <ip>:6379")
+            redis_url_prompt = input("Please enter redis URL. If you are deploying redis .[redis:6379]")
+            if not redis_url_prompt:
+                redis_url_prompt = "redis:6379"
+            self.settings["REDIS_URL"] = redis_url_prompt
+
+        if not self.settings["REDIS_TYPE"]:
+            logger.info("STANDALONE, CLUSTER")
+            redis_type_prompt = input("Please enter redis type.[STANDALONE]")
+            if not redis_type_prompt:
+                redis_type_prompt = "STANDALONE"
+            self.settings["REDIS_TYPE"] = redis_type_prompt
+
+        if not self.settings["REDIS_PW"]:
+            self.settings["REDIS_PW"] = self.prompt_password("Redis")
+
     @property
     def check_settings_and_prompt(self):
         self.prompt_arch()
@@ -1184,6 +1215,9 @@ class Prompt(object):
                 self.settings["GLUU_CACHE_TYPE"] = "REDIS"
             else:
                 self.settings["GLUU_CACHE_TYPE"] = "NATIVE_PERSISTENCE"
+
+        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
+            self.prompt_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":

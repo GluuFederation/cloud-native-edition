@@ -494,8 +494,11 @@ class App(object):
         persistence_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         persistence_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            persistence_cm_parser["data"]["GLUU_REDIS_URL"] = "redis:6379"
-            persistence_cm_parser["data"]["GLUU_REDIS_TYPE"] = "STANDALONE"
+            persistence_cm_parser["data"]["GLUU_REDIS_URL"] = self.settings["REDIS_URL"]
+            persistence_cm_parser["data"]["GLUU_REDIS_TYPE"] = self.settings["REDIS_TYPE"]
+            persistence_cm_parser["data"]["GLUU_REDIS_USE_SSL"] = self.settings["REDIS_USE_SSL"]
+            persistence_cm_parser["data"]["GLUU_REDIS_SSL_TRUSTSTORE"] = self.settings["REDIS_SSL_TRUSTSTORE"]
+            persistence_cm_parser["data"]["GLUU_REDIS_SENTINEL_GROUP"] = self.settings["REDIS_SENTINEL_GROUP"]
         persistence_cm_parser["data"]["GLUU_CASA_ENABLED"] = self.settings["ENABLE_CASA_BOOLEAN"]
         persistence_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
         persistence_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings["COUCHBASE_USER"]
@@ -760,8 +763,9 @@ class App(object):
 
     def kustomize_redis(self):
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            command = self.kubectl + " kustomize redis/base > " + self.redis_yaml
-            subprocess_cmd(command)
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                command = self.kubectl + " kustomize redis/base > " + self.redis_yaml
+                subprocess_cmd(command)
 
     def kustomize_update_lb_ip(self):
         if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y":
@@ -1195,7 +1199,8 @@ class App(object):
             self.setup_tls()
 
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            self.deploy_redis()
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                self.deploy_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":

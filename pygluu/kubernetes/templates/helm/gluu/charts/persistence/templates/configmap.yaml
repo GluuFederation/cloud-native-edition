@@ -25,6 +25,9 @@ data:
   {{ if eq .Values.global.gluuCacheType "REDIS" }}
   GLUU_REDIS_URL: {{ .Values.global.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.global.gluuRedisType | quote }}
+  GLUU_REDIS_USE_SSL: {{ .Values.global.gluuRedisUseSsl | quote }}
+  GLUU_REDIS_SSL_TRUSTSTORE: {{ .Values.global.gluuRedisSslTruststore | quote }}
+  GLUU_REDIS_SENTINEL_GROUP: {{ .Values.global.gluuRedisSentinelGroup | quote }}
   {{- end }}
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
