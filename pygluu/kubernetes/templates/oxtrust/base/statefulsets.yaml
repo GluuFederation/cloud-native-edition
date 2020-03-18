@@ -14,6 +14,9 @@ spec:
       app: oxtrust
   volumeClaimTemplates: []
   template:
+    metadata:
+      labels:
+        APP_NAME: oxtrust
     spec:
       containers:
       - name: oxtrust
