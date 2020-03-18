@@ -155,7 +155,7 @@ config:
 cr-rotate:
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.1.0_01
+    tag: 4.1.0_02
     pullPolicy: Always
 
 key-rotation:

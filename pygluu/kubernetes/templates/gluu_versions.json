@@ -5,7 +5,7 @@
     "CONFIG_IMAGE_NAME": "gluufederation/config-init",
     "CONFIG_IMAGE_TAG": "4.1.0_01",
     "CACHE_REFRESH_ROTATE_IMAGE_NAME": "gluufederation/cr-rotate",
-    "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.1.0_01",
+    "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.1.0_02",
     "KEY_ROTATE_IMAGE_NAME": "gluufederation/key-rotation",
     "KEY_ROTATE_IMAGE_TAG": "4.1.0_01",
     "LDAP_IMAGE_NAME": "gluufederation/wrends",
