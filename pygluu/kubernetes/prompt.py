@@ -544,7 +544,7 @@ class Prompt(object):
                 random_password = ''.join(random.choice(keystore_chars) for _ in range(12))
 
             if password == "Redis":
-                random_password = ''.join(random.choice(keystore_chars) for _ in range(64))
+                random_password = ''
 
             string_random_password = random_password[:1] + "***" + random_password[4:]
             pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
