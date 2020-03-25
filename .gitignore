@@ -94,6 +94,8 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# PyCharm project settings
+.idea
 # mkdocs documentation
 /site
 
@@ -101,3 +103,5 @@ ENV/
 .mypy_cache/
 
 *.pyz
+
+.DS_Store

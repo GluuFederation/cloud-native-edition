@@ -882,7 +882,7 @@ class App(object):
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
-                             "gluu-casa"]
+                             "gluu-casa", "gluu-ingress-fido2-configuration"]
 
         for ingress_name in ingress_name_list:
             yaml = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
@@ -1288,7 +1288,7 @@ class App(object):
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                                           "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
-                                          "gluu-ingress-stateful", "gluu-casa"]
+                                          "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
         eks_yamls_folder = Path("./gluueksyamls")
