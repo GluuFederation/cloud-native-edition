@@ -13,8 +13,8 @@ import random
 import json
 import base64
 from getpass import getpass
-from .kubeapi import Kubernetes, get_logger
-from .yamlparser import update_settings_json_file
+from .kubeapi import Kubernetes
+from .yamlparser import update_settings_json_file, get_logger
 
 logger = get_logger("gluu-prompt        ")
 
