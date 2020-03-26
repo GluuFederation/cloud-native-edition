@@ -57,13 +57,13 @@ spec:
           {{- end }}
           livenessProbe:
             httpGet:
-              path: /casa
+              path: /casa/health-check
               port: http
             initialDelaySeconds: 25
             periodSeconds: 25
           readinessProbe:
             httpGet:
-              path: /casa
+              path: /casa/health-check
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
