@@ -4,7 +4,7 @@
 global:
   # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
-    enabled: false 
+    enabled: false
     awsLocalStorage: true
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
@@ -46,9 +46,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap
-  # If REDIS is the Cache Type
-  gluuRedisType: STANDALONE
+  gluuPersistenceType: couchbase
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
@@ -104,7 +102,7 @@ global:
     enabled: false
 
   nfs:
-    enabled: false   
+    enabled: false  
 
   shared-shib:
     enabled: true 
@@ -113,8 +111,7 @@ global:
     enabled: false  
 
   istio:
-    enabled: true 
-
+     enabled: true
 #efs-provisioner used for creating shared file system in AWS
 efs-provisioner:
   efsProvisioner:
@@ -154,19 +151,19 @@ config:
   ldapType: opendj
 
   image:
-    repository: kungus/config-init
-    tag: 4.1.0_istio
+    repository: gluufederation/config-init
+    tag: 4.1.1_01
 
 cr-rotate:
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.1.0_02
+    tag: 4.1.1_02
     pullPolicy: Always
 
 key-rotation:
   image:
     repository: gluufederation/key-rotation
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
 nfs:
@@ -184,14 +181,14 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
 # persistence layer
 persistence:
   image:
-    repository: kungus/persistence
-    tag: 4.1.0_istio
+    repository: gluufederation/persistence
+    tag: 4.1.1_01
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false
@@ -205,7 +202,7 @@ persistence:
 oxauth:
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.0_01
+    tag: 4.1.1_02
     pullPolicy: Always
 
 oxd-server:
@@ -218,7 +215,7 @@ oxd-server:
 
   image:
     repository: gluufederation/oxd-server
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
   resources: {}
@@ -247,7 +244,7 @@ nginx:
 oxpassport:
   image:
     repository: gluufederation/oxpassport
-    tag: 4.0.1_01
+    tag: 4.1.1_01
     pullPolicy: Always
   # If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -261,19 +258,19 @@ oxpassport:
 oxshibboleth:
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
 oxtrust:
   image:
     repository: gluufederation/oxtrust
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
 radius:
   image:
     repository: gluufederation/radius
-    tag: 4.1.0_01
+    tag: 4.1.1_01
     pullPolicy: Always
 
 redis:
