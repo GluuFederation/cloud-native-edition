@@ -262,7 +262,7 @@ spec:
     - host: {{ . | quote }}
       http:
         paths:
-         - path: /.well-known/fido-configuration
+          - path: /.well-known/fido-configuration
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -301,7 +301,7 @@ spec:
     - host: {{ . | quote }}
       http:
         paths:
-         - path: /.well-known/fido2-configuration
+          - path: /.well-known/fido2-configuration
             backend:
               serviceName: oxauth
               servicePort: 8080
