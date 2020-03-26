@@ -172,6 +172,7 @@ jobs:
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
+          sleep 30
           cat /home/runner/work/test/settings.json
           sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=2000s deploy/gluu-radius || echo "Ready"!
           sudo microk8s.kubectl get po -n gluu
