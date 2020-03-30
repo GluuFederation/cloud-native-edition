@@ -122,7 +122,6 @@ class Couchbase(object):
                                                           value_of_literal=encoded_cb_user_string,
                                                           second_literal="password",
                                                           value_of_second_literal=encoded_cb_pass_string)
-        subprocess_cmd("alias kubectl='microk8s.kubectl'")
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
         kustomize_parser.dump_it()
@@ -533,7 +532,8 @@ class Couchbase(object):
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled", 700)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled", 700)
         # Setup couchbase backups
-        self.setup_backup_couchbase()
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+            self.setup_backup_couchbase()
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] == "Y":

@@ -95,7 +95,7 @@ class App(object):
         self.kubernetes = Kubernetes()
         self.settings = settings
         self.timeout = timeout
-        if self.settings["DEPLOYMENT_ARCH"] != "microk8s":
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
             for port in [80, 443]:
                 port_available = check_port("0.0.0.0", port)
                 if not port_available:
@@ -1210,7 +1210,8 @@ class App(object):
                 self.check_lb()
             else:
                 self.deploy_ldap()
-                self.setup_backup_ldap()
+                if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+                    self.setup_backup_ldap()
 
         if not restore:
             if self.settings["AWS_LB_TYPE"] == "alb":
