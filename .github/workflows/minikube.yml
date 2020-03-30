@@ -10,7 +10,7 @@ jobs:
       matrix:
         python-version: [3.7]
         gluu-version: ['"4.0"', '"4.1"']
-
+        persistence-backends: ['"ldap"','"couchbase"']
     steps:
     - name: Checkout code
       uses: actions/checkout@master
@@ -25,6 +25,12 @@ jobs:
         sudo python3 -m pip install --upgrade pip
         sudo pip3 install setuptools --upgrade
         sudo pip3 install pyOpenSSL --upgrade
+        sudo pip3 install requests --upgrade
+        git clone --recursive https://github.com/kubernetes-client/python.git
+        cd python
+        git checkout release-11.0
+        sed 's/raise ValueError("Invalid value for `conditions`, must not be `None`")/pass/g' ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py > tmpfile.py && mv tmpfile.py ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py
+        sudo python3 setup.py install
 
     - name: Lint with flake8
       run: |
@@ -42,13 +48,14 @@ jobs:
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/
+        sed '/kubernetes>=11.0.0b2/d' ./setup.py > tmpfile.py && mv tmpfile.py setup.py
         sudo make zipapp
 
     - name: Install Minikube
       uses: manusa/actions-setup-minikube@v1.0.0
       with:
         minikube version: 'v1.7.3'
-        kubernetes version: 'v1.17.0'   
+        kubernetes version: 'v1.17.0'
 
 
     - name: Test 1 settings(LDAP)
@@ -63,9 +70,9 @@ jobs:
           "ACCEPT_GLUU_LICENSE": "Y",
           "GLUU_VERSION": ${{ matrix.gluu-version }},
           "GLUU_UPGRADE_TARGET_VERSION": "",
-          "GLUU_HELM_RELEASE_NAME": "",
-          "NGINX_INGRESS_RELEASE_NAME": "",
-          "NGINX_INGRESS_NAMESPACE": "",
+          "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
+          "GLUU_HELM_RELEASE_NAME": "gluu",
+          "NGINX_INGRESS_RELEASE_NAME": "ningress",
           "NODES_IPS": [
             "$ip"
           ],
@@ -78,20 +85,25 @@ jobs:
           "USE_ARN": "",
           "ARN_AWS_IAM": "",
           "LB_ADD": "",
+          "REDIS_URL": "",
+          "REDIS_TYPE": "",
+          "REDIS_PW": "",
+          "REDIS_USE_SSL": "false",
           "DEPLOYMENT_ARCH": "minikube",
-          "PERSISTENCE_BACKEND": "ldap",
-          "INSTALL_COUCHBASE": "",
-          "COUCHBASE_NAMESPACE": "",
-          "COUCHBASE_VOLUME_TYPE": "",
-          "COUCHBASE_CLUSTER_NAME": "",
-          "COUCHBASE_FQDN": "",
-          "COUCHBASE_URL": "couchbase",
+          "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
+          "INSTALL_COUCHBASE": "Y",
+          "COUCHBASE_NAMESPACE": "cbns",
+          "COUCHBASE_VOLUME_TYPE": "io1",
+          "COUCHBASE_CLUSTER_NAME": "cbgluu",
+          "COUCHBASE_FQDN": "*.cbns.svc.cluster.local",
+          "COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local",
           "COUCHBASE_USER": "admin",
-          "COUCHBASE_PASSWORD": "",
+          "COUCHBASE_PASSWORD": "nTB5#|",
           "COUCHBASE_CRT": "",
+          "COUCHBASE_CN": "Couchbase CN",
           "COUCHBASE_SUBJECT_ALT_NAME": "",
-          "COUCHBASE_CLUSTER_FILE_OVERRIDE": "",
-          "COUCHBASE_USE_LOW_RESOURCES": "",
+          "COUCHBASE_CLUSTER_FILE_OVERRIDE": "N",
+          "COUCHBASE_USE_LOW_RESOURCES": "Y",
           "COUCHBASE_DATA_NODES": "",
           "COUCHBASE_QUERY_NODES": "",
           "COUCHBASE_INDEX_NODES": "",
@@ -106,7 +118,7 @@ jobs:
           "USING_CODE_FLOW": "",
           "USING_SCIM_FLOW": "",
           "USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW": "",
-          "DEPLOY_MULTI_CLUSTER": "",
+          "DEPLOY_MULTI_CLUSTER": "N",
           "HYBRID_LDAP_HELD_DATA": "",
           "LDAP_VOLUME": "",
           "LDAP_VOLUME_TYPE": 2,
@@ -164,6 +176,17 @@ jobs:
         }
         EOF
 
+    - name: Install Couchbase
+      if: ${{ matrix.persistence-backends == '"couchbase"' }}
+      run: |
+          cd /home/runner/work/test/
+          wget https://packages.couchbase.com/kubernetes/1.2.2/couchbase-autonomous-operator-kubernetes_1.2.2-linux-x86_64.tar.gz
+          sudo ./pygluu-kubernetes.pyz install-couchbase
+          COUCHBASE_IP=$(kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
+          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
+
+
+
     - name: Test Pygluu kubernetes
       id: test_kubernetes
       run: |
@@ -171,3 +194,5 @@ jobs:
           sudo ./pygluu-kubernetes.pyz install
           cat /home/runner/work/test/settings.json
           kubectl get po -n gluu
+          kubectl get po -n cbns
+
