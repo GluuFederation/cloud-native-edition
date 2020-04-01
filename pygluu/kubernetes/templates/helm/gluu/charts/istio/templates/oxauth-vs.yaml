@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -29,7 +29,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -40,7 +40,7 @@ spec:
       uri: /oxauth/restv1/uma2-configuration
     route:
       - destination:
-          host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          host: oxauth.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 8080
 ---
@@ -52,7 +52,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -63,7 +63,7 @@ spec:
       uri: /oxauth/.well-known/simple-web-discovery
     route:
     - destination:
-        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
 
@@ -75,7 +75,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -84,7 +84,7 @@ spec:
         prefix: /oxauth
     route:
     - destination:
-        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
 
@@ -97,7 +97,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -108,7 +108,7 @@ spec:
       uri: /oxauth/.well-known/webfinger
     route:
     - destination:
-        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
 ---
@@ -120,7 +120,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxauth.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -131,7 +131,7 @@ spec:
       uri: /oxauth/restv1/fido-u2f-configuration
     route:
     - destination:
-        host: oxauth # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
           

@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*.{{ .Release.Namespace }}.svc.cluster.local"
+  - {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:

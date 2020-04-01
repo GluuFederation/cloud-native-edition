@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-    - "*"
+    - oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
   gateways:
     - {{ .Release.Name }}-global-gtw
   http:
@@ -16,6 +16,6 @@ spec:
       uri: /identity
     route:
     - destination:
-        host: oxshibboleth 
+        host: oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
         port:
           number: 8081

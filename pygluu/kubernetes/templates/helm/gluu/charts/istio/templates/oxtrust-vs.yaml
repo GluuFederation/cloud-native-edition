@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxtrust.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -16,7 +16,7 @@ spec:
       uri: /identity
     route:
       - destination:
-          host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 80
 
@@ -29,7 +29,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "*"
+  - oxtrust.{{.Release.Namespace}}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -40,7 +40,7 @@ spec:
       uri: /identity/restv1/scim-configuration
     route:
       - destination:
-          host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+          host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 80
 --- 
@@ -61,6 +61,6 @@ spec:
         prefix: /identity
     route:
     - destination:
-        host: oxtrust # interpreted as oxauth.{{.Release.Namespace}}.svc.cluster.local
+        host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 80

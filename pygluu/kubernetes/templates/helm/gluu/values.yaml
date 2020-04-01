@@ -152,7 +152,7 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.1_01
+    tag: 4.1.1_dev
 
 cr-rotate:
   image:
@@ -188,7 +188,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.1_01
+    tag: 4.1.1_dev
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false
