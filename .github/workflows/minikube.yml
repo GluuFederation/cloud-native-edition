@@ -124,11 +124,6 @@ jobs:
           "LDAP_VOLUME_TYPE": 2,
           "LDAP_STATIC_VOLUME_ID": "",
           "LDAP_STATIC_DISK_URI": "",
-          "OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE": "",
-          "ACCEPT_EFS_NOTES": "",
-          "EFS_FILE_SYSTEM_ID": "",
-          "EFS_AWS_REGION": "",
-          "EFS_DNS": "",
           "GLUU_CACHE_TYPE": "NATIVE_PERSISTENCE",
           "GLUU_NAMESPACE": "gluu",
           "GLUU_FQDN": "demoexample.gluu.org",
@@ -146,8 +141,6 @@ jobs:
           "OXD_APPLICATION_KEYSTORE_CN": "oxd-server",
           "OXD_ADMIN_KEYSTORE_CN": "oxd-server",
           "LDAP_STORAGE_SIZE": "4Gi",
-          "OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE": "4Gi",
-          "NFS_STORAGE_SIZE": "4Gi",
           "OXAUTH_REPLICAS": 1,
           "OXTRUST_REPLICAS": 1,
           "LDAP_REPLICAS": 1,
@@ -180,7 +173,7 @@ jobs:
       if: ${{ matrix.persistence-backends == '"couchbase"' }}
       run: |
           cd /home/runner/work/test/
-          wget https://packages.couchbase.com/kubernetes/1.2.2/couchbase-autonomous-operator-kubernetes_1.2.2-linux-x86_64.tar.gz
+          wget ${{ secrets.cbpackage }}
           sudo ./pygluu-kubernetes.pyz install-couchbase
           COUCHBASE_IP=$(kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
