@@ -23,7 +23,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "10.101.155.102" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -46,7 +46,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
@@ -152,7 +152,7 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.1_01
+    tag: 4.1.1_dev
 
 cr-rotate:
   image:
@@ -188,7 +188,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.1_01
+    tag: 4.1.1_dev
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false
