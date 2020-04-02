@@ -364,6 +364,7 @@ class App(object):
             parser.dump_it()
 
     def setup_tls(self):
+        starting_time = time.time()
         while True:
             try:
                 ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
@@ -374,6 +375,11 @@ class App(object):
             except Exception:
                 logger.info("Waiting for Gluu secret...")
                 time.sleep(10)
+                end_time = time.time()
+                running_time = end_time - starting_time
+                if running_time > 600:
+                    logger.error("Could not read Gluu secret. Please check config job pod logs.")
+                    raise SystemExit(1)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
                                                           namespace=self.settings["GLUU_NAMESPACE"],
