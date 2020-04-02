@@ -6,6 +6,7 @@ metadata:
   name: {{ include "oxshibboleth.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: oxshibboleth
 {{ include "oxshibboleth.labels" . | indent 4 }}
 spec:
   serviceName: oxshibboleth
@@ -17,6 +18,7 @@ spec:
   template:
     metadata:
       labels:
+        APP_NAME: oxshibboleth
         app: {{ include "oxshibboleth.name" . }}
         release: {{ .Release.Name }}
     spec:
@@ -29,8 +31,8 @@ spec:
           - /bin/sh
           - -c
           - |
-              /usr/bin/python /scripts/updatelb.py &
-              /apps/scripts/entrypoint.sh
+              /usr/bin/python /scripts/updatelbip.py &
+              /app/scripts/entrypoint.sh
         {{- end }}
         ports:
           - name: http
@@ -40,11 +42,8 @@ spec:
         - configMapRef:
             name: {{ include "oxshibboleth.fullname" . }}
         volumeMounts:
-          - name: {{ .Release.Name }}-shared-shib
-            mountPath: "/opt/shared-shibboleth-idp"
-            subPath: shared-shibboleth-idp
           {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
-          - name: {{ include "oxshibboleth.name" .}}-updatelbip
+          - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
           {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
@@ -75,7 +74,7 @@ spec:
       {{- end }}
       volumes:
       {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
-      - name: {{ include "oxshibboleth.name" .}}-updatelbip
+      - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip
       {{- end }}
@@ -87,16 +86,3 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-cb-crt  
       {{- end }}
-      - name: {{ .Release.Name }}-shared-shib
-        persistentVolumeClaim:
-          {{- if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( not .Values.global.cloud.awsLocalStorage ) }}
-          claimName: efs
-          {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
-          claimName: {{ .Release.Name }}-shared-shib-pvc
-          {{- else if eq .Values.global.provisioner "microk8s.io/hostpath" }}
-          claimName: {{ .Release.Name }}-shared-shib-pvc
-          {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.cloud.awsLocalStorage ) }}
-          claimName: {{ .Release.Name }}-shared-shib-pvc
-          {{- else }}
-          claimName: {{ .Release.Name }}-nfs
-          {{- end }} 

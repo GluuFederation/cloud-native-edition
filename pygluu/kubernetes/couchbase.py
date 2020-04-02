@@ -122,9 +122,18 @@ class Couchbase(object):
                                                           value_of_literal=encoded_cb_user_string,
                                                           second_literal="password",
                                                           value_of_second_literal=encoded_cb_pass_string)
+
+        self.kubernetes.patch_or_create_namespaced_configmap(name="cb-restore-points",
+                                                             namespace=self.settings["COUCHBASE_NAMESPACE"],
+                                                             literal="restorepoints",
+                                                             value_of_literal=self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"])
+
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
         kustomize_parser.dump_it()
+        cron_job_parser = Parser("couchbase/backup/cronjobs.yaml", "CronJob")
+        cron_job_parser["spec"]["schedule"] = self.settings["COUCHBASE_BACKUP_SCHEDULE"]
+        cron_job_parser.dump_it()
         command = "kubectl kustomize couchbase/backup > ./couchbase-backup.yaml"
         subprocess_cmd(command)
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-url",

@@ -160,15 +160,10 @@ class Helm(object):
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             values_file_parser["global"]["opendj"]["enabled"] = True
 
-        values_file_parser["global"]["shared-shib"]["enabled"] = False
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            values_file_parser["global"]["shared-shib"]["enabled"] = True
             values_file_parser["global"]["oxshibboleth"]["enabled"] = True
-
-        values_file_parser["global"]["efs-provisioner"]["enabled"] = False
-        if self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
-            values_file_parser["global"]["efs-provisioner"]["enabled"] = True
+            values_file_parser["global"]["gluuSyncShibManifests"] = True
 
         values_file_parser["global"]["oxd-server"]["enabled"] = False
         if self.settings["ENABLE_OXD"] == "Y":
@@ -190,17 +185,6 @@ class Helm(object):
         if self.settings["ENABLE_KEY_ROTATE"] == "Y":
             values_file_parser["global"]["key-rotation"]["enabled"] = True
 
-        values_file_parser["global"]["nfs"]["enabled"] = False
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
-                values_file_parser["global"]["nfs"]["enabled"] = True
-
-        values_file_parser["efs-provisioner"]["efsProvisioner"]["dnsName"] = self.settings["EFS_DNS"]
-        values_file_parser["efs-provisioner"]["efsProvisioner"]["efsFileSystemId"] = self.settings[
-            "EFS_FILE_SYSTEM_ID"]
-        values_file_parser["efs-provisioner"]["efsProvisioner"]["awsRegion"] = self.settings["EFS_AWS_REGION"]
-        values_file_parser["efs-provisioner"]["efsProvisioner"]["persistentVolume"]["storage"] = self.settings[
-            "OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
         values_file_parser["config"]["orgName"] = self.settings["ORG_NAME"]
         values_file_parser["config"]["email"] = self.settings["EMAIL"]
         values_file_parser["config"]["adminPass"] = self.settings["ADMIN_PW"]
@@ -217,6 +201,8 @@ class Helm(object):
             values_file_parser["persistence"]["configmap"]["gluuOxtrustApiTestMode"] = True
         if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
             values_file_parser["persistence"]["configmap"]["gluuCasaEnabled"] = True
+            values_file_parser["global"]["gluuSyncCasaManifests"] = True
+
         if self.settings["ENABLE_OXPASSPORT_BOOLEAN"] == "true":
             values_file_parser["persistence"]["configmap"]["gluuPassportEnabled"] = True
         if self.settings["ENABLE_RADIUS_BOOLEAN"] == "true":

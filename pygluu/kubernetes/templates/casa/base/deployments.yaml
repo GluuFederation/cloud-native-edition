@@ -4,12 +4,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: casa
+  APP_NAME: casa
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: casa
   template:
+    metadata:
+      labels:
+        APP_NAME: casa
     spec:
       hostAliases:
       - ip: NGINX_IP

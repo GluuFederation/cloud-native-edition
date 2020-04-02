@@ -36,6 +36,11 @@ spec:
             - name: periodic-merge
               image: couchbase/server:enterprise-6.5.0
               env:
+                - name: RESTOREPOINTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: cb-restore-points
+                      key: restorepoints
                 - name: CB_USERNAME
                   valueFrom:
                     secretKeyRef:

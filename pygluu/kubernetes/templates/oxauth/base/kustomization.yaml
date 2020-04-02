@@ -20,6 +20,7 @@ configMapGenerator:
       - GLUU_SECRET_ADAPTER="kubernetes"
       - DOMAIN=FQDN
       -  GLUU_MAX_RAM_PERCENTAGE="75.0"
+      - GLUU_SYNC_CASA_MANIFESTS="false"
       # options: ldap/couchbase/hybrid
       - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE
       # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid

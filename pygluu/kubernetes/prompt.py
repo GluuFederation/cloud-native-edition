@@ -83,6 +83,9 @@ class Prompt(object):
                                 COUCHBASE_INDEX_STORAGE="",
                                 COUCHBASE_QUERY_STORAGE="",
                                 COUCHBASE_ANALYTICS_STORAGE="",
+                                COUCHBASE_BACKUP_SCHEDULE="",
+                                COUCHBASE_BACKUP_RESTORE_POINTS="",
+                                LDAP_BACKUP_SCHEDULE="",
                                 NUMBER_OF_EXPECTED_USERS="",
                                 EXPECTED_TRANSACTIONS_PER_SEC="",
                                 USING_CODE_FLOW="",
@@ -94,11 +97,6 @@ class Prompt(object):
                                 LDAP_VOLUME_TYPE="",
                                 LDAP_STATIC_VOLUME_ID="",
                                 LDAP_STATIC_DISK_URI="",
-                                OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE="",
-                                ACCEPT_EFS_NOTES="",
-                                EFS_FILE_SYSTEM_ID="",
-                                EFS_AWS_REGION="",
-                                EFS_DNS="",
                                 GLUU_CACHE_TYPE="",
                                 GLUU_NAMESPACE="",
                                 GLUU_FQDN="",
@@ -116,8 +114,6 @@ class Prompt(object):
                                 OXD_APPLICATION_KEYSTORE_CN="",
                                 OXD_ADMIN_KEYSTORE_CN="",
                                 LDAP_STORAGE_SIZE="",
-                                OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE="",
-                                NFS_STORAGE_SIZE="",
                                 OXAUTH_REPLICAS="",
                                 OXTRUST_REPLICAS="",
                                 LDAP_REPLICAS="",
@@ -450,16 +446,34 @@ class Prompt(object):
                 if not prompt:
                     prompt = "4Gi"
                 self.settings["LDAP_STORAGE_SIZE"] = prompt
-
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            if not self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]:
-                prompt = input("Size of Shared-Shib volume storage [4Gi]:")
-                if not prompt:
-                    prompt = "4Gi"
-                self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"] = prompt
-        else:
-            self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"] = "4Gi"
         update_settings_json_file(self.settings)
+
+    def prompt_backup(self):
+        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
+                self.settings["PERSISTENCE_BACKEND"] == "couchbase":
+
+            if not self.settings["COUCHBASE_BACKUP_SCHEDULE"]:
+                prompt = input("Please input couchbase backup cron job schedule. This will run backup job every "
+                               "30 mins by default.[*/30 * * * *]: ")
+                if not prompt:
+                    prompt = "*/30 * * * *"
+                self.settings["COUCHBASE_BACKUP_SCHEDULE"] = prompt
+
+            if not self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]:
+                prompt = input("Please input number of restore points to save in the persistent volume. "
+                               "[3]: ")
+                if not prompt:
+                    prompt = 3
+                self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"] = prompt
+
+        elif self.settings["PERSISTENCE_BACKEND"] == "ldap":
+
+            if not self.settings["LDAP_BACKUP_SCHEDULE"]:
+                prompt = input("Please input ldap backup cron job schedule. This will run backup job every "
+                               "30 mins by default.[*/30 * * * *]: ")
+                if not prompt:
+                    prompt = "*/30 * * * *"
+                self.settings["LDAP_BACKUP_SCHEDULE"] = prompt
 
     def prompt_replicas(self):
         if not self.settings["OXAUTH_REPLICAS"]:
@@ -569,6 +583,7 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
+        self.prompt_backup()
         if not self.settings["HOST_EXT_IP"]:
             ip = self.gather_ip
             self.settings["HOST_EXT_IP"] = ip
@@ -991,42 +1006,6 @@ class Prompt(object):
             ip = self.gather_ip
             self.settings["HOST_EXT_IP"] = ip
 
-        if self.settings["DEPLOYMENT_ARCH"] == "eks":
-            if not self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] and \
-                    self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-                print("|------------------------------------------------------------------|")
-                print("|                     Shared Shibboleth Volume                     |")
-                print("|------------------------------------------------------------------|")
-                print("| [1] local storage [default]                                      |")
-                print("| [2] EFS - Required for production on AWS                         |")
-                print("|------------------------------------------------------------------|")
-                prompt = input("Type of Shibboleth volume[1]")
-                if prompt == "2":
-                    prompt = "efs"
-                else:
-                    prompt = "local_storage"
-                self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] = prompt
-            if not self.settings["ACCEPT_EFS_NOTES"] and \
-                    self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
-                prompt = input("Make sure EFS is created, EFS must be inside the same region as the EKS cluster, "
-                               "VPC of EKS and EFS are the same, and security group of EFS allows all connections "
-                               "from EKS nodes[Y/N].[Y]")
-                if not prompt:
-                    prompt = "Y"
-                self.settings["ACCEPT_EFS_NOTES"] = prompt
-
-                if not self.settings["EFS_FILE_SYSTEM_ID"]:
-                    prompt = input("Enter FileSystemID (fs-xxx):")
-                    self.settings["EFS_FILE_SYSTEM_ID"] = prompt
-
-                if not self.settings["EFS_AWS_REGION"]:
-                    prompt = input("Enter AWS region (us-west-2):")
-                    self.settings["EFS_AWS_REGION"] = prompt
-
-                if not self.settings["EFS_DNS"]:
-                    prompt = input("Enter EFS dns name (fs-xxx.us-west-2.amazonaws.com):")
-                    self.settings["EFS_DNS"] = prompt
-
             aws_lb_type = ["nlb", "clb", "alb"]
             if self.settings["AWS_LB_TYPE"] not in aws_lb_type:
                 print("|-----------------------------------------------------------------|")
@@ -1131,7 +1110,6 @@ class Prompt(object):
                 print("| [6]  EKS      | LDAP volumes on host                             |")
                 print("| [7]  EKS      | LDAP EBS volumes dynamically provisioned         |")
                 print("| [8]  EKS      | LDAP EBS volumes statically provisioned          |")
-                print("| [9]  EKS      | LDAP EFS volume                                  |")
                 print("|------------------------------------------------------------------|")
                 print("|Google Cloud Engine - Google Kubernetes Engine                    |")
                 print("|------------------------------------------------------------------|")
@@ -1170,13 +1148,6 @@ class Prompt(object):
                     prompt = "io1"
                 self.settings["LDAP_VOLUME"] = prompt
 
-            if not self.settings["ACCEPT_EFS_NOTES"] and self.settings["LDAP_VOLUME"] == 3:
-                prompt = input("Make sure EFS is created, EFS must be inside the same region as the EKS cluster, "
-                               "VPC of EKS and EFS are the same, and security group of EFS allows all connections "
-                               "from EKS nodes[Y] ")
-                if not prompt:
-                    prompt = "Y"
-                self.settings["ACCEPT_EFS_NOTES"] = prompt
 
         if not self.settings["DEPLOY_MULTI_CLUSTER"]:
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" \
@@ -1223,11 +1194,11 @@ class Prompt(object):
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
             self.prompt_couchbase()
 
+        self.prompt_backup()
         self.prompt_config()
         self.prompt_image_name_tag()
         self.prompt_replicas()
         self.prompt_storage()
-        self.settings["NFS_STORAGE_SIZE"] = self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
         if self.settings["CONFIRM_PARAMS"] != "Y":
             self.confirm_params()
         update_settings_json_file(self.settings)

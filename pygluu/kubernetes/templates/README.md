@@ -4,7 +4,9 @@
 
     * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
     * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
-    * [Azure - AKS](#azure---aks) ![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
+    
+    !!!warning
+        * [Azure - AKS](#azure---aks) pending
 
     If deploying locally make sure to take a look at the specific notes bellow before continuing.
     
@@ -31,17 +33,8 @@
         aws-cli
         kubectl version
 
-> **_NOTE:_**  ![CDNJS](https://img.shields.io/badge/CLB--green.svg) Following any AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
-
-### EFS notes
-
-1. EFS is created
-
-1. EFS must be inside the same region as the EKS cluster
-
-1. VPC of EKS and EFS are the same
-
-1. Security group of EFS allows all connections from the EKS nodes
+!!!note
+    Default  AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
   
 ## GCE (Google Cloud Engine) - GKE
 
@@ -69,8 +62,10 @@
 
 
 ## Azure - AKS
-![CDNJS](https://img.shields.io/badge/status-pending-yellow.svg)
 
+!!!warning
+    Pending
+    
 ### Requirements
 
 -  Follow this [guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) to install Azure CLI on the VM that will be managing the cluster and nodes. Check to make sure.
@@ -122,7 +117,10 @@
 
 ## Install Gluu using `pygluu-kubernetes` with Kustomize
 
-1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/blob/4.1/README.md#build-pygluu-kubernetespyz-manually).
+1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+
+1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+
 
 1. Run :
 
@@ -135,7 +133,8 @@
 
 ### `settings.json` parameters file contents
 
- > **_NOTE:_** Please generate this file using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases).
+!!!note
+    Please generate this file using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases).
 
 | Parameter                                       | Description                                                                      | Options                                                                                     |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -182,6 +181,8 @@
 | `COUCHBASE_INDEX_STORAGE`                       | Couchbase index storage size                                                     | `""` or i.e `"5Gi"`                                                                         |
 | `COUCHBASE_QUERY_STORAGE`                       | Couchbase query storage size                                                     | `""` or i.e `"5Gi"`                                                                         |
 | `COUCHBASE_ANALYTICS_STORAGE`                   | Couchbase search, eventing and analytics storage size                            | `""` or i.e `"5Gi"`                                                                         |
+| `COUCHBASE_BACKUP_SCHEDULE`                     | Couchbase back up cron job frequency                                             |  i.e `"*/30 * * * *"`                                                                       |
+| `COUCHBASE_BACKUP_RESTORE_POINTS`               | Couchbase number of backups to keep                                              | i.e `3`                                                                                     |
 | `NUMBER_OF_EXPECTED_USERS`                      | Number of expected users [couchbase-resource-calc-alpha]                         | `""` or i.e `"1000000"`                                                                     |
 | `EXPECTED_TRANSACTIONS_PER_SEC`                 | Expected transactions per second [couchbase-resource-calc-alpha]                 | `""` or i.e `"2000"`                                                                        |
 | `USING_CODE_FLOW`                               | If using code flow [couchbase-resource-calc-alpha]                               | `""`, `"Y"` or `"N"`                                                                        |
@@ -193,11 +194,7 @@
 | `LDAP_VOLUME_TYPE`                              | Volume type for LDAP persistence                                                 | [options](#ldap_volume_type-options)                                                        |
 | `LDAP_STATIC_VOLUME_ID`                         | LDAP static volume id (AWS EKS)                                                  | `""` or `"<static-volume-id>"`                                                              |
 | `LDAP_STATIC_DISK_URI`                          | LDAP static disk uri (GCE GKE or Azure)                                          | `""` or `"<disk-uri>"`                                                                      |
-| `OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE`       | LDAP  Volume type                                                                | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
-| `ACCEPT_EFS_NOTES`                              | Auto accept EFS [notes](#efs-notes)                                              |  `""` or `"Y"` or `"N"`                                                                     |
-| `EFS_FILE_SYSTEM_ID`                            | EFS file system id                                                               | `""` or `<id>`                                                                              |
-| `EFS_AWS_REGION`                                | EFS aws region                                                                   | `""`or `"<aws-region>"`                                                                     |
-| `EFS_DNS`                                       | EFS DNS                                                                          | `""` or `"<efs-dns>"`                                                                       |
+| `LDAP_BACKUP_SCHEDULE`                          | LDAP back up cron job frequency                                                  |  i.e `"*/30 * * * *"`                                                                       |
 | `GLUU_CACHE_TYPE`                               | Cache type to be used                                                            | `"IN_MEMORY"`, `"REDIS"` or `"NATIVE_PERSISTENCE"`                                          |
 | `GLUU_NAMESPACE`                                | Namespace to deploy Gluu in                                                      | `"<name>"`                                                                                  |
 | `GLUU_FQDN`                                     | Gluu FQDN                                                                        | `"<FQDN>"` i.e `"demoexample.gluu.org"`                                                     |
@@ -213,8 +210,6 @@
 | `OXD_APPLICATION_KEYSTORE_CN`                   | OXD application keystore common name                                             | `"<name>"` i.e `"oxd_server"`                                                               |
 | `OXD_ADMIN_KEYSTORE_CN`                         | OXD admin keystore common name                                                   | `"<name>"` i.e `"oxd_server"`                                                               |
 | `LDAP_STORAGE_SIZE`                             | LDAP volume storage size                                                         | `""` i.e `"4Gi"`                                                                            |
-| `OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE`      | oxShibboleth and oxTrust shared volume storage size                              | `""` i.e `"4Gi"`                                                                            |
-| `NFS_STORAGE_SIZE`                              | NFS volume storage size                                                          | `""` i.e `"4Gi"`                                                                            |
 | `OXAUTH_REPLICAS`                               | Number of oxAuth replicas                                                        | min `"1"`                                                                                   |
 | `OXTRUST_REPLICAS`                              | Number of oxTrust replicas                                                       | min `"1"`                                                                                   |
 | `LDAP_REPLICAS`                                 | Number of LDAP replicas                                                          | min `"1"`                                                                                   |
@@ -278,7 +273,6 @@
 | `6`      | EKS                      | LDAP volumes on host                          |
 | `7`      | EKS                      | LDAP EBS volumes dynamically provisioned      |
 | `8`      | EKS                      | LDAP EBS volumes statically provisioned       |
-| `9`      | EKS                      | LDAP EFS volume                               |
 | `11`     | GKE                      | LDAP volumes on host                          |
 | `12`     | GKE                      | LDAP Persistent Disk  dynamically provisioned |
 | `13`     | GKE                      | LDAP Persistent Disk  statically provisioned  |
@@ -304,13 +298,16 @@
 
 ### Quickstart
 
-1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/blob/4.1/README.md#build-pygluu-kubernetespyz-manually).
+1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+
+1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
 
 1) Run :
 
   ```bash
   ./pygluu-kubernetes.pyz helm-install
   ```
+
 #### Installing Gluu using Helm manually
 
 1) Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
@@ -337,12 +334,16 @@
 
 1)  **Optional:** If using couchbase as the persistence backend.
     
-    1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](https://github.com/GluuFederation/enterprise-edition/blob/4.1/README.md#build-pygluu-kubernetespyz-manually).
+    1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
     
+    1) Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+
     1) Run:
+    
        ```bash
        ./pygluu-kubernetes.pyz couchbase-install
        ```
+       
     1) Open `settings.json` file generated from the previous step and copy over the values of `COUCHBASE_URL` and `COUCHBASE_USER`   to `global.gluuCouchbaseUrl` and `global.gluuCouchbaseUser` in `values.yaml` respectively. 
 
 1)  Make sure you are in the same directory as the `values.yaml` file and run:
@@ -352,6 +353,7 @@
    ```
 
 ### EKS helm notes
+
 #### Required changes to the `values.yaml`
 
   Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appropriate values :
@@ -359,28 +361,10 @@
   ```yaml
   #global values to be used across charts
   global:
-      awsLocalStorage: true #CHANGE-THIS if not in production ,hence not using EFS set awsLocalStorage to true to use for shared shibboleth files.
     provisioner: kubernetes.io/aws-ebs #CHANGE-THIS
     lbAddr: "" #CHANGE-THIS to the address recieved in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
     isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
-
-  # If using EFS change the marked values from your EFS below:
-  efs-provisioner:
-    efsProvisioner:
-
-      # Change the following:
-      dnsName: "" #CHANGE-THIS if efs is used to fs-xxxxxx.efs.us-east-1.amazonaws.com
-      efsFileSystemId: "" #CHANGE-THIS if efs is used to  fs-xxx
-      awsRegion: "" #CHANGE-THIS if efs is used to us-east-1
-      path: /opt/shared-shibboleth-idp
-      provisionerName: example.com/gcp-efs
-      storageClass:
-        name: gcp-efs
-        isDefault: false
-      persistentVolume:
-        accessModes: ReadWriteMany
-        storage: 5Gi
 
   nginx:
     ingress:
@@ -405,7 +389,6 @@
   ```yaml
   #global values to be used across charts
   global:
-      awsLocalStorage: true
     provisioner: kubernetes.io/gce-pd #CHANGE-THIS
     lbAddr: ""
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
@@ -422,11 +405,9 @@
         - secretName: tls-certificate
           hosts:
             - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-  nfs: 
-    enabled: true
   ```
 
-  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+  Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
 
 ### Minikube helm notes
 
@@ -437,7 +418,6 @@
   ```yaml
   #global values to be used across charts
   global:
-      awsLocalStorage: true
     provisioner: k8s.io/minikube-hostpath #CHANGE-THIS
     lbAddr: ""
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
@@ -457,20 +437,20 @@
 
   Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
 
-  - Map gluus FQDN at `/etc/hosts` file  to the minikube IP as shown below.
+- Map gluus FQDN at `/etc/hosts` file  to the minikube IP as shown below.
 
-  ```bash
-  ##
-  # Host Database
-  #
-  # localhost is used to configure the loopback interface
-  # when the system is booting.  Do not change this entry.
-  ##
-  192.168.99.100	demoexample.gluu.org #minikube IP and example domain
-  127.0.0.1	localhost
-  255.255.255.255	broadcasthost
-  ::1             localhost
-  ```
+    ```bash
+    ##
+    # Host Database
+    #
+    # localhost is used to configure the loopback interface
+    # when the system is booting.  Do not change this entry.
+    ##
+    192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+    127.0.0.1	localhost
+    255.255.255.255	broadcasthost
+    ::1             localhost
+    ```
 
 ### Microk8s helm notes
   
@@ -481,7 +461,6 @@
   ```yaml
   #global values to be used across charts
   global:
-      awsLocalStorage: true
     provisioner: microk8s.io/hostpath #CHANGE-THIS
     lbAddr: ""
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
@@ -501,7 +480,7 @@
 
   Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
 
-  - Map gluus FQDN at `/etc/hosts` file  to the microk8s vm IP as shown below.
+- Map gluus FQDN at `/etc/hosts` file  to the microk8s vm IP as shown below.
 
   ```bash
   ##
@@ -530,7 +509,6 @@ If during installation the release was not defined, release name is checked by r
 | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
 | `global.cloud.enabled`                             | Whether to enable cloud provisioning.                                                                                            | `false`                             |
 | `global.provisioner`                               | Which cloud provisioner to use when deploying                                                                                    | `k8s.io/minikube-hostpath`          |
-| `global.cloud.awsLocalStorage`                     | Deploy to AWS cloud but use localstorage                                                                                         | `true`                              |
 | `global.ldapServiceName`                           | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                            |
 | `global.nginxIp`                                   | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
 | `global.oxAuthServiceName`                         | `oxauth` service name - should not be changed                                                                                    |  `oxauth`                           |
@@ -556,14 +534,9 @@ If during installation the release was not defined, release name is checked by r
 | `global.cr-rotate.enabled`                         | Allow cache rotation deployment                                                                                                  | `false`                             |
 | `global.radius.enabled`                            | Enabled radius installation                                                                                                      | `false`                             |
 | `global.redis.enabled`                             | Whether to allow installation of redis chart.                                                                                    | `false`                             |
-| `global.shared-shib.enabled`                       | Allow installation of shared volumes. They are shared between `oxtrust` and `oxshibboleth` services.                             | `true`                              |
 | `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
 | `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
 | `global.config.enabled`                            | Either to install config chart or not.                                                                                           | `true`                              |   
-| `efs-provisioner.enabled`                          | Enable EFS provisioning for AWS deployments ONLY                                                                                 | `false`                             |
-| `efs-provisioner.efsProvisioner.dnsName`           | EFS DNS name. Usually, fs-xxxxxx.efs.aws-region.amazonaws.com                                                                    | `" "`                               |
-| `efs-provisioner.efsProvisioner.efsFileSystemId`   | EFS id                                                                                                                           | `" "`                               |
-| `efs-provisioner.efsProvisioner.awsRegion`         | AWS region which the deployment is taking place                                                                                  | `us-west-2`                         |
 | `config.orgName`                                   | Organisation Name                                                                                                                | `Gluu`                              |
 | `config.email`                                     | Email to be registered with ssl                                                                                                  | `support@gluu.org`                  |
 | `config.adminPass`                                 | Admin password to log in to the UI                                                                                               | `P@ssw0rd`                          |
@@ -685,7 +658,8 @@ global:
 - A modified `couchbase/couchbase-cluster.yaml` will be generated but in production it is likely that this file will be modified.
   * To override the `couchbase-cluster.yaml` place the file inside `/couchbase` folder after running `./pygluu-kubernetes.pyz`. More information on the properties [couchbase-cluster.yaml](https://docs.couchbase.com/operator/1.2/couchbase-cluster-config.html).
 
-> **_NOTE:_** Please note the `couchbase/couchbase-cluster.yaml` file must include at least three defined `spec.servers` with the labels `couchbase_services: index`, `couchbase_services: data` and `couchbase_services: analytics`
+!!!note
+    Please note the `couchbase/couchbase-cluster.yaml` file must include at least three defined `spec.servers` with the labels `couchbase_services: index`, `couchbase_services: data` and `couchbase_services: analytics`
 
 **If you wish to get started fast just change the values of `spec.servers.name` and `spec.servers.serverGroups` inside `couchbase/couchbase-cluster.yaml` to the zones of your EKS nodes and continue.**
 
@@ -714,7 +688,8 @@ global:
 
 ### Scaling pods
 
-> **_NOTE:_** When using Mircok8s substitute  `kubectl` with `microk8s.kubectl` in the below commands.
+!!!note
+    When using Mircok8s substitute  `kubectl` with `microk8s.kubectl` in the below commands.
 
 To scale pods, run the following command:
 
@@ -795,4 +770,26 @@ Examples:
   File "/root/.shiv/pygluu-kubernetes_3e5bddf4d309be28790a1b035ab5d72d0b9f33dfaade59da1bb9ec0bcd0165a4/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 101, in conditions
     ValueError: Invalid value for `conditions`, must not be `None`
   ```
+  
   To fix this error just rerun the installation command `./pygluu-kubernetes.pyz <command>` again.
+
+!!!note
+    Another process to circumvent this bug is to build python-kubernetes-client manually detailed below.
+    
+```bash
+    git clone --recursive https://github.com/kubernetes-client/python.git
+    cd python
+    git checkout release-11.0
+    sed 's/raise ValueError("Invalid value for `conditions`, must not be `None`")/pass/g' ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py > tmpfile.py && mv tmpfile.py ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py
+    sudo python3 setup.py install
+``` 
+
+Now remove the line requiring python client in pygluu-kubernetes `setup.py` file.
+
+```bash
+sed '/kubernetes>=11.0.0b2/d' ./setup.py > tmpfile.py && mv tmpfile.py setup.py
+```
+
+Build pygluu-kubernets [manually](#build-pygluu-kubernetespyz-manually).
+    
+ 

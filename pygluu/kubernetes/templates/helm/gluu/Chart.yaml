@@ -25,11 +25,7 @@ dependencies:
     - name: oxauth
       condition: global.oxauth.enabled
       version: 1.0.0
-  
-    - name: shared-shib
-      condition: global.shared-shib.enabled
-      version: 1.0.0
-  
+
     - name: oxtrust
       condition: global.oxtrust.enabled
       version: 1.0.0
@@ -61,15 +57,7 @@ dependencies:
     - name: radius
       condition: persistence.configmap.gluuRadiusEnabled
       version: 1.0.0
-  
-    - name: nfs
-      condition: global.nfs.enabled
-      version: 1.0.0
-  
-    - name: efs-provisioner
-      condition: global.efs-provisioner.enabled
-      version: 0.7.0
-  
+
     - name: oxd-server
       condition: global.oxd-server.enabled
       version: 1.0.0
