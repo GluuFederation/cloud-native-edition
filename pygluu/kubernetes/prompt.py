@@ -583,7 +583,8 @@ class Prompt(object):
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
-        self.prompt_backup()
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+            self.prompt_backup()
         if not self.settings["HOST_EXT_IP"]:
             ip = self.gather_ip
             self.settings["HOST_EXT_IP"] = ip
@@ -1193,8 +1194,8 @@ class Prompt(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
             self.prompt_couchbase()
-
-        self.prompt_backup()
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+            self.prompt_backup()
         self.prompt_config()
         self.prompt_image_name_tag()
         self.prompt_replicas()
