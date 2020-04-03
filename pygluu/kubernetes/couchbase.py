@@ -126,7 +126,7 @@ class Couchbase(object):
         self.kubernetes.patch_or_create_namespaced_configmap(name="cb-restore-points",
                                                              namespace=self.settings["COUCHBASE_NAMESPACE"],
                                                              literal="restorepoints",
-                                                             value_of_literal=self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"])
+                                                             value_of_literal=str(self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]))
 
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]

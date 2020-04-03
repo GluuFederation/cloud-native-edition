@@ -228,13 +228,13 @@ jobs:
           sudo ./pygluu-kubernetes.pyz helm-install
           sudo kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=helm-opendj-0 || sudo kubectl logs -l app=opendj -n gluu || echo "Not Found"
           kubectl -n gluu wait --for=condition=available --timeout=600s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu
-          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
+          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxd-server || kubectl logs -l app=oxd-server -n gluu
           kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || kubectl logs -l app=radius -n gluu
-          sudo helm delete helm-ldap-backup -n gluu
+          sudo helm delete helm-ldap-backup -n gluu || echo "Resources not found"
           sudo kubectl get po -n gluu
           sudo ./pygluu-kubernetes.pyz helm-uninstall
           sleep 20

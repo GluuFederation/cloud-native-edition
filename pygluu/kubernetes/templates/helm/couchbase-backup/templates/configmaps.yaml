@@ -5,4 +5,4 @@ kind: ConfigMap
 metadata:
   name: {{ include "cb-restore-points.fullname" . }}
 data:
-  restorepoints: {{ .Values.backupRestorePoints | b64enc }}
+  restorepoints: {{ .Values.backupRestorePoints | quote }}

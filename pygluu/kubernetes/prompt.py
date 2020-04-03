@@ -735,8 +735,8 @@ class Prompt(object):
             self.settings["COUCHBASE_CLUSTER_NAME"] = cb_cluster_name_prompt
 
         if not self.settings["COUCHBASE_URL"]:
-            default_cb_url_prompt = "{}.{}.svc.cluster.local".format(cb_cluster_name_prompt,
-                                                                     cb_cluster_namespace_prompt)
+            default_cb_url_prompt = "{}.{}.svc.cluster.local".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                                                     self.settings["COUCHBASE_NAMESPACE"])
 
             prompt = input("Please enter  couchbase (remote or local) URL base name[{}]"
                            .format(default_cb_url_prompt))
