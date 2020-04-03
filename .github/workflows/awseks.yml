@@ -2,7 +2,7 @@ name: awseks
 # This builds, packages and tests pygluu-kubernetes
 on:
   schedule:
-    - cron:  '* */24 * * *'
+    - cron:  '0 0 * * *'
 jobs:
   build:
 
@@ -207,7 +207,9 @@ jobs:
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz install-no-wait
-          kubectl -n gluu wait --for=condition=available --timeout=900s deploy/oxauth || kubectl logs -l app=oxauth -n gluu
+          sleep 30
+          kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=opendj-0 || sudo kubectl logs -l app=opendj -n gluu
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxauth || kubectl logs -l app=oxauth -n gluu
           kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/casa || kubectl logs -l app=casa -n gluu
@@ -223,7 +225,8 @@ jobs:
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz helm-install
-          kubectl -n gluu wait --for=condition=available --timeout=900s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu
+          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=helm-opendj-0 || sudo kubectl logs -l app=opendj -n gluu
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu
           kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -n gluu
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -n gluu
