@@ -13,4 +13,4 @@ spec:
       - destination:
           host: {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
           port:
-            number: 8083
+            number: 8080

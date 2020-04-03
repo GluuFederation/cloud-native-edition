@@ -10,8 +10,6 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: http
       name: http-k-rotation
   selector:
     app: {{ include "key-rotation.name" . }}

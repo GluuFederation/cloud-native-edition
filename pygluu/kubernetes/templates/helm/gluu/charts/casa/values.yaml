@@ -24,7 +24,6 @@ securityContext: {}
 
 service:
   port: 8080
-  targetPort: 8082
   name: http-casa
 
 resources:

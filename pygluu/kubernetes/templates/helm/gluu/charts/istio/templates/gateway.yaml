@@ -41,21 +41,21 @@ spec:
       - oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
   # casa
   - port:
-      number: 8082
+      number: 8080
       name: http-casa
       protocol: HTTP
     hosts:
-      - oxd-server.{{ .Release.Namespace }}.svc.cluster.local
+      - casa.{{ .Release.Namespace }}.svc.cluster.local
   # key-rotation
   - port:
-      number: 8083
+      number: 8080
       name: http-k-rotation
       protocol: HTTP
     hosts:
       - {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
   # cr-rotate
   - port:
-      number: 8084
+      number: 8080
       name: http-cr-rotate
       protocol: HTTP
     hosts:
@@ -73,44 +73,44 @@ spec:
       name: http-jetty-svc
       protocol: HTTP
     hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   - port:
       number: 1812
       name: tcp-rad-auth
       protocol: TCP
     hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   - port:
       number: 1813
       name: tcp-rad-acc
       protocol: TCP
     hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   # OPENDJ
   - port:
       number: 1636
       name: tcp-ldaps
       protocol: TCP
     hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   - port:
       number: 1389
       name: tcp-ldap
       protocol: TCP
     hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   - port:
       number: 8989
       name: tcp-repl
       protocol: TCP
     hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   - port:
       number: 4444
       name: tcp-admin
       protocol: TCP
     hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
+    - "*"
   # OXD-SERVER
   - port:
       number: 8444

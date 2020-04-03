@@ -16,4 +16,4 @@ spec:
       - destination:
           host: casa.{{ .Release.Namespace }}.svc.cluster.local
           port:
-            number: 8082
+            number: 8080

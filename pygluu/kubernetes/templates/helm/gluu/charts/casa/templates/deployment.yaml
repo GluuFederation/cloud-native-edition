@@ -45,7 +45,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: {{ .Values.service.name }}
-              containerPort: {{ .Values.service.targetPort }}
+              containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef: 
                 name: {{ include "casa.fullname" . }}
@@ -61,13 +61,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /casa
-              port: http
+              port: http-casa
             initialDelaySeconds: 25
             periodSeconds: 25
           readinessProbe:
             httpGet:
               path: /casa
-              port: http
+              port: http-casa
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:

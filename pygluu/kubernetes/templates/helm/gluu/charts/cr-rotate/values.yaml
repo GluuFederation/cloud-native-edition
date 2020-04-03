@@ -10,7 +10,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  targetPort: 8080
   port: 8084
 
 configMap:

@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - "opendj.{{ .Release.Namespace }}.svc.cluster.local"
+  - opendj.{{ .Release.Namespace }}.svc.cluster.local
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
