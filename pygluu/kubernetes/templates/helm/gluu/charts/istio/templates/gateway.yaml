@@ -69,23 +69,23 @@ spec:
     - oxpassport.{{ .Release.Namespace }}.svc.cluster.local
   # RADIUS
   - port:
-      number: 8085
+      number: 8080
       name: http-jetty-svc
       protocol: HTTP
     hosts:
-    - "*"
+    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
   - port:
       number: 1812
       name: tcp-rad-auth
       protocol: TCP
     hosts:
-    - "*"
+    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
   - port:
       number: 1813
       name: tcp-rad-acc
       protocol: TCP
     hosts:
-    - "*"
+    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
   # OPENDJ
   - port:
       number: 1636

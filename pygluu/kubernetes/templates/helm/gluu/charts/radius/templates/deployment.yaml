@@ -33,7 +33,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           {{- range $key, $value := .Values.service.ports }}
-          - containerPort: {{ $value.targetPort }}
+          - containerPort: {{ $value.port }}
             name: {{$key}}
           {{- end }}
         envFrom:

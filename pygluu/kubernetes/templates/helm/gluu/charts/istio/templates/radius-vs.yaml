@@ -23,5 +23,5 @@ spec:
       - destination:
           host: {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
           port:
-            number: 8085
+            number: 8080
 

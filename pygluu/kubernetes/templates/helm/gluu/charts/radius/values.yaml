@@ -16,13 +16,10 @@ service:
   ports:  
     tcp-rad-auth:
       port: 1812
-      targetPort: 1812
     tcp-rad-acc: 
       port: 1813
-      targetPort: 1813
     http-jetty-svc:
-      targetPort: 8080
-      port: 8085
+      port: 8080
 
 configMap:
   lbAddr: ""
