@@ -1,8 +1,8 @@
 name: googlegke
 # This builds, packages and tests pygluu-kubernetes
-on: [push]
-#  schedule:
-#    - cron:  '0 0 * * *'
+on:
+  schedule:
+    - cron:  '0 0 * * *'
 jobs:
   build:
 
@@ -231,7 +231,7 @@ jobs:
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || sudo kubectl logs -l app=radius -n gluu
           sudo kubectl get po -n gluu
           sudo ./pygluu-kubernetes.pyz helm-uninstall
-          sudo helm delete helm-ldap-backup -n gluu
+          sudo helm delete helm-ldap-backup -n gluu || echo "Resources not found"
           sleep 20
 
     - name: Test Pygluu couchbase kustomize
@@ -243,6 +243,7 @@ jobs:
         sudo ./pygluu-kubernetes.pyz install-couchbase
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
+        cat settings.json | sed 's/"COUCHBASE_URL": ""/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz install-no-wait
         sudo kubectl delete -f couchbase-backup.yaml || echo "Resources not found"
         sleep 30
@@ -292,7 +293,7 @@ jobs:
       if: always()
       run: |
           cd /home/runner/work/test/
-          sudo ./pygluu-kubernetes.pyz uninstall-couchbase
-          sudo ./pygluu-kubernetes.pyz helm-uninstall
+          sudo ./pygluu-kubernetes.pyz uninstall-couchbase || echo "pygluu failed"
+          sudo ./pygluu-kubernetes.pyz helm-uninstall || echo "pygluu failed"
           GKE_NAME=$(cat gke_cluster_name || echo "noname")
           sudo gcloud container clusters delete $GKE_NAME --zone ${{ secrets.google_region }}-a --quiet

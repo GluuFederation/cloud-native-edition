@@ -1,8 +1,8 @@
 name: awseks
 # This builds, packages and tests pygluu-kubernetes
-on: [push]
-#  schedule:
-#    - cron:  '0 0 * * *'
+on:
+  schedule:
+    - cron:  '0 0 * * *'
 jobs:
   build:
 
@@ -273,6 +273,7 @@ jobs:
         sudo ./pygluu-kubernetes.pyz install-couchbase
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' | sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
+        cat settings.json | sed 's/"COUCHBASE_URL": ""/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz helm-install
         kubectl -n gluu wait --for=condition=available --timeout=900s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu
         kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
@@ -295,7 +296,7 @@ jobs:
       if: always()
       run: |
           cd /home/runner/work/test/
-          sudo ./pygluu-kubernetes.pyz uninstall-couchbase
-          sudo ./pygluu-kubernetes.pyz helm-uninstall
+          sudo ./pygluu-kubernetes.pyz uninstall-couchbase || echo "pygluu failed"
+          sudo ./pygluu-kubernetes.pyz helm-uninstall || echo "pygluu failed"
           EKS_NAME=$(cat eks_cluster_name || echo "noname")
           eksctl delete cluster $EKS_NAME
