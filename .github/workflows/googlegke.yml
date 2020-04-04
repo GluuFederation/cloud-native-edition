@@ -270,6 +270,7 @@ jobs:
         sudo ./pygluu-kubernetes.pyz install-couchbase
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' | sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
+        cat settings.json | sed 's/"COUCHBASE_URL": ""/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz helm-install
         sudo kubectl delete -f couchbase-backup.yaml || echo "Resources not found"
         sleep 30
