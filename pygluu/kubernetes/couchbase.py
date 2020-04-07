@@ -126,7 +126,8 @@ class Couchbase(object):
         self.kubernetes.patch_or_create_namespaced_configmap(name="cb-restore-points",
                                                              namespace=self.settings["COUCHBASE_NAMESPACE"],
                                                              literal="restorepoints",
-                                                             value_of_literal=str(self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]))
+                                                             value_of_literal=str(
+                                                                 self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]))
 
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
@@ -160,35 +161,47 @@ class Couchbase(object):
 
     @property
     def calculate_couchbase_resources(self):
-        flows_string = self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] + self.settings[
-            "USING_CODE_FLOW"] + \
-                       self.settings["USING_SCIM_FLOW"]
         tps = int(self.settings["EXPECTED_TRANSACTIONS_PER_SEC"])
-        number_of_flows = flows_string.count("Y")
-        if number_of_flows < 1:
-            number_of_flows = 1
-        number_of_data_nodes = number_of_flows + 1
-        number_of_query_nodes = number_of_flows
-        number_of_index_nodes = number_of_flows
-        number_of_eventing_service_memory_nodes = number_of_flows - 1
-        if number_of_eventing_service_memory_nodes < 1:
-            number_of_eventing_service_memory_nodes = 1
+        number_of_data_nodes = 0
+        number_of_query_nodes = 0
+        number_of_index_nodes = 0
+        number_of_eventing_service_memory_nodes = 0
+        user_ratio = int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 50000000
+        tps_ratio = tps / 14000
+
+        if self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] == "Y":
+            number_of_data_nodes += tps_ratio * 7 * user_ratio
+            number_of_query_nodes += tps_ratio * 5 * user_ratio
+            number_of_index_nodes += tps_ratio * 5 * user_ratio
+            number_of_eventing_service_memory_nodes += tps_ratio * 4 * user_ratio
+
+        if self.settings["USING_CODE_FLOW"] == "Y":
+            number_of_data_nodes += tps_ratio * 14 * user_ratio
+            number_of_query_nodes += tps_ratio * 12 * user_ratio
+            number_of_index_nodes += tps_ratio * 13 * user_ratio
+            number_of_eventing_service_memory_nodes += tps_ratio * 7 * user_ratio
+
+        if self.settings["USING_SCIM_FLOW"] == "Y":
+            number_of_data_nodes += tps_ratio * 7 * user_ratio
+            number_of_query_nodes += tps_ratio * 5 * user_ratio
+            number_of_index_nodes += tps_ratio * 5 * user_ratio
+            number_of_eventing_service_memory_nodes += tps_ratio * 4 * user_ratio
 
         if not self.settings["COUCHBASE_GENERAL_STORAGE"]:
-            self.settings["COUCHBASE_GENERAL_STORAGE"] = str(int(((tps / 2000) * 200 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
+            self.settings["COUCHBASE_GENERAL_STORAGE"] = str(int((tps_ratio * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 125000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_DATA_STORAGE"]:
-            self.settings["COUCHBASE_DATA_STORAGE"] = str(int(((tps / 2000) * 500 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
+            self.settings["COUCHBASE_DATA_STORAGE"] = str(int((tps_ratio * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 100000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_INDEX_STORAGE"]:
-            self.settings["COUCHBASE_INDEX_STORAGE"] = str(int(((tps / 2000) * 150 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
+            self.settings["COUCHBASE_INDEX_STORAGE"] = str(int((tps_ratio * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 200000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_QUERY_STORAGE"]:
-            self.settings["COUCHBASE_QUERY_STORAGE"] = str(int(((tps / 2000) * 150 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
+            self.settings["COUCHBASE_QUERY_STORAGE"] = str(int((tps_ratio * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 200000)) + 5)) + "Gi"
         if not self.settings["COUCHBASE_ANALYTICS_STORAGE"]:
-            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = str(int(((tps / 2000) * 100 * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 10000000)) + 5)) + "Gi"
+            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = str(int((tps_ratio * (
+                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 250000)) + 5)) + "Gi"
 
         if self.settings["COUCHBASE_DATA_NODES"]:
             number_of_data_nodes = self.settings["COUCHBASE_DATA_NODES"]
@@ -199,50 +212,33 @@ class Couchbase(object):
         if self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]:
             number_of_eventing_service_memory_nodes = self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]
 
-        data_service_memory_quota = ((tps / 2000) * 12800 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 512
-        if data_service_memory_quota > 12800:
-            number_of_data_nodes = round(data_service_memory_quota / 12800)
-            number_of_query_nodes = number_of_data_nodes - 1
-            data_service_memory_quota = 12800
-        data_memory_request = data_service_memory_quota * 1.40
-        data_memory_limit = data_memory_request + 2000
-        data_cpu_request = data_service_memory_quota * 0.625
-        data_cpu_limit = data_cpu_request + 2000
+        data_service_memory_quota = (tps_ratio * 40000 * user_ratio) + 512
+        data_memory_request = data_service_memory_quota / 4
+        data_memory_limit = data_memory_request
+        data_cpu_request = data_service_memory_quota / 4
+        data_cpu_limit = data_cpu_request
 
-        query_memory_request = data_service_memory_quota * 1.40
-        query_memory_limit = query_memory_request + 2000
-        query_cpu_request = data_service_memory_quota * 0.625
-        query_cpu_limit = query_cpu_request + 2000
+        query_memory_request = data_memory_request
+        query_memory_limit = query_memory_request
+        query_cpu_request = data_service_memory_quota / 4
+        query_cpu_limit = query_cpu_request
 
-        index_service_memory_quota = ((tps / 2000) * 25600 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
-        if index_service_memory_quota > 25600:
-            number_of_index_nodes = round(index_service_memory_quota / 25600)
-            index_service_memory_quota = 25600
-        index_memory_request = index_service_memory_quota * 1.40
-        index_memory_limit = index_memory_request + 2000
-        index_cpu_request = index_service_memory_quota * 0.625
-        index_cpu_limit = index_cpu_request + 2000
+        index_service_memory_quota = (tps_ratio * 25000 * user_ratio) + 256
+        index_memory_request = index_service_memory_quota / 3
+        index_memory_limit = index_memory_request
+        index_cpu_request = index_service_memory_quota / 3
+        index_cpu_limit = index_cpu_request
 
-        search_service_memory_quota = ((tps / 2000) * 4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
-        eventing_service_memory_quota = (4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 256
-        analytics_service_memory_quota = (4266 * number_of_flows * (
-                int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 1000000)) + 1024
-        if search_service_memory_quota > 4266:
-            number_of_eventing_service_memory_nodes = round(search_service_memory_quota / 4266)
-            search_service_memory_quota = 4266
-            eventing_service_memory_quota = 4266
-            analytics_service_memory_quota = 4266
+        search_service_memory_quota = (tps_ratio * 4000 * user_ratio) + 256
+        eventing_service_memory_quota = (tps_ratio * 4000 * user_ratio) + 256
+        analytics_service_memory_quota = (tps_ratio * 4000 * user_ratio) + 1024
 
         search_eventing_analytics_memory_quota_sum = (search_service_memory_quota + eventing_service_memory_quota +
                                                       analytics_service_memory_quota)
-        search_eventing_analytics_memory_request = search_eventing_analytics_memory_quota_sum * 1.40
-        search_eventing_analytics_memory_limit = search_eventing_analytics_memory_request + 2000
-        search_eventing_analytics_cpu_request = search_eventing_analytics_memory_quota_sum * 0.625
-        search_eventing_analytics_cpu_limit = search_eventing_analytics_cpu_request + 2000
+        search_eventing_analytics_memory_request = tps_ratio * 10000 * user_ratio
+        search_eventing_analytics_memory_limit = search_eventing_analytics_memory_request
+        search_eventing_analytics_cpu_request = tps_ratio * 6000 * user_ratio
+        search_eventing_analytics_cpu_limit = search_eventing_analytics_cpu_request
 
         # Two services because query is assumed to take the same amount of mem quota
         total_mem_resources = data_service_memory_quota + data_service_memory_quota + index_service_memory_quota + \
