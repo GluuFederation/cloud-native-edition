@@ -3,7 +3,7 @@ apiVersion: batch/v1beta1
 metadata:
   name: {{ include "couchbase-backup.fullname" . }}
 spec:
-  schedule: "*/5 * * * *"
+  schedule: {{ .Values.backupSchedule }}
   concurrencyPolicy: {{ .Values.concurrencyPolicy }}
   jobTemplate:
     spec:
@@ -36,20 +36,25 @@ spec:
             - name: periodic-merge
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               env:
+                - name: RESTOREPOINTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ include "cb-restore-points.fullname" . }}
+                      key: restorepoints
                 - name: CB_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: cb-auth
+                      name: {{ include "couchbase-backup-cb-auth.fullname" . }}
                       key: username
                 - name: CB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: cb-auth
+                      name: {{ include "couchbase-backup-cb-auth.fullname" . }}
                       key: password
                 - name: CLUSTER
                   valueFrom:
                     secretKeyRef:
-                      name: {{ include "couchbase-backup.fullname" . }}
+                      name: {{ include "couchbase-backup-url.fullname" . }}
                       key: url
               command: ["/bin/sh", "-c" ,"/backups/backup-with-periodic-merge.sh"]
               volumeMounts:

@@ -4,12 +4,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: casa
+  labels:
+    APP_NAME: casa
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: casa
   template:
+    metadata:
+      labels:
+        APP_NAME: casa
     spec:
       hostAliases:
       - ip: NGINX_IP
@@ -44,18 +49,18 @@ spec:
             subPath: couchbase.crt
           - mountPath: /scripts
             name: update-lb-ip
-#        livenessProbe:
-#          httpGet:
-#            path: /casa
-#            port: 8080
-#          initialDelaySeconds: 30
-#          periodSeconds: 30
-#        readinessProbe:
-#          httpGet:
-#            path: /casa
-#            port: 8080
-#          initialDelaySeconds: 25
-#          periodSeconds: 25
+        livenessProbe:
+          httpGet:
+            path: /casa/health-check
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /casa/health-check
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 25
         resources:
           requests:
             memory: "500Mi"

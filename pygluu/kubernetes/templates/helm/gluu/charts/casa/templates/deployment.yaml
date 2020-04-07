@@ -6,6 +6,7 @@ metadata:
   name: {{ include "casa.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: casa
 {{ include "casa.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -16,6 +17,7 @@ spec:
   template:
     metadata:
       labels:
+        APP_NAME: casa
         app: {{ include "casa.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
       {{- if .Values.global.istio.enabled }}
@@ -39,7 +41,7 @@ spec:
             - /bin/sh
             - -c
             - |
-                /usr/bin/python /scripts/updatelbip.py &
+                /usr/bin/python /scripts/update-lb-ip.py &
                 /app/scripts/entrypoint.sh
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}

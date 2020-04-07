@@ -95,7 +95,7 @@ class App(object):
         self.kubernetes = Kubernetes()
         self.settings = settings
         self.timeout = timeout
-        if self.settings["DEPLOYMENT_ARCH"] != "microk8s":
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
             for port in [80, 443]:
                 port_available = check_port("0.0.0.0", port)
                 if not port_available:
@@ -156,8 +156,6 @@ class App(object):
                 kustomize_yaml_directory = dynamic_eks_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 8:
                 kustomize_yaml_directory = static_eks_folder
-            elif self.settings["LDAP_VOLUME_TYPE"] == 9:
-                kustomize_yaml_directory = efs_eks_folder
             else:
                 kustomize_yaml_directory = local_eks_folder
 
@@ -366,6 +364,7 @@ class App(object):
             parser.dump_it()
 
     def setup_tls(self):
+        starting_time = time.time()
         while True:
             try:
                 ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
@@ -376,6 +375,11 @@ class App(object):
             except Exception:
                 logger.info("Waiting for Gluu secret...")
                 time.sleep(10)
+                end_time = time.time()
+                running_time = end_time - starting_time
+                if running_time > 600:
+                    logger.error("Could not read Gluu secret. Please check config job pod logs.")
+                    raise SystemExit(1)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
                                                           namespace=self.settings["GLUU_NAMESPACE"],
@@ -384,34 +388,6 @@ class App(object):
                                                           secret_type="kubernetes.io/tls",
                                                           second_literal="tls.key",
                                                           value_of_second_literal=ssl_key)
-
-    def kustomize_shared_shib(self):
-        if self.settings["DEPLOYMENT_ARCH"] == "eks" and \
-                self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
-            command = self.kubectl + " kustomize shared-shib/efs > " + self.shared_shib_yaml
-            subprocess_cmd(command)
-
-        elif self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
-            command = self.kubectl + " kustomize shared-shib/nfs > " + self.shared_shib_yaml
-            subprocess_cmd(command)
-
-            nfs_pvc_parser = Parser(self.shared_shib_yaml, "PersistentVolumeClaim", "nfs-pvc")
-            nfs_pvc_parser["spec"]["resources"]["requests"]["storage"] = self.settings["NFS_STORAGE_SIZE"]
-            nfs_pvc_parser.dump_it()
-
-        else:
-            command = self.kubectl + " kustomize shared-shib/localstorage > " + self.shared_shib_yaml
-            subprocess_cmd(command)
-
-        if self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] != "efs":
-            shared_shib_pv_parser = Parser(self.shared_shib_yaml, "PersistentVolume", "shared-shib-pv")
-            shared_shib_pv_parser["spec"]["capacity"]["storage"] = self.settings["OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
-            shared_shib_pv_parser.dump_it()
-
-        shared_shib_pvc_parser = Parser(self.shared_shib_yaml, "PersistentVolumeClaim", "shared-shib-pvc")
-        shared_shib_pvc_parser["spec"]["resources"]["requests"]["storage"] = self.settings[
-            "OXTRUST_OXSHIBBOLETH_SHARED_STORAGE_SIZE"]
-        shared_shib_pvc_parser.dump_it()
 
     def kustomize_config(self):
         config_kustmoization_yaml = Path("./config/base/kustomization.yaml")
@@ -524,6 +500,8 @@ class App(object):
         subprocess_cmd(command)
 
         oxauth_cm_parser = Parser(self.oxauth_yaml, "ConfigMap")
+        if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
+            oxauth_cm_parser["data"]["GLUU_SYNC_CASA_MANIFESTS"] = "true"
         oxauth_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         oxauth_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
         oxauth_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
@@ -568,6 +546,8 @@ class App(object):
         command = self.kubectl + " kustomize oxtrust/base > " + self.oxtrust_yaml
         subprocess_cmd(command)
         oxtrust_cm_parser = Parser(self.oxtrust_yaml, "ConfigMap")
+        if self.settings["ENABLE_OXSHIBBOLETH"] != "Y":
+            oxtrust_cm_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         oxtrust_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         oxtrust_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
         oxtrust_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
@@ -882,7 +862,7 @@ class App(object):
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
-                             "gluu-casa"]
+                             "gluu-casa", "gluu-ingress-fido2-configuration"]
 
         for ingress_name in ingress_name_list:
             yaml = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
@@ -923,76 +903,6 @@ class App(object):
                                                                 namespace=self.settings["GLUU_NAMESPACE"])
             if not self.settings["AWS_LB_TYPE"] == "alb":
                 self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj", self.timeout)
-
-    def deploy_nfs(self):
-        nfs_service_yaml = "./shared-shib/nfs/services.yaml"
-        parser = Parser(nfs_service_yaml, "Service")
-        parser["metadata"]["namespace"] = self.settings["GLUU_NAMESPACE"]
-        parser.dump_it()
-        self.kubernetes.create_objects_from_dict("shared-shib/nfs/services.yaml")
-        nfs_ip = None
-        while True:
-            if nfs_ip:
-                break
-            nfs_ip = self.kubernetes.read_namespaced_service(name="nfs-server",
-                                                             namespace=self.settings["GLUU_NAMESPACE"]).spec.cluster_ip
-            time.sleep(10)
-
-        shared_shib_pv_parser = Parser(self.shared_shib_yaml, "PersistentVolume", "shared-shib-pv")
-        shared_shib_pv_parser["spec"]["nfs"]["server"] = nfs_ip
-        shared_shib_pv_parser.dump_it()
-
-        shared_shib_sc_parser = Parser(self.shared_shib_yaml, "StorageClass")
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            shared_shib_sc_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-            shared_shib_sc_parser["provisioner"] = "kubernetes.io/gce-pd"
-        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
-            shared_shib_sc_parser["provisioner"] = "kubernetes.io/azure-disk"
-            del shared_shib_sc_parser["parameters"]["type"]
-            shared_shib_sc_parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
-        unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
-        shared_shib_sc_parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-        shared_shib_sc_parser.dump_it()
-
-        self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        if not self.settings["AWS_LB_TYPE"] == "alb":
-            # Timeout cannot be zero to execute commands in pod
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=nfs-server", 300)
-
-        exec_command_shared_shib = ["mkdir", "-p", "/exports/opt/shared-shibboleth-idp"]
-
-        self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_command_shared_shib,
-                                                        app_label="app=nfs-server",
-                                                        namespace=self.settings["GLUU_NAMESPACE"])
-
-    def deploy_efs(self):
-        efs_deploy_parser = Parser(self.shared_shib_yaml, "Deployment")
-        efs_env_list = efs_deploy_parser["spec"]["template"]["spec"]["containers"][0]["env"]
-        for env in efs_env_list:
-            if env["name"] == "FILE_SYSTEM_ID":
-                env["value"] = self.settings["EFS_FILE_SYSTEM_ID"]
-            elif env["name"] == "AWS_REGION":
-                env["value"] = self.settings["EFS_AWS_REGION"]
-
-            # Check to makre sure this DNS Name is also changed when using efs
-            # elif env["name"] == "DNS_NAME":
-            #    env["value"] = self.settings["EFS_DNS"]
-
-        efs_deploy_parser["spec"]["template"]["spec"]["volumes"][0]["nfs"]["server"] = self.settings["EFS_DNS"]
-        efs_deploy_parser.dump_it()
-        self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
-        if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=efs-provisioner", self.timeout)
-
-    def deploy_shared_shib(self):
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
-                self.deploy_nfs()
-            elif self.settings["DEPLOYMENT_ARCH"] == "eks" and \
-                    self.settings["OXTRUST_OXSHIBBOLETH_SHARED_VOLUME_TYPE"] == "efs":
-                self.deploy_efs()
-            else:
-                self.kubernetes.create_objects_from_dict(self.shared_shib_yaml)
 
     def deploy_update_lb_ip(self):
         self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml)
@@ -1108,6 +1018,9 @@ class App(object):
             "GLUU_PERSISTENCE_LDAP_MAPPING=" + self.settings["HYBRID_LDAP_HELD_DATA"],
             "GLUU_PERSISTENCE_TYPE=" + self.settings["PERSISTENCE_BACKEND"]]
         kustomize_parser.dump_it()
+        cron_job_parser = Parser("ldap/backup/cronjobs.yaml", "CronJob")
+        cron_job_parser["spec"]["schedule"] = self.settings["LDAP_BACKUP_SCHEDULE"]
+        cron_job_parser.dump_it()
         command = "kubectl kustomize ldap/backup > ./ldap-backup.yaml"
         subprocess_cmd(command)
         self.kubernetes.create_objects_from_dict("./ldap-backup.yaml")
@@ -1157,7 +1070,6 @@ class App(object):
         self.update_kustomization_yaml()
         if not restore:
             self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
-        self.kustomize_shared_shib()
         self.kustomize_config()
         self.kustomize_ldap()
         self.kustomize_persistence()
@@ -1186,8 +1098,6 @@ class App(object):
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
                                                                           encoded_cb_pass_string)
 
-        self.deploy_shared_shib()
-
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             if restore:
                 self.mount_config()
@@ -1210,7 +1120,8 @@ class App(object):
                 self.check_lb()
             else:
                 self.deploy_ldap()
-                self.setup_backup_ldap()
+                if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+                    self.setup_backup_ldap()
 
         if not restore:
             if self.settings["AWS_LB_TYPE"] == "alb":
@@ -1288,7 +1199,7 @@ class App(object):
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                                           "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
-                                          "gluu-ingress-stateful", "gluu-casa"]
+                                          "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
         eks_yamls_folder = Path("./gluueksyamls")

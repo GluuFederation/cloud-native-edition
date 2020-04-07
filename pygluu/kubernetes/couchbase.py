@@ -122,10 +122,18 @@ class Couchbase(object):
                                                           value_of_literal=encoded_cb_user_string,
                                                           second_literal="password",
                                                           value_of_second_literal=encoded_cb_pass_string)
-        subprocess_cmd("alias kubectl='microk8s.kubectl'")
+
+        self.kubernetes.patch_or_create_namespaced_configmap(name="cb-restore-points",
+                                                             namespace=self.settings["COUCHBASE_NAMESPACE"],
+                                                             literal="restorepoints",
+                                                             value_of_literal=str(self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]))
+
         kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
         kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
         kustomize_parser.dump_it()
+        cron_job_parser = Parser("couchbase/backup/cronjobs.yaml", "CronJob")
+        cron_job_parser["spec"]["schedule"] = self.settings["COUCHBASE_BACKUP_SCHEDULE"]
+        cron_job_parser.dump_it()
         command = "kubectl kustomize couchbase/backup > ./couchbase-backup.yaml"
         subprocess_cmd(command)
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-url",
@@ -533,7 +541,8 @@ class Couchbase(object):
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled", 700)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled", 700)
         # Setup couchbase backups
-        self.setup_backup_couchbase()
+        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+            self.setup_backup_couchbase()
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] == "Y":

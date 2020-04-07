@@ -16,6 +16,10 @@ fullnameOverride: ""
 
 
 cbUrl: cbgluu.default.svc.cluster.local #CHANGE THIS
+password: SamPle
+username: admin
+backupRestorePoints: 3
+backupSchedule: "*/30 * * * *"
 concurrencyPolicy: Forbid
 
 persistence:

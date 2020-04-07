@@ -1,7 +1,10 @@
 ![microk8s](https://github.com/GluuFederation/enterprise-edition/workflows/microk8s/badge.svg?branch=4.1)
 ![minikube](https://github.com/GluuFederation/enterprise-edition/workflows/minikube/badge.svg?branch=4.1)
+![awseks](https://github.com/GluuFederation/enterprise-edition/workflows/awseks/badge.svg?branch=4.1)
+![googlegke](https://github.com/GluuFederation/enterprise-edition/workflows/googlegke/badge.svg?branch=4.1)
 
-# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.0-green.svg?style=for-the-badge)
+
+# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.3-green.svg?style=for-the-badge)
 
 ## Kubernetes recipes
 
@@ -60,3 +63,24 @@
     ValueError: Invalid value for `conditions`, must not be `None`
   ```
   To fix this error just rerun the installation command `./pygluu-kubernetes.pyz <command>` again.
+
+!!!note
+    Another process to circumvent this bug is to build python-kubernetes-client manually detailed below.
+    
+```bash
+    git clone --recursive https://github.com/kubernetes-client/python.git
+    cd python
+    git checkout release-11.0
+    sed 's/raise ValueError("Invalid value for `conditions`, must not be `None`")/pass/g' ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py > tmpfile.py && mv tmpfile.py ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py
+    sudo python3 setup.py install
+``` 
+
+Now remove the line requiring python client in pygluu-kubernetes `setup.py` file.
+
+```bash
+sed '/kubernetes>=11.0.0b2/d' ./setup.py > tmpfile.py && mv tmpfile.py setup.py
+```
+
+Build pygluu-kubernets [manually](#build-pygluu-kubernetespyz-manually).
+    
+ 

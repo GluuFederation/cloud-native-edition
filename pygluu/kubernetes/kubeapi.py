@@ -18,14 +18,15 @@ logger = get_logger("gluu-kubernetes-api")
 
 # TODO: remove this function once fixed by kubernetes
 def fix_kubernetes_client_11_0_0b2():
+    shiv_dir = Path(os.path.expanduser("~/.shiv"))
     try:
-        def get_immediate_subdirectories(a_dir=Path("/root/.shiv")):
+        def get_immediate_subdirectories(a_dir=shiv_dir):
             return [name for name in os.listdir(a_dir)
                     if os.path.isdir(os.path.join(a_dir, name))]
 
         all_shiv_dirs = get_immediate_subdirectories()
         for directory in all_shiv_dirs:
-            bug_file = Path("/root/.shiv/" + directory +
+            bug_file = Path(shiv_dir + "/" + directory +
                             "/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py")
 
             with open(bug_file, 'r+') as fh:

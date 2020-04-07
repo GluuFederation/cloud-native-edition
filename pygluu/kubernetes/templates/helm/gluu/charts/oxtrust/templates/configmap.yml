@@ -6,6 +6,7 @@ metadata:
   name: {{ template "oxtrust.fullname" . }}-cm
   namespace: {{ .Release.Namespace }}
 data:
+  GLUU_CONTAINER_METADATA: {{ .Values.global.containerMetadataName | quote }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
@@ -18,6 +19,7 @@ data:
   {{- end }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
   GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
+  GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.global.gluuSyncShibManifests | quote }}
     # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}

@@ -5,7 +5,6 @@ global:
   # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
     enabled: false
-    awsLocalStorage: true
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
   provisioner: k8s.io/minikube-hostpath
@@ -40,9 +39,11 @@ global:
   gluuRedisType: STANDALONE
   gluuRedisSslTruststore: ""
   gluuRedisSentinelGroup: ""
-
+  gluuSyncShibManifests: false
+  gluuSyncCasaManifests: false
   gluuMaxRamPercent: "75.0"
   configAdapterName: kubernetes
+  containerMetadataName: kubernetes
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
@@ -85,9 +86,6 @@ global:
   oxshibboleth:
     enabled: false
 
-  efs-provisioner:
-    enabled: false
-
   oxd-server:
     enabled: false 
 
@@ -101,32 +99,12 @@ global:
   key-rotation:
     enabled: false
 
-  nfs:
-    enabled: false  
-
-  shared-shib:
-    enabled: true 
- 
   cr-rotate:
     enabled: false  
 
   istio:
-     enabled: true
-#efs-provisioner used for creating shared file system in AWS
-efs-provisioner:
-  efsProvisioner:
-    # If specified, use this DNS or IP to connect the EFS
-    dnsName: "" # fs-xxxxxx.efs.us-east-1.amazonaws.com
-    efsFileSystemId: ""
-    awsRegion: us-west-2
-    path: /opt/shared-shibboleth-idp
-    provisionerName: example.com/gcp-efs
-    storageClass:
-      name: gcp-efs
-      isDefault: false
-    persistentVolume:
-      accessModes: ReadWriteMany
-      storage: 5Gi
+    enabled: true
+
 casa:
   image:
     repository: gluufederation/casa
@@ -152,7 +130,7 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.1_02
+    tag: 4.1.1_01
 
 cr-rotate:
   image:
@@ -165,12 +143,6 @@ key-rotation:
     repository: gluufederation/key-rotation
     tag: 4.1.1_01
     pullPolicy: Always
-
-nfs:
-  image:
-    repository: k8s.gcr.io/volume-nfs
-    tag: 0.8
-    pullPolicy: IfNotPresent
 
 opendj:
   # options true/false : must be enabled if cache type is REDIS
@@ -188,7 +160,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.1_02
+    tag: 4.1.1_01
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false

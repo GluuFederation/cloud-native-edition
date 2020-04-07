@@ -50,9 +50,6 @@ spec:
         - configMapRef:
             name: {{ template "oxtrust.fullname" . }}-cm
         volumeMounts:
-          # names must match the volume names below
-          - name: {{ .Release.Name }}-shared-shib
-            mountPath: "/opt/shared-shibboleth-idp"
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxtrust.fullname" .}}-updatelbip
             mountPath: /scripts
@@ -91,19 +88,6 @@ spec:
           secret:
             secretName: {{ .Release.Name }}-cb-crt  
       {{- end }}
-        - name: {{ .Release.Name }}-shared-shib
-          persistentVolumeClaim:
-            {{- if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( not .Values.global.cloud.awsLocalStorage ) }}
-            claimName: efs
-            {{- else if eq .Values.global.provisioner "k8s.io/minikube-hostpath" }}
-            claimName: {{ .Release.Name }}-shared-shib-pvc
-            {{- else if eq .Values.global.provisioner "microk8s.io/hostpath" }}
-            claimName: {{ .Release.Name }}-shared-shib-pvc
-            {{- else if and ( and .Values.global.cloud.enabled (eq .Values.global.provisioner "kubernetes.io/aws-ebs")) ( .Values.global.cloud.awsLocalStorage ) }}
-            claimName: {{ .Release.Name }}-shared-shib-pvc
-            {{- else }}
-            claimName: {{ .Release.Name }}-nfs
-            {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
