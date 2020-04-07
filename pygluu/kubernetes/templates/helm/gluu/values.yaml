@@ -22,7 +22,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: "192.168.64.20" # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -47,7 +47,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap
+  gluuPersistenceType: couchbase
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
