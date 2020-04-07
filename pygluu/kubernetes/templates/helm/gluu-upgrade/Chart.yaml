@@ -1,0 +1,10 @@
+apiVersion: v2
+name: gluu-upgrade
+description: A Helm chart for Kubernetes
+type: application
+version: 1.0.0
+appVersion: 4.1.1_02
+maintainers:
+- name: GLUU
+email: support@gluu.org
+home: https://www.gluu.org/ee

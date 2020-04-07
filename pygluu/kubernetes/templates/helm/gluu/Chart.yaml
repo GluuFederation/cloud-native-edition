@@ -65,5 +65,3 @@ dependencies:
     - name: persistence
       condition: global.persistence.enabled
       version: 1.0.0
-      
-  

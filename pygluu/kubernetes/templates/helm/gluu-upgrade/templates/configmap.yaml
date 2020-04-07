@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ include "gluu-upgrade.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+data:
+  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace }}
+  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace }}
+  GLUU_CONFIG_ADAPTER: {{ .Values.configAdapterName }}
+  GLUU_SECRET_ADAPTER: {{ .Values.configSecretAdapter }}
+  DOMAIN: {{ .Values.domain }}
+    # options: ldap/couchbase/hybrid
+  GLUU_PERSISTENCE_TYPE: {{ .Values.gluuPersistenceType }}
+    # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+  {{- if or (eq .Values.gluuPersistenceType "hybrid") (eq .Values.gluuPersistenceType "ldap") }}
+  GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.gluuPersistenceLdapMapping | quote }}
+  {{- end }}
+  {{- if or (eq .Values.gluuPersistenceType "ldap") (eq .Values.gluuPersistenceType "hybrid")  }}
+  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  GLUU_LDAP_URL: {{ .Values.gluuLdapUrl | quote }}
+  {{- else if or (eq .Values.gluuPersistenceType "couchbase") (eq .Values.gluuPersistenceType "hybrid") }}
+  #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  GLUU_COUCHBASE_URL: {{ .Values.gluuCouchbaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.gluuCouchbaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: {{ .Values.gluuCouchbaseCertFile | quote }}
+  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.gluuCouchbasePassFile | quote }}
+  {{- end }} 
+  
