@@ -553,6 +553,7 @@ If during installation the release was not defined, release name is checked by r
 | `persistence.configmap.gluuPassportEnabled`        | Auto install passport service chart                                                                                              | `false`                             |
 | `persistence.configmap.gluuRadiusEnabled`          | Auto install radius service chart                                                                                                | `false`                             |
 | `persistence.configmap.gluuSamlEnabled`            | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not.                         | `true`                              |
+| `global.upgrade.enabled`                           | Upgrade Gluu server static configuration and LDAP data.    | `false`                   |
 | `oxd-server.enabled`                               | Enable or disable installation of OXD server                                                                                     | `false`                             |
 | `oxd-server.configmap.adminKeystorePassword`       | Admin keystore password                                                                                                          | `examplePass`                       |
 | `oxd-server.configmap.applicationKeystorePassword` | Password used to decrypt the keystore                                                                                            | `examplePass`                       |  

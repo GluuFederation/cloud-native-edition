@@ -65,5 +65,9 @@ dependencies:
     - name: persistence
       condition: global.persistence.enabled
       version: 1.0.0
+
+    - name: upgrade
+      condition: global.upgrade.enabled
+      version: 1.0.0
       
   

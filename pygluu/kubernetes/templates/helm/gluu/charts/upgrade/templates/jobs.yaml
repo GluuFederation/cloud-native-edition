@@ -1,0 +1,42 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "upgrade.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "upgrade.labels" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      name: {{ include "upgrade.name" . }}
+      labels:
+        app: {{ include "upgrade.name" . }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ include "upgrade.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        args: ["--source", "4.0", "--target", "4.1"]
+        envFrom:
+        - configMapRef:
+            name: {{ include "upgrade.fullname" . }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+        volumeMounts:
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
+        {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+      volumes:
+        - name: cb-pass
+          secret:
+            secretName: {{ .Release.Name }}-cb-pass
+        - name: cb-crt 
+          secret:
+            secretName: {{ .Release.Name }}-cb-crt
+      {{- end }}

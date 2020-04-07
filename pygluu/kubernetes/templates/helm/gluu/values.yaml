@@ -47,7 +47,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
@@ -76,6 +76,9 @@ global:
 
   persistence:
     enabled: true
+
+  upgrade:
+    enabled: false
 
   oxtrust:
     enabled: true
@@ -167,6 +170,11 @@ persistence:
     gluuCasaEnabled: false   
     gluuRadiusEnabled: false 
     gluuSamlEnabled: true
+
+upgrade:
+  image:
+    repository: gluufederation/upgrade
+    tag: 4.1.0_01
 
 oxauth:
   image:
