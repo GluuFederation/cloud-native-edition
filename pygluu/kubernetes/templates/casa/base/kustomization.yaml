@@ -15,6 +15,7 @@ configMapGenerator:
     literals:
       - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
       - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
+      - GLUU_CONTAINER_METADATA="kubernetes"
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"
       - DOMAIN=FQDN
