@@ -39,7 +39,8 @@ setup(
         "ruamel.yaml>=0.16.5",
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
-        "pyDes>=2.0.0"  # TODO: Remove the following as soon as the update secret is moved to backend
+        "pyDes>=2.0.0",  # TODO: Remove the following as soon as the update secret is moved to backend
+        "google-api-python-client>=1.8.0" # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
     ],
     classifiers=[
         "Intended Audience :: Developers",
