@@ -36,7 +36,6 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
-        "kubernetes>=11.0.0b2",
         "ruamel.yaml>=0.16.5",
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
