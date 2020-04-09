@@ -23,8 +23,8 @@ def subprocess_cmd(command):
 
 def install_kubernetes_client_11_0_0():
     logger.warning("https://github.com/kubernetes-client/python/issues/1022"
-                   "We have provided an in-house workaround for the issue regarding  building CRDs with"
-                   "kubernetes client. This workaround will be removed once resolved by kubernetes")
+                   " We have provided an in-house workaround for the issue regarding  building CRDs with"
+                   " kubernetes client. This workaround will be removed once resolved by kubernetes")
     kubernetes_package = os.path.join(os.path.dirname(__file__), "templates/kubernetesv11.0.0.tar.gz")
     kubernetes_package_setup = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0/setup.py")
     extract_kubernetes_client_tar(kubernetes_package)
@@ -32,7 +32,7 @@ def install_kubernetes_client_11_0_0():
     working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0")
     os.chdir(working_directory_kubernetes_client)
     logger.info("Installing Kubernetes python client...")
-    subprocess_cmd("python3 {} install".format(kubernetes_package_setup))
+    subprocess_cmd("sudo python3 {} install".format(kubernetes_package_setup))
     os.chdir(curdir)
 
 
