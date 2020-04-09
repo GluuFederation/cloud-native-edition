@@ -52,7 +52,6 @@ setup(
         "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "requests", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "requests-oauthlib", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
-        "urllib3>=1.24.2" # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
     ],
     classifiers=[
         "Intended Audience :: Developers",
