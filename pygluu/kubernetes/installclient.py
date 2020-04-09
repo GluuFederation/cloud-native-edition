@@ -26,14 +26,19 @@ def install_kubernetes_client_11_0_0():
                    " We have provided an in-house workaround for the issue regarding  building CRDs with"
                    " kubernetes client. This workaround will be removed once resolved by kubernetes")
     kubernetes_package = os.path.join(os.path.dirname(__file__), "templates/kubernetesv11.0.0.tar.gz")
-    kubernetes_package_setup = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0/setup.py")
+    kubernetes_package_setup = os.path.join(os.path.dirname(__file__),
+                                            "kubernetes-client/kubernetesv11.0.0/setup.py")
     extract_kubernetes_client_tar(kubernetes_package)
-    curdir = os.getcwd()
-    working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0")
-    os.chdir(working_directory_kubernetes_client)
-    logger.info("Installing Kubernetes python client...")
-    subprocess_cmd("sudo python3 {} install".format(kubernetes_package_setup))
-    os.chdir(curdir)
+    working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__),
+                                                       "kubernetes-client/kubernetesv11.0.0/kubernetes/__init__.py")
+    MODULE_PATH = working_directory_kubernetes_client
+    MODULE_NAME = "kubernetes"
+    import importlib
+    import sys
+    spec = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
 
 
 def extract_kubernetes_client_tar(tar_file):
