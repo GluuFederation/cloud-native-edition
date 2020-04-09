@@ -42,7 +42,17 @@ setup(
         "pyDes>=2.0.0",  # TODO: Remove the following as soon as the update secret is moved to backend
         "google-api-python-client>=1.8.0", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "requests_oauthlib>=1.3.0", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
-        "websockets>=8.1" # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "certifi>=14.05.14", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "six>=1.9.0", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "python-dateutil>=2.5.3", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "setuptools>=46.1.3", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "pyyaml>=3.12", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "google-auth>=1.0.1", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "ipaddress>=1.0.17;python_version=='2.7'", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "requests", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "requests-oauthlib", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "urllib3>=1.24.2" # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
     ],
     classifiers=[
         "Intended Audience :: Developers",
