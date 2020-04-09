@@ -12,56 +12,44 @@ from pathlib import Path
 import subprocess
 import shutil
 import os
+import tarfile
 
 logger = get_logger("gluu-kubernetes-api")
 
 
-# TODO: remove this function once fixed by kubernetes
-def fix_kubernetes_client_11_0_0b2():
-    shiv_dir = Path(os.path.expanduser("~/.shiv"))
-    try:
-        def get_immediate_subdirectories(a_dir=shiv_dir):
-            return [name for name in os.listdir(a_dir)
-                    if os.path.isdir(os.path.join(a_dir, name))]
-
-        all_shiv_dirs = get_immediate_subdirectories()
-        for directory in all_shiv_dirs:
-            bug_file = Path(shiv_dir + "/" + directory +
-                            "/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py")
-
-            with open(bug_file, 'r+') as fh:
-                lines = fh.readlines()
-                for line in lines:
-                    if "if conditions is None:" in line:
-                        fh.seek(0)
-                        lines.insert(lines.index(line), '        conditions = 1\n')
-                        fh.writelines(lines)
-                        break
-
-            with open(bug_file, "r+") as fh:
-                lines = fh.readlines()
-                fh.seek(0)
-                for line in lines:
-                    if "if conditions is None:" not in line and \
-                            "Invalid value for `conditions`, must not be `None`" not in line:
-                        fh.write(line)
-                fh.truncate()
-
-    except Exception:
-        logger.warning("Installation might fail due to a bug inside the ~/.shiv/*/"
-                       "site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py "
-                       "to fix this please open that file and set conditions = 1 above line 101")
-
-
-# TODO: remove this function once fixed by kubernetes
-fix_kubernetes_client_11_0_0b2()
-
-
+# TODO: remove this section once fixed by kubernetes
 def subprocess_cmd(command):
     """Execute command"""
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
     proc_stdout = process.communicate()[0].strip()
     return proc_stdout
+
+
+def install_kubernetes_client_11_0_0():
+    logger.warning("https://github.com/kubernetes-client/python/issues/1022"
+                   "We have provided an in-house workaround for the issue regarding  building CRDs with"
+                   "kubernetes client. This workaround will be removed once resolved by kubernetes")
+    kubernetes_package = os.path.join(os.path.dirname(__file__), "templates/kubernetesv11.0.0.tar.gz")
+    kubernetes_package_setup = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0/setup.py")
+    extract_kubernetes_client_tar(kubernetes_package)
+    curdir = os.getcwd()
+    working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0")
+    os.chdir(working_directory_kubernetes_client)
+    logger.info("Installing Kubernetes python client...")
+    subprocess_cmd("python3 {} install".format(kubernetes_package_setup))
+    os.chdir(curdir)
+
+
+def extract_kubernetes_client_tar(tar_file):
+    kubernetes_extract_folder = os.path.join(os.path.dirname(__file__), "kubernetes-client")
+    extract_folder = Path(kubernetes_extract_folder)
+    #logger.info("Extracting {} in {} ".format(tar_file, extract_folder))
+    tr = tarfile.open(tar_file)
+    tr.extractall(path=extract_folder)
+    tr.close()
+
+install_kubernetes_client_11_0_0()
+# TODO: End  of section to be removed
 
 
 def check_microk8s_kube_config_file():
