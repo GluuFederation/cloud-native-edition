@@ -9,47 +9,10 @@ from .yamlparser import Parser, get_logger
 import sys
 import time
 from pathlib import Path
-import subprocess
 import shutil
 import os
-import tarfile
 
 logger = get_logger("gluu-kubernetes-api")
-
-
-# TODO: remove this section once fixed by kubernetes
-def subprocess_cmd(command):
-    """Execute command"""
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    return proc_stdout
-
-
-def install_kubernetes_client_11_0_0():
-    logger.warning("https://github.com/kubernetes-client/python/issues/1022"
-                   "We have provided an in-house workaround for the issue regarding  building CRDs with"
-                   "kubernetes client. This workaround will be removed once resolved by kubernetes")
-    kubernetes_package = os.path.join(os.path.dirname(__file__), "templates/kubernetesv11.0.0.tar.gz")
-    kubernetes_package_setup = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0/setup.py")
-    extract_kubernetes_client_tar(kubernetes_package)
-    curdir = os.getcwd()
-    working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__), "kubernetes-client/kubernetesv11.0.0")
-    os.chdir(working_directory_kubernetes_client)
-    logger.info("Installing Kubernetes python client...")
-    subprocess_cmd("python3 {} install".format(kubernetes_package_setup))
-    os.chdir(curdir)
-
-
-def extract_kubernetes_client_tar(tar_file):
-    kubernetes_extract_folder = os.path.join(os.path.dirname(__file__), "kubernetes-client")
-    extract_folder = Path(kubernetes_extract_folder)
-    #logger.info("Extracting {} in {} ".format(tar_file, extract_folder))
-    tr = tarfile.open(tar_file)
-    tr.extractall(path=extract_folder)
-    tr.close()
-
-install_kubernetes_client_11_0_0()
-# TODO: End  of section to be removed
 
 
 def check_microk8s_kube_config_file():
