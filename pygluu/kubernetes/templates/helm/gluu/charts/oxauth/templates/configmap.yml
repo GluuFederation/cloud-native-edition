@@ -6,6 +6,7 @@ metadata:
   name: {{ template "oxauth.fullname" . }}-cm
   namespace: {{ .Release.Namespace }}
 data:
+  GLUU_CONTAINER_METADATA: {{ .Values.global.containerMetadataName | quote }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}

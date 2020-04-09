@@ -18,6 +18,7 @@ configMapGenerator:
       - LB_ADDR=LBADDR
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"
+      - GLUU_CONTAINER_METADATA="kubernetes"
       - DOMAIN=FQDN
       - GLUU_MAX_RAM_PERCENTAGE="75.0"
       - GLUU_SYNC_CASA_MANIFESTS="false"
