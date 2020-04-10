@@ -28,11 +28,6 @@ jobs:
         sudo pip3 install setuptools --upgrade
         sudo pip3 install pyOpenSSL --upgrade
         sudo pip3 install requests --upgrade
-        git clone --recursive https://github.com/kubernetes-client/python.git
-        cd python
-        git checkout release-11.0
-        sed 's/raise ValueError("Invalid value for `conditions`, must not be `None`")/pass/g' ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py > tmpfile.py && mv tmpfile.py ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py
-        sudo python3 setup.py install
 
     - name: Lint with flake8
       run: |
@@ -50,7 +45,6 @@ jobs:
         mkdir /home/runner/work/test/
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/
-        sed '/kubernetes>=11.0.0b2/d' ./setup.py > tmpfile.py && mv tmpfile.py setup.py
         sudo make zipapp
 
     - name: Install Google GKE dependencies
