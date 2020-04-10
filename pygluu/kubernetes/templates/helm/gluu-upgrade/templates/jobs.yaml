@@ -18,7 +18,7 @@ spec:
       containers:
       - name: {{ include "gluu-upgrade.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        args: ["--source", "4.0", "--target", "4.1"]
+        args: ["--source", {{ .Values.source | quote }}, "--target", {{ .Values.target | quote }}]
         envFrom:
         - configMapRef:
             name: {{ include "gluu-upgrade.fullname" . }}
