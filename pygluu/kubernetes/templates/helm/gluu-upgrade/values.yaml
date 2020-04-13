@@ -10,8 +10,8 @@ fullnameOverride: ""
 
 configAdapterName: kubernetes
 configSecretAdapter: kubernetes
-source: 4.0
-target: 4.1
+source: "4.0"
+target: "4.1"
 # domain is the FQDN used in main gluu server chart 
 domain: demoexample.gluu.org
 # options: ldap/couchbase/hybrid
