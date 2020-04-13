@@ -43,8 +43,10 @@ class Helm(object):
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
             self.kubernetes.delete_namespace(self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
-            self.kubernetes.delete_cluster_role(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
-            self.kubernetes.delete_cluster_role_binding(self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
+            self.kubernetes.delete_cluster_role(
+                self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
+            self.kubernetes.delete_cluster_role_binding(
+                self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
             exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com")
             exec_cmd("helm repo update")
         command = "helm install {} stable/nginx-ingress --namespace={}".format(
@@ -261,15 +263,14 @@ class Helm(object):
             values_file_parser["ldapPass"] = self.settings["LDAP_PW"]
             values_file_parser.dump_it()
 
-
             exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
                 self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
-                                                                            self.settings["GLUU_NAMESPACE"]))
+                                                        self.settings["GLUU_NAMESPACE"]))
         exec_cmd("helm delete {} --namespace={}".format(self.ldap_backup_release_name,
-                                                                            self.settings["GLUU_NAMESPACE"]))
+                                                        self.settings["GLUU_NAMESPACE"]))
 
     def uninstall_nginx_ingress(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['NGINX_INGRESS_RELEASE_NAME'],
