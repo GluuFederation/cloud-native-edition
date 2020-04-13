@@ -1,0 +1,29 @@
+# gluuReleaseName is the release name used when deploying main gluu server chart
+gluuReleaseName: cv # CHANGE 
+
+image:
+  repository: gluufederation/upgrade
+  tag: 4.1.0_01
+
+nameOverride: ""
+fullnameOverride: ""
+
+configAdapterName: kubernetes
+configSecretAdapter: kubernetes
+source: "4.0"
+target: "4.1"
+# domain is the FQDN used in main gluu server chart 
+domain: demoexample.gluu.org
+# options: ldap/couchbase/hybrid
+gluuPersistenceType: ldap
+# options: default/user/site/cache/statistic
+# used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+gluuPersistenceLdapMapping: default 
+gluuLdapUrl: opendj:1636
+# gluuCouchbaseUrl is the couchbase service name
+gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
+gluuCouchbaseUser: admin
+# gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
+gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+# gluuCouchbaseCertFile location of
+gluuCouchbaseCertFile: /etc/certs/couchbase.crt

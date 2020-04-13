@@ -1,0 +1,42 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "gluu-upgrade.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "gluu-upgrade.labels" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      name: {{ include "gluu-upgrade.name" . }}
+      labels:
+        app: {{ include "gluu-upgrade.name" . }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ include "gluu-upgrade.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        args: ["--source", {{ .Values.source | quote }}, "--target", {{ .Values.target | quote }}]
+        envFrom:
+        - configMapRef:
+            name: {{ include "gluu-upgrade.fullname" . }}
+        {{- if or (eq .Values.gluuPersistenceType "couchbase") (eq .Values.gluuPersistenceType "hybrid")  }}
+        volumeMounts:
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
+        {{- end }}
+      {{- if or (eq .Values.gluuPersistenceType "couchbase") (eq .Values.gluuPersistenceType "hybrid")  }}
+      volumes:
+        - name: cb-pass
+          secret:
+            secretName: {{ .Values.gluuReleaseName }}-cb-pass
+        - name: cb-crt 
+          secret:
+            secretName: {{ .Values.gluuReleaseName }}-cb-crt
+      {{- end }}
