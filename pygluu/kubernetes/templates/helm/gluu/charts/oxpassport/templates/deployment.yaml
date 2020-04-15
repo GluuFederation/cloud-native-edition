@@ -18,6 +18,10 @@ spec:
       labels:
         app: {{ include "oxpassport.name" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.global.istio.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ .Chart.Name }}
@@ -32,9 +36,7 @@ spec:
               /app/scripts/entrypoint.sh
         {{- end }}
         ports:
-          - name: http
-            containerPort: 8090
-            protocol: TCP
+          - containerPort: {{ .Values.service.port }}
         envFrom:
           - configMapRef:
               name: {{ include "oxpassport.name" . }}
@@ -54,14 +56,14 @@ spec:
         livenessProbe:
           httpGet:
             path: /passport/token
-            port: http
+            port: {{ .Values.service.port }}
           initialDelaySeconds: 30
           periodSeconds: 30
           failureThreshold: 20
         readinessProbe:
           httpGet:
             path: /passport/token
-            port: http
+            port: {{ .Values.service.port }}
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
