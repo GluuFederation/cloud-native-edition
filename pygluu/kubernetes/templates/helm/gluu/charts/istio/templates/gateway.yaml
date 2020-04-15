@@ -63,10 +63,10 @@ spec:
   # oxpassport
   - port:
       number: 8090
-      name: http-oxpassport
-      protocol: HTTP
+      name: tcp-oxpassport
+      protocol: TCP
     hosts:
-    - oxpassport.{{ .Release.Namespace }}.svc.cluster.local
+    - "*" # oxpassport.{{ .Release.Namespace }}.svc.cluster.local
   # RADIUS
   - port:
       number: 8080
