@@ -6,6 +6,9 @@ metadata:
   name: {{ include "key-rotation.name" . }}
   namespace: {{ .Release.Namespace }}
 data:
+  GLUU_KEY_ROTATION_FORCE: "false"
+  GLUU_KEY_ROTATION_CHECK: "3600"
+  GLUU_KEY_ROTATION_INTERVAL: "48"
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
   GLUU_CONTAINER_METADATA: {{ .Values.global.containerMetadataName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
