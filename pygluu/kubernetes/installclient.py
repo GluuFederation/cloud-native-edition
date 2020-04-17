@@ -1,6 +1,6 @@
 """
- License terms and conditions:
- https://www.gluu.org/license/enterprise-edition/
+ License terms and conditions for Gluu Cloud Native Edition:
+ https://www.apache.org/licenses/LICENSE-2.0
 """
 # TODO: Delete this script as soon as the kubernetes python client fixes CRD issue
 

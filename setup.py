@@ -1,6 +1,6 @@
 """
- License terms and conditions:
- https://www.gluu.org/license/enterprise-edition/
+ License terms and conditions for Gluu Cloud Native Edition:
+ https://www.apache.org/licenses/LICENSE-2.0
 """
 
 import codecs
@@ -25,8 +25,8 @@ setup(
     name="pygluu-kubernetes",
     version=find_version("pygluu", "kubernetes", "__init__.py"),
     url="",
-    copyright="Copyright 2020, Gluu Kubernetes",
-    license="Gluu Support <https://www.gluu.org/license/enterprise-edition/>",
+    copyright="Copyright 2020, Gluu Cloud Native Edition",
+    license="Apache 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
     author="Gluu",
     author_email="mo@gluu.org",
     maintainer="Mohammad Abudayyeh",

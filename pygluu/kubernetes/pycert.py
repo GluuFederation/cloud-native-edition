@@ -1,6 +1,6 @@
 """
- License terms and conditions:
- https://www.gluu.org/license/enterprise-edition/
+ License terms and conditions for Gluu Cloud Native Edition:
+ https://www.apache.org/licenses/LICENSE-2.0
 """
 
 from .yamlparser import Parser, get_logger, update_settings_json_file

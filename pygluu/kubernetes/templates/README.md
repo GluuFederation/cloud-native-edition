@@ -138,7 +138,7 @@
 
 | Parameter                                       | Description                                                                      | Options                                                                                     |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.gluu.org/license/enterprise-edition/)           | `"Y"` or `"N"`                                                                              |
+| `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.apache.org/licenses/LICENSE-2.0)           | `"Y"` or `"N"`                                                                              |
 | `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.0"` or `"4.1"`                                                                              |
 | `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |
 | `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Ingress release name                                                       | `"<name>"`                                                                                  |

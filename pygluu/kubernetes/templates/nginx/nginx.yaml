@@ -1,5 +1,5 @@
-# Licensed under the Gluu Support License
-# https://raw.githubusercontent.com/GluuFederation/enterprise-edition/4.0/LICENSE
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:

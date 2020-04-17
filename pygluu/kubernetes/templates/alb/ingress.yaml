@@ -1,5 +1,5 @@
 # Licensed under the Gluu Support License
-# https://www.gluu.org/license/enterprise-edition/
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:

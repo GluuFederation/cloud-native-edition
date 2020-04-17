@@ -4,8 +4,8 @@
 # Update the IP of the load balancer automatically
 
 """
- License terms and conditions:
- https://www.gluu.org/license/enterprise-edition/
+ License terms and conditions for Gluu Cloud Native Edition:
+ https://www.apache.org/licenses/LICENSE-2.0
 """
 
 import socket

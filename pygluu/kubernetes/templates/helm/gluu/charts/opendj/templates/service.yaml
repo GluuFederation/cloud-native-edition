@@ -1,5 +1,5 @@
-# License terms and conditions:
-# https://www.gluu.org/license/enterprise-edition/
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
 apiVersion: v1
 kind: Service
