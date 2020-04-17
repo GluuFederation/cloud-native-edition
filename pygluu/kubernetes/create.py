@@ -571,17 +571,6 @@ class App(object):
         oxtrust_statefulset_parser = Parser(self.oxtrust_yaml, "StatefulSet")
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             del oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
-
-        if self.settings["ENABLE_OXSHIBBOLETH"] != "Y":
-
-            volume_mount_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
-            volume_list = oxtrust_statefulset_parser["spec"]["template"]["spec"]["volumes"]
-            shared_shib_vm_index = next(
-                (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "shared-shib"), None)
-            shared_shib_v_index = next(
-                (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "shared-shib"), None)
-            del volume_mount_list[shared_shib_vm_index]
-            del volume_list[shared_shib_v_index]
         oxtrust_statefulset_parser.dump_it()
 
     def kustomize_oxshibboleth(self):
