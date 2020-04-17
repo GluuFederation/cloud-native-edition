@@ -1,14 +1,14 @@
-![microk8s](https://github.com/GluuFederation/enterprise-edition/workflows/microk8s/badge.svg?branch=4.1)
-![minikube](https://github.com/GluuFederation/enterprise-edition/workflows/minikube/badge.svg?branch=4.1)
-![awseks](https://github.com/GluuFederation/enterprise-edition/workflows/awseks/badge.svg?branch=4.1)
-![googlegke](https://github.com/GluuFederation/enterprise-edition/workflows/googlegke/badge.svg?branch=4.1)
+![microk8s](https://github.com/GluuFederation/cloud-native-edition/workflows/microk8s/badge.svg?branch=4.1)
+![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.1)
+![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.1)
+![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.1)
 
 
 # pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.3-green.svg?style=for-the-badge)
 
 ## Kubernetes recipes
 
-- Install [Gluu](https://github.com/GluuFederation/enterprise-edition/tree/4.1/pygluu/kubernetes/templates/)
+- Install [Gluu](https://github.com/GluuFederation/cloud-native-edition/tree/4.1/pygluu/kubernetes/templates/)
 
 ## Build `pygluu-kubernetes.pyz` manually
 

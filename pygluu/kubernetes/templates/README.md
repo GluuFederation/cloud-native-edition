@@ -117,7 +117,7 @@
 
 ## Install Gluu using `pygluu-kubernetes` with Kustomize
 
-1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
 
 1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
 
@@ -129,16 +129,16 @@
     ```
     
 !!!note
-    Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases). 
+    Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/cloud-native-edition/releases). 
 
 ### `settings.json` parameters file contents
 
 !!!note
-    Please generate this file using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/enterprise-edition/releases).
+    Please generate this file using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/cloud-native-edition/releases).
 
 | Parameter                                       | Description                                                                      | Options                                                                                     |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.apache.org/licenses/LICENSE-2.0)           | `"Y"` or `"N"`                                                                              |
+| `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.gluu.org/license/cloud-native-edition/)           | `"Y"` or `"N"`                                                                              |
 | `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.0"` or `"4.1"`                                                                              |
 | `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |
 | `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Ingress release name                                                       | `"<name>"`                                                                                  |
@@ -298,11 +298,11 @@
 
 ### Quickstart
 
-1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
 
 1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
 
-1) Run :
+1. Run :
 
   ```bash
   ./pygluu-kubernetes.pyz helm-install
@@ -310,7 +310,7 @@
 
 #### Installing Gluu using Helm manually
 
-1) Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
+1. Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
 
    ```bash
    helm repo add stable https://kubernetes-charts.storage.googleapis.com
@@ -318,11 +318,11 @@
    helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
    ```
 
-1)  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
+1.  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
 
     - If the FQDN is not registered acquire the loadbalancers ip if on **GCE**, or **Azure** using `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'` and if on **AWS** get the loadbalancers addresss using `kubectl -n ingress-nginx get svc ingress-nginx \--output jsonpath='{.status.loadBalancer.ingress[0].hostname}'`.
 
-1)  - If deploying on the cloud make sure to take a look at the helm cloud specific notes before continuing.
+1.  - If deploying on the cloud make sure to take a look at the helm cloud specific notes before continuing.
 
       * [EKS](#eks-helm-notes)
       * [GKE](#gke-helm-notes)
@@ -332,21 +332,21 @@
       * [Minikube](#minikube-helm-notes)
       * [MicroK8s](#microk8s-helm-notes)
 
-1)  **Optional:** If using couchbase as the persistence backend.
+1.  **Optional:** If using couchbase as the persistence backend.
     
-    1) Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
     
-    1) Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+    1. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
 
-    1) Run:
+    1.  Run:
     
        ```bash
        ./pygluu-kubernetes.pyz couchbase-install
        ```
        
-    1) Open `settings.json` file generated from the previous step and copy over the values of `COUCHBASE_URL` and `COUCHBASE_USER`   to `global.gluuCouchbaseUrl` and `global.gluuCouchbaseUser` in `values.yaml` respectively. 
+    1. Open `settings.json` file generated from the previous step and copy over the values of `COUCHBASE_URL` and `COUCHBASE_USER`   to `global.gluuCouchbaseUrl` and `global.gluuCouchbaseUser` in `values.yaml` respectively. 
 
-1)  Make sure you are in the same directory as the `values.yaml` file and run:
+1.  Make sure you are in the same directory as the `values.yaml` file and run:
 
    ```bash
    helm install <release-name> -f values.yaml -n <namespace> .
@@ -716,7 +716,7 @@ Examples:
 ## Build pygluu-kubernetes installer
 
 ### Overview
-[`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/enterprise-edition/releases) is periodically released and does not need to be built manually. However, the process of building the installer package is listed [below](#build-pygluu-kubernetespyz-manually).
+[`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases) is periodically released and does not need to be built manually. However, the process of building the installer package is listed [below](#build-pygluu-kubernetespyz-manually).
 
 ### Build `pygluu-kubernetes.pyz` manually
 
@@ -760,36 +760,5 @@ Examples:
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
 
-#### Known bug
-
-- Bug in line 101   File `/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py`, line 101, in conditions. The error will look similar to the following:
-  
-  ```bash
-    File "/root/.shiv/pygluu-kubernetes_3e5bddf4d309be28790a1b035ab5d72d0b9f33dfaade59da1bb9ec0bcd0165a4/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 54, in __init__
-    self.conditions = conditions
-  File "/root/.shiv/pygluu-kubernetes_3e5bddf4d309be28790a1b035ab5d72d0b9f33dfaade59da1bb9ec0bcd0165a4/site-packages/kubernetes/client/models/v1beta1_custom_resource_definition_status.py", line 101, in conditions
-    ValueError: Invalid value for `conditions`, must not be `None`
-  ```
-  
-  To fix this error just rerun the installation command `./pygluu-kubernetes.pyz <command>` again.
-
-!!!note
-    Another process to circumvent this bug is to build python-kubernetes-client manually detailed below.
-    
-```bash
-    git clone --recursive https://github.com/kubernetes-client/python.git
-    cd python
-    git checkout release-11.0
-    sed 's/raise ValueError("Invalid value for `conditions`, must not be `None`")/pass/g' ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py > tmpfile.py && mv tmpfile.py ./kubernetes/client/models/v1beta1_custom_resource_definition_status.py
-    sudo python3 setup.py install
-``` 
-
-Now remove the line requiring python client in pygluu-kubernetes `setup.py` file.
-
-```bash
-sed '/kubernetes>=11.0.0b2/d' ./setup.py > tmpfile.py && mv tmpfile.py setup.py
-```
-
-Build pygluu-kubernets [manually](#build-pygluu-kubernetespyz-manually).
     
  
