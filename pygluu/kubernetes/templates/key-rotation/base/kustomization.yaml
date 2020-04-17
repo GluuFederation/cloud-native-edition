@@ -14,6 +14,7 @@ configMapGenerator:
   - name: key-rotation-cm
     literals:
       - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
+      - GLUU_CONTAINER_METADATA="kubernetes"
       - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"

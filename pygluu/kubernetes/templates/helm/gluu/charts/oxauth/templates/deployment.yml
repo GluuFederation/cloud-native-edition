@@ -6,6 +6,7 @@ metadata:
   name: {{ include "oxauth.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: oxauth
 {{ include "oxauth.labels" . | indent 4}}
 spec:
   replicas: 1
@@ -15,6 +16,7 @@ spec:
   template:
     metadata:
       labels:
+        APP_NAME: oxauth
         app: {{ include "oxauth.name" . }}
     spec:
       containers:

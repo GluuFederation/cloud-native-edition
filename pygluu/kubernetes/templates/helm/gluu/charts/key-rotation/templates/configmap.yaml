@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName | quote }}
+  GLUU_CONTAINER_METADATA: {{ .Values.global.containerMetadataName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter | quote }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
