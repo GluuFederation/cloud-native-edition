@@ -171,7 +171,7 @@ persistence:
 oxauth:
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.1_04
+    tag: 4.1.1_05
     pullPolicy: Always
 
 oxd-server:
