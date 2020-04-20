@@ -11,9 +11,7 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /idp
-    rewrite:
-      uri: /identity
+        exact: /idp
     route:
     - destination:
         host: oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local

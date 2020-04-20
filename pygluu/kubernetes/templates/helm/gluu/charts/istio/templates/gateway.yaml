@@ -39,53 +39,21 @@ spec:
       protocol: HTTP 
     hosts:
       - oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
-  # casa
+  # # casa
   - port:
       number: 8080
       name: http-casa
       protocol: HTTP
     hosts:
       - casa.{{ .Release.Namespace }}.svc.cluster.local
-  # key-rotation
-  - port:
-      number: 8080
-      name: http-k-rotation
-      protocol: HTTP
-    hosts:
-      - {{ .Release.Name }}-key-rotation.{{ .Release.Namespace }}.svc.cluster.local
-  # cr-rotate
-  - port:
-      number: 8080
-      name: http-cr-rotate
-      protocol: HTTP
-    hosts:
-    - {{ .Release.Name }}-cr-rotate.{{ .Release.Namespace }}.svc.cluster.local
   # oxpassport
   - port:
       number: 8090
       name: tcp-oxpassport
       protocol: TCP
     hosts:
-    - "*" # oxpassport.{{ .Release.Namespace }}.svc.cluster.local
-  # RADIUS
-  - port:
-      number: 8080
-      name: http-jetty-svc
-      protocol: HTTP
-    hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 1812
-      name: tcp-rad-auth
-      protocol: TCP
-    hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 1813
-      name: tcp-rad-acc
-      protocol: TCP
-    hosts:
-    - {{ .Release.Name }}-radius.{{ .Release.Namespace }}.svc.cluster.local
+    - oxpassport.{{ .Release.Namespace }}.svc.cluster.local
+  
   # OPENDJ
   - port:
       number: 1636
@@ -111,24 +79,5 @@ spec:
       protocol: TCP
     hosts:
     - opendj.{{ .Release.Namespace }}.svc.cluster.local
-  # OXD-SERVER
-  - port:
-      number: 8444
-      name: http-admin-gui
-      protocol: HTTP
-    hosts:
-    - oxd-server.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 8443
-      name: tcp-app-cone
-      protocol: TCP
-    hosts:
-    - oxd-server.{{ .Release.Namespace }}.svc.cluster.local
-  # REDIS
-  - port:
-      number: 6379
-      name: tcp-redis
-      protocol: TCP
-    hosts:
-    - redis.{{ .Release.Namespace }}.svc.cluster.local
+
     
