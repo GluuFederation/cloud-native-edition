@@ -141,7 +141,7 @@ cr-rotate:
 key-rotation:
   image:
     repository: gluufederation/key-rotation
-    tag: 4.1.1_01
+    tag: 4.1.1_03
     pullPolicy: Always
 
 opendj:
@@ -174,7 +174,7 @@ persistence:
 oxauth:
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.1_02
+    tag: 4.1.1_05
     pullPolicy: Always
 
 oxd-server:

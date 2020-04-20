@@ -18,10 +18,6 @@ spec:
       labels:
         app: {{ include "oxpassport.name" . }}
         release: {{ .Release.Name }}
-      {{- if .Values.global.istio.enabled }}
-      annotations:
-        sidecar.istio.io/rewriteAppHTTPProbers: "true"
-      {{- end }}
     spec:
       containers:
       - name: {{ .Chart.Name }}
