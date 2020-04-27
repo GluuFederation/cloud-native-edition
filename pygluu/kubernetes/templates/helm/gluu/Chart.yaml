@@ -1,7 +1,7 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
-appVersion: "4.1.0_01"
+appVersion: "4.1.1_01"
 home: https://www.gluu.org/ee
 maintainers:
 - name: Gluu
@@ -13,11 +13,7 @@ dependencies:
     - name: config
       condition: global.config.enabled
       version: 1.0.0
-  
-    - name: redis
-      condition: global.redis.enabled
-      version: 1.0.0
-  
+
     - name: opendj
       condition: global.opendj.enabled
       version: 1.0.0

@@ -31,7 +31,7 @@ class Prompt(object):
         self.kubernetes = Kubernetes()
         self.get_settings()
         self.config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
-                                "ldap_pw": "", "email": "", "org_name": ""}
+                                "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
         self.prompt_license()
         self.prompt_version()
 
@@ -59,6 +59,10 @@ class Prompt(object):
                                 REDIS_USE_SSL="false",
                                 REDIS_SSL_TRUSTSTORE="",
                                 REDIS_SENTINEL_GROUP="",
+                                REDIS_MASTER_NODES="",
+                                REDIS_NODES_PER_MASTER="",
+                                REDIS_NAMESPACE="",
+                                INSTALL_REDIS="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -764,9 +768,9 @@ class Prompt(object):
             if not self.settings['COUCHBASE_SUBJECT_ALT_NAME']:
                 self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = ["*.{}.{}.svc".format(
                     self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
-                                                              "*.{}.svc".format(self.settings["COUCHBASE_NAMESPACE"]),
-                                                              "*.{}.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
-                                                                               self.settings["COUCHBASE_FQDN"])]
+                    "*.{}.svc".format(self.settings["COUCHBASE_NAMESPACE"]),
+                    "*.{}.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                     self.settings["COUCHBASE_FQDN"])]
             if not self.settings["COUCHBASE_CN"]:
                 prompt = input("Enter Couchbase certificate common name.[Couchbase CA]")
                 if not prompt:
@@ -967,24 +971,61 @@ class Prompt(object):
                 logger.warning("Cannot determine IP address {}".format(exc))
 
     def prompt_redis(self):
-        if not self.settings["REDIS_URL"]:
-            logger.info("Redis URL can be : redis:6379 in a redis deployment")
-            logger.info("Redis URL using AWS ElastiCach [Configuration Endpoint]: clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
-            logger.info("Redis URL using Google MemoryStore : <ip>:6379")
-            redis_url_prompt = input("Please enter redis URL. If you are deploying redis .[redis:6379]")
-            if not redis_url_prompt:
-                redis_url_prompt = "redis:6379"
-            self.settings["REDIS_URL"] = redis_url_prompt
-
         if not self.settings["REDIS_TYPE"]:
             logger.info("STANDALONE, CLUSTER")
-            redis_type_prompt = input("Please enter redis type.[STANDALONE]")
+            redis_type_prompt = input("Please enter redis type.[CLUSTER]")
             if not redis_type_prompt:
-                redis_type_prompt = "STANDALONE"
+                redis_type_prompt = "CLUSTER"
             self.settings["REDIS_TYPE"] = redis_type_prompt
 
-        if not self.settings["REDIS_PW"]:
-            self.settings["REDIS_PW"] = self.prompt_password("Redis")
+        if not self.settings["INSTALL_REDIS"]:
+            logger.info("For the following prompt  if placed [N] the Redis is assumed to be"
+                        " installed or remotely provisioned")
+            redis_install_prompt = input("Install Redis[Y/N]?[Y]")
+            if not redis_install_prompt:
+                redis_install_prompt = "Y"
+            self.settings["INSTALL_REDIS"] = redis_install_prompt
+
+        if self.settings["INSTALL_REDIS"] == "Y":
+
+            if not self.settings["REDIS_MASTER_NODES"]:
+                redis_master_prompt = input("The number of  master node. Minimum is 3.[3]")
+                if not redis_master_prompt:
+                    redis_master_prompt = 3
+                redis_master_prompt = int(redis_master_prompt)
+                self.settings["REDIS_MASTER_NODES"] = redis_master_prompt
+
+            if not self.settings["REDIS_NODES_PER_MASTER"]:
+                redis_node_prompt = input("The number of nodes per master node.[2]")
+                if not redis_node_prompt:
+                    redis_node_prompt = 2
+                redis_node_prompt = int(redis_node_prompt)
+                self.settings["REDIS_NODES_PER_MASTER"] = redis_node_prompt
+
+            if not self.settings["REDIS_NAMESPACE"]:
+                redis_namespace = input("Please enter a namespace for Redis cluster.[gluu-redis-cluster]")
+                if not redis_namespace:
+                    redis_namespace = "gluu-redis-cluster"
+                self.settings["REDIS_NAMESPACE"] = redis_namespace
+
+        else:
+            # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
+            if not self.settings["REDIS_PW"]:
+                self.settings["REDIS_PW"] = self.prompt_password("Redis")
+
+        if not self.settings["REDIS_URL"]:
+            if self.settings["INSTALL_REDIS"] == "Y":
+                redis_url_prompt = "redis-cluster.{}.svc.cluster.local:6379".format(
+                    self.settings["REDIS_NAMESPACE"])
+            else:
+                logger.info(
+                    "Redis URL can be : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379 in a redis deployment")
+                logger.info("Redis URL using AWS ElastiCach [Configuration Endpoint]: "
+                            "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
+                logger.info("Redis URL using Google MemoryStore : <ip>:6379")
+                redis_url_prompt = input("Please enter redis URL. If you are deploying redis ."
+                                         "[redis-cluster.gluu-redis-cluster.svc.cluster.local:6379]")
+            self.settings["REDIS_URL"] = redis_url_prompt
 
     @property
     def check_settings_and_prompt(self):
@@ -1006,42 +1047,42 @@ class Prompt(object):
         if not self.settings["HOST_EXT_IP"]:
             ip = self.gather_ip
             self.settings["HOST_EXT_IP"] = ip
+            if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                aws_lb_type = ["nlb", "clb", "alb"]
+                if self.settings["AWS_LB_TYPE"] not in aws_lb_type:
+                    print("|-----------------------------------------------------------------|")
+                    print("|                     AWS Loadbalancer type                       |")
+                    print("|-----------------------------------------------------------------|")
+                    print("| [1] Classic Load Balancer (CLB) [default]                       |")
+                    print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
+                    print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
+                    print("|-----------------------------------------------------------------|")
+                    prompt = input("Loadbalancer type?[1]")
+                    if not prompt:
+                        prompt = 1
+                    prompt = int(prompt)
+                    if prompt == 2:
+                        self.settings["AWS_LB_TYPE"] = "nlb"
+                    elif prompt == 3:
+                        self.settings["AWS_LB_TYPE"] = "alb"
+                        logger.info("A prompt later during installation will appear to input the ALB DNS address")
+                    else:
+                        self.settings["AWS_LB_TYPE"] = "clb"
 
-            aws_lb_type = ["nlb", "clb", "alb"]
-            if self.settings["AWS_LB_TYPE"] not in aws_lb_type:
-                print("|-----------------------------------------------------------------|")
-                print("|                     AWS Loadbalancer type                       |")
-                print("|-----------------------------------------------------------------|")
-                print("| [1] Classic Load Balancer (CLB) [default]                       |")
-                print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
-                print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
-                print("|-----------------------------------------------------------------|")
-                prompt = input("Loadbalancer type?[1]")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                if prompt == 2:
-                    self.settings["AWS_LB_TYPE"] = "nlb"
-                elif prompt == 3:
-                    self.settings["AWS_LB_TYPE"] = "alb"
-                    logger.info("A prompt later during installation will appear to input the ALB DNS address")
-                else:
-                    self.settings["AWS_LB_TYPE"] = "clb"
+                if not self.settings["USE_ARN"]:
+                    prompt = input("Are you terminating SSL traffic at LB and using certificate from AWS [N][Y/N]")
+                    if prompt == "Y" or prompt == "y":
+                        prompt = "Y"
+                    else:
+                        prompt = "N"
+                    self.settings["USE_ARN"] = prompt
 
-            if not self.settings["USE_ARN"]:
-                prompt = input("Are you terminating SSL traffic at LB and using certificate from AWS [N][Y/N]")
-                if prompt == "Y" or prompt == "y":
-                    prompt = "Y"
-                else:
-                    prompt = "N"
-                self.settings["USE_ARN"] = prompt
-
-            if not self.settings["ARN_AWS_IAM"] and self.settings["USE_ARN"] == "Y":
-                prompt = ""
-                while not prompt:
-                    prompt = input("Enter aws-load-balancer-ssl-cert arn quoted "
-                                   "('arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX'): ")
-                self.settings["ARN_AWS_IAM"] = prompt
+                if not self.settings["ARN_AWS_IAM"] and self.settings["USE_ARN"] == "Y":
+                    prompt = ""
+                    while not prompt:
+                        prompt = input("Enter aws-load-balancer-ssl-cert arn quoted "
+                                       "('arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX'): ")
+                    self.settings["ARN_AWS_IAM"] = prompt
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke":
             self.prompt_gke()
@@ -1148,7 +1189,6 @@ class Prompt(object):
                 if not prompt:
                     prompt = "io1"
                 self.settings["LDAP_VOLUME"] = prompt
-
 
         if not self.settings["DEPLOY_MULTI_CLUSTER"]:
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" \

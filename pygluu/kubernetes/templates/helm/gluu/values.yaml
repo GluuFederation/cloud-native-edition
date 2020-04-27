@@ -89,10 +89,6 @@ global:
   oxd-server:
     enabled: false 
 
-  # redis should be enabled only when cacheType is REDIS
-  redis:
-    enabled: false
-
   nginx:
     enabled: true
 
@@ -241,9 +237,3 @@ radius:
     repository: gluufederation/radius
     tag: 4.1.1_01
     pullPolicy: Always
-
-redis:
-  image:
-    repository: redis
-    tag: alpine
-    pullPolicy: IfNotPresent

@@ -11,6 +11,8 @@ import logging
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 from collections import OrderedDict, Mapping
+import subprocess
+import shlex
 
 
 def update_settings_json_file(settings):
@@ -18,6 +20,21 @@ def update_settings_json_file(settings):
     """
     with open(Path('./settings.json'), 'w+') as file:
         json.dump(settings, file, indent=2)
+
+
+def exec_cmd(cmd):
+    args = shlex.split(cmd)
+    popen = subprocess.Popen(args,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    stdout, stderr = popen.communicate()
+    retcode = popen.returncode
+
+    if retcode != 0:
+        logger.error(str(stderr, "utf-8"))
+    logger.info(str(stdout, "utf-8"))
+    return stdout, stderr, retcode
 
 
 def get_logger(name):

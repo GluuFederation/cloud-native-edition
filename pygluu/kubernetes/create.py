@@ -25,7 +25,7 @@ from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 from .prompt import Prompt
-from .yamlparser import Parser, get_logger
+from .yamlparser import Parser, get_logger, exec_cmd
 from .helm import Helm
 # TODO: Remove the following as soon as the update secret is moved to backend
 from .updatesecrets import modify_secret
@@ -125,7 +125,6 @@ class App(object):
         self.oxd_server_yaml = str(self.output_yaml_directory.joinpath("oxd-server.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
         self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
-        self.redis_yaml = str(self.output_yaml_directory.joinpath("redis.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("updatelbip.yaml").resolve())
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
@@ -142,6 +141,49 @@ class App(object):
             kubectl = "kubectl"
         return kubectl
 
+    def analyze_storage_class(self, storageclass):
+        parser = Parser(storageclass, "StorageClass")
+        if self.settings["DEPLOYMENT_ARCH"] == "eks":
+            parser["provisioner"] = "kubernetes.io/aws-ebs"
+            parser["parameters"]["encrypted"] = "true"
+            parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+            unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings["DEPLOYMENT_ARCH"] == "gke":
+            parser["provisioner"] = "kubernetes.io/gce-pd"
+            del parser["parameters"]["encrypted"]
+            parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+            unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+            parser["provisioner"] = "kubernetes.io/azure-disk"
+            del parser["parameters"]["encrypted"]
+            del parser["parameters"]["type"]
+            parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
+            unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings['DEPLOYMENT_ARCH'] == "microk8s":
+            try:
+                parser["provisioner"] = "microk8s.io/hostpath"
+                del parser["allowedTopologies"]
+                del parser["allowVolumeExpansion"]
+                del parser["parameters"]
+            except KeyError:
+                logger.info("Key not found")
+            parser.dump_it()
+        elif self.settings['DEPLOYMENT_ARCH'] == "minikube":
+            try:
+                parser["provisioner"] = "k8s.io/minikube-hostpath"
+                del parser["allowedTopologies"]
+                del parser["allowVolumeExpansion"]
+                del parser["parameters"]
+            except KeyError:
+                logger.info("Key not found")
+            parser.dump_it()
+
     @property
     def set_output_yaml_directory(self):
 
@@ -153,13 +195,7 @@ class App(object):
         elif self.settings["DEPLOYMENT_ARCH"] == "eks":
             output_yamls_folder = Path("gluu_eks_yamls")
             if self.settings["LDAP_VOLUME_TYPE"] == 7:
-                parser = Parser(dynamic_eks_folder.joinpath("storageclasses.yaml"), "StorageClass")
-                parser["provisioner"] = "kubernetes.io/aws-ebs"
-                parser["parameters"]["encrypted"] = "true"
-                parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-                parser.dump_it()
+                self.analyze_storage_class(dynamic_eks_folder.joinpath("storageclasses.yaml"))
                 kustomize_yaml_directory = dynamic_eks_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 8:
                 kustomize_yaml_directory = static_eks_folder
@@ -174,13 +210,7 @@ class App(object):
                 except FileNotFoundError:
                     logger.info("Directory not found. Copying...")
                 copy(dynamic_eks_folder, dynamic_gke_folder)
-                parser = Parser(dynamic_gke_folder.joinpath("storageclasses.yaml"), "StorageClass")
-                parser["provisioner"] = "kubernetes.io/gce-pd"
-                del parser["parameters"]["encrypted"]
-                parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-                parser.dump_it()
+                self.analyze_storage_class(dynamic_gke_folder.joinpath("storageclasses.yaml"))
                 kustomize_yaml_directory = dynamic_gke_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 13:
                 kustomize_yaml_directory = static_gke_folder
@@ -191,14 +221,7 @@ class App(object):
             output_yamls_folder = Path("gluu_aks_yamls")
             if self.settings["LDAP_VOLUME_TYPE"] == 17:
                 copy(dynamic_eks_folder, dynamic_azure_folder)
-                parser = Parser(dynamic_azure_folder.joinpath("storageclasses.yaml"), "StorageClass")
-                parser["provisioner"] = "kubernetes.io/azure-disk"
-                del parser["parameters"]["encrypted"]
-                del parser["parameters"]["type"]
-                parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
-                unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
-                parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-                parser.dump_it()
+                self.analyze_storage_class(dynamic_azure_folder.joinpath("storageclasses.yaml"))
                 kustomize_yaml_directory = dynamic_azure_folder
             elif self.settings["LDAP_VOLUME_TYPE"] == 18:
                 kustomize_yaml_directory = static_azure_folder
@@ -337,7 +360,7 @@ class App(object):
                                    "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base",
                                    "./upgrade/base"]
         other_kustomization_yamls = ["./update-lb-ip/base", "./shared-shib/efs", "./shared-shib/localstorage",
-                                     "./shared-shib/nfs", "./redis/base"]
+                                     "./shared-shib/nfs"]
         all_kustomization_yamls = app_kustomization_yamls + other_kustomization_yamls
         for yaml in all_kustomization_yamls:
             kustomization_yaml = yaml + "/kustomization.yaml"
@@ -737,12 +760,6 @@ class App(object):
                 del radius_server_deployment_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
             radius_server_deployment_parser.dump_it()
 
-    def kustomize_redis(self):
-        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
-                command = self.kubectl + " kustomize redis/base > " + self.redis_yaml
-                subprocess_cmd(command)
-
     def kustomize_update_lb_ip(self):
         if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y":
             if self.settings["DEPLOYMENT_ARCH"] == "eks":
@@ -870,10 +887,58 @@ class App(object):
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nginx.yaml"),
                                                  self.settings["GLUU_NAMESPACE"])
 
+    def deploy_kubedb(self, helm=False):
+        self.uninstall_kubedb()
+        self.kubernetes.create_namespace(name="gluu-kubedb")
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
+                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
+
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or helm:
+            try:
+                exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
+                exec_cmd("helm repo update")
+                exec_cmd("helm install kubedb-operator appscode/kubedb  --version v0.13.0-rc.0 "
+                         "--namespace gluu-kubedb")
+                self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb", self.timeout)
+                exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.13.0-rc.0 "
+                         "--namespace gluu-kubedb")
+            except FileNotFoundError:
+                logger.error("Helm v3 is not installed. Please install it to continue "
+                             "https://helm.sh/docs/intro/install/")
+                raise SystemExit(1)
+        else:
+            exec_cmd("bash ./redis/kubedb.sh --namespace=gluu-kubedb --install-catalog=catalog.kubedb.com/v1alpha1")
+
     def deploy_redis(self):
-        self.kubernetes.create_objects_from_dict(self.redis_yaml)
+        self.uninstall_redis()
+        self.kubernetes.create_namespace(name=self.settings["REDIS_NAMESPACE"])
+        redis_storage_class = Path("./redis/storageclasses.yaml")
+        self.analyze_storage_class(redis_storage_class)
+        self.kubernetes.create_objects_from_dict(redis_storage_class)
+
+        redis_configmap = Path("./redis/configmaps.yaml")
+        redis_conf_parser = Parser(redis_configmap, "ConfigMap")
+        redis_conf_parser["metadata"]["namespace"] = self.settings["REDIS_NAMESPACE"]
+        redis_conf_parser.dump_it()
+        self.kubernetes.create_objects_from_dict(redis_configmap)
+
+        redis_yaml = Path("./redis/redis.yaml")
+        redis_parser = Parser(redis_yaml, "Redis")
+        redis_parser["spec"]["cluster"]["master"] = self.settings["REDIS_MASTER_NODES"]
+        redis_parser["spec"]["cluster"]["replicas"] = self.settings["REDIS_NODES_PER_MASTER"]
+        redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings["REDIS_NAMESPACE"]
+        redis_parser["metadata"]["namespace"] = self.settings["REDIS_NAMESPACE"]
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
+        redis_parser.dump_it()
+        try:
+            exec_cmd("kubectl apply -f {}".format(redis_yaml))
+        except:
+            exec_cmd("microk8s.kubectl apply -f {}".format(redis_yaml))
+
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis-cluster", self.timeout)
 
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
@@ -1078,7 +1143,6 @@ class App(object):
         self.kustomize_oxd_server()
         self.kustomize_casa()
         self.kustomize_radius()
-        self.kustomize_redis()
         self.kustomize_update_lb_ip()
         if install_couchbase:
             if self.settings["PERSISTENCE_BACKEND"] != "ldap":
@@ -1104,9 +1168,9 @@ class App(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.setup_tls()
 
-        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
-                self.deploy_redis()
+        if self.settings["INSTALL_REDIS"] == "Y":
+            self.deploy_kubedb()
+            self.deploy_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -1167,7 +1231,7 @@ class App(object):
         gluu_storage_class_names = ["aws-efs", "opendj-sc", "gluu-nfs-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
-                                      "app=radius", "app=redis", "app=efs-provisioner", "app=key-rotation"]
+                                      "app=radius", "app=efs-provisioner", "app=key-rotation"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
@@ -1209,6 +1273,8 @@ class App(object):
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
         if not restore:
+            self.uninstall_redis()
+            self.uninstall_kubedb()
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
@@ -1307,6 +1373,34 @@ class App(object):
             with contextlib.suppress(FileNotFoundError):
                 time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
                 shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
+
+    def uninstall_kubedb(self, helm=False):
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
+                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
+
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or helm:
+            try:
+                exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
+                exec_cmd("helm repo update")
+                exec_cmd("helm delete kubedb-operator --namespace gluu-kubedb")
+                exec_cmd("helm delete kubedb-catalog --namespace gluu-kubedb")
+                time.sleep(20)
+            except FileNotFoundError:
+                logger.error("Helm v3 is not installed. Please install it to continue "
+                             "https://helm.sh/docs/intro/install/")
+                raise SystemExit(1)
+        else:
+            exec_cmd("bash -s ./redis/kubedb.sh --uninstall --purge  --namespace=gluu-kubedb")
+        self.kubernetes.delete_namespace(name="gluu-kubedb")
+
+    def uninstall_redis(self):
+        logger.info("Removing gluu-redis-cluster...")
+        try:
+            exec_cmd("kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
+        except:
+            exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
+        self.kubernetes.delete_namespace(name=self.settings["REDIS_NAMESPACE"])
 
 
 def create_parser():
@@ -1409,6 +1503,12 @@ def main():
 
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
+            app = App(settings)
+            if settings["INSTALL_REDIS"] == "Y":
+                app.uninstall_redis()
+                app.uninstall_kubedb(helm=True)
+                app.deploy_kubedb(helm=True)
+                app.deploy_redis()
             helm = Helm(settings)
             helm.install_gluu()
 
@@ -1417,6 +1517,9 @@ def main():
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
+            app = App(settings)
+            app.uninstall_redis()
+            app.uninstall_kubedb(helm=True)
             time.sleep(30)
             app = App(settings)
             app.uninstall()

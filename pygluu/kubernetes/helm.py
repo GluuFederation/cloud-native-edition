@@ -4,30 +4,13 @@
 """
 
 from pathlib import Path
-from .yamlparser import Parser, get_logger
+from .yamlparser import Parser, get_logger, exec_cmd
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 import time
-import subprocess
 import socket
-import shlex
 
 logger = get_logger("gluu-helm          ")
-
-
-def exec_cmd(cmd):
-    args = shlex.split(cmd)
-    popen = subprocess.Popen(args,
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-    stdout, stderr = popen.communicate()
-    retcode = popen.returncode
-
-    if retcode != 0:
-        logger.error(str(stderr, "utf-8"))
-    logger.info(str(stdout, "utf-8"))
-    return stdout, stderr, retcode
 
 
 class Helm(object):
@@ -142,8 +125,12 @@ class Helm(object):
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
             values_file_parser["global"]["isDomainRegistered"] = "true"
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            values_file_parser["global"]["gluuRedisUrl"] = "redis:6379"
-            values_file_parser["global"]["gluuRedisType"] = "STANDALONE"
+            values_file_parser["global"]["gluuRedisUrl"] = self.settings["REDIS_URL"]
+            values_file_parser["global"]["gluuRedisType"] = self.settings["REDIS_TYPE"]
+            values_file_parser["global"]["gluuRedisUseSsl"] = self.settings["REDIS_USE_SSL"]
+            values_file_parser["global"]["gluuRedisSslTruststore"] = self.settings["REDIS_SSL_TRUSTSTORE"]
+            values_file_parser["global"]["gluuRedisSentinelGroup"] = self.settings["REDIS_SENTINEL_GROUP"]
+
         values_file_parser["global"]["lbAddr"] = self.settings["LB_ADD"]
         values_file_parser["global"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["global"]["gluuPersistenceLdapMapping"] = "default"
@@ -171,10 +158,8 @@ class Helm(object):
         if self.settings["ENABLE_OXD"] == "Y":
             values_file_parser["global"]["oxd-server"]["enabled"] = True
 
-        values_file_parser["global"]["redis"]["enabled"] = False
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            values_file_parser["global"]["redis"]["enabled"] = True
             values_file_parser["opendj"]["gluuRedisEnabled"] = True
 
         values_file_parser["global"]["nginx"]["enabled"] = True

@@ -160,6 +160,10 @@
 | `REDIS_USE_SSL`                                 | Redis SSL use                                                                    |  `"false"` or `"true"`                                                                      |
 | `REDIS_SSL_TRUSTSTORE`                          | Redis SSL truststore. If using cloud provider services this is left empty.       | i.e `""`, `"/etc/myredis.pem"`                                                              |
 | `REDIS_SENTINEL_GROUP`                          | Redis Sentinel group                                                             | i.e `""`                                                                                    |
+| `REDIS_MASTER_NODES`                            | Number of Redis master node if Redis is to be installed                          | i.e `3`                                                                                    |
+| `REDIS_NODES_PER_MASTER`                        | Number of nodes per Redis master node if Redis is to be installed                | i.e `2`                                                                                    |
+| `REDIS_NAMESPACE`                               | Redis Namespace if Redis is to be installed                                      | i.e `"gluu-redis-cluster"`                                                                                    |
+| `INSTALL_REDIS`                                 | Install Redis                                                                    | `"Y"` or `"N"`                                                                                    |
 | `INSTALL_COUCHBASE`                             | Install couchbase                                                                | `"Y"` or `"N"`                                                                              |
 | `COUCHBASE_NAMESPACE`                           | Couchbase namespace                                                              | `"<name>"`                                                                                  |
 | `COUCHBASE_VOLUME_TYPE`                         | Persistence Volume type                                                          | `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                         |
@@ -533,7 +537,6 @@ If during installation the release was not defined, release name is checked by r
 | `global.key-rotation.enabled`                      | Allow key rotation                                                                                                               | `false`                             |
 | `global.cr-rotate.enabled`                         | Allow cache rotation deployment                                                                                                  | `false`                             |
 | `global.radius.enabled`                            | Enabled radius installation                                                                                                      | `false`                             |
-| `global.redis.enabled`                             | Whether to allow installation of redis chart.                                                                                    | `false`                             |
 | `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
 | `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
 | `global.config.enabled`                            | Either to install config chart or not.                                                                                           | `true`                              |   
@@ -614,25 +617,6 @@ oxd-server:
 ### Casa
 
 - Casa is dependant on `oxd-server`. To install it `oxd-server` must be enabled.
-
-### Redis
-
-To enable usage of Redis, change the following values.
-
-```yaml
-opendj:
-  # options REDIS/NATIVE_PERSISTENCE
-  gluuCacheType: REDIS
-  # options true/false : must be enabled if cache type is REDIS
-  gluuRedisEnabled: true
-
-# redis should be enabled only when cacheType is REDIS
-global:
-  redis:
-    enabled: true
-
-```
-
 
 ### Other optional services
 
