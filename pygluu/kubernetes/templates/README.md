@@ -195,7 +195,11 @@
 | `DEPLOY_MULTI_CLUSTER`                          | Deploying a Multi-cluster [alpha]                                                | `"Y"` or `"N"`                                                                              |
 | `HYBRID_LDAP_HELD_DATA`                         | Type of data to be held in LDAP with a hybrid installation of couchbase and LDAP | `""`, `"default"`, `"user"`, `"site"`, `"cache"` or `"token"`                               |
 | `LDAP_VOLUME`                                   | LDAP  Volume type                                                                | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
-| `LDAP_VOLUME_TYPE`                              | Volume type for LDAP persistence                                                 | [options](#ldap_volume_type-options)                                                        |
+| `APP_VOLUME_TYPE`                               | Volume type for LDAP persistence                                                 | [options](#app_volume_type-options)                                                         |
+| `INSTALL_JACKRABBIT`                            | Install Jackrabbit                                                               | `"Y"` or `"N"`                                                                              |
+| `JACKRABBIT_STORAGE_SIZE`                       | Jackrabbit volume storage size                                                   | `""` i.e `"4Gi"`                                                                            |
+| `JACKRABBIT_URL`                                | http:// url for Jackrabbit                                                       | i.e `"http://jackrabbit:8080"`                                                              |
+| `JACKRABBIT_USER`                               | Jackrabbit user                                                                  | `"admin"`                                                                                   |
 | `LDAP_STATIC_VOLUME_ID`                         | LDAP static volume id (AWS EKS)                                                  | `""` or `"<static-volume-id>"`                                                              |
 | `LDAP_STATIC_DISK_URI`                          | LDAP static disk uri (GCE GKE or Azure)                                          | `""` or `"<disk-uri>"`                                                                      |
 | `LDAP_BACKUP_SCHEDULE`                          | LDAP back up cron job frequency                                                  |  i.e `"*/30 * * * *"`                                                                       |
@@ -238,6 +242,8 @@
 | `ENABLE_CASA_BOOLEAN`                           | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_SAML_BOOLEAN`                           | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `EDIT_IMAGE_NAMES_TAGS`                         | Manually place the image source and tag                                          | `"Y"` or `"N"`                                                                              |
+| `JACKRABBIT_IMAGE_NAME`                         | Jackrabbit image repository name                                                 | i.e `"gluufederation/jackrabbit"`                                                                 |
+| `JACKRABBIT_IMAGE_TAG`                          | Jackrabbit image tag                                                             | i.e `"4.1.0_01"`                                                                            |
 | `CASA_IMAGE_NAME`                               | Casa image repository name                                                       | i.e `"gluufederation/casa"`                                                                 |
 | `CASA_IMAGE_TAG`                                | Casa image tag                                                                   | i.e `"4.1.0_01"`                                                                            |
 | `CONFIG_IMAGE_NAME`                             | Config image repository name                                                     | i.e `"gluufederation/config-init"`                                                          |
@@ -266,23 +272,23 @@
 | `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.1.0_01"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
 
-### `LDAP_VOLUME_TYPE`-options
+### `APP_VOLUME_TYPE`-options
 
-`LDAP_VOLUME_TYPE=""` but if `PERSISTENCE_BACKEND` is `WrenDS` options are :
+`APP_VOLUME_TYPE=""` but if `PERSISTENCE_BACKEND` is `WrenDS` options are :
 
 | Options  | Deployemnt Architecture  | Volume Type                                   |
 | -------- | ------------------------ | --------------------------------------------- |
-| `1`      | Microk8s                 | LDAP volumes on host                          |
-| `2`      | Minikube                 | LDAP volumes on host                          |
-| `6`      | EKS                      | LDAP volumes on host                          |
-| `7`      | EKS                      | LDAP EBS volumes dynamically provisioned      |
-| `8`      | EKS                      | LDAP EBS volumes statically provisioned       |
-| `11`     | GKE                      | LDAP volumes on host                          |
-| `12`     | GKE                      | LDAP Persistent Disk  dynamically provisioned |
-| `13`     | GKE                      | LDAP Persistent Disk  statically provisioned  |
-| `16`     | Azure                    | LDAP volumes on host                          |
-| `17`     | Azure                    | LDAP Persistent Disk  dynamically provisioned |
-| `18`     | Azure                    | LDAP Persistent Disk  statically provisioned  |
+| `1`      | Microk8s                 | volumes on host                          |
+| `2`      | Minikube                 | volumes on host                          |
+| `6`      | EKS                      | volumes on host                          |
+| `7`      | EKS                      | EBS volumes dynamically provisioned      |
+| `8`      | EKS                      | EBS volumes statically provisioned       |
+| `11`     | GKE                      | volumes on host                          |
+| `12`     | GKE                      | Persistent Disk  dynamically provisioned |
+| `13`     | GKE                      | Persistent Disk  statically provisioned  |
+| `16`     | Azure                    | volumes on host                          |
+| `17`     | Azure                    | Persistent Disk  dynamically provisioned |
+| `18`     | Azure                    | Persistent Disk  statically provisioned  |
 
 ### Uninstall Gluu using Kustomize
 
@@ -520,6 +526,11 @@ If during installation the release was not defined, release name is checked by r
 | `global.domain`                                    | DNS domain name                                                                                                                  | `demoexample.gluu.org`              |
 | `global.isDomainRegistered`                        | Whether the domain to be used is registered or not                                                                               | `false`                             |
 | `global.gluuLdapUrl`                               | wrends/ldap server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                      |
+| `global.gluuJcaSyncInterval`                       | Jackrabbit sync interval                                                                                                         |  `300`                              |
+| `global.gluuJcaRmiUrl`                             | Jackrabbit rmi url. Port and service name of Jackrabbit.                                                                         |  `jackrabbit:8080/rmi`              |
+| `global.gluuJcaUrl`                                | Jackrabbit url. Port and service name of Jackrabbit                                                                              |  `jackrabbit:8080`                  |
+| `global.gluuJcaUsername`                           | Jackrabbit username                                                                                                              |  `admin`                            |
+| `global.gluuJcaPasswordFile`                       | Jackrabbit password file location                                                                                                |  `/etc/gluu/conf/jca_password`      |
 | `global.gluuMaxFraction`                           | Controls how much of total RAM is up for grabs in containers running Java apps                                                   |  `1`                                |
 | `global.configAdapterName`                         | The config backend adapter                                                                                                       | `Kubernetes`                        |
 | `global.configSecretAdapter`                       | The secrets adapter                                                                                                              | `Kubernetes`                        |
@@ -743,6 +754,3 @@ Examples:
     ```
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
-
-    
- 

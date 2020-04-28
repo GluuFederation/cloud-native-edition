@@ -10,6 +10,8 @@
     "KEY_ROTATE_IMAGE_TAG": "4.1.1_03",
     "LDAP_IMAGE_NAME": "gluufederation/wrends",
     "LDAP_IMAGE_TAG": "4.1.1_01",
+    "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
+    "JACKRABBIT_IMAGE_TAG": "4.1.1_dev",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
     "OXAUTH_IMAGE_TAG": "4.1.1_05",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",

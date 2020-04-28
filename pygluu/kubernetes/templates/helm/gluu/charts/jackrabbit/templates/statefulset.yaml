@@ -1,0 +1,58 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "jackrabbit.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "jackrabbit.labels" . | indent 4}}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "jackrabbit.name" . }}
+  serviceName: {{ include "jackrabbit.name" . }}
+  replicas: {{ .Values.replicas }} 
+  template:
+    metadata:
+      labels:
+        app: {{ include "jackrabbit.name" . }}
+    spec:
+      containers:
+      - name: {{ include "jackrabbit.fullname" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        envFrom:
+        - configMapRef:
+            name: {{ include "jackrabbit.fullname" . }}
+        ports:
+        {{- range $key, $value := .Values.ports }}
+          - containerPort: {{ $value.targetPort }}
+            name: {{ $key }}
+        {{- end }}
+        volumeMounts:
+        {{- range $key, $values := .Values.volumeMounts }}
+          - mountPath: {{$values.mountPath}}
+            name: {{$values.name}}
+            subPath: {{$key}}
+        {{- end }}
+        readinessProbe:
+          tcpSocket: 
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 25
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+  volumeClaimTemplates:
+  - metadata:
+      name: jackrabbit-volume
+    spec:
+      accessModes:
+      - {{ .Values.storage.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}
+      storageClassName: {{ include "jackrabbit.fullname" . | quote }}

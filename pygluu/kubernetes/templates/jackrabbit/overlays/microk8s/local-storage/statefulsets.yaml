@@ -1,0 +1,18 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jackrabbit
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: jackrabbit-pvc
+      spec:
+        volumeName: jackrabbit-pv
+        storageClassName: ""
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: STORAGELDAP

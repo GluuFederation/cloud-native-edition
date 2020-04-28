@@ -16,6 +16,10 @@ configMapGenerator:
       - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"
+      - GLUU_DOCUMENT_STORE_TYPE="JCA"
+      - GLUU_JCA_RMI_URL="http://jackrabbit:8080/rmi"
+      - GLUU_JCA_USERNAME="admin"
+      - GLUU_JCA_PASSWORD_FILE="/etc/gluu/conf/jca_password"
       - DOMAIN=FQDN
       # options: ldap/couchbase/hybrid
       - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE

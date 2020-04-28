@@ -1,0 +1,11 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: v1
+appVersion: "4.1.0_01"
+home: https://www.gluu.org/de
+maintainers:
+- name: Gluu
+email: support@gluu.org
+description: A Helm chart for jackrabbit content repository
+name: jackrabbit
+version: 1.0.1

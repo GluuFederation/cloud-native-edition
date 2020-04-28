@@ -63,6 +63,10 @@ class Prompt(object):
                                 REDIS_NODES_PER_MASTER="",
                                 REDIS_NAMESPACE="",
                                 INSTALL_REDIS="",
+                                INSTALL_JACKRABBIT="",
+                                JACKRABBIT_STORAGE_SIZE="",
+                                JACKRABBIT_URL="",
+                                JACKRABBIT_USER="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -98,7 +102,7 @@ class Prompt(object):
                                 DEPLOY_MULTI_CLUSTER="",
                                 HYBRID_LDAP_HELD_DATA="",
                                 LDAP_VOLUME="",
-                                LDAP_VOLUME_TYPE="",
+                                APP_VOLUME_TYPE="",
                                 LDAP_STATIC_VOLUME_ID="",
                                 LDAP_STATIC_DISK_URI="",
                                 GLUU_CACHE_TYPE="",
@@ -152,6 +156,8 @@ class Prompt(object):
                                 KEY_ROTATE_IMAGE_TAG="",
                                 LDAP_IMAGE_NAME="",
                                 LDAP_IMAGE_TAG="",
+                                JACKRABBIT_IMAGE_NAME="",
+                                JACKRABBIT_IMAGE_TAG="",
                                 OXAUTH_IMAGE_NAME="",
                                 OXAUTH_IMAGE_TAG="",
                                 OXD_IMAGE_NAME="",
@@ -297,6 +303,8 @@ class Prompt(object):
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                     self.settings["PERSISTENCE_BACKEND"] == "ldap":
                 prompt_and_set_setting("WrenDS", "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
+            # Jackrabbit
+            prompt_and_set_setting("jackrabbit", "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
             # OXAUTH
             prompt_and_set_setting("oxAuth", "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
             # OXD
@@ -344,7 +352,7 @@ class Prompt(object):
             prompt = input("Please enter valid email for Google Cloud account:")
             self.settings["GMAIL_ACCOUNT"] = prompt
 
-        if self.settings["LDAP_VOLUME_TYPE"] == 11:
+        if self.settings["APP_VOLUME_TYPE"] == 11:
             for node_name in self.settings["NODES_NAMES"]:
                 for zone in self.settings["NODES_ZONES"]:
                     response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
@@ -441,6 +449,37 @@ class Prompt(object):
         with open(Path('./config/base/generate.json'), 'w+') as file:
             json.dump(self.config_settings, file)
         update_settings_json_file(self.settings)
+
+    def prompt_jackrabbit(self):
+        if not self.settings["INSTALL_JACKRABBIT"]:
+            logger.info("Jackrabbit must be installed. If the following prompt is answered with N it is assumed "
+                        "the jackrabbit content repository is either installed locally or remotely")
+            prompt = input("Install Jackrabbit content repository[Y/N]?[Y]")
+            if prompt == "N" or prompt == "n":
+                prompt = "N"
+            else:
+                prompt = "Y"
+            self.settings["INSTALL_JACKRABBIT"] = prompt
+        if self.settings["INSTALL_JACKRABBIT"] == "N":
+            if not self.settings["JACKRABBIT_URL"]:
+                prompt = input("Please enter jackrabbit url [http://jackrabbit:8080]")
+                if not prompt:
+                    prompt = "http://jackrabbit:8080"
+                self.settings["JACKRABBIT_URL"] = prompt
+            if not self.settings["JACKRABBIT_USER"]:
+                prompt = input("Please enter jackrabbit user [admin]")
+                if not prompt:
+                    prompt = "admin"
+                self.settings["JACKRABBIT_USER"] = prompt
+            logger.info("Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod")
+        else:
+            if not self.settings["JACKRABBIT_STORAGE_SIZE"]:
+                prompt = input("Size of Jackrabbit content repository volume storage [4Gi]:")
+                if not prompt:
+                    prompt = "4Gi"
+                self.settings["JACKRABBIT_STORAGE_SIZE"] = prompt
+            self.settings["JACKRABBIT_USER"] = "admin"
+            self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
     def prompt_storage(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
@@ -596,7 +635,9 @@ class Prompt(object):
             logger.info("For the following prompt  if placed [N] the couchbase is assumed to be"
                         " installed or remotely provisioned")
             prompt = input("Install Couchbase[Y/N]?[Y]")
-            if not prompt:
+            if prompt == "N" or prompt == "n":
+                prompt = "N"
+            else:
                 prompt = "Y"
             self.settings["INSTALL_COUCHBASE"] = prompt
 
@@ -982,7 +1023,9 @@ class Prompt(object):
             logger.info("For the following prompt  if placed [N] the Redis is assumed to be"
                         " installed or remotely provisioned")
             redis_install_prompt = input("Install Redis[Y/N]?[Y]")
-            if not redis_install_prompt:
+            if redis_install_prompt == "N" or redis_install_prompt == "n":
+                redis_install_prompt = "N"
+            else:
                 redis_install_prompt = "Y"
             self.settings["INSTALL_REDIS"] = redis_install_prompt
 
@@ -1032,6 +1075,8 @@ class Prompt(object):
         self.prompt_arch()
         self.prompt_gluu_namespace()
         self.prompt_optional_services()
+        self.prompt_jackrabbit()
+
         if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "gke" \
                 or self.settings["DEPLOYMENT_ARCH"] == "aks":
@@ -1134,54 +1179,56 @@ class Prompt(object):
                     self.settings["HYBRID_LDAP_HELD_DATA"] = "default"
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
+                self.settings["PERSISTENCE_BACKEND"] == "ldap" or \
+                self.settings["INSTALL_JACKRABBIT"] == "Y":
             self.settings["COUCHBASE_USER"] = "admin"
             self.settings["COUCHBASE_URL"] = "couchbase"
-            if not self.settings["LDAP_VOLUME_TYPE"]:
-                print("|------------------------------------------------------------------|")
-                print("|                     Local Deployments                            |")
-                print("|------------------------------------------------------------------|")
-                print("| [1]  Microk8s | LDAP volumes on host [default]                   |")
-                print("| [2]  Minikube | LDAP volumes on host                             |")
-                print("|------------------------------------------------------------------|")
-                print("|                     Cloud Deployments                            |")
-                print("|------------------------------------------------------------------|")
-                print("|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |")
-                print("|                    MultiAZ - Supported                           |")
-                print("|------------------------------------------------------------------|")
-                print("| [6]  EKS      | LDAP volumes on host                             |")
-                print("| [7]  EKS      | LDAP EBS volumes dynamically provisioned         |")
-                print("| [8]  EKS      | LDAP EBS volumes statically provisioned          |")
-                print("|------------------------------------------------------------------|")
-                print("|Google Cloud Engine - Google Kubernetes Engine                    |")
-                print("|------------------------------------------------------------------|")
-                print("| [11]  GKE     | LDAP volumes on host                             |")
-                print("| [12]  GKE     | LDAP Persistent Disk  dynamically provisioned    |")
-                print("| [13]  GKE     | LDAP Persistent Disk  statically provisioned     |")
-                print("|------------------------------------------------------------------|")
-                print("|Microsoft Azure                                                   |")
-                print("|------------------------------------------------------------------|")
-                print("| [16] Azure    | LDAP volumes on host                             |")
-                print("| [17] Azure    | LDAP Persistent Disk  dynamically provisioned    |")
-                print("| [18] Azure    | LDAP Persistent Disk  statically provisioned     |")
-                print("|------------------------------------------------------------------|")
-                print("|                             Notes                                |")
-                print("|------------------------------------------------------------------|")
-                print("|             Any other option will default to choice 1            |")
-                print("|------------------------------------------------------------------|")
-                prompt = input("What type of LDAP deployment[1]")
-                if not prompt:
-                    prompt = 1
+            if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
+                self.settings["APP_VOLUME_TYPE"] = 1
+            elif self.settings["DEPLOYMENT_ARCH"] == "minikube":
+                self.settings["APP_VOLUME_TYPE"] = 2
+            if not self.settings["APP_VOLUME_TYPE"]:
+                if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                    print("|------------------------------------------------------------------|")
+                    print("|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |")
+                    print("|                    MultiAZ - Supported                           |")
+                    print("|------------------------------------------------------------------|")
+                    print("| [6]  volumes on host                                             |")
+                    print("| [7]  EBS volumes dynamically provisioned [default]               |")
+                    print("| [8]  EBS volumes statically provisioned                          |")
+                    prompt = input("What type of volume path [7]")
+                    if not prompt:
+                        prompt = 7
+                elif self.settings["DEPLOYMENT_ARCH"] == "gke":
+                    print("|------------------------------------------------------------------|")
+                    print("|Google Cloud Engine - Google Kubernetes Engine                    |")
+                    print("|------------------------------------------------------------------|")
+                    print("| [11]  volumes on host                                            |")
+                    print("| [12]  Persistent Disk  dynamically provisioned [default]         |")
+                    print("| [13]  Persistent Disk  statically provisioned                    |")
+                    prompt = input("What type of volume path [12]")
+                    if not prompt:
+                        prompt = 12
+                elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+                    print("|------------------------------------------------------------------|")
+                    print("|Microsoft Azure                                                   |")
+                    print("|------------------------------------------------------------------|")
+                    print("| [16] volumes on host                                             |")
+                    print("| [17] Persistent Disk  dynamically provisioned                    |")
+                    print("| [18] Persistent Disk  statically provisioned                     |")
+                    prompt = input("What type of volume path [17]")
+                    if not prompt:
+                        prompt = 17
                 prompt = int(prompt)
-                self.settings["LDAP_VOLUME_TYPE"] = prompt
+                self.settings["APP_VOLUME_TYPE"] = prompt
 
-            if self.settings["LDAP_VOLUME_TYPE"] == 8 or self.settings["LDAP_VOLUME_TYPE"] == 13:
+            if self.settings["APP_VOLUME_TYPE"] == 8 or self.settings["APP_VOLUME_TYPE"] == 13:
                 self.prompt_volumes_identitfier()
 
-            if self.settings["LDAP_VOLUME_TYPE"] == 18:
+            if self.settings["APP_VOLUME_TYPE"] == 18:
                 self.prompt_disk_uris()
 
-            if self.settings["LDAP_VOLUME_TYPE"] > 2 and not self.settings["LDAP_VOLUME"]:
+            if self.settings["APP_VOLUME_TYPE"] > 2 and not self.settings["LDAP_VOLUME"]:
                 logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
                 logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
                 logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")

@@ -34,21 +34,31 @@ from .updatesecrets import modify_secret
 logger = get_logger("gluu-create        ")
 
 # Local Deployments
-local_minikube_folder = Path("./ldap/overlays/minikube/local-storage/")
-local_microk8s_folder = Path("./ldap/overlays/microk8s/local-storage/")
+local_ldap_minikube_folder = Path("./ldap/overlays/minikube/local-storage/")
+local_jcr_minikube_folder = Path("./jackrabbit/overlays/minikube/local-storage/")
+local_ldap_microk8s_folder = Path("./ldap/overlays/microk8s/local-storage/")
+local_jcr_microk8s_folder = Path("./jackrabbit/overlays/microk8s/local-storage/")
 # AWS
-local_eks_folder = Path("./ldap/overlays/eks/local-storage/")
-dynamic_eks_folder = Path("./ldap/overlays/eks/dynamic-ebs/")
-static_eks_folder = Path("./ldap/overlays/eks/static-ebs/")
-efs_eks_folder = Path("./ldap/overlays/eks/efs/")
+local_ldap_eks_folder = Path("./ldap/overlays/eks/local-storage/")
+local_jcr_eks_folder = Path("./jackrabbit/overlays/eks/local-storage/")
+dynamic_ldap_eks_folder = Path("./ldap/overlays/eks/dynamic-ebs/")
+dynamic_jcr_eks_folder = Path("./jackrabbit/overlays/eks/dynamic-ebs/")
+static_ldap_eks_folder = Path("./ldap/overlays/eks/static-ebs/")
+static_jcr_eks_folder = Path("./jackrabbit/overlays/eks/static-ebs/")
 # GCE
-local_gke_folder = Path("./ldap/overlays/gke/local-storage/")
-dynamic_gke_folder = Path("./ldap/overlays/gke/dynamic-pd/")
-static_gke_folder = Path("./ldap/overlays/gke/static-pd/")
+local_ldap_gke_folder = Path("./ldap/overlays/gke/local-storage/")
+local_jcr_gke_folder = Path("./jackrabbit/overlays/gke/local-storage/")
+dynamic_ldap_gke_folder = Path("./ldap/overlays/gke/dynamic-pd/")
+dynamic_jcr_gke_folder = Path("./jackrabbit/overlays/gke/dynamic-pd/")
+static_ldap_gke_folder = Path("./ldap/overlays/gke/static-pd/")
+static_jcr_gke_folder = Path("./jackrabbit/overlays/gke/static-pd/")
 # AZURE
-local_azure_folder = Path("./ldap/overlays/azure/local-storage/")
-dynamic_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
-static_azure_folder = Path("./ldap/overlays/azure/static-dn/")
+local_ldap_azure_folder = Path("./ldap/overlays/azure/local-storage/")
+local_jcr_azure_folder = Path("./jackrabbit/overlays/azure/local-storage/")
+dynamic_ldap_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
+dynamic_jcr_azure_folder = Path("./jackrabbit/overlays/azure/dynamic-dn/")
+static_ldap_azure_folder = Path("./ldap/overlays/azure/static-dn/")
+static_jcr_azure_folder = Path("./jackrabbit/overlays/azure/static-dn/")
 
 
 def subprocess_cmd(command):
@@ -110,10 +120,12 @@ class App(object):
                     raise SystemExit(1)
 
         self.kubectl = self.detect_kubectl
-        self.output_yaml_directory, self.kustomize_yaml_directory = self.set_output_yaml_directory
+        self.output_yaml_directory, self.ldap_kustomize_yaml_directory, self.jcr_kustomize_yaml_directory \
+            = self.set_output_yaml_directory
         self.shared_shib_yaml = str(self.output_yaml_directory.joinpath("shared-shib.yaml").resolve())
         self.config_yaml = str(self.output_yaml_directory.joinpath("config.yaml").resolve())
         self.ldap_yaml = str(self.output_yaml_directory.joinpath("ldap.yaml").resolve())
+        self.jackrabbit_yaml = str(self.output_yaml_directory.joinpath("jackrabbit.yaml").resolve())
         self.persistence_yaml = str(self.output_yaml_directory.joinpath("persistence.yaml").resolve())
         self.oxauth_yaml = str(self.output_yaml_directory.joinpath("oxauth.yaml").resolve())
         self.oxtrust_yaml = str(self.output_yaml_directory.joinpath("oxtrust.yaml").resolve())
@@ -188,51 +200,83 @@ class App(object):
     def set_output_yaml_directory(self):
 
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
-            copy(local_microk8s_folder, local_minikube_folder)
+            copy(local_ldap_microk8s_folder, local_ldap_minikube_folder)
+            copy(local_jcr_microk8s_folder, local_jcr_minikube_folder)
             output_yamls_folder = Path("gluu_minikube_yamls")
-            kustomize_yaml_directory = local_minikube_folder
+            ldap_kustomize_yaml_directory = local_ldap_minikube_folder
+            jcr_kustomize_yaml_directory = local_jcr_minikube_folder
 
         elif self.settings["DEPLOYMENT_ARCH"] == "eks":
             output_yamls_folder = Path("gluu_eks_yamls")
-            if self.settings["LDAP_VOLUME_TYPE"] == 7:
-                self.analyze_storage_class(dynamic_eks_folder.joinpath("storageclasses.yaml"))
-                kustomize_yaml_directory = dynamic_eks_folder
-            elif self.settings["LDAP_VOLUME_TYPE"] == 8:
-                kustomize_yaml_directory = static_eks_folder
+            if self.settings["APP_VOLUME_TYPE"] == 7:
+                self.analyze_storage_class(dynamic_ldap_eks_folder.joinpath("storageclasses.yaml"))
+                self.analyze_storage_class(dynamic_jcr_eks_folder.joinpath("storageclasses.yaml"))
+                ldap_kustomize_yaml_directory = dynamic_ldap_eks_folder
+                jcr_kustomize_yaml_directory = dynamic_jcr_eks_folder
+
+            elif self.settings["APP_VOLUME_TYPE"] == 8:
+                ldap_kustomize_yaml_directory = static_ldap_eks_folder
+                jcr_kustomize_yaml_directory = static_jcr_eks_folder
+
             else:
-                kustomize_yaml_directory = local_eks_folder
+                ldap_kustomize_yaml_directory = local_ldap_eks_folder
+                jcr_kustomize_yaml_directory = local_jcr_eks_folder
 
         elif self.settings["DEPLOYMENT_ARCH"] == "gke":
             output_yamls_folder = Path("gluu_gke_yamls")
-            if self.settings["LDAP_VOLUME_TYPE"] == 12:
+            if self.settings["APP_VOLUME_TYPE"] == 12:
                 try:
-                    shutil.rmtree(dynamic_gke_folder)
+                    shutil.rmtree(dynamic_ldap_gke_folder)
                 except FileNotFoundError:
                     logger.info("Directory not found. Copying...")
-                copy(dynamic_eks_folder, dynamic_gke_folder)
-                self.analyze_storage_class(dynamic_gke_folder.joinpath("storageclasses.yaml"))
-                kustomize_yaml_directory = dynamic_gke_folder
-            elif self.settings["LDAP_VOLUME_TYPE"] == 13:
-                kustomize_yaml_directory = static_gke_folder
+                try:
+                    shutil.rmtree(dynamic_jcr_gke_folder)
+                except FileNotFoundError:
+                    logger.info("Directory not found. Copying...")
+
+                copy(dynamic_ldap_eks_folder, dynamic_ldap_gke_folder)
+                copy(dynamic_jcr_eks_folder, dynamic_jcr_gke_folder)
+                self.analyze_storage_class(dynamic_ldap_eks_folder.joinpath("storageclasses.yaml"))
+                self.analyze_storage_class(dynamic_jcr_eks_folder.joinpath("storageclasses.yaml"))
+
+                ldap_kustomize_yaml_directory = dynamic_ldap_eks_folder
+                jcr_kustomize_yaml_directory = dynamic_jcr_eks_folder
+            elif self.settings["APP_VOLUME_TYPE"] == 13:
+                ldap_kustomize_yaml_directory = static_ldap_gke_folder
+                jcr_kustomize_yaml_directory = static_jcr_gke_folder
+
             else:
-                kustomize_yaml_directory = local_gke_folder
+                ldap_kustomize_yaml_directory = local_ldap_gke_folder
+                jcr_kustomize_yaml_directory = local_jcr_gke_folder
 
         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
             output_yamls_folder = Path("gluu_aks_yamls")
-            if self.settings["LDAP_VOLUME_TYPE"] == 17:
-                copy(dynamic_eks_folder, dynamic_azure_folder)
-                self.analyze_storage_class(dynamic_azure_folder.joinpath("storageclasses.yaml"))
-                kustomize_yaml_directory = dynamic_azure_folder
-            elif self.settings["LDAP_VOLUME_TYPE"] == 18:
-                kustomize_yaml_directory = static_azure_folder
+            if self.settings["APP_VOLUME_TYPE"] == 17:
+                copy(dynamic_ldap_eks_folder, dynamic_ldap_azure_folder)
+                copy(dynamic_jcr_eks_folder, dynamic_jcr_azure_folder)
+
+                self.analyze_storage_class(dynamic_ldap_azure_folder.joinpath("storageclasses.yaml"))
+                self.analyze_storage_class(dynamic_jcr_azure_folder.joinpath("storageclasses.yaml"))
+
+                ldap_kustomize_yaml_directory = dynamic_ldap_azure_folder
+                jcr_kustomize_yaml_directory = dynamic_ldap_azure_folder
+
+            elif self.settings["APP_VOLUME_TYPE"] == 18:
+                ldap_kustomize_yaml_directory = static_ldap_azure_folder
+                jcr_kustomize_yaml_directory = static_jcr_azure_folder
+
             else:
-                kustomize_yaml_directory = local_azure_folder
+                ldap_kustomize_yaml_directory = local_ldap_azure_folder
+                jcr_kustomize_yaml_directory = local_jcr_azure_folder
+
         else:
             output_yamls_folder = Path("gluu_microk8s_yamls")
-            kustomize_yaml_directory = local_microk8s_folder
+            ldap_kustomize_yaml_directory = local_ldap_microk8s_folder
+            jcr_kustomize_yaml_directory = local_jcr_microk8s_folder
+
         if not output_yamls_folder.exists():
             os.mkdir(output_yamls_folder)
-        return output_yamls_folder, kustomize_yaml_directory
+        return output_yamls_folder, ldap_kustomize_yaml_directory, jcr_kustomize_yaml_directory
 
     def adjust_fqdn_yaml_entries(self):
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" \
@@ -358,7 +402,7 @@ class App(object):
         app_kustomization_yamls = ["./casa/base", "./config/base", "./cr-rotate/base", "./key-rotation/base",
                                    "./ldap/base", "./oxauth/base", "./oxd-server/base", "./oxpassport/base",
                                    "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base",
-                                   "./upgrade/base"]
+                                   "./upgrade/base", "./jackrabbit/base"]
         other_kustomization_yamls = ["./update-lb-ip/base", "./shared-shib/efs", "./shared-shib/localstorage",
                                      "./shared-shib/nfs"]
         all_kustomization_yamls = app_kustomization_yamls + other_kustomization_yamls
@@ -377,6 +421,8 @@ class App(object):
                     update_image_name_tag("KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG")
                 elif "ldap" in yaml:
                     update_image_name_tag("LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
+                elif "jackrabbit" in yaml:
+                    update_image_name_tag("JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
                 elif "oxauth" in yaml:
                     update_image_name_tag("OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
                 elif "oxd-server" in yaml:
@@ -465,7 +511,7 @@ class App(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             command = self.kubectl + " kustomize " + str(
-                self.kustomize_yaml_directory.resolve()) + " > " + self.ldap_yaml
+                self.ldap_kustomize_yaml_directory.resolve()) + " > " + self.ldap_yaml
             subprocess_cmd(command)
 
             ldap_cm_parser = Parser(self.ldap_yaml, "ConfigMap")
@@ -484,13 +530,39 @@ class App(object):
                 del ldap_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
             ldap_statefulset_parser.dump_it()
 
-            if self.settings["LDAP_VOLUME_TYPE"] != 7 and self.settings["LDAP_VOLUME_TYPE"] != 12 and \
-                    self.settings["LDAP_VOLUME_TYPE"] != 17:
+            if self.settings["APP_VOLUME_TYPE"] != 7 and self.settings["APP_VOLUME_TYPE"] != 12 and \
+                    self.settings["APP_VOLUME_TYPE"] != 17:
                 ldap_pv_parser = Parser(self.ldap_yaml, "PersistentVolume")
                 ldap_pv_parser["spec"]["capacity"]["storage"] = self.settings["LDAP_STORAGE_SIZE"]
-                if self.settings["LDAP_VOLUME_TYPE"] == 11:
+                if self.settings["APP_VOLUME_TYPE"] == 11:
                     ldap_pv_parser["spec"]["hostPath"]["path"] = self.settings["GOOGLE_NODE_HOME_DIR"] + "/opendj"
                 ldap_pv_parser.dump_it()
+
+    def kustomize_jackrabbit(self):
+        command = self.kubectl + " kustomize " + str(
+            self.jcr_kustomize_yaml_directory.resolve()) + " > " + self.jackrabbit_yaml
+        subprocess_cmd(command)
+
+        jackrabbit_cm_parser = Parser(self.jackrabbit_yaml, "ConfigMap")
+        jackrabbit_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        jackrabbit_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        jackrabbit_cm_parser.dump_it()
+
+        jackrabbit_statefulset_parser = Parser(self.jackrabbit_yaml, "StatefulSet")
+        jackrabbit_statefulset_parser["spec"]["volumeClaimTemplates"][0]["spec"]["resources"]["requests"]["storage"] \
+            = self.settings["JACKRABBIT_STORAGE_SIZE"]
+        # Remove resource limits on local installations
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            del jackrabbit_statefulset_parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+        jackrabbit_statefulset_parser.dump_it()
+
+        if self.settings["APP_VOLUME_TYPE"] != 7 and self.settings["APP_VOLUME_TYPE"] != 12 and \
+                self.settings["APP_VOLUME_TYPE"] != 17:
+            jackrabbit_pv_parser = Parser(self.jackrabbit_yaml, "PersistentVolume")
+            jackrabbit_pv_parser["spec"]["capacity"]["storage"] = self.settings["JACKRABBIT_STORAGE_SIZE"]
+            if self.settings["APP_VOLUME_TYPE"] == 11:
+                jackrabbit_pv_parser["spec"]["hostPath"]["path"] = self.settings["GOOGLE_NODE_HOME_DIR"] + "/jackrabbit"
+            jackrabbit_pv_parser.dump_it()
 
     def kustomize_persistence(self):
         command = self.kubectl + " kustomize persistence/base > " + self.persistence_yaml
@@ -517,6 +589,8 @@ class App(object):
         persistence_cm_parser["data"]["GLUU_SAML_ENABLED"] = self.settings["ENABLE_SAML_BOOLEAN"]
         persistence_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
         persistence_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        persistence_cm_parser["data"]["GLUU_JCA_RMI_URL"] = self.settings["JACKRABBIT_URL"] + "/rmi"
+        persistence_cm_parser["data"]["GLUU_JCA_USERNAME"] = self.settings["JACKRABBIT_USER"]
         persistence_cm_parser.dump_it()
 
         if self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -540,6 +614,7 @@ class App(object):
         oxauth_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
         oxauth_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
         oxauth_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        oxauth_cm_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
         oxauth_cm_parser.dump_it()
 
         # Remove resource limits on local installations
@@ -577,7 +652,7 @@ class App(object):
         subprocess_cmd(command)
         oxtrust_cm_parser = Parser(self.oxtrust_yaml, "ConfigMap")
         if self.settings["ENABLE_OXSHIBBOLETH"] != "Y":
-            oxtrust_cm_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
+            oxtrust_cm_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "false"
         oxtrust_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         oxtrust_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
         oxtrust_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
@@ -586,6 +661,8 @@ class App(object):
         oxtrust_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
         oxtrust_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
         oxtrust_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+        oxtrust_cm_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
+
         oxtrust_cm_parser.dump_it()
 
         self.adjust_yamls_for_fqdn_status[self.oxtrust_yaml] = "StatefulSet"
@@ -609,6 +686,7 @@ class App(object):
             oxshibboleth_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
             oxshibboleth_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             oxshibboleth_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+            oxshibboleth_cm_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
             oxshibboleth_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.oxshibboleth_yaml] = "StatefulSet"
@@ -631,6 +709,8 @@ class App(object):
             oxpassport_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings["PERSISTENCE_BACKEND"]
             oxpassport_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             oxpassport_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
+            oxpassport_cm_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
+
             oxpassport_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.oxpassport_yaml] = "Deployment"
@@ -727,7 +807,7 @@ class App(object):
             casa_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             casa_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
             casa_cm_parser["data"]["GLUU_OXD_SERVER_URL"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"] + ":8443"
-
+            casa_cm_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
             casa_cm_parser.dump_it()
 
             self.adjust_yamls_for_fqdn_status[self.casa_yaml] = "Deployment"
@@ -952,6 +1032,13 @@ class App(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj", self.timeout)
 
+    def deploy_jackrabbit(self):
+        self.kubernetes.create_objects_from_dict(self.jackrabbit_yaml)
+        logger.info("Deploying Jackrabbit content repository.Please wait..")
+        time.sleep(10)
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=jackrabbit", self.timeout)
+
     def deploy_persistence(self):
         self.kubernetes.create_objects_from_dict(self.persistence_yaml)
         logger.info("Trying to import ldifs...")
@@ -1132,6 +1219,7 @@ class App(object):
         if not restore:
             self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         self.kustomize_config()
+        self.kustomize_jackrabbit()
         self.kustomize_ldap()
         self.kustomize_persistence()
         self.kustomize_oxauth()
@@ -1144,6 +1232,8 @@ class App(object):
         self.kustomize_casa()
         self.kustomize_radius()
         self.kustomize_update_lb_ip()
+        if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
+            self.deploy_jackrabbit()
         if install_couchbase:
             if self.settings["PERSISTENCE_BACKEND"] != "ldap":
                 if self.settings["INSTALL_COUCHBASE"] == "Y":
@@ -1171,6 +1261,7 @@ class App(object):
         if self.settings["INSTALL_REDIS"] == "Y":
             self.deploy_kubedb()
             self.deploy_redis()
+
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -1227,13 +1318,13 @@ class App(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server"]
+                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server", "jackrabbit"]
         gluu_storage_class_names = ["aws-efs", "opendj-sc", "gluu-nfs-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
-                                      "app=radius", "app=efs-provisioner", "app=key-rotation"]
+                                      "app=radius", "app=efs-provisioner", "app=key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
-        stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth"]
+        stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
         secrets = ["oxdkeystorecm", "gluu", "tls-certificate"]
         cb_secrets = ["cb-pass", "cb-crt"]
@@ -1273,8 +1364,9 @@ class App(object):
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
         if not restore:
-            self.uninstall_redis()
-            self.uninstall_kubedb()
+            if self.settings["INSTALL_REDIS"] == "Y":
+                self.uninstall_redis()
+                self.uninstall_kubedb()
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
@@ -1339,12 +1431,12 @@ class App(object):
                 elif self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
-                    if self.settings["LDAP_VOLUME_TYPE"] == 6 or self.settings["LDAP_VOLUME_TYPE"] == 16:
+                    if self.settings["APP_VOLUME_TYPE"] == 6 or self.settings["APP_VOLUME_TYPE"] == 16:
                         if self.settings["DEPLOYMENT_ARCH"] == "eks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "ec2-user", node_ip, "/data")
                         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
                             ssh_and_remove(self.settings["NODE_SSH_KEY"], "opc", node_ip, "/data")
-            if self.settings["LDAP_VOLUME_TYPE"] == 11:
+            if self.settings["APP_VOLUME_TYPE"] == 11:
                 if self.settings["DEPLOYMENT_ARCH"] == "gke":
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:

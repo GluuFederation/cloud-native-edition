@@ -1,0 +1,17 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: jackrabbit
+resources:
+  - statefulsets.yaml
+  - services.yaml
+images:
+  - name: gluufederation/jackrabbit
+    newTag: 4.1.1_dev
+configMapGenerator:
+  - name: jackrabbit-cm
+    literals:
+      - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
+      - GLUU_CONFIG_ADAPTER="kubernetes"

@@ -145,6 +145,12 @@ class Helm(object):
         values_file_parser["global"]["config"]["enabled"] = True
         values_file_parser["global"]["opendj"]["enabled"] = False
 
+        if self.settings["INSTALL_JACKRABBIT"] == "Y":
+            values_file_parser["global"]["jackrabbit"]["enabled"] = True
+            values_file_parser["global"]["gluuJcaRmiUrl"] = True
+            values_file_parser["global"]["gluuJcaUrl"] = True
+            values_file_parser["global"]["gluuJcaUsername"] = True
+
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             values_file_parser["global"]["opendj"]["enabled"] = True

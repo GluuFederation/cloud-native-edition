@@ -17,7 +17,11 @@ dependencies:
     - name: opendj
       condition: global.opendj.enabled
       version: 1.0.0
-  
+
+    - name: jackrabbit
+      condition: global.jackrabbit.enabled
+      version: 1.0.0
+
     - name: oxauth
       condition: global.oxauth.enabled
       version: 1.0.0

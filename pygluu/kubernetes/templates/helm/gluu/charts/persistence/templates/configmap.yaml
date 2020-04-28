@@ -10,6 +10,10 @@ data:
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  GLUU_DOCUMENT_STORE_TYPE: {{ .Values.global.gluuDocumentStoreType | quote }}
+  GLUU_JCA_RMI_URL: {{ .Values.global.gluuJcaRmiUrl | quote }}
+  GLUU_JCA_USERNAME: {{ .Values.global.gluuJcaUsername | quote }}
+  GLUU_JCA_PASSWORD_FILE: {{ .Values.global.gluuJcaPasswordFile | quote }}
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}

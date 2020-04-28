@@ -13,6 +13,9 @@ data:
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
   GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
+  GLUU_DOCUMENT_STORE_TYPE: {{ .Values.global.gluuDocumentStoreType | quote }}
+  GLUU_JCA_SYNC_INTERVAL: {{ .Values.global.gluuJcaSyncInterval | quote }}
+  GLUU_JCA_URL: {{ .Values.global.gluuJcaUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
   GLUU_OXD_SERVER_URL: {{ .Values.global.gluuOxdServerUrl | quote }}

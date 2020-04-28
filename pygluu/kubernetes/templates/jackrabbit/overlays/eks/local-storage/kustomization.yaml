@@ -1,0 +1,10 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+bases:
+  - ../../../base
+resources:
+  - persistentvolumes.yaml
+patchesStrategicMerge:
+  - statefulsets.yaml

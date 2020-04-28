@@ -1,0 +1,62 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jackrabbit
+spec:
+  serviceName: jackrabbit
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jackrabbit
+  volumeClaimTemplates: []
+  template:
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - jackrabbit
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: opendj
+        imagePullPolicy: Always
+        image: gluufederation/jackrabbit:4.1.1_dev
+        envFrom:
+        - configMapRef:
+            name: jackrabbit-cm
+        ports:
+          - containerPort: 8080
+            name: jackrabbit
+        volumeMounts:
+          - mountPath: /opt/jackrabbit/repository
+            name: jackrabbit-pvc
+            subPath: repository
+          - mountPath: /opt/jackrabbit/version
+            name: jackrabbit-pvc
+            subPath: version
+          - mountPath: /opt/jackrabbit/workspaces
+            name: jackrabbit-pvc
+            subPath: workspaces
+        resources:
+          requests:
+            memory: "1500Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2000Mi"
+            cpu: "1500m"
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 25
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30

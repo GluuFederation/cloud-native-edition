@@ -28,6 +28,14 @@ global:
   isDomainRegistered: "false" # "true" or "false"
 
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
+  # Options LOCAL / JCA (jackrabbit)
+  gluuDocumentStoreType: JCA
+  # Jackrabbit content repository
+  gluuJcaSyncInterval: 300
+  gluuJcaRmiUrl: http://jackrabbit:8080/rmi
+  gluuJcaUrl: http://jackrabbit:8080
+  gluuJcaUsername: admin
+  gluuJcaPasswordFile: /etc/gluu/conf/jca_password
 
   gluuLdapUrl: opendj:1636
   gluuOxtrustBackend: oxtrust:8080
@@ -72,6 +80,9 @@ global:
     enabled: true
 
   config:
+    enabled: true
+
+  jackrabbit:
     enabled: true
 
   persistence:
@@ -135,6 +146,16 @@ key-rotation:
   image:
     repository: gluufederation/key-rotation
     tag: 4.1.1_03
+    pullPolicy: Always
+
+jackrabbit:
+  replicas: 1
+  storage:
+    size: 5Gi
+
+  image:
+    repository: gluufederation/jackrabbit
+    tag: 4.1.1_dev
     pullPolicy: Always
 
 opendj:

@@ -15,6 +15,9 @@ configMapGenerator:
     literals:
       - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
       - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
+      - GLUU_DOCUMENT_STORE_TYPE="JCA"
+      - GLUU_JCA_SYNC_INTERVAL=300
+      - GLUU_JCA_URL="http://jackrabbit:8080"
       - GLUU_CONTAINER_METADATA="kubernetes"
       - GLUU_CONFIG_ADAPTER="kubernetes"
       - GLUU_SECRET_ADAPTER="kubernetes"

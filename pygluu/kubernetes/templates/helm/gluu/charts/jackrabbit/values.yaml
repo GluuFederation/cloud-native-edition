@@ -1,0 +1,37 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+# jackrabbit Environament Variables
+nameOverride: ""
+fullnameOverride: ""
+
+# StatefulSet
+# values declaration
+replicas: 1
+
+image:
+  repository: gluufederation/jackrabbit
+  tag: 4.1.0_01
+  pullPolicy: Always
+  
+storage:
+  size: 5Gi
+  accessModes: ReadWriteOnce
+  type: DirectoryOrCreate
+
+#servicePorts values used in StatefulSet container
+ports:
+  jackrabbit:
+    port: 8080
+    targetPort: 8080
+# VolumeMounts for StatefulSet
+# jackrabbit-init vm
+volumeMounts:
+  repository:
+    mountPath: /opt/jackrabbit/repository
+    name: jackrabbit-volume
+  version:
+    mountPath: /opt/jackrabbit/version
+    name: jackrabbit-volume
+  workspaces:
+    mountPath: opt/jackrabbit/workspaces
+    name: jackrabbit-volume
