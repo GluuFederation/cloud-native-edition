@@ -115,6 +115,7 @@ jobs:
           "REDIS_USE_SSL": "false",
           "DEPLOYMENT_ARCH": "eks",
           "PERSISTENCE_BACKEND": "ldap",
+          "INSTALL_JACKRABBIT": "Y",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
           "JACKRABBIT_USER": "admin",

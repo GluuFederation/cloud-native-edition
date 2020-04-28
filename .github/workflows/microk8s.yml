@@ -77,6 +77,7 @@ jobs:
           "REDIS_USE_SSL": "false",
           "DEPLOYMENT_ARCH": "microk8s",
           "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
+          "INSTALL_JACKRABBIT": "Y",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
           "JACKRABBIT_USER": "admin",
