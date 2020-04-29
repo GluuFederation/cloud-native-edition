@@ -122,7 +122,6 @@ class App(object):
         self.kubectl = self.detect_kubectl
         self.output_yaml_directory, self.ldap_kustomize_yaml_directory, self.jcr_kustomize_yaml_directory \
             = self.set_output_yaml_directory
-        self.shared_shib_yaml = str(self.output_yaml_directory.joinpath("shared-shib.yaml").resolve())
         self.config_yaml = str(self.output_yaml_directory.joinpath("config.yaml").resolve())
         self.ldap_yaml = str(self.output_yaml_directory.joinpath("ldap.yaml").resolve())
         self.jackrabbit_yaml = str(self.output_yaml_directory.joinpath("jackrabbit.yaml").resolve())
@@ -403,8 +402,7 @@ class App(object):
                                    "./ldap/base", "./oxauth/base", "./oxd-server/base", "./oxpassport/base",
                                    "./oxshibboleth/base", "./oxtrust/base", "./persistence/base", "./radius/base",
                                    "./upgrade/base", "./jackrabbit/base"]
-        other_kustomization_yamls = ["./update-lb-ip/base", "./shared-shib/efs", "./shared-shib/localstorage",
-                                     "./shared-shib/nfs"]
+        other_kustomization_yamls = ["./update-lb-ip/base"]
         all_kustomization_yamls = app_kustomization_yamls + other_kustomization_yamls
         for yaml in all_kustomization_yamls:
             kustomization_yaml = yaml + "/kustomization.yaml"
@@ -1318,29 +1316,21 @@ class App(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "nfs-server", "jackrabbit"]
-        gluu_storage_class_names = ["aws-efs", "opendj-sc", "gluu-nfs-sc"]
+                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit"]
+        gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
-                                      "app=radius", "app=efs-provisioner", "app=key-rotation", "app=jackrabbit"]
+                                      "app=radius", "app=key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
         secrets = ["oxdkeystorecm", "gluu", "tls-certificate"]
         cb_secrets = ["cb-pass", "cb-crt"]
         daemon_set_label = "app=cr-rotate"
-        replication_controller_label = "app=nfs-server"
-        shared_shib_label = "app=shared-shib"
-        all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label] + \
-                     [replication_controller_label] + [shared_shib_label]
+        all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label]
         gluu_config_maps_names = ["casacm", "updatelbip", "gluu"]
         nginx_config_maps_names = ["nginx-configuration", "tcp-services", "udp-services"]
         gluu_cluster_role_bindings_name = "cluster-admin-binding"
-        efs_cluster_role_bindings_name = "run-efs-provisioner"
-        efs_role_binding_name = "leader-locking-efs-provisioner"
-        efs_cluster_role_name = "efs-provisioner-runner"
-        efs_role_name = "leader-locking-efs-provisioner"
-        efs_service_account_name = "efs-provisioner"
         nginx_roles_name = "nginx-ingress-role"
         nginx_cluster_role_name = "nginx-ingress-clusterrole"
         nginx_role_bindings_name = "nginx-ingress-role-nisa-binding"
@@ -1397,13 +1387,6 @@ class App(object):
             self.kubernetes.delete_storage_class(storage_class)
 
         if not restore:
-            # delete EFS
-            self.kubernetes.delete_role(efs_role_name, self.settings["GLUU_NAMESPACE"])
-            self.kubernetes.delete_role_binding(efs_role_binding_name, self.settings["GLUU_NAMESPACE"])
-            self.kubernetes.delete_cluster_role(efs_cluster_role_name)
-            self.kubernetes.delete_cluster_role_binding(efs_cluster_role_bindings_name)
-            self.kubernetes.delete_service_account(efs_service_account_name, self.settings["GLUU_NAMESPACE"])
-
             self.kubernetes.delete_role("gluu-role", self.settings["GLUU_NAMESPACE"])
             self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings["GLUU_NAMESPACE"])
             self.kubernetes.delete_role(nginx_roles_name, "ingress-nginx")
@@ -1441,6 +1424,8 @@ class App(object):
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:
                             subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
+                                           format(node_name, zone))
+                            subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/jackrabbit'".
                                            format(node_name, zone))
         if not restore:
             shutil.rmtree(Path("./previousgluuminikubeyamls"), ignore_errors=True)
