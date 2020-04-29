@@ -152,10 +152,9 @@ jackrabbit:
   replicas: 1
   storage:
     size: 5Gi
-
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.1.1_dev
+    tag: 4.1.1_01
     pullPolicy: Always
 
 opendj:
@@ -167,14 +166,14 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.1.1_01
+    tag: 4.1.1_02
     pullPolicy: Always
 
 # persistence layer
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.1_01
+    tag: 4.1.1_03
     pullPolicy: Always
   configmap:
     gluuOxtrustApiEnabled: false
@@ -188,7 +187,7 @@ persistence:
 oxauth:
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.1_05
+    tag: 4.1.1_06
     pullPolicy: Always
 
 oxd-server:
@@ -244,13 +243,13 @@ oxpassport:
 oxshibboleth:
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.1.1_01
+    tag: 4.1.1_03
     pullPolicy: Always
 
 oxtrust:
   image:
     repository: gluufederation/oxtrust
-    tag: 4.1.1_01
+    tag: 4.1.1_03
     pullPolicy: Always
 
 radius:

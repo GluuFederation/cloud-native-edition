@@ -229,6 +229,8 @@ class Helm(object):
         values_file_parser["oxpassport"]["image"]["tag"] = self.settings["OXPASSPORT_IMAGE_TAG"]
         values_file_parser["oxshibboleth"]["image"]["repository"] = self.settings["OXSHIBBOLETH_IMAGE_NAME"]
         values_file_parser["oxshibboleth"]["image"]["tag"] = self.settings["OXSHIBBOLETH_IMAGE_TAG"]
+        values_file_parser["jackrabbit"]["image"]["repository"] = self.settings["JACKRABBIT_IMAGE_NAME"]
+        values_file_parser["jackrabbit"]["image"]["tag"] = self.settings["JACKRABBIT_IMAGE_TAG"]
         values_file_parser["oxtrust"]["image"]["repository"] = self.settings["OXTRUST_IMAGE_NAME"]
         values_file_parser["oxtrust"]["image"]["tag"] = self.settings["OXTRUST_IMAGE_TAG"]
         values_file_parser["radius"]["image"]["repository"] = self.settings["RADIUS_IMAGE_NAME"]
