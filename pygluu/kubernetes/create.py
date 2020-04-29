@@ -1372,8 +1372,6 @@ class App(object):
             for secret in cb_secrets:
                 self.kubernetes.delete_secret(secret, self.settings["GLUU_NAMESPACE"])
         self.kubernetes.delete_daemon_set(self.settings["GLUU_NAMESPACE"], daemon_set_label)
-        self.kubernetes.delete_collection_namespaced_replication_controller(self.settings["GLUU_NAMESPACE"],
-                                                                            replication_controller_label)
         for config_map in gluu_config_maps_names:
             self.kubernetes.delete_config_map_using_name(config_map, self.settings["GLUU_NAMESPACE"])
         if not restore:
