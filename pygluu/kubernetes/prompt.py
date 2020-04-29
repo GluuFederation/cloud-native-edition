@@ -924,6 +924,8 @@ class Prompt(object):
         if self.settings["ENABLE_CASA"] == "Y":
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
+
+        if self.settings["ENABLE_OXD"] == "Y":
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:
                 prompt = input("oxd server application keystore name [oxd-server]?")
                 if not prompt:
