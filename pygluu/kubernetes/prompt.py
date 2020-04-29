@@ -1181,8 +1181,6 @@ class Prompt(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap" or \
                 self.settings["INSTALL_JACKRABBIT"] == "Y":
-            self.settings["COUCHBASE_USER"] = "admin"
-            self.settings["COUCHBASE_URL"] = "couchbase"
             if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                 self.settings["APP_VOLUME_TYPE"] = 1
             elif self.settings["DEPLOYMENT_ARCH"] == "minikube":

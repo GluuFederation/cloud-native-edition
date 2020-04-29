@@ -163,15 +163,21 @@ class App(object):
             parser.dump_it()
         elif self.settings["DEPLOYMENT_ARCH"] == "gke":
             parser["provisioner"] = "kubernetes.io/gce-pd"
-            del parser["parameters"]["encrypted"]
+            try:
+                del parser["parameters"]["encrypted"]
+            except KeyError:
+                logger.info("Key not found")
             parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
             parser.dump_it()
         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
             parser["provisioner"] = "kubernetes.io/azure-disk"
-            del parser["parameters"]["encrypted"]
-            del parser["parameters"]["type"]
+            try:
+                del parser["parameters"]["encrypted"]
+                del parser["parameters"]["type"]
+            except KeyError:
+                logger.info("Key not found")
             parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
