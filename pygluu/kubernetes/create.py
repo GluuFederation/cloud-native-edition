@@ -1266,7 +1266,6 @@ class App(object):
             self.deploy_kubedb()
             self.deploy_redis()
 
-
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if restore:
@@ -1584,8 +1583,8 @@ def main():
 
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
-            app = App(settings)
             if settings["INSTALL_REDIS"] == "Y":
+                app = App(settings)
                 app.uninstall_redis()
                 app.uninstall_kubedb(helm=True)
                 app.deploy_kubedb(helm=True)
@@ -1598,12 +1597,12 @@ def main():
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
-            app = App(settings)
-            app.uninstall_redis()
-            app.uninstall_kubedb(helm=True)
-            time.sleep(30)
-            app = App(settings)
-            app.uninstall()
+            if settings["INSTALL_REDIS"] == "Y":
+                app = App(settings)
+                app.uninstall_redis()
+                app.uninstall_kubedb(helm=True)
+                time.sleep(30)
+                app.uninstall()
 
         elif args.subparser_name == "helm-install-gluu":
             settings = prompts.prompt_helm
