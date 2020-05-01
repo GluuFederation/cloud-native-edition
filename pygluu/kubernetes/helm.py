@@ -52,7 +52,7 @@ class Helm(object):
                         if ip_static:
                             break
                     except (TypeError, AttributeError):
-                        logger.info("Waiting for LB to recieve an ip assignment from AWS")
+                        logger.info("Waiting for LB to receive an ip assignment from AWS")
                     time.sleep(10)
             else:
                 if self.settings["USE_ARN"] == "Y":

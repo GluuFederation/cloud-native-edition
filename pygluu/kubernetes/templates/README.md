@@ -372,7 +372,7 @@
   #global values to be used across charts
   global:
     provisioner: kubernetes.io/aws-ebs #CHANGE-THIS
-    lbAddr: "" #CHANGE-THIS to the address recieved in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
+    lbAddr: "" #CHANGE-THIS to the address received in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
     isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
 
@@ -403,7 +403,7 @@
     lbAddr: ""
     domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
       # Networking configs
-    nginxIp: "" #CHANGE-THIS  to the IP recieved from the previous step
+    nginxIp: "" #CHANGE-THIS  to the IP received from the previous step
     isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
   nginx:
     ingress:
