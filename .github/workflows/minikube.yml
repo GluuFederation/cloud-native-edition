@@ -74,7 +74,7 @@ jobs:
           "KONG_PG_USER": "kong",
           "KONG_PG_PASSWORD": "MUs6#@",
           "GG_UI_PG_USER": "konga",
-          "GG_UI_PG_PASSWORD": "MUs6#@"",
+          "GG_UI_PG_PASSWORD": "MUs6#@",
           "KONG_DATABASE": "kong",
           "GG_UI_DATABASE": "konga",
           "POSTGRES_REPLICAS": "3",
