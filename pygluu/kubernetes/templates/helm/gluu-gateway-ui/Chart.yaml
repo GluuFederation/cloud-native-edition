@@ -1,0 +1,11 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: v1
+appVersion: "4.1.0_01"
+home: https://www.gluu.org/
+maintainers:
+- name: Gluu
+email: support@gluu.org
+description: Helm chart for gluu-gateway-ui service
+name: gluu-gateway-ui
+version: 1.0.0

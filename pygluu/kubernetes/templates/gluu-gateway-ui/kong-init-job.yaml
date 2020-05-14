@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kong-migration
+  labels:
+    app: kong-migration-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kong-migration
+          image: gluufederation/gluu-gateway:4.1.0_dev
+          env:
+            - name: KONG_DATABASE
+              value: "postgres"
+            - name: KONG_PG_HOST
+              value: postgres.postgres.svc.cluster.local
+            - name: KONG_PG_USER
+              value: kong
+            - name: KONG_PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kong-postgres-pass
+                  key: KONG_PG_PASSWORD
+          command:
+            - /bin/sh
+            - -c
+            - |
+                kong migrations bootstrap

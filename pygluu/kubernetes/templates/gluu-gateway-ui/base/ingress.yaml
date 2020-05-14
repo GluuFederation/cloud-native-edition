@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: gluu-gg-ui
+spec:
+  rules:
+  - host: FQDN
+    http:
+      paths:
+      - backend:
+          serviceName: gg-kong-ui
+          servicePort: 1337
+        path: /gg-ui/(|$)(.*)
+  tls:
+  - hosts:
+    - FQDN
+    secretName: tls-certificate

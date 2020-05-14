@@ -835,6 +835,7 @@ class Kubernetes(object):
                               stderr=True, stdin=False,
                               stdout=True, tty=False)
                 logger.info("{}".format(resp))
+                return resp
             except client.rest.ApiException as e:
                 logger.exception(e)
 

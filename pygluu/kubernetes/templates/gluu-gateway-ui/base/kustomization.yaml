@@ -1,0 +1,39 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: gg-kong-ui
+resources:
+  - services.yaml
+  - deployments.yaml
+  - jobs.yaml
+  - ingress.yaml
+images:
+  - name: gluufederation/gluu-gateway-ui
+    newTag: 4.1.0_dev
+configMapGenerator:
+  - name: gg-ui-cm
+    literals:
+      - DB_USER="konga"
+      - DB_ADAPTER="postgres"
+      - KONG_ADMIN_URL="admin.kong.svc.cluster.local:8444"
+      - DB_HOST="postgres.postgres.svc.cluster.local"
+      - DB_SSL="false"
+      - DB_PORT="5432"
+      - POSTGRES_VERSION="9.6"
+      - SSL_KEY_PATH="/etc/certs/tls.key"
+      - SSL_CERT_PATH="/etc/certs/tls.crt"
+      - DB_DATABASE="konga"
+      - NODE_ENV=production
+      - PORT="1337"
+      - OXD_SERVER_URL="https://oxd-server.gluu.svc.cluster.local:8443"
+      - OP_SERVER_URL="demoexample.gluu.org"
+      - OXD_ID=""
+      - CLIENT_ID=""
+      - CLIENT_SECRET=""
+      - OXD_SERVER_VERSION="4.1"
+      - GG_HOST="https://demoexample.gluu.org/gg-ui"
+      - GG_UI_REDIRECT_URL_HOST=""
+      - EXPLICIT_HOST="0.0.0.0"
+      - GG_VERSION="4.1"

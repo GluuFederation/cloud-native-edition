@@ -43,6 +43,20 @@ class Prompt(object):
                                 GLUU_HELM_RELEASE_NAME="",
                                 NGINX_INGRESS_RELEASE_NAME="",
                                 NGINX_INGRESS_NAMESPACE="",
+                                INSTALL_GLUU_GATEWAY="",
+                                POSTGRES_NAMESPACE="",
+                                KONG_NAMESPACE="",
+                                GG_UI_NAMESPACE="",
+                                KONG_PG_USER="",
+                                KONG_PG_PASSWORD="",
+                                GG_UI_PG_USER="",
+                                GG_UI_PG_PASSWORD="",
+                                KONG_DATABASE="",
+                                GG_UI_DATABASE="",
+                                POSTGRES_REPLICAS="",
+                                POSTGRES_URL="",
+                                KONG_HELM_RELEASE_NAME="",
+                                GG_UI_HELM_RELEASE_NAME="",
                                 NODES_IPS=[],
                                 NODES_ZONES=[],
                                 NODES_NAMES=[],
@@ -172,6 +186,10 @@ class Prompt(object):
                                 PERSISTENCE_IMAGE_TAG="",
                                 RADIUS_IMAGE_NAME="",
                                 RADIUS_IMAGE_TAG="",
+                                GLUU_GATEWAY_IMAGE_NAME="",
+                                GLUU_GATEWAY_IMAGE_TAG="",
+                                GLUU_GATEWAY_UI_IMAGE_NAME="",
+                                GLUU_GATEWAY_UI_IMAGE_TAG="",
                                 UPGRADE_IMAGE_NAME="",
                                 UPGRADE_IMAGE_TAG="",
                                 CONFIRM_PARAMS="N",
@@ -222,7 +240,7 @@ class Prompt(object):
     def confirm_params(self):
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                            "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "REDIS_PW",
-                           "COUCHBASE_SUBJECT_ALT_NAME"]
+                           "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GG_UI_PG_PASSWORD"]
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
             if k not in hidden_settings:
@@ -254,6 +272,20 @@ class Prompt(object):
             if not prompt:
                 prompt = "ingress-nginx"
             self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
+
+        if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            if not self.settings["KONG_HELM_RELEASE_NAME"]:
+                prompt = input("Please enter Gluu Gateway helm name[gluu-gateway]")
+                if not prompt:
+                    prompt = "gluu-gateway"
+                self.settings["KONG_HELM_RELEASE_NAME"] = prompt
+
+            if not self.settings["GG_UI_HELM_RELEASE_NAME"]:
+                prompt = input("Please enter Gluu Gateway UI helm name[gluu-gateway-ui]")
+                if not prompt:
+                    prompt = "gluu-gateway-ui"
+                self.settings["GG_UI_HELM_RELEASE_NAME"] = prompt
+
         update_settings_json_file(self.settings)
         return self.settings
 
@@ -480,6 +512,83 @@ class Prompt(object):
                 self.settings["JACKRABBIT_STORAGE_SIZE"] = prompt
             self.settings["JACKRABBIT_USER"] = "admin"
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
+
+    def prompt_postgres(self):
+        if not self.settings["POSTGRES_NAMESPACE"]:
+            prompt = input("Please enter a namespace for postgres.[postgres]")
+            if not prompt:
+                prompt = "postgres"
+            self.settings["POSTGRES_NAMESPACE"] = prompt
+
+        if not self.settings["POSTGRES_REPLICAS"]:
+            prompt = input("Please enter number of replicas for postgres.[3]")
+            if not prompt:
+                prompt = 3
+            prompt = int(prompt)
+            self.settings["POSTGRES_REPLICAS"] = prompt
+
+        if not self.settings["POSTGRES_URL"]:
+            default_postgres_url_prompt = "postgres.{}.svc.cluster.local".format(self.settings["POSTGRES_NAMESPACE"])
+
+            prompt = input("Please enter  postgres (remote or local) URL base name. If postgres is to be installed"
+                           " automatically please press enter to accept the default correct value[{}]"
+                           .format(default_postgres_url_prompt))
+            if not prompt:
+                prompt = default_postgres_url_prompt
+            self.settings["POSTGRES_URL"] = prompt
+
+    def prompt_gluu_gateway(self):
+        if not self.settings["INSTALL_GLUU_GATEWAY"]:
+            prompt = input("Install Gluu Gateway[Y/N]?[Y]")
+            if prompt == "N" or prompt == "n":
+                prompt = "N"
+            else:
+                prompt = "Y"
+            self.settings["INSTALL_GLUU_GATEWAY"] = prompt
+        if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            self.prompt_postgres()
+            if not self.settings["KONG_NAMESPACE"]:
+                prompt = input("Please enter a namespace for Gluu Gateway.[gluu-gateway]")
+                if not prompt:
+                    prompt = "gluu-gateway"
+                self.settings["KONG_NAMESPACE"] = prompt
+
+            if not self.settings["GG_UI_NAMESPACE"]:
+                prompt = input("Please enter a namespace for gluu gateway ui.[gg-ui]")
+                if not prompt:
+                    prompt = "gg-ui"
+                self.settings["GG_UI_NAMESPACE"] = prompt
+
+            if not self.settings["KONG_PG_USER"]:
+                prompt = input("Please enter a user for gluu-gateway postgres database.[kong]")
+                if not prompt:
+                    prompt = "kong"
+                self.settings["KONG_PG_USER"] = prompt
+
+            if not self.settings["KONG_PG_PASSWORD"]:
+                self.settings["KONG_PG_PASSWORD"] = self.prompt_password("gluu-gateway-postgres")
+
+            if not self.settings["GG_UI_PG_USER"]:
+                prompt = input("Please enter a user for gluu-gateway-ui postgres database.[konga]")
+                if not prompt:
+                    prompt = "konga"
+                self.settings["GG_UI_PG_USER"] = prompt
+
+            if not self.settings["GG_UI_PG_PASSWORD"]:
+                self.settings["GG_UI_PG_PASSWORD"] = self.prompt_password("gluu-gateway-ui-postgres")
+
+            if not self.settings["KONG_DATABASE"]:
+                prompt = input("Please enter  gluu-gateway postgres database name.[kong]")
+                if not prompt:
+                    prompt = "kong"
+                self.settings["KONG_DATABASE"] = prompt
+
+            if not self.settings["GG_UI_DATABASE"]:
+                prompt = input("Please enter  gluu-gateway-ui postgres database name.[konga]")
+                if not prompt:
+                    prompt = "konga"
+                self.settings["GG_UI_DATABASE"] = prompt
+
 
     def prompt_storage(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
@@ -1077,6 +1186,7 @@ class Prompt(object):
         self.prompt_arch()
         self.prompt_gluu_namespace()
         self.prompt_optional_services()
+        self.prompt_gluu_gateway()
         self.prompt_jackrabbit()
 
         if self.settings["DEPLOYMENT_ARCH"] == "eks" \

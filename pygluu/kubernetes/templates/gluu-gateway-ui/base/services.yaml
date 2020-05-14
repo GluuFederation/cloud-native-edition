@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gg-kong-ui
+spec:
+  ports:
+  - port: 1337
+    name: gg-kong-ui
+    targetPort: 1337
+    protocol: TCP
+  clusterIP: None
+  selector:
+    app: gg-kong-ui

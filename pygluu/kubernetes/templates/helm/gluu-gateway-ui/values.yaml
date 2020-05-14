@@ -1,0 +1,33 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+replicaCount: 1
+dynamicStorage: true
+
+image:
+  repository: gluufederation/gluu-gateway-ui
+  tag: 4.1.0_01
+  pullPolicy: Always
+
+dbUser: "konga"
+dbAdapter: "postgres"
+kongAdminUrl: "kong-admin.kong.svc.cluster.local:8444"
+dbHost: "postgres.postgres.svc.cluster.local"
+dbSsl: "false"
+dbPort: "5432"
+postgresVersion: "9.6"
+sslKeyPath: "/etc/certs/key.pem"
+sslCertPath: "/etc/certs/certificate.pem"
+dbDatabase: "konga"
+nodeEnv: "production"
+port: "1337"
+oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
+opServerUrl: "demoexample.gluu.org"
+# Custom client created info
+oxdId: ""
+clientId: ""
+clientSecret: ""
+oxdServerVersion: "4.1"
+ggHost: "https://demoexample.gluu.org/gg-ui"
+ggUiRedirectUrlHost: ""
+explicitHost: "0.0.0.0"
+ggVersion: "4.1"

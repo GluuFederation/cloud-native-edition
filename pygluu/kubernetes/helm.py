@@ -259,6 +259,23 @@ class Helm(object):
             exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
                 self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
 
+    def install_kong_dbless(self):
+        exec_cmd("helm repo add kong https://charts.konghq.com")
+        exec_cmd("helm repo update")
+        exec_cmd("helm install {} kong/kong "
+                 "--set ingressController.installCRDs=false "
+                 "--set image.repository={} "
+                 "--set image.tag={} "
+                 "--namespace={}".format(self.settings['GLUU_GATEWAY_KONG_RELEASE_NAME'],
+                                                        self.settings['GLUU_GATEWAY_IMAGE_NAME'],
+                                                        self.settings['GLUU_GATEWAY_IMAGE_TAG'],
+                                                        self.settings["GLUU_GATWAY_KONG_NAMESPACE"]))
+        logger.info("Please create a secret called kong-config inside namespace : {} "
+                    "containing the kong.yml deceleration file.\n"
+                    "kubectl create secret generic kong-config "
+                         "-n {} --from-file=kong.yml".format(self.settings["GLUU_GATWAY_KONG_NAMESPACE"],
+                                                             self.settings["GLUU_GATWAY_KONG_NAMESPACE"]))
+
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
                                                         self.settings["GLUU_NAMESPACE"]))

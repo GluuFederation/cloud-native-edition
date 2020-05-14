@@ -17,7 +17,11 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 logger = get_logger("gluu-cert-manager  ")
 
 
-def setup_crts(ca_common_name, cert_common_name, san_list):
+def setup_crts(ca_common_name, cert_common_name, san_list,
+               ca_cert_file="./ca.crt",
+               ca_key_file="./ca.key",
+               cert_file="./chain.pem",
+               key_file="./pkey.key"):
     logger.info("Generating CA private key")
     root_key = rsa.generate_private_key(
         public_exponent=65537,
@@ -148,17 +152,17 @@ def setup_crts(ca_common_name, cert_common_name, san_list):
         OpenSSL.crypto.FILETYPE_PEM,
         cert_pem)
     crt_header = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_TEXT, crt)
-    logger.info("Dumping ca.crt")
-    with open("ca.crt", "wb") as f:
+    logger.info("Dumping {}".format(ca_cert_file))
+    with open(ca_cert_file, "wb") as f:
         f.write(ca_cert)
-    logger.info("Dumping ca.key")
-    with open("ca.key", "wb") as f:
+    logger.info("Dumping {}".format(ca_key_file))
+    with open(ca_key_file, "wb") as f:
         f.write(ca_key)
-    logger.info("Dumping chain.pem")
-    with open("chain.pem", "wb") as f:
+    logger.info("Dumping {}".format(cert_file))
+    with open(cert_file, "wb") as f:
         f.write(crt_header + cert_pem)
-    logger.info("Dumping pkey.key")
-    with open("pkey.key", "wb") as f:
+    logger.info("Dumping {}".format(key_file))
+    with open(key_file, "wb") as f:
         f.write(cert_key_pem)
 
 
