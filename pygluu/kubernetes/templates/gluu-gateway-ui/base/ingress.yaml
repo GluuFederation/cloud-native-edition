@@ -19,7 +19,7 @@ spec:
       paths:
       - backend:
           serviceName: gg-kong-ui
-          servicePort: 1337
+          servicePort: 443
         path: /gg-ui/(|$)(.*)
   tls:
   - hosts:

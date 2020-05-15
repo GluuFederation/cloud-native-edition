@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: {{ .Values.global.gluu-gateway-uiServiceName }}
+    name: {{ include "gluu-gateway-ui.name" . }}
   selector:
     app: {{ include "gluu-gateway-ui.name" . }}
     

@@ -4,9 +4,9 @@ metadata:
   name: gg-kong-ui
 spec:
   ports:
-  - port: 1337
+  - port: 443
     name: gg-kong-ui
-    targetPort: 1337
+    targetPort: 443
     protocol: TCP
   clusterIP: None
   selector:

@@ -27,9 +27,9 @@
     "RADIUS_IMAGE_NAME": "gluufederation/radius",
     "RADIUS_IMAGE_TAG": "4.1.1_01",
     "GLUU_GATEWAY_IMAGE_NAME": "gluufederation/gluu-gateway",
-    "GLUU_GATEWAY_IMAGE_TAG": "4.1.0_dev",
+    "GLUU_GATEWAY_IMAGE_TAG": "4.2.0_dev",
     "GLUU_GATEWAY_UI_IMAGE_NAME": "gluufederation/gluu-gateway-ui",
-    "GLUU_GATEWAY_UI_IMAGE_TAG": "4.1.0_dev",
+    "GLUU_GATEWAY_UI_IMAGE_TAG": "4.2.0_dev",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
     "UPGRADE_IMAGE_TAG": "4.1.1_03"
   },

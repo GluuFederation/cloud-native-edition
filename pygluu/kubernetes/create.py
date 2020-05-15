@@ -170,7 +170,7 @@ class App(object):
             try:
                 del parser["parameters"]["encrypted"]
             except KeyError:
-                logger.info("Key not deleted as they are not found inside yaml.")
+                logger.info("Key not deleted as it does not exist inside yaml.")
             parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
@@ -181,7 +181,7 @@ class App(object):
                 del parser["parameters"]["encrypted"]
                 del parser["parameters"]["type"]
             except KeyError:
-                logger.info("Key not deleted as they are not found inside yaml.")
+                logger.info("Key not deleted as it does not exist inside yaml.")
             parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
@@ -193,7 +193,7 @@ class App(object):
                 del parser["allowVolumeExpansion"]
                 del parser["parameters"]
             except KeyError:
-                logger.info("Key not deleted as they are not found inside yaml.")
+                logger.info("Key not deleted as it does not exist inside yaml.")
             parser.dump_it()
         elif self.settings['DEPLOYMENT_ARCH'] == "minikube":
             try:
@@ -202,7 +202,7 @@ class App(object):
                 del parser["allowVolumeExpansion"]
                 del parser["parameters"]
             except KeyError:
-                logger.info("Key not deleted as they are not found inside yaml.")
+                logger.info("Key not deleted as it does not exist inside yaml.")
             parser.dump_it()
 
     @property
@@ -301,7 +301,7 @@ class App(object):
                     try:
                         del cm_parser["data"]["LB_ADDR"]
                     except KeyError:
-                        logger.info("Key not deleted as they are not found inside yaml.")
+                        logger.info("Key not deleted as it does not exist inside yaml.")
                     cm_parser.dump_it()
                     if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
                             self.settings["DEPLOYMENT_ARCH"] == "minikube" or self.settings["DEPLOYMENT_ARCH"] == "gke":
@@ -311,11 +311,11 @@ class App(object):
                         try:
                             del parser["spec"]["template"]["spec"]["hostAliases"]
                         except KeyError:
-                            logger.info("Key not deleted as they are not found inside yaml.")
+                            logger.info("Key not deleted as it does not exist inside yaml.")
                     try:
                         del parser["spec"]["template"]["spec"]["containers"][0]["command"]
                     except KeyError:
-                        logger.info("Key not deleted as they are not found inside yaml.")
+                        logger.info("Key not deleted as it does not exist inside yaml.")
 
                     update_lb_ip_vm_index = next(
                         (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "update-lb-ip"), None)
@@ -1269,12 +1269,13 @@ class App(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GG_UI_NAMESPACE"], "app=gg-kong-ui", self.timeout)
 
-    def install_gluugateway_dbmode(self):
-        self.kustomize_gg_ui()
-        self.adjust_fqdn_yaml_entries()
+    def install_gluu_gateway_dbmode(self, helm=False):
         self.deploy_postgres()
         self.deploy_kong()
-        self.deploy_gg_ui()
+        if not helm:
+            self.kustomize_gg_ui()
+            self.adjust_fqdn_yaml_entries()
+            self.deploy_gg_ui()
 
     def deploy_redis(self):
         self.uninstall_redis()
@@ -1611,7 +1612,7 @@ class App(object):
             self.deploy_radius()
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
-            self.install_gluugateway_dbmode()
+            self.install_gluu_gateway_dbmode()
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
@@ -1899,19 +1900,22 @@ def main():
         elif args.subparser_name == "install-gg-dbmode":
             app = App(settings)
             prompts.prompt_gluu_gateway()
-            app.install_gluugateway_dbmode()
+            app.install_gluu_gateway_dbmode()
 
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
-            if settings["INSTALL_REDIS"] == "Y":
-                app = App(settings)
-                app.uninstall_redis()
+            app = App(settings)
+            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 app.uninstall_kubedb(helm=True)
                 app.deploy_kubedb(helm=True)
+            if settings["INSTALL_REDIS"] == "Y":
+                app.uninstall_redis()
                 app.deploy_redis()
+            if settings["INSTALL_GLUU_GATEWAY"] == "Y":
+                app.install_gluu_gateway_dbmode(helm=True)
             helm = Helm(settings)
             helm.install_gluu()
 

@@ -1,0 +1,110 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "gluu-gateway-ui.fullname" . }}-cm
+  namespace: {{ .Release.Namespace }}
+data:
+  DB_USER: {{ .Values.dbUser | quote }}
+  DB_ADAPTER: {{ .Values.dbAdapter | quote }}
+  KONG_ADMIN_URL: {{ .Values.kongAdminUrl | quote }}
+  DB_HOST: {{ .Release.dbHost | quote }}
+  DB_SSL: {{ .Release.dbSsl | quote }}
+  DB_PORT: {{ .Values.dbPort | quote }}
+  POSTGRES_VERSION: {{ .Values.postgresVersion | quote }}
+  SSL_KEY_PATH: {{ .Values.sslKeyPath | quote }}
+  SSL_CERT_PATH: {{ .Values.sslCertPath | quote }}
+  DB_DATABASE: {{ .Values.dbDatabase }}
+  NODE_ENV: {{ .Values.nodeEnv | quote }}
+  PORT: {{ .Values.ports.containerPort }}
+  OXD_SERVER_URL: {{ .Values.oxdServerUrl | quote }}
+  OP_SERVER_URL: {{ .Values.opServerUrl | quote }}
+  OXD_ID: {{ .Values.oxdId | quote }}
+  CLIENT_ID: {{ .Values.clientId | quote }}
+  CLIENT_SECRET: {{ .Values.clientSecret }}
+  OXD_SERVER_VERSION: {{ .Values.oxdServerVersion }}
+  GG_HOST: {{ .Values.ggHost | quote }}
+  GG_UI_REDIRECT_URL_HOST: {{ .Values.ggUiRedirectUrlHost | quote }}
+  EXPLICIT_HOST: {{ .Values.explicitHost | quote }}
+  GG_VERSION: {{ .Values.ggVersion | quote }}
+
+  ---
+
+  apiVersion: v1
+  data:
+    updatelbip.py: |-
+      #!/usr/bin/env python
+      """
+      Update the IP of the load balancer automatically
+      """
+      import socket
+      import sys
+      import os
+      import logging
+      import time
+
+      logger = logging.getLogger("update-lb-ip")
+      logger.setLevel(logging.INFO)
+      ch = logging.StreamHandler()
+      fmt = logging.Formatter('%(levelname)s - %(asctime)s - %(message)s')
+      ch.setFormatter(fmt)
+      logger.addHandler(ch)
+
+      def backup(hosts):
+          timenow = time.strftime("%c")
+          timestamp = "Backup occured %s \n" % timenow
+          with open('/etc/hosts.back', 'a+') as f:
+              f.write(timestamp)
+              for line in hosts:
+                  f.write(line)
+
+
+      def get_hosts(LB_ADDR, DOMAIN):
+          ip_list = []
+          hosts_list = []
+          ais = socket.getaddrinfo(LB_ADDR, 0, 0, 0, 0)
+          for result in ais:
+              ip_list.append(result[-1][0])
+          ip_list = list(set(ip_list))
+          for ip in ip_list:
+              add_host = ip + " " + DOMAIN
+              hosts_list.append(add_host)
+
+          return hosts_list
+
+
+      def main():
+          try:
+              while True:
+                  LB_ADDR = os.environ.get("LB_ADDR", "")
+                  DOMAIN = os.environ.get("DOMAIN", "demoexample.gluu.org")
+                  host_file = open('/etc/hosts', 'r').readlines()
+                  hosts = get_hosts(LB_ADDR, DOMAIN)
+                  stop = []
+                  for host in hosts:
+                      for i in host_file:
+                          if host.replace(" ", "") in i.replace(" ", ""):
+                              stop.append("found")
+                  if len(stop) != len(hosts):
+                      backup(host_file)
+                      logger.info("Writing new hosts file")
+                      with open('/etc/hosts', 'w') as f:
+                          for line in host_file:
+                              if DOMAIN not in line:
+                                  f.write(line)
+                          for host in hosts:
+                              f.write(host)
+                              f.write("\n")
+                          f.write("\n")
+                  time.sleep(300)
+          except KeyboardInterrupt:
+              logger.warn("Canceled by user; exiting ...")
+
+
+      if __name__ == "__main__":
+          main()
+  kind: ConfigMap
+  metadata:
+    name: {{ .Release.Name }}-updatelbip
+    namespace: {{ .Release.Namespace }}

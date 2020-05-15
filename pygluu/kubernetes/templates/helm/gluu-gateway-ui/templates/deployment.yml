@@ -23,7 +23,7 @@ spec:
       - name: {{ template "gluu.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (and .Values.cloud.enabled (eq .Values.isDomainRegistered "false") ) (eq .Values.provisioner "kubernetes.io/aws-ebs") }}
         command:
           - /bin/sh
           - -c
@@ -34,54 +34,53 @@ spec:
         resources:
           requests:
             memory: {{ .Values.requests.memory }}
-          # limits:
-          #   memory: {{ .Values.limits.memory }}
+            cpu: {{ .Values.requests.cpu }}
+          limits:
+            memory: {{ .Values.limits.memory }}
+            cpu: {{ .Values.limits.cpu }}
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
+        env:
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.gluuGatewayPostgresPasswordSecretName }}
+                key: DB_PASSWORD
         envFrom:
         - configMapRef:
             name: {{ template "gluu-gateway-ui.fullname" . }}-cm
         volumeMounts:
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "aws") }}
           - name: {{ include "gluu-gateway-ui.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
-          - name: cb-pass
-            mountPath: "/etc/gluu/conf/couchbase_password"
-            subPath: couchbase_password
-          - name: cb-crt 
-            mountPath: "/etc/certs/couchbase.crt"
-            subPath: couchbase.crt 
-        {{- end }}
         livenessProbe:
-          httpGet:
-            path: /gluu-gateway-ui/.well-known/openid-configuration
-            port: {{ .Values.ports.containerPort }}
+            tcpSocket:
+              port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
-          httpGet:
-            path: /gluu-gateway-ui/.well-known/openid-configuration
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 25
+            tcpSocket:
+              port: {{ .Values.ports.containerPort }}
           periodSeconds: 25
-      {{- if eq .Values.global.isDomainRegistered "false" }}
+      {{- if eq .Values.cloud.isDomainRegistered "false" }}
       hostAliases:
-      - ip: {{ .Values.global.nginxIp }}
+      - ip: {{ .Values.loadBalancerIp }}
         hostnames:
-        - {{ .Values.global.domain }}
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
       {{- end }}
       volumes:
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
-        - name: cb-pass
+        - name: tls-certificate
           secret:
-            secretName: {{ .Release.Name }}-cb-pass
-        - name: cb-crt 
-          secret:
-            secretName: {{ .Release.Name }}-cb-crt 
-      {{- end }}
-      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+            secretName: tls-certificate
+      {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "aws") }}
         - name: {{ include "gluu-gateway-ui.fullname" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip

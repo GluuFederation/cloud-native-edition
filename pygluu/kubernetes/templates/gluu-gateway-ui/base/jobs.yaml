@@ -17,7 +17,7 @@ spec:
             secretName: tls-certificate
       containers:
         - name: gg-ui-prepareation
-          image: gluufederation/gluu-gateway-ui:4.1.0_dev
+          image: gluufederation/gluu-gateway-ui:4.2.0_dev
           imagePullPolicy: Always
           env:
             - name: DB_PASSWORD
@@ -35,4 +35,4 @@ spec:
             - /bin/sh
             - -c
             - |
-                ./start.sh -c prepare -a postgres -u postgresql://konga:konga@postgres.postgres.svc.cluster.local:5432/konga
+                ./entrypoint.sh -c prepare -a postgres -u postgresql://konga:konga@postgres.postgres.svc.cluster.local:5432/konga

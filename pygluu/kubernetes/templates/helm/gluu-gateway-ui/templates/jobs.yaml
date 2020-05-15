@@ -1,38 +1,42 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: gg-ui-prepareation
+  name: {{ include "gluu-gateway-ui.fullname" . }}-preperation
 spec:
   template:
     spec:
       restartPolicy: Never
       volumes:
-        - name: gg-ui-cert-key
+        {{- range .Values.nginxIngress.tls }}
+        - name: tls-certificate
           secret:
             items:
-              - key: certificate.pem
-                path: certificate.pem
-              - key: key.pem
-                path: key.pem
-            secretName: gg-ui-cert-key
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+            secretName: {{ .secretName }}
+        {{- end }}
       containers:
-        - name: gg-ui-prepareation
-          image: gluufederation/gluu-gateway-ui:4.1.0_dev
-          imagePullPolicy: Always
+        - name: {{ include "gluu-gateway-ui.fullname" . }}-preperation
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: gg-ui-postgres-pass
+                  name: {{ .Values.gluuGatewayPostgresPasswordSecretName }}
                   key: DB_PASSWORD
           envFrom:
           - configMapRef:
-              name: gg-ui-cm
+              name: {{ template "gluu-gateway-ui.fullname" . }}-cm
           volumeMounts:
             - mountPath: /etc/certs
-              name: gg-ui-cert-key
+              name: tls-certificate
           command:
             - /bin/sh
             - -c
             - |
-                ./start.sh -c prepare -a postgres -u postgresql://konga:konga@postgres.postgres.svc.cluster.local:5432/konga
+                ./entrypoint.sh -c prepare -a postgres -u postgresql://konga:konga@postgres.postgres.svc.cluster.local:5432/konga

@@ -1,13 +1,23 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 replicaCount: 1
-dynamicStorage: true
-
 image:
   repository: gluufederation/gluu-gateway-ui
-  tag: 4.1.0_01
+  tag: 4.2.0_dev
   pullPolicy: Always
+cloud:
+  enabled: true
+  isDomainRegistered: false
+  provider: aws
 
+requests:
+  memory: 500Mi
+  cpu: 500m
+limites:
+  memory: 500Mi
+  cpu: 500m
+ports:
+  containerPort: 443
 dbUser: "konga"
 dbAdapter: "postgres"
 kongAdminUrl: "kong-admin.kong.svc.cluster.local:8444"
@@ -19,7 +29,6 @@ sslKeyPath: "/etc/certs/key.pem"
 sslCertPath: "/etc/certs/certificate.pem"
 dbDatabase: "konga"
 nodeEnv: "production"
-port: "1337"
 oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
 opServerUrl: "demoexample.gluu.org"
 # Custom client created info
@@ -31,3 +40,23 @@ ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"
 ggVersion: "4.1"
+gluuGatewayPostgresPasswordSecretName: "gluu-gateway-ui-postgres-pass"
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+nginxIngress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /gg-ui/(|$)(.*)
+  hosts:
+    - demoexample.gluu.org
+  tls:
+   - secretName: tls-certificate
+     hosts:
+       - demoexample.gluu.org

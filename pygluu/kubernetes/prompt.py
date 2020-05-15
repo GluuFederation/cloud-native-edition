@@ -539,13 +539,14 @@ class Prompt(object):
 
     def prompt_gluu_gateway(self):
         if not self.settings["INSTALL_GLUU_GATEWAY"]:
-            prompt = input("Install Gluu Gateway[Y/N]?[Y]")
+            prompt = input("Install Gluu Gateway (alpha) [Y/N]?[Y]")
             if prompt == "N" or prompt == "n":
                 prompt = "N"
             else:
                 prompt = "Y"
             self.settings["INSTALL_GLUU_GATEWAY"] = prompt
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            self.settings["ENABLE_OXD"] = "Y"
             self.prompt_postgres()
             if not self.settings["KONG_NAMESPACE"]:
                 prompt = input("Please enter a namespace for Gluu Gateway.[gluu-gateway]")
@@ -588,7 +589,6 @@ class Prompt(object):
                 if not prompt:
                     prompt = "konga"
                 self.settings["GG_UI_DATABASE"] = prompt
-
 
     def prompt_storage(self):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
