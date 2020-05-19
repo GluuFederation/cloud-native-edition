@@ -6,7 +6,7 @@ metadata:
   labels:
     app: postgres
 spec:
-  version: "9.6-v2"
+  version: "11.2"
   replicas: 3
   standbyMode: Hot
   storageType: "Durable"

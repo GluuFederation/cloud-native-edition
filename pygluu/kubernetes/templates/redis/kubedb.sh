@@ -477,32 +477,6 @@ if [ "$KUBEDB_OPERATOR_NAME" = "operator" ]; then
   done
 fi
 
-if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "elasticsearch" ]; then
-  echo
-  echo "installing KubeDB Elasticsearch catalog"
-  ${SCRIPT_LOCATION}deploy/kubedb-catalog/elasticsearch.yaml | $ONESSL envsubst | kubectl apply -f -
-fi
-
-if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "etcd" ]; then
-  echo "installing KubeDB Etcd catalog"
-  ${SCRIPT_LOCATION}deploy/kubedb-catalog/etcd.yaml | $ONESSL envsubst | kubectl apply -f -
-fi
-
-if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "memcached" ]; then
-  echo "installing KubeDB Memcached catalog"
-  ${SCRIPT_LOCATION}deploy/kubedb-catalog/memcached.yaml | $ONESSL envsubst | kubectl apply -f -
-fi
-
-if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "mongo" ]; then
-  echo "installing KubeDB MongoDB catalog"
-  ${SCRIPT_LOCATION}deploy/kubedb-catalog/mongodb.yaml | $ONESSL envsubst | kubectl apply -f -
-fi
-
-if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "mysql" ]; then
-  echo "installing KubeDB MySQL catalog"
-  ${SCRIPT_LOCATION}deploy/kubedb-catalog/mysql.yaml | $ONESSL envsubst | kubectl apply -f -
-fi
-
 if [ "$KUBEDB_CATALOG" = "all" ] || [ "$KUBEDB_CATALOG" = "postgres" ]; then
   echo "installing KubeDB Postgres catalog"
   ${SCRIPT_LOCATION}deploy/kubedb-catalog/postgres.yaml | $ONESSL envsubst | kubectl apply -f -

@@ -411,107 +411,62 @@ class Kustomize(object):
             app_file = str(self.output_yaml_directory.joinpath(app_filename).resolve())
             command = self.kubectl + " kustomize ./{}/base > {} ".format(app, app_file)
             if app == "config":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="CONFIG_IMAGE_NAME",
-                                               image_tag_key="CONFIG_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "CONFIG_IMAGE_NAME", "CONFIG_IMAGE_TAG")
 
             if app == "ldap":
-                logger.info("Building {} manifests".format(app))
                 if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                         self.settings["PERSISTENCE_BACKEND"] == "ldap":
-                    self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                                   namespace=self.settings["GLUU_NAMESPACE"],
-                                                   image_name_key="LDAP_IMAGE_NAME",
-                                                   image_tag_key="LDAP_IMAGE_TAG")
                     command = self.kubectl + " kustomize " + str(
                         self.ldap_kustomize_yaml_directory.resolve()) + " > " + app_file
-                    subprocess_cmd(command)
-                    self.parse_configmap(app_file)
+                    self.build_manifest(app, kustomization_file, command, app_file,
+                                        "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
                     self.adjust_ldap_jackrabbit(app_file)
                     self.remove_resources(app_file, "StatefulSet")
 
             if app == "jackrabbit" and self.settings["INSTALL_JACKRABBIT"] == "Y":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="JACKRABBIT_IMAGE_NAME",
-                                               image_tag_key="JACKRABBIT_IMAGE_TAG")
                 command = self.kubectl + " kustomize " + str(
                     self.jcr_kustomize_yaml_directory.resolve()) + " > " + app_file
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
                 self.adjust_ldap_jackrabbit(app_file)
                 self.remove_resources(app_file, "StatefulSet")
 
             if app == "persistence":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="PERSISTENCE_IMAGE_NAME",
-                                               image_tag_key="PERSISTENCE_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG")
                 persistence_job_parser = Parser(app_file, "Job")
                 del persistence_job_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
                 del persistence_job_parser["spec"]["template"]["spec"]["volumes"]
                 persistence_job_parser.dump_it()
 
             if app == "oxauth":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="OXAUTH_IMAGE_NAME",
-                                               image_tag_key="OXAUTH_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "oxtrust":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="OXTRUST_IMAGE_NAME",
-                                               image_tag_key="OXTRUST_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG")
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxshibboleth" and self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="OXSHIBBOLETH_IMAGE_NAME",
-                                               image_tag_key="OXSHIBBOLETH_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "OXSHIBBOLETH_IMAGE_NAME", "OXSHIBBOLETH_IMAGE_TAG")
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxpassport" and self.settings["ENABLE_OXPASSPORT"] == "Y":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="OXPASSPORT_IMAGE_NAME",
-                                               image_tag_key="OXPASSPORT_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "key-rotation" and self.settings["ENABLE_KEY_ROTATE"] == "Y":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings["GLUU_NAMESPACE"],
-                                               image_name_key="KEY_ROTATE_IMAGE_NAME",
-                                               image_tag_key="KEY_ROTATE_IMAGE_TAG")
-                subprocess_cmd(command)
-                self.parse_configmap(app_file)
+                self.build_manifest(app, kustomization_file, command, app_file,
+                                    "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
@@ -563,9 +518,18 @@ class Kustomize(object):
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "update-lb-ip" and self.settings["IS_GLUU_FQDN_REGISTERED"] == "N":
-                logger.info("Building {} manifests".format(app))
                 if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                    logger.info("Building {} manifests".format(app))
                     subprocess_cmd(command)
+
+    def build_manifest(self, app, kustomization_file, command, app_file, image_name_key, image_tag_key):
+        logger.info("Building {} manifests".format(app))
+        self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
+                                       namespace=self.settings["GLUU_NAMESPACE"],
+                                       image_name_key=image_name_key,
+                                       image_tag_key=image_tag_key)
+        subprocess_cmd(command)
+        self.parse_configmap(app_file)
 
     def kustomize_gluu_upgrade(self):
         self.update_kustomization_yaml(kustomization_yaml="upgrade/base/kustomization.yaml",
@@ -780,13 +744,14 @@ class Kustomize(object):
             pv_parser.dump_it()
 
     def remove_resources(self, app_file, kind):
-        parser = Parser(app_file, kind)
-        try:
-            logger.info("Removing resources limits and requests from {}".format(app_file))
-            del parser["spec"]["template"]["spec"]["containers"][0]["resources"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser.dump_it()
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            parser = Parser(app_file, kind)
+            try:
+                logger.info("Removing resources limits and requests from {}".format(app_file))
+                del parser["spec"]["template"]["spec"]["containers"][0]["resources"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser.dump_it()
 
     def check_lb(self):
         lb_hostname = None
@@ -912,7 +877,7 @@ class Kustomize(object):
                              "https://helm.sh/docs/intro/install/")
                 raise SystemExit(1)
         else:
-            exec_cmd("bash ./redis/kubedb.sh --namespace=gluu-kubedb --install-catalog=catalog.kubedb.com/v1alpha1")
+            exec_cmd("bash ./redis/kubedb.sh --namespace=gluu-kubedb")
 
     def deploy_postgres(self):
         self.uninstall_postgres()
@@ -1323,6 +1288,7 @@ class Kustomize(object):
         if not restore:
             self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         self.kustomize_it()
+        self.adjust_fqdn_yaml_entries()
         if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
             self.deploy_jackrabbit()
         if install_couchbase:
@@ -1569,7 +1535,7 @@ class Kustomize(object):
                              "https://helm.sh/docs/intro/install/")
                 raise SystemExit(1)
         else:
-            exec_cmd("bash -s ./redis/kubedb.sh --uninstall --purge  --namespace=gluu-kubedb")
+            exec_cmd("bash ./redis/kubedb.sh --uninstall --purge  --namespace=gluu-kubedb")
         self.kubernetes.delete_namespace(name="gluu-kubedb")
 
     def uninstall_redis(self):
