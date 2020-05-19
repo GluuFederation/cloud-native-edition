@@ -770,11 +770,11 @@ class Kubernetes(object):
 
     def read_namespaced_pod_status(self, name, timeout, namespace="default"):
         """Read pod status with name in namespace"""
-        load_kubernetes_config(mute=True)
         starting_time = time.time()
         try:
             finished_prep_boolean = False
             while not finished_prep_boolean:
+                load_kubernetes_config(mute=True)
                 end_time = time.time()
                 running_time = end_time - starting_time
                 time.sleep(5)

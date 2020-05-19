@@ -1520,6 +1520,7 @@ class Kustomize(object):
                 shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
 
     def uninstall_kubedb(self, helm=False):
+        logger.info("Deleting KubeDB...This may take a little while.")
         if self.settings["DEPLOYMENT_ARCH"] == "gke":
             exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
                      "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")

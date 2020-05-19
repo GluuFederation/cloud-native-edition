@@ -24,7 +24,7 @@ spec:
                       - jackrabbit
               topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: opendj
+      - name: jackrabbit
         imagePullPolicy: Always
         image: gluufederation/jackrabbit:4.1.1_dev
         envFrom:
