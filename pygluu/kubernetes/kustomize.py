@@ -435,10 +435,11 @@ class Kustomize(object):
             if app == "persistence":
                 self.build_manifest(app, kustomization_file, command, app_file,
                                     "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG")
-                persistence_job_parser = Parser(app_file, "Job")
-                del persistence_job_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
-                del persistence_job_parser["spec"]["template"]["spec"]["volumes"]
-                persistence_job_parser.dump_it()
+                if self.settings["PERSISTENCE_BACKEND"] == "ldap":
+                    persistence_job_parser = Parser(app_file, "Job")
+                    del persistence_job_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
+                    del persistence_job_parser["spec"]["template"]["spec"]["volumes"]
+                    persistence_job_parser.dump_it()
 
             if app == "oxauth":
                 self.build_manifest(app, kustomization_file, command, app_file,
