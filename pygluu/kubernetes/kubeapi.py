@@ -8,6 +8,7 @@ from kubernetes.stream import stream
 from .yamlparser import Parser
 from .common import get_logger, check_microk8s_kube_config_file
 import time
+import sys
 
 logger = get_logger("gluu-kubernetes-api")
 
