@@ -3,34 +3,20 @@
  https://www.apache.org/licenses/LICENSE-2.0
 """
 
-from kubernetes import client, config, utils
+from kubernetes import client, utils, config
 from kubernetes.stream import stream
-from .yamlparser import Parser, get_logger
-import sys
+from .yamlparser import Parser
+from .common import get_logger, check_microk8s_kube_config_file
 import time
-from pathlib import Path
-import shutil
-import os
 
 logger = get_logger("gluu-kubernetes-api")
 
 
-def check_microk8s_kube_config_file():
-    kube_config_file_location = Path(os.path.expanduser("~/.kube/config"))
-
-    if not kube_config_file_location.exists():
-        kube_dir = os.path.dirname(kube_config_file_location)
-
-        if not os.path.exists(kube_dir):
-            os.makedirs(kube_dir)
-
-        try:
-            shutil.copy(Path("/var/snap/microk8s/current/credentials/client.config"), kube_config_file_location)
-        except FileNotFoundError:
-            logger.error("No Kubernetes config file found at ~/.kube/config")
-
-
-def load_config(mute=False):
+def load_kubernetes_config(mute=False):
+    """
+    Loads kuberentes in cluster or from file configuration
+    :param mute:
+    """
     config_loaded = False
     try:
         config.load_incluster_config()
@@ -49,11 +35,10 @@ def load_config(mute=False):
         logger.error("Unable to load in-cluster or Kube config")
         sys.exit(1)
 
-
 class Kubernetes(object):
     def __init__(self):
         check_microk8s_kube_config_file()
-        load_config()
+        load_kubernetes_config()
         self.api_client = client.ApiClient()
         self.custom_def_cli = client.CustomObjectsApi()
         self.core_cli = client.CoreV1Api()
@@ -71,8 +56,9 @@ class Kubernetes(object):
         self.core_cli.api_client.configuration.assert_hostname = False
         self.apps_cli.api_client.configuration.assert_hostname = False
 
-    def check_error_and_response(self, starting_time, resp):
-        load_config(mute=True)
+    @staticmethod
+    def check_error_and_response(starting_time, resp):
+        load_kubernetes_config(mute=True)
         end_time = time.time()
         running_time = end_time - starting_time
         if resp.status != 404 and resp.status:
@@ -87,7 +73,7 @@ class Kubernetes(object):
             return False
 
     def check_read_error_and_response(self, starting_time, resp):
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         end_time = time.time()
         running_time = end_time - starting_time
         if resp.status == 404 and not resp.status:
@@ -103,7 +89,7 @@ class Kubernetes(object):
 
     def delete_namespace(self, name):
         """Delete namespace with name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -117,7 +103,7 @@ class Kubernetes(object):
 
     def delete_validating_webhook_configuration(self, name):
         """Delete validating webhook configuration with name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -131,7 +117,7 @@ class Kubernetes(object):
 
     def delete_mutating_webhook_configuration(self, name):
         """Delete mutating webhook configuration with name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -145,7 +131,7 @@ class Kubernetes(object):
 
     def delete_service(self, name, namespace="default"):
         """Delete service with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -159,7 +145,7 @@ class Kubernetes(object):
 
     def delete_deployment_using_label(self, namespace="default", app_label=None):
         """Delete deployment using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -176,7 +162,7 @@ class Kubernetes(object):
 
     def delete_deployment_using_name(self, name, namespace="default"):
         """Delete deployment using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -190,7 +176,7 @@ class Kubernetes(object):
 
     def delete_stateful_set(self, namespace="default", app_label=None):
         """Delete statefulset using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -207,7 +193,7 @@ class Kubernetes(object):
 
     def delete_job(self, namespace="default", app_label=None):
         """Delete job using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -222,7 +208,7 @@ class Kubernetes(object):
 
     def delete_secret(self, name, namespace="default"):
         """Delete secret using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -236,7 +222,7 @@ class Kubernetes(object):
 
     def delete_daemon_set(self, namespace="default", app_label=None):
         """Delete daemon set using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -253,7 +239,7 @@ class Kubernetes(object):
 
     def delete_collection_namespaced_replication_controller(self, namespace="default", app_label=None):
         """Delete replication controller using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -270,7 +256,7 @@ class Kubernetes(object):
 
     def delete_config_map_using_label(self, namespace="default", app_label=None):
         """Delete config map using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -286,7 +272,7 @@ class Kubernetes(object):
 
     def delete_config_map_using_name(self, name, namespace="default"):
         """Delete config map using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -300,7 +286,7 @@ class Kubernetes(object):
 
     def delete_role(self, name, namespace="default"):
         """Delete role using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -314,7 +300,7 @@ class Kubernetes(object):
 
     def delete_role_binding(self, name, namespace="default"):
         """Delete role binding using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -328,7 +314,7 @@ class Kubernetes(object):
 
     def delete_cluster_role(self, name):
         """Delete cluster role using name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -342,7 +328,7 @@ class Kubernetes(object):
 
     def delete_cluster_role_binding(self, name):
         """Delete cluster role binding using name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -356,7 +342,7 @@ class Kubernetes(object):
 
     def delete_persistent_volume(self, app_label=None):
         """Delete persistent volume using app label"""
-        load_config()
+        load_kubernetes_config()
         starting_time = time.time()
         response = True
         while response:
@@ -371,7 +357,7 @@ class Kubernetes(object):
 
     def delete_persistent_volume_claim(self, namespace="default", app_label=None):
         """Delete persistent volume claim using app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -389,7 +375,7 @@ class Kubernetes(object):
 
     def delete_service_account(self, name, namespace="default"):
         """Delete service account using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -403,7 +389,7 @@ class Kubernetes(object):
 
     def delete_ingress(self, name, namespace="default"):
         """Delete ingress using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -422,7 +408,7 @@ class Kubernetes(object):
 
     def delete_custom_resource(self, name):
         """Delete custom resource using name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -437,7 +423,7 @@ class Kubernetes(object):
 
     def delete_storage_class(self, name):
         """Delete storage class using name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -451,7 +437,7 @@ class Kubernetes(object):
 
     def create_namespace(self, name):
         """Create namespace using name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         body = client.V1Secret()
         metadata = client.V1ObjectMeta()
         metadata.name = name
@@ -466,7 +452,7 @@ class Kubernetes(object):
 
     def create_namespaced_service_account(self, name, namespace="default"):
         """Create service account using name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         body = client.V1ServiceAccount()
         metadata = client.V1ObjectMeta()
         metadata.name = name
@@ -483,7 +469,7 @@ class Kubernetes(object):
     def create_namespaced_role_binding(self, role_binding_name, service_account_name, role_name, namespace="default"):
         """Create role binding using name=role_binding_name in namespace
         connecting role_name using service_account_name"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         subject = client.V1Subject(kind="ServiceAccount", name=service_account_name, namespace=namespace)
         metadata = client.V1ObjectMeta(name=role_binding_name)
         role = client.V1RoleRef(kind="Role", name=role_name, api_group="rbac.authorization.k8s.io")
@@ -499,7 +485,7 @@ class Kubernetes(object):
 
     def create_namespaced_custom_object(self, filepath, namespace="default"):
         """Create custom object (couchbase) using file in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         yaml_objects = Parser(filepath).return_manifests_dict
         for manifest in yaml_objects:
             try:
@@ -518,7 +504,7 @@ class Kubernetes(object):
                                              second_literal=None, value_of_second_literal=None, data=None):
         """Patch configmap and if not exist create"""
         # Instantiate the configmap object
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         body = client.V1ConfigMap()
         metadata = client.V1ObjectMeta(name=name)
         body.data = data
@@ -545,7 +531,7 @@ class Kubernetes(object):
 
     def patch_namespaced_deployment_scale(self, name, replicas, namespace="default"):
         """Scale deployment using name in namespace to replicas"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         body = {
             'spec': {
                 'replicas': replicas,
@@ -562,7 +548,7 @@ class Kubernetes(object):
     def patch_or_create_namespaced_secret(self, name, literal, value_of_literal, namespace="default",
                                           secret_type="Opaque", second_literal=None, value_of_second_literal=None, data=None):
         """Patch secret and if not exist create"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         # Instantiate the Secret object
         body = client.V1Secret()
         metadata = client.V1ObjectMeta(name=name)
@@ -591,7 +577,7 @@ class Kubernetes(object):
 
     def patch_namespaced_deployment(self, name, image, namespace="default"):
         """Scale deployment using name in namespace to replicas"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         # Configureate Pod template container
         container = client.V1Container(name=name)
         # Create and configurate a spec section
@@ -623,7 +609,7 @@ class Kubernetes(object):
 
     def patch_namespaced_statefulset(self, name, image, namespace="default"):
         """Scale deployment using name in namespace to replicas"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         # Configureate Pod template container
         container = client.V1Container(name=name)
         # Create and configurate a spec section
@@ -656,7 +642,7 @@ class Kubernetes(object):
 
     def patch_namespaced_daemonset(self, name, image, namespace="default"):
         """Scale deployment using name in namespace to replicas"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         # Configureate Pod template container
         container = client.V1Container(name=name)
         # Create and configurate a spec section
@@ -688,7 +674,7 @@ class Kubernetes(object):
 
     def patch_namespaced_stateful_set_scale(self, name, replicas, namespace="default"):
         """Scale statefulset using name in namespace to replicas"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         body = {
             'spec': {
                 'replicas': replicas,
@@ -704,7 +690,7 @@ class Kubernetes(object):
 
     def create_objects_from_dict(self, filepath, namespace=None):
         """Create kubernetes object from a yaml encapsulated inside a dictionary"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         yaml_objects = Parser(filepath).return_manifests_dict
         for manifest in yaml_objects:
             try:
@@ -718,7 +704,7 @@ class Kubernetes(object):
 
     def list_pod_name_by_label(self, namespace="default", app_label=None):
         """List pods names with app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         try:
             pods_name = []
             response = self.core_cli.list_namespaced_pod(namespace=namespace, label_selector=app_label, watch=False)
@@ -731,7 +717,7 @@ class Kubernetes(object):
 
     def read_namespaced_secret(self, name, namespace="default"):
         """Read secret with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -744,7 +730,7 @@ class Kubernetes(object):
 
     def read_namespaced_service(self, name, namespace="default"):
         """Read service with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -757,7 +743,7 @@ class Kubernetes(object):
 
     def read_namespaced_configmap(self, name, namespace="default"):
         """Read configmap with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -770,7 +756,7 @@ class Kubernetes(object):
 
     def read_namespaced_ingress(self, name, namespace="default"):
         """Read service with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         response = True
         while response:
@@ -783,7 +769,7 @@ class Kubernetes(object):
 
     def read_namespaced_pod_status(self, name, timeout, namespace="default"):
         """Read pod status with name in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         starting_time = time.time()
         try:
             finished_prep_boolean = False
@@ -824,7 +810,7 @@ class Kubernetes(object):
 
     def connect_get_namespaced_pod_exec(self, exec_command, app_label=None, namespace="default"):
         """Execute command in pod with app label in namespace"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         pods_name = self.list_pod_name_by_label(namespace, app_label)
         for pod_name in pods_name:
             try:
@@ -841,7 +827,7 @@ class Kubernetes(object):
 
     def get_namespaces(self):
         """List all namespaces"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         try:
             return self.core_cli.list_namespace(pretty="pretty")
         except client.rest.ApiException as e:
@@ -850,7 +836,7 @@ class Kubernetes(object):
 
     def list_nodes(self):
         """List all nodes"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         try:
             nodes_list = self.core_cli.list_node(pretty="pretty")
             logger.info("Getting list of nodes")
@@ -861,7 +847,7 @@ class Kubernetes(object):
 
     def read_node(self, name):
         """Read node information"""
-        load_config(mute=True)
+        load_kubernetes_config(mute=True)
         try:
             node_data = self.core_cli.read_node(name)
             logger.info("Getting node {} data".format(name))

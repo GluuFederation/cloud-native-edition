@@ -1,12 +1,13 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Generate certificate authority cert,  key and chain cert and key signed by CA generated.
 """
 
-from .yamlparser import Parser, get_logger, update_settings_json_file
 import datetime
 import OpenSSL.crypto
 import OpenSSL.SSL
+from.common import get_logger
 from cryptography import x509
 from cryptography.x509.oid import NameOID, ExtendedKeyUsageOID
 from cryptography.hazmat.primitives import hashes
@@ -22,6 +23,16 @@ def setup_crts(ca_common_name, cert_common_name, san_list,
                ca_key_file="./ca.key",
                cert_file="./chain.pem",
                key_file="./pkey.key"):
+    """
+     Generate certificate authority cert,  key and chain cert and key signed by CA generated.
+    :param ca_common_name:
+    :param cert_common_name:
+    :param san_list:
+    :param ca_cert_file:
+    :param ca_key_file:
+    :param cert_file:
+    :param key_file:
+    """
     logger.info("Generating CA private key")
     root_key = rsa.generate_private_key(
         public_exponent=65537,

@@ -1,54 +1,16 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Yaml parser
 """
 
 from pathlib import Path
 import contextlib
 import os
-import json
-import logging
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 from collections import OrderedDict, Mapping
-import subprocess
-import shlex
-
-
-def update_settings_json_file(settings):
-    """Write settings out to a json file
-    """
-    with open(Path('./settings.json'), 'w+') as file:
-        json.dump(settings, file, indent=2)
-
-
-def exec_cmd(cmd):
-    args = shlex.split(cmd)
-    popen = subprocess.Popen(args,
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-    stdout, stderr = popen.communicate()
-    retcode = popen.returncode
-
-    if retcode != 0:
-        logger.error(str(stderr, "utf-8"))
-    logger.info(str(stdout, "utf-8"))
-    return stdout, stderr, retcode
-
-
-def get_logger(name):
-    log_format = '%(asctime)s - %(name)8s - %(levelname)5s - %(message)s'
-    logging.basicConfig(level=logging.INFO,
-                        format=log_format,
-                        filename='setup.log',
-                        filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    console.setFormatter(logging.Formatter(log_format))
-    logging.getLogger(name).addHandler(console)
-    return logging.getLogger(name)
-
+from .common import get_logger
 
 logger = get_logger("gluu-yaml-parser   ")
 
@@ -130,4 +92,3 @@ class Parser(dict):
         for k, v in kwargs.items():
             self[k] = v
         super(Parser, self).update(self)
-

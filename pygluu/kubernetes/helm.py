@@ -1,10 +1,12 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Handles Helm Gluu Chart
 """
 
 from pathlib import Path
-from .yamlparser import Parser, get_logger, exec_cmd
+from .yamlparser import Parser
+from .common import get_logger, exec_cmd
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 import time
@@ -21,6 +23,10 @@ class Helm(object):
         self.ldap_backup_release_name = self.settings['GLUU_HELM_RELEASE_NAME'] + "-ldap-backup"
 
     def check_install_nginx_ingress(self, install_ingress=True):
+        """
+        Helm installs nginx ingress or checks to recieve and ip or address
+        :param install_ingress:
+        """
         if install_ingress:
             self.kubernetes.delete_custom_resource("virtualservers.k8s.nginx.org")
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
@@ -102,6 +108,9 @@ class Helm(object):
             self.settings["HOST_EXT_IP"] = ip
 
     def analyze_global_values(self):
+        """
+        Parses Gluu values.yaml with the input information from prompts
+        """
         values_file_parser = Parser(self.values_file, True)
         values_file_parser["global"]["cloud"]["enabled"] = False
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
@@ -238,6 +247,10 @@ class Helm(object):
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
+        """
+        Helm install Gluu
+        :param install_ingress:
+        """
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
@@ -258,23 +271,6 @@ class Helm(object):
 
             exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
                 self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
-
-    def install_kong_dbless(self):
-        exec_cmd("helm repo add kong https://charts.konghq.com")
-        exec_cmd("helm repo update")
-        exec_cmd("helm install {} kong/kong "
-                 "--set ingressController.installCRDs=false "
-                 "--set image.repository={} "
-                 "--set image.tag={} "
-                 "--namespace={}".format(self.settings['GLUU_GATEWAY_KONG_RELEASE_NAME'],
-                                                        self.settings['GLUU_GATEWAY_IMAGE_NAME'],
-                                                        self.settings['GLUU_GATEWAY_IMAGE_TAG'],
-                                                        self.settings["GLUU_GATWAY_KONG_NAMESPACE"]))
-        logger.info("Please create a secret called kong-config inside namespace : {} "
-                    "containing the kong.yml deceleration file.\n"
-                    "kubectl create secret generic kong-config "
-                         "-n {} --from-file=kong.yml".format(self.settings["GLUU_GATWAY_KONG_NAMESPACE"],
-                                                             self.settings["GLUU_GATWAY_KONG_NAMESPACE"]))
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],

@@ -1,12 +1,12 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Installs kubernetes client 11.0.0 with fix to CRD handeling
 """
 # TODO: Delete this script as soon as the kubernetes python client fixes CRD issue
 
-from .yamlparser import get_logger
+from .common import get_logger
 from pathlib import Path
-import subprocess
 import os
 import tarfile
 
@@ -14,12 +14,6 @@ logger = get_logger("python-k8-installer")
 
 
 # TODO: remove this section once fixed by kubernetes
-def subprocess_cmd(command):
-    """Execute command"""
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    return proc_stdout
-
 
 def install_kubernetes_client_11_0_0():
     logger.warning("https://github.com/kubernetes-client/python/issues/1022"

@@ -1,30 +1,29 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Installs and configures Couchbase
 """
 
 from pathlib import Path
 import shutil
 import tarfile
 from .kubeapi import Kubernetes
-from .yamlparser import Parser, get_logger, update_settings_json_file
-from .pycert import check_cert_with_private_key, setup_crts
-import subprocess
+from .yamlparser import Parser
+from .common import get_logger, update_settings_json_file, subprocess_cmd
+from .pycert import setup_crts
 import sys
 import base64
 import random
+import os
 
 logger = get_logger("gluu-couchbase     ")
 
 
-def subprocess_cmd(command):
-    """Execute command"""
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    return proc_stdout
-
-
 def extract_couchbase_tar(tar_file):
+    """
+    Extracts couchbase kubernetes tar file
+    :param tar_file:
+    """
     extract_folder = Path("./couchbase-source-folder")
     logger.info("Extracting {} in {} ".format(tar_file, extract_folder))
     tr = tarfile.open(tar_file)
@@ -34,6 +33,17 @@ def extract_couchbase_tar(tar_file):
 
 def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_service_name, mem_req, mem_limit,
                                       cpu_req, cpu_limit):
+    """
+    Creates the server spec section inside couchbase.yaml for each couchbase service
+    :param zones:
+    :param number_of_cb_service_nodes:
+    :param cb_service_name:
+    :param mem_req:
+    :param mem_limit:
+    :param cpu_req:
+    :param cpu_limit:
+    :return:
+    """
     server_spec = []
     zones = zones
     number_of_zones = len(zones)
@@ -63,6 +73,7 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
 
     return server_spec
 
+
 class Couchbase(object):
     def __init__(self, settings):
         self.settings = settings
@@ -78,6 +89,10 @@ class Couchbase(object):
 
     @property
     def get_couchbase_files(self):
+        """
+        Returns the couchbase extracted package folder path containing manifests and the tar package file
+        :return:
+        """
         if self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_tar_pattern = "couchbase-autonomous-operator-kubernetes_*.tar.gz"
             directory = Path('.')
@@ -97,6 +112,11 @@ class Couchbase(object):
         return Path("."), Path(".")
 
     def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string):
+        """
+        Create cor patch secret containing couchbase certificate authority crt and couchbase admin password
+        :param encoded_ca_crt_string:
+        :param encoded_cb_pass_string:
+        """
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
                                                           namespace=self.settings["GLUU_NAMESPACE"],
@@ -110,6 +130,9 @@ class Couchbase(object):
                                                           value_of_literal=encoded_cb_pass_string)
 
     def setup_backup_couchbase(self):
+        """
+        Setups Couchbase backup strategy
+        """
         encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
         encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
         encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
@@ -161,6 +184,11 @@ class Couchbase(object):
 
     @property
     def calculate_couchbase_resources(self):
+        """
+        Return a dictionary containing couchbase resource information calculated
+        Alpha
+        :return: 
+        """
         tps = int(self.settings["EXPECTED_TRANSACTIONS_PER_SEC"])
         number_of_data_nodes = 0
         number_of_query_nodes = 0
@@ -241,8 +269,9 @@ class Couchbase(object):
         search_eventing_analytics_cpu_limit = search_eventing_analytics_cpu_request
 
         # Two services because query is assumed to take the same amount of mem quota
-        total_mem_resources = data_service_memory_quota + data_service_memory_quota + index_service_memory_quota + \
-                              search_eventing_analytics_memory_quota_sum
+        total_mem_resources = \
+            data_service_memory_quota + data_service_memory_quota + index_service_memory_quota + \
+            search_eventing_analytics_memory_quota_sum
 
         total_cpu_resources = data_cpu_limit + query_cpu_limit + index_cpu_limit + search_eventing_analytics_cpu_limit
 
@@ -283,6 +312,9 @@ class Couchbase(object):
         return resources_info
 
     def analyze_couchbase_cluster_yaml(self):
+        """
+        Dumps created calculated resources into couchbase.yaml file. ALso includes cloud zones.
+        """
         parser = Parser("./couchbase/couchbase-cluster.yaml", "CouchbaseCluster")
         parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
         number_of_buckets = len(parser["spec"]["buckets"])
@@ -290,9 +322,8 @@ class Couchbase(object):
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
             resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
-                                  "pod": {"volumeMounts":
-                                              {"default": "pvc-general", "data": "pvc-data", "index": "pvc-index",
-                                               "analytics": ["pvc-analytics"]}}}]
+                                  "pod": {"volumeMounts": {"default": "pvc-general",
+                                          "data": "pvc-data", "index": "pvc-index", "analytics": ["pvc-analytics"]}}}]
             data_service_memory_quota = 1024
             index_service_memory_quota = 512
             search_service_memory_quota = 512
@@ -343,8 +374,9 @@ class Couchbase(object):
                 str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_REQUEST"]),
                 str(resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_CPU_LIMIT"]))
 
-            resources_servers = data_server_spec + query_server_spec + \
-                                index_server_spec + search_eventing_analytics_server_spec
+            resources_servers = \
+                data_server_spec + query_server_spec + index_server_spec + \
+                search_eventing_analytics_server_spec
 
         if self.settings["NODES_ZONES"]:
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
@@ -381,6 +413,9 @@ class Couchbase(object):
         parser.dump_it()
 
     def install(self):
+        """
+        Installs Couchbase
+        """
         self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
@@ -419,18 +454,27 @@ class Couchbase(object):
             storage_class_file_parser.dump_it()
 
         logger.info("Installing Couchbase...")
-        custom_cb_ca_crt = Path("./ca.crt")
-        custom_cb_crt = Path("./chain.pem")
-        custom_cb_key = Path("./pkey.key")
+        couchbase_crts_keys = Path("couchbase_crts_keys")
+        if not couchbase_crts_keys.exists():
+            os.mkdir(couchbase_crts_keys)
+        custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
+        custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
+        custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
         if not custom_cb_ca_crt.exists() and not custom_cb_crt.exists() and not custom_cb_key.exists():
-            setup_crts(self.settings["COUCHBASE_CN"], "couchbase-server", self.settings["COUCHBASE_SUBJECT_ALT_NAME"])
+            setup_crts(ca_common_name=self.settings["COUCHBASE_CN"],
+                       cert_common_name="couchbase-server",
+                       san_list=self.settings["COUCHBASE_SUBJECT_ALT_NAME"],
+                       ca_cert_file="./couchbase_crts_keys/ca.crt",
+                       ca_key_file="./couchbase_crts_keys/ca.key",
+                       cert_file="./couchbase_crts_keys/chain.pem",
+                       key_file="./couchbase_crts_keys/pkey.key")
         self.kubernetes.create_namespace(name=cb_namespace)
-        chain_pem_filepath = Path("chain.pem")
-        pkey_filepath = Path("pkey.key")
-        tls_cert_filepath = Path("tls-cert-file")
-        tls_private_key_filepath = Path("tls-private-key-file")
-        ca_cert_filepath = Path("ca.crt")
-        shutil.copyfile(ca_cert_filepath, Path("./couchbase.crt"))
+        chain_pem_filepath = Path("./couchbase_crts_keys/chain.pem")
+        pkey_filepath = Path("./couchbase_crts_keys/pkey.key")
+        tls_cert_filepath = Path("./couchbase_crts_keys/tls-cert-file")
+        tls_private_key_filepath = Path("./couchbase_crts_keys/tls-private-key-file")
+        ca_cert_filepath = Path("./couchbase_crts_keys/ca.crt")
+        shutil.copyfile(ca_cert_filepath, Path("./couchbase_crts_keys/couchbase.crt"))
         shutil.copyfile(chain_pem_filepath, tls_cert_filepath)
         shutil.copyfile(pkey_filepath, tls_private_key_filepath)
         with open(tls_cert_filepath) as content_file:
@@ -542,9 +586,12 @@ class Couchbase(object):
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] == "Y":
-            logger.info("Setup XDCR between the running gluu couchbase cluster and this one")
+            logger.info("Setup XDCR between the running Gluu couchbase cluster and this one")
 
     def uninstall(self):
+        """
+        Uninstalls couchbase
+        """
         logger.info("Deleting Couchbase...")
         self.kubernetes.delete_storage_class("couchbase-sc")
         self.kubernetes.delete_custom_resource("couchbaseclusters.couchbase.com")

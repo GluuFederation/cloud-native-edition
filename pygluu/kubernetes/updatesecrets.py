@@ -1,6 +1,7 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ This script helps with editing GLuu secrets without manually tampering with the secrets.
 """
 # TODO: Delete this script as soon as the update secret is moved to backend
 
@@ -8,7 +9,8 @@
 from pathlib import Path
 import base64
 from pyDes import *
-from .yamlparser import Parser, get_logger
+from .yamlparser import Parser
+from .common import get_logger
 
 logger = get_logger("secret-yaml-parser   ")
 
@@ -50,16 +52,32 @@ base64_secrets = [
 
 
 def encode_base64(string):
+    """
+    Returns encoded string
+    :param string:
+    :return:
+    """
     encoded_bytes = base64.b64encode(string.encode("utf-8"))
     encoded_str = str(encoded_bytes, "utf-8")
     return encoded_str
 
 
 def decode_base64(string):
+    """
+    Returns Base64 decoded string
+    :param string:
+    :return:
+    """
     return base64.b64decode(string).decode('utf-8')
 
 
 def encode_pydes(data="", salt_key=""):
+    """
+    Returns encoded PyDes data using salt key
+    :param data:
+    :param salt_key:
+    :return:
+    """
     engine = triple_des(salt_key, ECB, pad=None, padmode=PAD_PKCS5)
     data = data.encode('ascii')
     en_data = engine.encrypt(data)
@@ -67,6 +85,11 @@ def encode_pydes(data="", salt_key=""):
 
 
 def modify_tls(key, value):
+    """
+    Reads Gluus https TLS certificate and key and updated it with the corresponding value
+    :param key:
+    :param value:
+    """
     tls_yaml_parser = Parser("gluu_tls_certificate.yaml", "Secret")
     if key == "crt":
         logger.info("Editing cert tls secret ")
@@ -78,6 +101,9 @@ def modify_tls(key, value):
 
 
 def modify_secret():
+    """
+    Modify Gluu Secrets
+    """
     input("Please place your gluu secret as gluu_secret.yaml. Press Enter when ready")
     secret_yaml_parser = Parser("gluu_secret.yaml", "Secret")
     encoded_salt_key = secret_yaml_parser["data"]["encoded_salt"]

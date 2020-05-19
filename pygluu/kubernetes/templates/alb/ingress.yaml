@@ -19,7 +19,8 @@ metadata:
     alb.ingress.kubernetes.io/actions.uma-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/restv1/uma2-configuration", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.webfinger-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/webfinger", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.simple-web-discovery-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/.well-known/simple-web-discovery", "StatusCode": "HTTP_301"}}'
-    alb.ingress.kubernetes.io/actions.fido-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/restv1/fido-u2f-configuration", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/actions.fido-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/restv1/fido-configuration", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/actions.fido2-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/oxauth/restv1/fido2/configuration", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/actions.main-page-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/identity/", "StatusCode": "HTTP_301"}}'
 
 
@@ -52,9 +53,13 @@ spec:
         backend:
           serviceName: simple-web-discovery-redirect
           servicePort: use-annotation
-      - path: /.well-known/fido-u2f-configuration
+      - path: /.well-known/fido-configuration
         backend:
           serviceName: fido-redirect
+          servicePort: use-annotation
+      - path: /.well-known/fido2-configuration
+        backend:
+          serviceName: fido2-redirect
           servicePort: use-annotation
       - path: /
         backend:
@@ -80,7 +85,11 @@ spec:
         backend:
           serviceName: oxauth
           servicePort: 8080
-      - path: /.well-known/fido-u2f-configuration
+      - path: /.well-known/fido-configuration
+        backend:
+          serviceName: oxauth
+          servicePort: 8080
+      - path: /.well-known/fido2-configuration
         backend:
           serviceName: oxauth
           servicePort: 8080
@@ -104,3 +113,7 @@ spec:
         backend:
           serviceName: casa
           servicePort: 8080
+      - path: /gg-ui*
+        backend:
+          serviceName: gg-kong-ui
+          servicePort: 443

@@ -1,28 +1,19 @@
 """
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
+ Prompt is used for prompting users for input used in deploying Gluu.
 """
 
 from pathlib import Path
-import subprocess
 import ipaddress
 import re
-import string
 import shutil
-import random
 import json
 import base64
-from getpass import getpass
 from .kubeapi import Kubernetes
-from .yamlparser import update_settings_json_file, get_logger
+from .common import update_settings_json_file, get_logger, subprocess_cmd, prompt_password
 
 logger = get_logger("gluu-prompt        ")
-
-
-def subprocess_cmd(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    return proc_stdout
 
 
 class Prompt(object):
@@ -46,13 +37,13 @@ class Prompt(object):
                                 INSTALL_GLUU_GATEWAY="",
                                 POSTGRES_NAMESPACE="",
                                 KONG_NAMESPACE="",
-                                GG_UI_NAMESPACE="",
+                                GLUU_GATEWAY_UI_NAMESPACE="",
                                 KONG_PG_USER="",
                                 KONG_PG_PASSWORD="",
-                                GG_UI_PG_USER="",
-                                GG_UI_PG_PASSWORD="",
+                                GLUU_GATEWAY_UI_PG_USER="",
+                                GLUU_GATEWAY_UI_PG_PASSWORD="",
                                 KONG_DATABASE="",
-                                GG_UI_DATABASE="",
+                                GLUU_GATEWAY_UI_DATABASE="",
                                 POSTGRES_REPLICAS="",
                                 POSTGRES_URL="",
                                 KONG_HELM_RELEASE_NAME="",
@@ -197,7 +188,7 @@ class Prompt(object):
         return default_settings
 
     def get_settings(self):
-        """Get merged settings (default and custom settings from local Python file).
+        """Get merged settings (default and custom settings from json file).
         """
         filename = Path("./settings.json")
         try:
@@ -209,7 +200,7 @@ class Prompt(object):
 
     @property
     def get_supported_versions(self):
-        """Get merged settings (default and custom settings from local Python file).
+        """Get Gluu versions from gluu_versions.json
         """
         filename = Path("./gluu_versions.json")
         try:
@@ -219,14 +210,20 @@ class Prompt(object):
             version_number = 0
             for k, v in versions.items():
                 logger.info(k)
-                if float(k) > version_number:
-                    version_number = float(k)
+                if "_dev" in k:
+                    logger.info("DEV VERSION : {}".format(k))
+                else:
+                    if float(k) > version_number:
+                        version_number = float(k)
             version_number = str(version_number)
             return versions, version_number
         except FileNotFoundError:
             pass
 
     def prompt_version(self):
+        """
+        Prompts for Gluu versions
+        """
         versions, version_number = self.get_supported_versions
         if not self.settings["GLUU_VERSION"]:
             prompt = input("Please enter the current version of Gluu or the version to be installed [{}]"
@@ -238,9 +235,12 @@ class Prompt(object):
         self.settings.update(image_names_and_tags)
 
     def confirm_params(self):
+        """
+        Formats output of settings from prompts to the user. Passwords are not displayed.
+        """
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                            "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "REDIS_PW",
-                           "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GG_UI_PG_PASSWORD"]
+                           "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GLUU_GATEWAY_UI_PG_PASSWORD"]
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
             if k not in hidden_settings:
@@ -255,6 +255,10 @@ class Prompt(object):
 
     @property
     def prompt_helm(self):
+        """
+        Prompts for helm installation and returns updated settings.
+        :return:
+        """
         if not self.settings["GLUU_HELM_RELEASE_NAME"]:
             prompt = input("Please enter Gluu helm name[gluu]")
             if not prompt:
@@ -291,6 +295,10 @@ class Prompt(object):
 
     @property
     def prompt_upgrade(self):
+        """
+        Prompts for upgrade and returns updated settings.
+        :return:
+        """
         versions, version_number = self.get_supported_versions
         if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
             prompt = input("Please enter the version to upgrade Gluu to [{}]"
@@ -304,6 +312,9 @@ class Prompt(object):
         return self.settings
 
     def prompt_image_name_tag(self):
+        """
+        Manual prompts for image names and tags if changed from default or at a different repository.
+        """
         def prompt_and_set_setting(service, image_name_key, image_tag_key):
             name_prompt = input(service + " image name [{}]".format(self.settings[image_name_key]))
             tag_prompt = input(service + " image tag [{}]".format(self.settings[image_tag_key]))
@@ -358,7 +369,10 @@ class Prompt(object):
             self.settings["EDIT_IMAGE_NAMES_TAGS"] = "N"
         update_settings_json_file(self.settings)
 
-    def prompt_volumes_identitfier(self):
+    def prompt_volumes_identifier(self):
+        """
+        Prompts for Static volume IDs.
+        """
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if not self.settings["LDAP_STATIC_VOLUME_ID"]:
@@ -370,6 +384,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_disk_uris(self):
+        """
+        Prompts for static volume Disk URIs (AKS)
+        """
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if not self.settings["LDAP_STATIC_DISK_URI"]:
@@ -380,6 +397,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_gke(self):
+        """
+        GKE prompts
+        """
         if not self.settings["GMAIL_ACCOUNT"]:
             prompt = input("Please enter valid email for Google Cloud account:")
             self.settings["GMAIL_ACCOUNT"] = prompt
@@ -398,6 +418,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_config(self):
+        """
+        Prompts for generation of configuration layer
+        """
         check_fqdn_provided = False
         while True:
             if not self.settings["GLUU_FQDN"] or check_fqdn_provided:
@@ -445,12 +468,12 @@ class Prompt(object):
             self.settings["ORG_NAME"] = prompt
 
         if not self.settings["ADMIN_PW"]:
-            self.settings["ADMIN_PW"] = self.prompt_password("oxTrust")
+            self.settings["ADMIN_PW"] = prompt_password("oxTrust")
 
         if not self.settings["LDAP_PW"]:
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                     self.settings["PERSISTENCE_BACKEND"] == "ldap":
-                self.settings["LDAP_PW"] = self.prompt_password("LDAP")
+                self.settings["LDAP_PW"] = prompt_password("LDAP")
             else:
                 self.settings["LDAP_PW"] = self.settings["COUCHBASE_PASSWORD"]
 
@@ -483,6 +506,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_jackrabbit(self):
+        """
+        Prompts for Jackrabbit content repository
+        """
         if not self.settings["INSTALL_JACKRABBIT"]:
             logger.info("Jackrabbit must be installed. If the following prompt is answered with N it is assumed "
                         "the jackrabbit content repository is either installed locally or remotely")
@@ -514,6 +540,9 @@ class Prompt(object):
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
     def prompt_postgres(self):
+        """
+        Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
+        """
         if not self.settings["POSTGRES_NAMESPACE"]:
             prompt = input("Please enter a namespace for postgres.[postgres]")
             if not prompt:
@@ -538,6 +567,9 @@ class Prompt(object):
             self.settings["POSTGRES_URL"] = prompt
 
     def prompt_gluu_gateway(self):
+        """
+        Prompts for Gluu Gateway
+        """
         if not self.settings["INSTALL_GLUU_GATEWAY"]:
             prompt = input("Install Gluu Gateway (alpha) [Y/N]?[Y]")
             if prompt == "N" or prompt == "n":
@@ -554,11 +586,11 @@ class Prompt(object):
                     prompt = "gluu-gateway"
                 self.settings["KONG_NAMESPACE"] = prompt
 
-            if not self.settings["GG_UI_NAMESPACE"]:
+            if not self.settings["GLUU_GATEWAY_UI_NAMESPACE"]:
                 prompt = input("Please enter a namespace for gluu gateway ui.[gg-ui]")
                 if not prompt:
                     prompt = "gg-ui"
-                self.settings["GG_UI_NAMESPACE"] = prompt
+                self.settings["GLUU_GATEWAY_UI_NAMESPACE"] = prompt
 
             if not self.settings["KONG_PG_USER"]:
                 prompt = input("Please enter a user for gluu-gateway postgres database.[kong]")
@@ -567,16 +599,16 @@ class Prompt(object):
                 self.settings["KONG_PG_USER"] = prompt
 
             if not self.settings["KONG_PG_PASSWORD"]:
-                self.settings["KONG_PG_PASSWORD"] = self.prompt_password("gluu-gateway-postgres")
+                self.settings["KONG_PG_PASSWORD"] = prompt_password("gluu-gateway-postgres")
 
-            if not self.settings["GG_UI_PG_USER"]:
+            if not self.settings["GLUU_GATEWAY_UI_PG_USER"]:
                 prompt = input("Please enter a user for gluu-gateway-ui postgres database.[konga]")
                 if not prompt:
                     prompt = "konga"
-                self.settings["GG_UI_PG_USER"] = prompt
+                self.settings["GLUU_GATEWAY_UI_PG_USER"] = prompt
 
-            if not self.settings["GG_UI_PG_PASSWORD"]:
-                self.settings["GG_UI_PG_PASSWORD"] = self.prompt_password("gluu-gateway-ui-postgres")
+            if not self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"]:
+                self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"] = prompt_password("gluu-gateway-ui-postgres")
 
             if not self.settings["KONG_DATABASE"]:
                 prompt = input("Please enter  gluu-gateway postgres database name.[kong]")
@@ -584,13 +616,16 @@ class Prompt(object):
                     prompt = "kong"
                 self.settings["KONG_DATABASE"] = prompt
 
-            if not self.settings["GG_UI_DATABASE"]:
+            if not self.settings["GLUU_GATEWAY_UI_DATABASE"]:
                 prompt = input("Please enter  gluu-gateway-ui postgres database name.[konga]")
                 if not prompt:
                     prompt = "konga"
-                self.settings["GG_UI_DATABASE"] = prompt
+                self.settings["GLUU_GATEWAY_UI_DATABASE"] = prompt
 
     def prompt_storage(self):
+        """
+        Prompt for LDAP storage size
+        """
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if not self.settings["LDAP_STORAGE_SIZE"]:
@@ -601,6 +636,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_backup(self):
+        """
+        Prompt for LDAP and or Couchbase backup strategies
+        """
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
 
@@ -628,6 +666,9 @@ class Prompt(object):
                 self.settings["LDAP_BACKUP_SCHEDULE"] = prompt
 
     def prompt_replicas(self):
+        """
+        Prompt number of replicas for Gluu apps
+        """
         if not self.settings["OXAUTH_REPLICAS"]:
             prompt = input("Number of oxAuth replicas [1]:")
             if not prompt:
@@ -692,46 +733,7 @@ class Prompt(object):
                 self.settings["RADIUS_REPLICAS"] = prompt
         update_settings_json_file(self.settings)
 
-    def prompt_password(self, password):
-        chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
-        keystore_chars = string.ascii_letters + string.digits
-        chars = chars.replace('"', '')
-        chars = chars.replace("'", "")
-        chars = chars.replace("$", "")
-        chars = chars.replace("/", "")
-        chars = chars.replace("!", "")
-        while True:
-            while True:
-                random_password = ''.join(random.choice(chars) for _ in range(6))
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
-                if regex_bool:
-                    break
-            if password == "OXD-server":
-                random_password = ''.join(random.choice(keystore_chars) for _ in range(12))
-
-            if password == "Redis":
-                random_password = ''
-
-            string_random_password = random_password[:1] + "***" + random_password[4:]
-            pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
-            if not pw_prompt:
-                pw_prompt = random_password
-                confirm_pw_prompt = random_password
-            else:
-                confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
-                regex_bool = True
-                if password != "OXD-server" and password != "Redis":
-                    regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
-
-            if confirm_pw_prompt != pw_prompt:
-                logger.error("Passwords do not match")
-            elif not regex_bool:
-                logger.error("Password does not meet requirements. The password must container one digit, one uppercase"
-                             " letter, one lower case letter and one symbol")
-            else:
-                logger.info("Success! {} password was set.".format(password))
-                return pw_prompt
-
+    @property
     def prompt_couchbase(self):
         self.prompt_arch()
         self.prompt_gluu_namespace()
@@ -909,7 +911,7 @@ class Prompt(object):
             self.settings["COUCHBASE_USER"] = prompt
 
         if not self.settings["COUCHBASE_PASSWORD"]:
-            self.settings["COUCHBASE_PASSWORD"] = self.prompt_password("Couchbase")
+            self.settings["COUCHBASE_PASSWORD"] = prompt_password("Couchbase")
 
         custom_cb_ca_crt = Path("./ca.crt")
         custom_cb_crt = Path("./chain.pem")
@@ -930,6 +932,10 @@ class Prompt(object):
         return self.settings
 
     def prompt_arch(self):
+        """
+        Prompts for the kubernetes infrastructure used.
+        # TODO: This should be auto-detected
+        """
         if not self.settings["DEPLOYMENT_ARCH"]:
             print("|------------------------------------------------------------------|")
             print("|                     Local Deployments                            |")
@@ -957,6 +963,9 @@ class Prompt(object):
             self.settings["DEPLOYMENT_ARCH"] = prompt
 
     def prompt_license(self):
+        """
+        Prompts user to accept Apache 2.0 license
+        """
         if not self.settings["ACCEPT_GLUU_LICENSE"]:
             with open("./LICENSE") as f:
                 print(f.read())
@@ -970,6 +979,9 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_gluu_namespace(self):
+        """
+        Prompt to enable optional services
+        """
         if not self.settings["GLUU_NAMESPACE"]:
             prompt = input("Namespace to deploy Gluu in [gluu]:")
             if not prompt:
@@ -1046,7 +1058,7 @@ class Prompt(object):
                     prompt = "oxd-server"
                 self.settings["OXD_ADMIN_KEYSTORE_CN"] = prompt
             if not self.settings["OXD_SERVER_PW"]:
-                self.settings["OXD_SERVER_PW"] = self.prompt_password("OXD-server")
+                self.settings["OXD_SERVER_PW"] = prompt_password("OXD-server")
 
         if not self.settings["ENABLE_OXTRUST_API"]:
             prompt = input("Enable oxTrust Api [N]?[Y/N]")
@@ -1070,6 +1082,10 @@ class Prompt(object):
 
     @property
     def gather_ip(self):
+        """
+        Attempts to detect and return ip automatically. Also set node names, zones, and addresses in a cloud deployment.
+        :return:
+        """
         logger.info("Determining OS type and attempting to gather external IP address")
         ip = ""
         # detect IP address automatically (if possible)
@@ -1106,7 +1122,7 @@ class Prompt(object):
         except Exception as e:
             logger.error(e)
             # prompt for user-inputted IP address
-            logger.warning("[W] Cannot determine IP address")
+            logger.warning("Cannot determine IP address")
             ip = input("Please input the host's external IP address: ")
 
         opt = input("Is this the correct external IP address: {} [Y/n]? ".format(ip))
@@ -1123,6 +1139,9 @@ class Prompt(object):
                 logger.warning("Cannot determine IP address {}".format(exc))
 
     def prompt_redis(self):
+        """
+        Prompts for Redis
+        """
         if not self.settings["REDIS_TYPE"]:
             logger.info("STANDALONE, CLUSTER")
             redis_type_prompt = input("Please enter redis type.[CLUSTER]")
@@ -1165,7 +1184,7 @@ class Prompt(object):
         else:
             # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
             if not self.settings["REDIS_PW"]:
-                self.settings["REDIS_PW"] = self.prompt_password("Redis")
+                self.settings["REDIS_PW"] = prompt_password("Redis")
 
         if not self.settings["REDIS_URL"]:
             if self.settings["INSTALL_REDIS"] == "Y":
@@ -1183,6 +1202,10 @@ class Prompt(object):
 
     @property
     def check_settings_and_prompt(self):
+        """
+        Main property: called to setup all prompts and returns prompts in settings file.
+        :return:
+        """
         self.prompt_arch()
         self.prompt_gluu_namespace()
         self.prompt_optional_services()
@@ -1333,7 +1356,7 @@ class Prompt(object):
                 self.settings["APP_VOLUME_TYPE"] = prompt
 
             if self.settings["APP_VOLUME_TYPE"] == 8 or self.settings["APP_VOLUME_TYPE"] == 13:
-                self.prompt_volumes_identitfier()
+                self.prompt_volumes_identifier()
 
             if self.settings["APP_VOLUME_TYPE"] == 18:
                 self.prompt_disk_uris()
@@ -1390,7 +1413,7 @@ class Prompt(object):
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
-            self.prompt_couchbase()
+            self.prompt_couchbase
         if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
             self.prompt_backup()
         self.prompt_config()
