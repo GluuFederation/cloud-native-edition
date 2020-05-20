@@ -28,6 +28,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
     """
     kubernetes = Kubernetes()
     logger.info("Registering a client : {}".format(client_name))
+    oxd_id, client_id, client_secret = ""
 
     data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
            '", "post_logout_redirect_uris": ["https://' + op_host + \
@@ -38,16 +39,20 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
                          "{}/register-site".format(oxd_url), "--header",
                          "Content-Type: application/json", "--data-raw",
                          data]
+    try:
+        client_registration_response = \
+            kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
+                                                       app_label="app=oxauth",
+                                                       namespace=namespace)
 
-    client_registration_response = \
-        kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                   app_label="app=oxauth",
-                                                   namespace=namespace)
-
-    client_registration_response_dict = literal_eval(client_registration_response)
-    oxd_id = client_registration_response_dict["oxd_id"]
-    client_id = client_registration_response_dict["client_id"]
-    client_secret = client_registration_response_dict["client_secret"]
+        client_registration_response_dict = literal_eval(client_registration_response)
+        oxd_id = client_registration_response_dict["oxd_id"]
+        client_id = client_registration_response_dict["client_id"]
+        client_secret = client_registration_response_dict["client_secret"]
+    except:
+        manual_curl_command = " ".join(exec_curl_command)
+        logger.error("Registeration of client : {} failed. Please do so manually by calling\n{}".format(
+            client_name, manual_curl_command))
     return oxd_id, client_id, client_secret
 
 

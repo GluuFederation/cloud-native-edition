@@ -27,7 +27,7 @@ spec:
         requests:
           cpu: 250m
           memory: 64Mi
-  replicas: 3
+  replicas: "3"
   standbyMode: Hot
   storage:
     accessModes:
