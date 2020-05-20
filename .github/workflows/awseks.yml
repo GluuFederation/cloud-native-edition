@@ -112,7 +112,7 @@ jobs:
           "POSTGRES_REPLICAS": "3",
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "KONG_HELM_RELEASE_NAME": "kong",
-          "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
+          "GG_UI_HELM_RELEASE_NAME": "ggui",
           "NODES_IPS": [],
           "NODES_ZONES": [],
           "NODES_NAMES": [],
@@ -218,7 +218,7 @@ jobs:
       id: test_kubernetes_ldap_kustomize
       run: |
           cd /home/runner/work/test/
-          sudo ./pygluu-kubernetes.pyz install
+          sudo ./pygluu-kubernetes.pyz install-no-wait
           sleep 30
           kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=opendj-0 || sudo kubectl logs -l app=opendj -n gluu || echo "Not Found"
           kubectl -n gluu wait --for=condition=available --timeout=600s deploy/oxauth || kubectl logs -l app=oxauth -n gluu
@@ -260,7 +260,7 @@ jobs:
         sudo ./pygluu-kubernetes.pyz install-couchbase
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
-        sudo ./pygluu-kubernetes.pyz install
+        sudo ./pygluu-kubernetes.pyz install-no-wait
         kubectl -n gluu wait --for=condition=available --timeout=900s deploy/oxauth || kubectl logs -l app=oxauth -n gluu
         kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu
         kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -n gluu

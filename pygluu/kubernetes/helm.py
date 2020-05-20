@@ -6,12 +6,11 @@
 
 from pathlib import Path
 from .yamlparser import Parser
-from .common import get_logger, exec_cmd, register_op_client
+from .common import get_logger, exec_cmd
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 import time
 import socket
-import base64
 
 logger = get_logger("gluu-helm          ")
 
@@ -272,64 +271,6 @@ class Helm(object):
 
             exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
                 self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
-
-    def install_gluu_gateway_ui(self):
-        self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
-        try:
-            # Try to get gluu cert + key
-            ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
-                                                              self.settings["GLUU_NAMESPACE"]).data["ssl_cert"]
-            ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                             self.settings["GLUU_NAMESPACE"]).data["ssl_key"]
-
-            self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
-                                                              namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
-                                                              literal="tls.crt",
-                                                              value_of_literal=ssl_cert,
-                                                              secret_type="kubernetes.io/tls",
-                                                              second_literal="tls.key",
-                                                              value_of_second_literal=ssl_key)
-
-        except Exception:
-            logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
-                         "Please mount crt and key inside gg-ui deployment")
-        encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"].encode("utf-8"))
-        encoded_gg_ui_pg_pass_string = str(encoded_gg_ui_pg_pass_bytes, "utf-8")
-        oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings["OXD_APPLICATION_KEYSTORE_CN"], self.settings["GLUU_NAMESPACE"])
-
-        self.kubernetes.patch_or_create_namespaced_secret(name="gg-ui-postgres-pass",
-                                                          namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
-                                                          literal="DB_PASSWORD",
-                                                          value_of_literal=encoded_gg_ui_pg_pass_string)
-        values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
-        values_file_parser = Parser(values_file, True)
-        values_file_parser["dbUser"] = self.settings["GLUU_GATEWAY_UI_PG_USER"]
-        values_file_parser["kongAdminUrl"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
-            self.settings["KONG_NAMESPACE"])
-        values_file_parser["dbHost"] = self.settings["POSTGRES_URL"]
-        values_file_parser["dbDatabase"] = self.settings["GLUU_GATEWAY_UI_DATABASE"]
-        values_file_parser["oxdServerUrl"] = oxd_server_url
-        # Register new client if one was not provided
-        if not values_file_parser["oxdId"] or \
-            not values_file_parser["clientId"] or \
-            not values_file_parser["clientSecret"]:
-            oxd_id, client_id, client_secret = register_op_client("konga-client",
-                                                                  self.settings["GLUU_FQDN"],
-                                                                  oxd_server_url)
-            values_file_parser["oxdId"] = oxd_id
-            values_file_parser["clientId"] = client_id
-            values_file_parser["clientSecret"] = client_secret
-        values_file_parser["opServerUrl"] = self.settings["GLUU_FQDN"]
-        values_file_parser["ggHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
-        values_file_parser["ggUiRedirectUrlHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
-
-        exec_cmd("helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui --namespace={}".format(
-            self.settings['GLUU_GATEWAY_UI_HELM_RELEASE_NAME'], self.settings["GLUU_GATEWAY_UI_NAMESPACE"]))
-
-    def uninstall_gluu_gateway_ui(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_GATEWAY_UI_HELM_RELEASE_NAME'],
-                                                        self.settings["GLUU_GATEWAY_UI_NAMESPACE"]))
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],

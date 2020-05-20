@@ -10,10 +10,11 @@ import base64
 import contextlib
 from pathlib import Path
 from .yamlparser import Parser
-from .common import get_logger, subprocess_cmd, copy, exec_cmd, ssh_and_remove, register_op_client
+from .common import get_logger, subprocess_cmd, copy, exec_cmd, ssh_and_remove
 from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
+from ast import literal_eval
 
 
 logger = get_logger("gluu-kustomize     ")
@@ -623,7 +624,7 @@ class Kustomize(object):
         parser["images"][0]["newTag"] = self.settings[image_tag_key]
         parser.dump_it()
 
-    def setup_tls(self, namespace):
+    def setup_tls(self):
         starting_time = time.time()
         while True:
             try:
@@ -639,11 +640,10 @@ class Kustomize(object):
                 running_time = end_time - starting_time
                 if running_time > 600:
                     logger.error("Could not read Gluu secret. Please check config job pod logs.")
-                    if namespace != self.settings["GLUU_GATEWAY_UI_NAMESPACE"]:
-                        raise SystemExit(1)
+                    raise SystemExit(1)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
-                                                          namespace=namespace,
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
                                                           literal="tls.crt",
                                                           value_of_literal=ssl_cert,
                                                           secret_type="kubernetes.io/tls",
@@ -668,6 +668,34 @@ class Kustomize(object):
                     time.sleep(10)
             self.settings["LB_ADD"] = lb_hostname
 
+    def register_op_client(self, client_name, op_host, oxd_url):
+        logger.info("Registering a client for gg-ui named konga-client")
+
+        add_curl = ["apk", "add", "curl"]
+        data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
+               '", "post_logout_redirect_uris": ["https://' + op_host + \
+               '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
+               '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
+
+        exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
+                             "{}/register-site".format(oxd_url), "--header",
+                             "Content-Type: application/json", "--data-raw",
+                             data]
+
+        self.kubernetes.connect_get_namespaced_pod_exec(exec_command=add_curl,
+                                                        app_label="app=oxtrust",
+                                                        namespace=self.settings["GLUU_NAMESPACE"])
+        client_registration_response = \
+            self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
+                                                            app_label="app=oxtrust",
+                                                            namespace=self.settings["GLUU_NAMESPACE"])
+
+        client_registration_response_dict = literal_eval(client_registration_response)
+        oxd_id = client_registration_response_dict["oxd_id"]
+        client_id = client_registration_response_dict["client_id"]
+        client_secret = client_registration_response_dict["client_secret"]
+        return oxd_id, client_id, client_secret
+
     def parse_gluu_gateway_ui_configmap(self):
         oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
             self.settings["OXD_APPLICATION_KEYSTORE_CN"], self.settings["GLUU_NAMESPACE"])
@@ -682,9 +710,9 @@ class Kustomize(object):
         if not gg_ui_cm_parser["data"]["CLIENT_ID"] or \
                 not gg_ui_cm_parser["data"]["OXD_ID"] or \
                 not gg_ui_cm_parser["data"]["CLIENT_SECRET"]:
-            oxd_id, client_id, client_secret = register_op_client("konga-client",
-                                                                  self.settings["GLUU_FQDN"],
-                                                                  oxd_server_url)
+            oxd_id, client_id, client_secret = self.register_op_client("konga-client",
+                                                                       self.settings["GLUU_FQDN"],
+                                                                       oxd_server_url)
             gg_ui_cm_parser["data"]["OXD_ID"] = oxd_id
             gg_ui_cm_parser["data"]["CLIENT_ID"] = client_id
             gg_ui_cm_parser["data"]["CLIENT_SECRET"] = client_secret
@@ -901,7 +929,8 @@ class Kustomize(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=postgres", self.timeout)
 
-    def deploy_kong_init(self):
+    def deploy_kong(self):
+        self.uninstall_kong()
         self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
         encoded_kong_pass_bytes = base64.b64encode(self.settings["KONG_PG_PASSWORD"].encode("utf-8"))
         encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
@@ -921,10 +950,6 @@ class Kustomize(object):
         kong_init_job_parser["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
         kong_init_job_parser.dump_it()
         self.kubernetes.create_objects_from_dict(kong_init_job)
-
-    def deploy_kong(self):
-        self.uninstall_kong()
-        self.deploy_kong_init()
         kong_all_in_one_db = Path("./gluu-gateway-ui/kong-all-in-one-db.yaml")
 
         kong_all_in_one_db_parser_sa = Parser(kong_all_in_one_db, "ServiceAccount")
@@ -991,7 +1016,24 @@ class Kustomize(object):
 
     def deploy_gg_ui(self):
         self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
-        self.setup_tls(namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        try:
+            # Try to get gluu cert + key
+            ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
+                                                              self.settings["GLUU_NAMESPACE"]).data["ssl_cert"]
+            ssl_key = self.kubernetes.read_namespaced_secret("gluu",
+                                                             self.settings["GLUU_NAMESPACE"]).data["ssl_key"]
+
+            self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
+                                                              namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
+                                                              literal="tls.crt",
+                                                              value_of_literal=ssl_cert,
+                                                              secret_type="kubernetes.io/tls",
+                                                              second_literal="tls.key",
+                                                              value_of_second_literal=ssl_key)
+
+        except Exception:
+            logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
+                         "Please mount crt and key inside gg-ui deployment")
 
         encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"].encode("utf-8"))
         encoded_gg_ui_pg_pass_string = str(encoded_gg_ui_pg_pass_bytes, "utf-8")
@@ -1005,12 +1047,13 @@ class Kustomize(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui", self.timeout)
 
-    def install_gluu_gateway_dbmode(self):
+    def install_gluu_gateway_dbmode(self, helm=False):
         self.deploy_postgres()
         self.deploy_kong()
-        self.kustomize_gluu_gateway_ui()
-        self.adjust_fqdn_yaml_entries()
-        self.deploy_gg_ui()
+        if not helm:
+            self.kustomize_gluu_gateway_ui()
+            self.adjust_fqdn_yaml_entries()
+            self.deploy_gg_ui()
 
     def deploy_redis(self):
         self.uninstall_redis()
@@ -1247,6 +1290,8 @@ class Kustomize(object):
             self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
+        if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
+            self.deploy_jackrabbit()
         if install_couchbase:
             if self.settings["PERSISTENCE_BACKEND"] != "ldap":
                 if self.settings["INSTALL_COUCHBASE"] == "Y":
@@ -1260,8 +1305,7 @@ class Kustomize(object):
                     couchbase_app = Couchbase(self.settings)
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
                                                                           encoded_cb_pass_string)
-        if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
-            self.deploy_jackrabbit()
+
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             if restore:
                 self.mount_config()
@@ -1270,7 +1314,7 @@ class Kustomize(object):
                 self.deploy_config()
 
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.setup_tls(namespace=self.settings["GLUU_NAMESPACE"])
+            self.setup_tls()
 
         if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
             self.deploy_kubedb()
