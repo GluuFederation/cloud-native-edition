@@ -29,7 +29,6 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
     kubernetes = Kubernetes()
     logger.info("Registering a client : {}".format(client_name))
 
-    add_curl = ["apk", "add", "curl"]
     data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
            '", "post_logout_redirect_uris": ["https://' + op_host + \
            '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
@@ -40,12 +39,9 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
                          "Content-Type: application/json", "--data-raw",
                          data]
 
-    kubernetes.connect_get_namespaced_pod_exec(exec_command=add_curl,
-                                               app_label="app=oxtrust",
-                                               namespace=namespace)
     client_registration_response = \
         kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                   app_label="app=oxtrust",
+                                                   app_label="app=oxauth",
                                                    namespace=namespace)
 
     client_registration_response_dict = literal_eval(client_registration_response)
