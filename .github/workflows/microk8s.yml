@@ -59,7 +59,7 @@ jobs:
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "GLUU_HELM_RELEASE_NAME": "gluu",
           "NGINX_INGRESS_RELEASE_NAME": "ningress",
-          "INSTALL_GLUU_GATEWAY": "N",
+          "INSTALL_GLUU_GATEWAY": "Y",
           "POSTGRES_NAMESPACE": "postgres",
           "KONG_NAMESPACE": "gluu-gateway",
           "GLUU_GATEWAY_UI_NAMESPACE": "gg-ui",

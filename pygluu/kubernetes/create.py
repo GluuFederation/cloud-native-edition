@@ -80,7 +80,7 @@ def main():
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
 
-    timeout = 300
+    timeout = 120
     if args.subparser_name == "install-no-wait":
         timeout = 0
     try:

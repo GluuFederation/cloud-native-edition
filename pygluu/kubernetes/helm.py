@@ -353,7 +353,8 @@ class Helm(object):
         if not values_file_parser["oxdId"] or \
             not values_file_parser["clientId"] or \
             not values_file_parser["clientSecret"]:
-            oxd_id, client_id, client_secret = register_op_client("konga-client",
+            oxd_id, client_id, client_secret = register_op_client(self.settings["GLUU_NAMESPACE"],
+                                                                  "konga-client",
                                                                   self.settings["GLUU_FQDN"],
                                                                   oxd_server_url)
             values_file_parser["oxdId"] = oxd_id

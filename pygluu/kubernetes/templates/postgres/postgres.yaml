@@ -6,7 +6,7 @@ metadata:
   labels:
     app: postgres
 spec:
-  version: "11.2"
+  version: "11.1"
   replicas: 3
   standbyMode: Hot
   storageType: "Durable"
@@ -16,7 +16,7 @@ spec:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 1Gi
+        storage: 4Gi
   monitor:
     agent: prometheus.io/coreos-operator
     prometheus:

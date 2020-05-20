@@ -721,7 +721,8 @@ class Kustomize(object):
         if not gg_ui_cm_parser["data"]["CLIENT_ID"] or \
                 not gg_ui_cm_parser["data"]["OXD_ID"] or \
                 not gg_ui_cm_parser["data"]["CLIENT_SECRET"]:
-            oxd_id, client_id, client_secret = register_op_client("konga-client",
+            oxd_id, client_id, client_secret = register_op_client(self.settings["GLUU_NAMESPACE"],
+                                                                  "konga-client",
                                                                   self.settings["GLUU_FQDN"],
                                                                   oxd_server_url)
             gg_ui_cm_parser["data"]["OXD_ID"] = oxd_id
