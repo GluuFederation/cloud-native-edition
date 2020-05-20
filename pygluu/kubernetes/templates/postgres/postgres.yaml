@@ -1,42 +1,42 @@
 apiVersion: kubedb.com/v1alpha1
 kind: Postgres
 metadata:
-  name: postgres
-  namespace: postgres
   labels:
     app: postgres
+  name: postgres
+  namespace: postgres
 spec:
   version: "11.1"
+  init:
+    scriptSource:
+      secret:
+        secretName: pg-init-sql
+  monitor:
+    agent: prometheus.io/coreos-operator
+    prometheus:
+      interval: 10s
+      labels:
+        app: postgres
+      namespace: postgres
+  podTemplate:
+    spec:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 128Mi
+        requests:
+          cpu: 250m
+          memory: 64Mi
   replicas: 3
   standbyMode: Hot
-  storageType: "Durable"
   storage:
-    storageClassName: postgres-sc
     accessModes:
       - ReadWriteOnce
     resources:
       requests:
         storage: 4Gi
-  monitor:
-    agent: prometheus.io/coreos-operator
-    prometheus:
-      namespace: postgres
-      labels:
-        app: postgres
-      interval: 10s
-  init:
-    scriptSource:
-      secret:
-        secretName: pg-init-sql
-  podTemplate:
-    spec:
-      resources:
-        requests:
-          memory: "64Mi"
-          cpu: "250m"
-        limits:
-          memory: "128Mi"
-          cpu: "500m"
+    storageClassName: postgres-sc
+  storageType: Durable
+  terminationPolicy: WipeOut
   updateStrategy:
     type: RollingUpdate
-  terminationPolicy: WipeOut

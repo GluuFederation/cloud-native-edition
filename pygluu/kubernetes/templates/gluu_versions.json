@@ -79,7 +79,7 @@
     "LDAP_IMAGE_NAME": "gluufederation/wrends",
     "LDAP_IMAGE_TAG": "4.0.1_02",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
-    "OXAUTH_IMAGE_TAG": "4.0.1_08",
+    "OXAUTH_IMAGE_TAG": "4.0.1_09",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
     "OXD_IMAGE_TAG": "4.0.0_02",
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
