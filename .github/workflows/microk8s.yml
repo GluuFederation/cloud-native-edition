@@ -72,7 +72,7 @@ jobs:
           "POSTGRES_REPLICAS": "3",
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "KONG_HELM_RELEASE_NAME": "kong",
-          "GG_UI_HELM_RELEASE_NAME": "ggui",
+          "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
           "NODES_IPS": [
             "$ip"
           ],
