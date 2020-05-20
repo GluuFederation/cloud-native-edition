@@ -9,8 +9,9 @@ import socket
 import base64
 import contextlib
 from pathlib import Path
+from ast import literal_eval
 from .yamlparser import Parser
-from .common import get_logger, subprocess_cmd, copy, exec_cmd, ssh_and_remove, register_op_client
+from .common import get_logger, subprocess_cmd, copy, exec_cmd, ssh_and_remove
 from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
@@ -44,6 +45,44 @@ dynamic_ldap_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
 dynamic_jcr_azure_folder = Path("./jackrabbit/overlays/azure/dynamic-dn/")
 static_ldap_azure_folder = Path("./ldap/overlays/azure/static-dn/")
 static_jcr_azure_folder = Path("./jackrabbit/overlays/azure/static-dn/")
+
+
+def register_op_client(namespace, client_name, op_host, oxd_url):
+    """
+    Registers an op client using oxd.
+    :param namespace:
+    :param client_name:
+    :param op_host:
+    :param oxd_url:
+    :return:
+    """
+    kubernetes = Kubernetes()
+    logger.info("Registering a client : {}".format(client_name))
+
+    add_curl = ["apk", "add", "curl"]
+    data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
+           '", "post_logout_redirect_uris": ["https://' + op_host + \
+           '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
+           '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
+
+    exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
+                         "{}/register-site".format(oxd_url), "--header",
+                         "Content-Type: application/json", "--data-raw",
+                         data]
+
+    kubernetes.connect_get_namespaced_pod_exec(exec_command=add_curl,
+                                               app_label="app=oxtrust",
+                                               namespace=namespace)
+    client_registration_response = \
+        kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
+                                                   app_label="app=oxtrust",
+                                                   namespace=namespace)
+
+    client_registration_response_dict = literal_eval(client_registration_response)
+    oxd_id = client_registration_response_dict["oxd_id"]
+    client_id = client_registration_response_dict["client_id"]
+    client_secret = client_registration_response_dict["client_secret"]
+    return oxd_id, client_id, client_secret
 
 
 class Kustomize(object):

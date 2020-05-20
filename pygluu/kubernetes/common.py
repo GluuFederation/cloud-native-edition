@@ -15,8 +15,6 @@ import random
 import re
 from getpass import getpass
 from pathlib import Path
-from .kubeapi import Kubernetes
-from ast import literal_eval
 
 
 def update_settings_json_file(settings):
@@ -193,44 +191,6 @@ def prompt_password(password):
         else:
             logger.info("Success! {} password was set.".format(password))
             return pw_prompt
-
-
-def register_op_client(namespace, client_name, op_host, oxd_url):
-    """
-    Registers an op client using oxd.
-    :param namespace:
-    :param client_name:
-    :param op_host:
-    :param oxd_url:
-    :return:
-    """
-    kubernetes = Kubernetes()
-    logger.info("Registering a client : {}".format(client_name))
-
-    add_curl = ["apk", "add", "curl"]
-    data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
-           '", "post_logout_redirect_uris": ["https://' + op_host + \
-           '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
-           '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
-
-    exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                         "{}/register-site".format(oxd_url), "--header",
-                         "Content-Type: application/json", "--data-raw",
-                         data]
-
-    kubernetes.connect_get_namespaced_pod_exec(exec_command=add_curl,
-                                               app_label="app=oxtrust",
-                                               namespace=namespace)
-    client_registration_response = \
-        kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                   app_label="app=oxtrust",
-                                                   namespace=namespace)
-
-    client_registration_response_dict = literal_eval(client_registration_response)
-    oxd_id = client_registration_response_dict["oxd_id"]
-    client_id = client_registration_response_dict["client_id"]
-    client_secret = client_registration_response_dict["client_secret"]
-    return oxd_id, client_id, client_secret
 
 
 logger = get_logger("gluu-common        ")
