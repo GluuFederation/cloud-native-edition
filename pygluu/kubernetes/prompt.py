@@ -47,7 +47,7 @@ class Prompt(object):
                                 POSTGRES_REPLICAS="",
                                 POSTGRES_URL="",
                                 KONG_HELM_RELEASE_NAME="",
-                                GG_UI_HELM_RELEASE_NAME="",
+                                GLUU_GATEWAY_UI_HELM_RELEASE_NAME="",
                                 NODES_IPS=[],
                                 NODES_ZONES=[],
                                 NODES_NAMES=[],
@@ -284,11 +284,11 @@ class Prompt(object):
                     prompt = "gluu-gateway"
                 self.settings["KONG_HELM_RELEASE_NAME"] = prompt
 
-            if not self.settings["GG_UI_HELM_RELEASE_NAME"]:
+            if not self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"]:
                 prompt = input("Please enter Gluu Gateway UI helm name[gluu-gateway-ui]")
                 if not prompt:
                     prompt = "gluu-gateway-ui"
-                self.settings["GG_UI_HELM_RELEASE_NAME"] = prompt
+                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = prompt
 
         update_settings_json_file(self.settings)
         return self.settings

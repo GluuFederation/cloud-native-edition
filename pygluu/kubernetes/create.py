@@ -143,7 +143,8 @@ def main():
                 kustomize.uninstall_redis()
                 kustomize.deploy_redis()
             if settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                kustomize.install_gluu_gateway_dbmode(helm=True)
+                kustomize.deploy_postgres()
+
             helm = Helm(settings)
             helm.install_gluu()
 
@@ -164,6 +165,12 @@ def main():
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.install_gluu(install_ingress=False)
+
+        elif args.subparser_name == "helm-install-gluu-gateway-ui":
+            settings = prompts.prompt_helm
+            helm = Helm(settings)
+            helm.uninstall_gluu_gateway_ui()
+            helm.install_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gluu":
             settings = prompts.prompt_helm
