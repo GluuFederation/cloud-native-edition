@@ -58,7 +58,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
     """
     kubernetes = Kubernetes()
     logger.info("Registering a client : {}".format(client_name))
-    oxd_id, client_id, client_secret = ""
+    oxd_id, client_id, client_secret = "", "", ""
 
     data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
            '", "post_logout_redirect_uris": ["https://' + op_host + \
