@@ -43,6 +43,7 @@ def create_parser():
                                                   "pods to be running")
     subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
     subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database")
+    subparsers.add_parser("uninstall-gg-dbmode", help="Unnstall Gluu Gateway with Postgres database")
     subparsers.add_parser("restore", help="Install Gluu Enterprise Edition with a "
                                           "running database and previous configuration")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
@@ -129,6 +130,12 @@ def main():
             kustomize = Kustomize(settings, timeout)
             prompts.prompt_gluu_gateway()
             kustomize.install_gluu_gateway_dbmode()
+
+        elif args.subparser_name == "uninstall-gg-dbmode":
+            kustomize = Kustomize(settings, timeout)
+            kustomize.uninstall_postgres()
+            kustomize.uninstall_kong()
+            kustomize.uninstall_gg_ui()
 
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")

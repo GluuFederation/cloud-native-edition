@@ -1045,6 +1045,12 @@ class Kustomize(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui", self.timeout)
 
+    def uninstall_gg_ui(self):
+        self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], "app=gg-ui")
+        self.kubernetes.delete_service( "gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        self.kubernetes.delete_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+
     def install_gluu_gateway_dbmode(self):
         self.deploy_postgres()
         self.deploy_kong()
@@ -1376,11 +1382,11 @@ class Kustomize(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit", "gg-kong-ui"]
-        gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc", "postgres-sc", "redis-sc"]
+                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit"]
+        gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
-                                      "app=radius", "app=key-rotation", "app=jackrabbit", "app=gg-ui"]
+                                      "app=radius", "app=key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
@@ -1399,7 +1405,7 @@ class Kustomize(object):
         nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
-                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-gg-ui",
+                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
                                           "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
@@ -1419,7 +1425,8 @@ class Kustomize(object):
             if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 self.uninstall_postgres()
                 self.uninstall_kong()
-                self.kubernetes.delete_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+                self.uninstall_gg_ui()
+
             if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 self.uninstall_kubedb()
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
@@ -1542,6 +1549,7 @@ class Kustomize(object):
             exec_cmd("kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
         except:
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
+        self.kubernetes.delete_storage_class("redis-sc")
         self.kubernetes.delete_namespace(name=self.settings["REDIS_NAMESPACE"])
 
     def uninstall_kong(self):
@@ -1551,6 +1559,7 @@ class Kustomize(object):
         self.kubernetes.delete_custom_resource("kongingresses.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongplugins.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("tcpingresses.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("kongclusterplugins.configuration.konghq.com")
         self.kubernetes.delete_cluster_role("kong-ingress-clusterrole")
         self.kubernetes.delete_service_account("kong-serviceaccount", self.settings["KONG_NAMESPACE"])
         self.kubernetes.delete_cluster_role_binding("kong-ingress-clusterrole-nisa-binding")
@@ -1567,4 +1576,5 @@ class Kustomize(object):
             exec_cmd("kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
         except:
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
+        self.kubernetes.delete_storage_class("postgres-sc")
         self.kubernetes.delete_namespace(name=self.settings["POSTGRES_NAMESPACE"])
