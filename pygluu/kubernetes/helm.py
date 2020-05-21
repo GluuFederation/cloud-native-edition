@@ -361,7 +361,7 @@ class Helm(object):
             values_file_parser["oxdId"] = oxd_id
             values_file_parser["clientId"] = client_id
             values_file_parser["clientSecret"] = client_secret
-        values_file_parser["opServerUrl"] = self.settings["GLUU_FQDN"]
+        values_file_parser["opServerUrl"] = "https://" + self.settings["GLUU_FQDN"]
         values_file_parser["ggHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
         values_file_parser["ggUiRedirectUrlHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
 

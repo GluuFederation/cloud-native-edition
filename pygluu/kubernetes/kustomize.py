@@ -81,7 +81,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_secret = client_registration_response_dict["client_secret"]
     except:
         manual_curl_command = " ".join(exec_curl_command)
-        logger.error("Registeration of client : {} failed. Please do so manually by calling\n{}".format(
+        logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
     return oxd_id, client_id, client_secret
 
@@ -729,7 +729,7 @@ class Kustomize(object):
             gg_ui_cm_parser["data"]["OXD_ID"] = oxd_id
             gg_ui_cm_parser["data"]["CLIENT_ID"] = client_id
             gg_ui_cm_parser["data"]["CLIENT_SECRET"] = client_secret
-        gg_ui_cm_parser["data"]["OP_SERVER_URL"] = self.settings["GLUU_FQDN"]
+        gg_ui_cm_parser["data"]["OP_SERVER_URL"] = "https://" + self.settings["GLUU_FQDN"]
 
         gg_ui_cm_parser["data"]["GG_HOST"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
         gg_ui_cm_parser["data"]["GG_UI_REDIRECT_URL_HOST"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
@@ -934,13 +934,13 @@ class Kustomize(object):
                 logger.info("Resources not deleted as they are not found inside yaml.")
 
         postgres_parser.dump_it()
-        try:
-            exec_cmd("kubectl apply -f {}".format(postgres_yaml))
-        except:
-            exec_cmd("microk8s.kubectl apply -f {}".format(postgres_yaml))
-
+        self.kubernetes.create_namespaced_custom_object(filepath=postgres_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="postgreses",
+                                                        namespace=self.settings["POSTGRES_NAMESPACE"])
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=postgres", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings["POSTGRES_NAMESPACE"], "app=postgres", self.timeout)
 
     def deploy_kong_init(self):
         self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
@@ -1081,10 +1081,11 @@ class Kustomize(object):
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
         redis_parser.dump_it()
-        try:
-            exec_cmd("kubectl apply -f {}".format(redis_yaml))
-        except:
-            exec_cmd("microk8s.kubectl apply -f {}".format(redis_yaml))
+        self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="redises",
+                                                        namespace=self.settings["REDIS_NAMESPACE"])
 
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=redis-cluster", self.timeout)
@@ -1308,8 +1309,10 @@ class Kustomize(object):
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
                                                                           encoded_cb_pass_string)
         if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
+            self.kubernetes = Kubernetes()
             self.deploy_jackrabbit()
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
+            self.kubernetes = Kubernetes()
             if restore:
                 self.mount_config()
                 self.save_a_copy_of_config()
@@ -1320,13 +1323,16 @@ class Kustomize(object):
             self.setup_tls(namespace=self.settings["GLUU_NAMESPACE"])
 
         if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_kubedb()
 
         if self.settings["INSTALL_REDIS"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
+            self.kubernetes = Kubernetes()
             if restore:
                 self.run_backup_command()
                 self.mount_config()
@@ -1337,6 +1343,7 @@ class Kustomize(object):
                     self.setup_backup_ldap()
 
         if not restore:
+            self.kubernetes = Kubernetes()
             if self.settings["AWS_LB_TYPE"] == "alb":
                 self.prepare_alb()
                 self.deploy_alb()
@@ -1344,33 +1351,41 @@ class Kustomize(object):
                 self.deploy_nginx()
         self.adjust_fqdn_yaml_entries()
         if not restore:
+            self.kubernetes = Kubernetes()
             self.deploy_persistence()
 
         if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" and self.settings["IS_GLUU_FQDN_REGISTERED"] != "y":
             if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                self.kubernetes = Kubernetes()
                 self.deploy_update_lb_ip()
-
+        self.kubernetes = Kubernetes()
         self.deploy_oxauth()
         if self.settings["ENABLE_OXD"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_oxd()
 
         if self.settings["ENABLE_CASA"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_casa()
-
+        self.kubernetes = Kubernetes()
         self.deploy_oxtrust()
 
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_oxshibboleth()
             if restore:
                 self.mount_config()
 
         if self.settings["ENABLE_OXPASSPORT"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_oxpassport()
 
         if self.settings["ENABLE_CACHE_REFRESH"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_cr_rotate()
 
         if self.settings["ENABLE_KEY_ROTATE"] == "Y":
+            self.kubernetes = Kubernetes()
             self.deploy_key_rotation()
             if restore:
                 self.mount_config()
@@ -1379,6 +1394,7 @@ class Kustomize(object):
             self.deploy_radius()
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            self.kubernetes = Kubernetes()
             self.install_gluu_gateway_dbmode()
 
     def uninstall(self, restore=False):
@@ -1546,6 +1562,7 @@ class Kustomize(object):
 
     def uninstall_redis(self):
         logger.info("Removing gluu-redis-cluster...")
+        self.kubernetes.delete_custom_resource("couchbaseclusters.couchbase.com")
         try:
             exec_cmd("kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
         except:

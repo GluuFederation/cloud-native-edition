@@ -572,6 +572,9 @@ class Couchbase(object):
 
         self.kubernetes.create_objects_from_dict(self.storage_class_file, namespace=cb_namespace)
         self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
+                                                        group="couchbase.com",
+                                                        version="v1",
+                                                        plural="couchbaseclusters",
                                                         namespace=cb_namespace)
 
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled", 700)
