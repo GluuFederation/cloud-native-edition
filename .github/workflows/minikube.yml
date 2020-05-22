@@ -49,7 +49,7 @@ jobs:
       uses: manusa/actions-setup-minikube@v1.0.0
       with:
         minikube version: 'v1.7.3'
-        kubernetes version: 'v1.17.0'
+        kubernetes version: 'v1.16.0'
 
 
     - name: Test 1 settings(LDAP)
