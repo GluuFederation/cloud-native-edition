@@ -552,8 +552,7 @@ class Prompt(object):
         if not self.settings["POSTGRES_REPLICAS"]:
             prompt = input("Please enter number of replicas for postgres.[3]")
             if not prompt:
-                prompt = 3
-            prompt = int(prompt)
+                prompt = "3"
             self.settings["POSTGRES_REPLICAS"] = prompt
 
         if not self.settings["POSTGRES_URL"]:
