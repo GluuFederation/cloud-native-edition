@@ -25,11 +25,11 @@ def install_kubernetes_client_11_0_0():
     extract_kubernetes_client_tar(kubernetes_package)
     working_directory_kubernetes_client = os.path.join(os.path.dirname(__file__),
                                                        "kubernetes-client/kubernetesv11.0.0/kubernetes/__init__.py")
-    MODULE_PATH = working_directory_kubernetes_client
-    MODULE_NAME = "kubernetes"
+    module_path = working_directory_kubernetes_client
+    module_name = "kubernetes"
     import importlib
     import sys
-    spec = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)

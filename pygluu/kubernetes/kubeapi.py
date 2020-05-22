@@ -91,7 +91,8 @@ class Kubernetes(object):
         else:
             raise e
 
-    def check_read_error_and_response(self, starting_time, resp):
+    @staticmethod
+    def check_read_error_and_response(starting_time, resp):
         end_time = time.time()
         running_time = end_time - starting_time
         if resp.status == 404 and not resp.status:

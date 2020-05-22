@@ -79,7 +79,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         oxd_id = client_registration_response_dict["oxd_id"]
         client_id = client_registration_response_dict["client_id"]
         client_secret = client_registration_response_dict["client_secret"]
-    except:
+    except (IndexError, Exception):
         manual_curl_command = " ".join(exec_curl_command)
         logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
@@ -672,7 +672,7 @@ class Kustomize(object):
                 ssl_key = self.kubernetes.read_namespaced_secret("gluu",
                                                                  self.settings["GLUU_NAMESPACE"]).data["ssl_key"]
                 break
-            except Exception:
+            except (KeyError, Exception):
                 logger.info("Waiting for Gluu secret...")
                 time.sleep(10)
                 end_time = time.time()
@@ -899,19 +899,20 @@ class Kustomize(object):
         postgres_init_sql = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE USER {};\n" \
                             "ALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
                             "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\nCREATE DATABASE {};\n" \
-                            "GRANT ALL PRIVILEGES ON DATABASE {} TO {};".format(self.settings["KONG_PG_USER"],
-                                                                                self.settings["KONG_PG_USER"],
-                                                                                self.settings["KONG_PG_PASSWORD"],
-                                                                                self.settings["GLUU_GATEWAY_UI_PG_USER"],
-                                                                                self.settings["GLUU_GATEWAY_UI_PG_USER"],
-                                                                                self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"],
-                                                                                self.settings["KONG_DATABASE"],
-                                                                                self.settings["KONG_DATABASE"],
-                                                                                self.settings["KONG_PG_USER"],
-                                                                                self.settings["GLUU_GATEWAY_UI_DATABASE"],
-                                                                                self.settings["GLUU_GATEWAY_UI_DATABASE"],
-                                                                                self.settings["GLUU_GATEWAY_UI_PG_USER"]
-                                                                                )
+                            "GRANT ALL PRIVILEGES ON DATABASE {} TO {};"\
+            .format(self.settings["KONG_PG_USER"],
+                    self.settings["KONG_PG_USER"],
+                    self.settings["KONG_PG_PASSWORD"],
+                    self.settings["GLUU_GATEWAY_UI_PG_USER"],
+                    self.settings["GLUU_GATEWAY_UI_PG_USER"],
+                    self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"],
+                    self.settings["KONG_DATABASE"],
+                    self.settings["KONG_DATABASE"],
+                    self.settings["KONG_PG_USER"],
+                    self.settings["GLUU_GATEWAY_UI_DATABASE"],
+                    self.settings["GLUU_GATEWAY_UI_DATABASE"],
+                    self.settings["GLUU_GATEWAY_UI_PG_USER"]
+                    )
         encoded_postgers_init_bytes = base64.b64encode(postgres_init_sql.encode("utf-8"))
         encoded_postgers_init_string = str(encoded_postgers_init_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="pg-init-sql",
@@ -1044,11 +1045,12 @@ class Kustomize(object):
 
         self.kubernetes.create_objects_from_dict(self.gg_ui_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
-            self.kubernetes.check_pods_statuses(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
+                                                "app=gg-kong-ui", self.timeout)
 
     def uninstall_gg_ui(self):
         self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], "app=gg-ui")
-        self.kubernetes.delete_service( "gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        self.kubernetes.delete_service("gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.kubernetes.delete_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
@@ -1215,7 +1217,7 @@ class Kustomize(object):
             self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
                                                             app_label="app=opendj",
                                                             namespace=self.settings["GLUU_NAMESPACE"])
-        except:
+        except (ConnectionError, Exception):
             pass
 
     def setup_backup_ldap(self):
@@ -1565,7 +1567,7 @@ class Kustomize(object):
         self.kubernetes.delete_custom_resource("couchbaseclusters.couchbase.com")
         try:
             exec_cmd("kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
-        except:
+        except (SystemError, Exception):
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
         self.kubernetes.delete_storage_class("redis-sc")
         self.kubernetes.delete_namespace(name=self.settings["REDIS_NAMESPACE"])
@@ -1592,7 +1594,7 @@ class Kustomize(object):
         logger.info("Removing gluu-postgres...")
         try:
             exec_cmd("kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
-        except:
+        except (SystemError, Exception):
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
         self.kubernetes.delete_storage_class("postgres-sc")
         self.kubernetes.delete_namespace(name=self.settings["POSTGRES_NAMESPACE"])

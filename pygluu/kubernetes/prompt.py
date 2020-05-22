@@ -1259,8 +1259,8 @@ class Prompt(object):
                 if not self.settings["ARN_AWS_IAM"] and self.settings["USE_ARN"] == "Y":
                     prompt = ""
                     while not prompt:
-                        prompt = input("Enter aws-load-balancer-ssl-cert arn quoted "
-                                       "('arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX'): ")
+                        prompt = input("Enter aws-load-balancer-ssl-cert arn quoted ('arn:aws:acm:us-west-2:XXXXXXXX:"
+                                       "certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX'): ")
                     self.settings["ARN_AWS_IAM"] = prompt
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke":

@@ -49,7 +49,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         oxd_id = client_registration_response_dict["oxd_id"]
         client_id = client_registration_response_dict["client_id"]
         client_secret = client_registration_response_dict["client_secret"]
-    except:
+    except (IndexError, Exception):
         manual_curl_command = " ".join(exec_curl_command)
         logger.error("Registeration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
@@ -330,7 +330,7 @@ class Helm(object):
                                                               second_literal="tls.key",
                                                               value_of_second_literal=ssl_key)
 
-        except Exception:
+        except (KeyError, Exception):
             logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
                          "Please mount crt and key inside gg-ui deployment")
         encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"].encode("utf-8"))
@@ -352,8 +352,8 @@ class Helm(object):
         values_file_parser["oxdServerUrl"] = oxd_server_url
         # Register new client if one was not provided
         if not values_file_parser["oxdId"] or \
-            not values_file_parser["clientId"] or \
-            not values_file_parser["clientSecret"]:
+                not values_file_parser["clientId"] or \
+                not values_file_parser["clientSecret"]:
             oxd_id, client_id, client_secret = register_op_client(self.settings["GLUU_NAMESPACE"],
                                                                   "konga-client",
                                                                   self.settings["GLUU_FQDN"],
