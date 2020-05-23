@@ -20,10 +20,10 @@ spec:
         app: {{ include "gluu-gateway-ui.name" . }}
     spec:
       containers:
-      - name: {{ template "gluu.fullname" . }}
+      - name: {{ template "gluu-gateway-ui.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        {{- if and (and .Values.cloud.enabled (eq .Values.isDomainRegistered "false") ) (eq .Values.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "eks") }}
         command:
           - /bin/sh
           - -c
@@ -44,24 +44,26 @@ spec:
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.gluuGatewayPostgresPasswordSecretName }}
+                name: {{ include "gluu-gateway-ui.fullname" . }}-postgres-pass
                 key: DB_PASSWORD
         envFrom:
         - configMapRef:
             name: {{ template "gluu-gateway-ui.fullname" . }}-cm
         volumeMounts:
-        {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "aws") }}
+          - mountPath: /etc/certs
+            name: tls-certificate
+        {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "eks") }}
           - name: {{ include "gluu-gateway-ui.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
         livenessProbe:
-            tcpSocket:
-              port: {{ .Values.ports.containerPort }}
+          tcpSocket:
+            port: 443
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
-            tcpSocket:
-              port: {{ .Values.ports.containerPort }}
+          tcpSocket:
+            port: 443
           periodSeconds: 25
       {{- if eq .Values.cloud.isDomainRegistered "false" }}
       hostAliases:
@@ -80,7 +82,7 @@ spec:
               - key: tls.key
                 path: tls.key
             secretName: tls-certificate
-      {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "aws") }}
+      {{- if and (and .Values.cloud.enabled (eq .Values.cloud.isDomainRegistered "false") ) (eq .Values.cloud.provider "eks") }}
         - name: {{ include "gluu-gateway-ui.fullname" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip

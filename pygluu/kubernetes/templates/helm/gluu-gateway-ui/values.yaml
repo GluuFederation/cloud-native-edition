@@ -7,40 +7,41 @@ image:
   pullPolicy: Always
 cloud:
   enabled: true
-  isDomainRegistered: false
-  provider: aws
+  isDomainRegistered: "false"
+  provider: "aws"
 
 requests:
   memory: 500Mi
   cpu: 500m
-limites:
+limits:
   memory: 500Mi
   cpu: 500m
 ports:
   containerPort: 443
+loadBalancerIp: ""
 dbUser: "konga"
 dbAdapter: "postgres"
+dbPassword: password
 kongAdminUrl: "kong-admin.kong.svc.cluster.local:8444"
 dbHost: "postgres.postgres.svc.cluster.local"
 dbSsl: "false"
 dbPort: "5432"
-postgresVersion: "9.6"
-sslKeyPath: "/etc/certs/key.pem"
-sslCertPath: "/etc/certs/certificate.pem"
+postgresVersion: "11.1"
+sslKeyPath: "/etc/certs/tls.key"
+sslCertPath: "/etc/certs/tls.crt"
 dbDatabase: "konga"
 nodeEnv: "production"
 oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
 opServerUrl: "demoexample.gluu.org"
 # Custom client created info
-oxdId: ""
-clientId: ""
-clientSecret: ""
+oxdId:
+clientId:
+clientSecret:
 oxdServerVersion: "4.1"
 ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"
 ggVersion: "4.1"
-gluuGatewayPostgresPasswordSecretName: "gluu-gateway-ui-postgres-pass"
 nameOverride: ""
 fullnameOverride: ""
 
@@ -53,7 +54,6 @@ nginxIngress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  path: /gg-ui/(|$)(.*)
   hosts:
     - demoexample.gluu.org
   tls:

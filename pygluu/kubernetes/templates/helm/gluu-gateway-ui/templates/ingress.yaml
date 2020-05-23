@@ -31,9 +31,9 @@ spec:
     - host: {{ . | quote }}
       http:
         paths:
-          - path: {{ .Values.nginxIngress.path }}
+          - path: /gg-ui/(|$)(.*)
             backend:
-              serviceName: {{ include "gluu-gateway-ui.name" . }}
-              servicePort: {{ .Values.ports.containerPort }}
+              serviceName: gluu-gateway-ui
+              servicePort: 443
 {{- end }}
 {{- end -}}

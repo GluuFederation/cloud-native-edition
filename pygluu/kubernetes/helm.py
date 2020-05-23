@@ -314,6 +314,7 @@ class Helm(object):
                 self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
 
     def install_gluu_gateway_ui(self):
+        self.uninstall_gluu_gateway_ui()
         self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         try:
             # Try to get gluu cert + key
@@ -333,17 +334,17 @@ class Helm(object):
         except (KeyError, Exception):
             logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
                          "Please mount crt and key inside gg-ui deployment")
-        encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"].encode("utf-8"))
-        encoded_gg_ui_pg_pass_string = str(encoded_gg_ui_pg_pass_bytes, "utf-8")
         oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
             self.settings["OXD_APPLICATION_KEYSTORE_CN"], self.settings["GLUU_NAMESPACE"])
-
-        self.kubernetes.patch_or_create_namespaced_secret(name="gg-ui-postgres-pass",
-                                                          namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
-                                                          literal="DB_PASSWORD",
-                                                          value_of_literal=encoded_gg_ui_pg_pass_string)
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
+        values_file_parser["cloud"]["isDomainRegistered"] = "false"
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
+            values_file_parser["cloud"]["isDomainRegistered"] = "true"
+        values_file_parser["cloud"]["enabled"] = True
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            values_file_parser["cloud"]["enabled"] = False
+        values_file_parser["cloud"]["provider"] = self.settings["DEPLOYMENT_ARCH"]
         values_file_parser["dbUser"] = self.settings["GLUU_GATEWAY_UI_PG_USER"]
         values_file_parser["kongAdminUrl"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
             self.settings["KONG_NAMESPACE"])
@@ -361,12 +362,42 @@ class Helm(object):
             values_file_parser["oxdId"] = oxd_id
             values_file_parser["clientId"] = client_id
             values_file_parser["clientSecret"] = client_secret
+        values_file_parser["loadBalancerIp"] = self.settings["HOST_EXT_IP"]
+        values_file_parser["dbPassword"] = self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"]
         values_file_parser["opServerUrl"] = "https://" + self.settings["GLUU_FQDN"]
         values_file_parser["ggHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
         values_file_parser["ggUiRedirectUrlHost"] = self.settings["GLUU_FQDN"] + "/gg-ui/"
-
+        values_file_parser.dump_it()
         exec_cmd("helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui --namespace={}".format(
             self.settings['GLUU_GATEWAY_UI_HELM_RELEASE_NAME'], self.settings["GLUU_GATEWAY_UI_NAMESPACE"]))
+
+    def install_gluu_gateway_dbmode(self):
+        self.uninstall_gluu_gateway_dbmode()
+        self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
+        exec_cmd("helm repo add kong https://charts.konghq.com")
+        exec_cmd("helm repo update")
+        exec_cmd("helm install {} kong/kong "
+                 "--set ingressController.installCRDs=false "
+                 "--set image.repository={} "
+                 "--set image.tag={} "
+                 "--set env.database={} "
+                 "--set env.pg_user={} "
+                 "--set env.pg_password.valueFrom.secretKeyRef.name=kong-postgres-pass "
+                 "--set env.pg_password.valueFrom.secretKeyRef.key=KONG_PG_PASSWORD "
+                 "--set env.pg_host={} "
+                 "--set admin.enabled=true "
+                 "--set admin.type=ClusterIP "
+                 "--namespace={}".format(self.settings["KONG_HELM_RELEASE_NAME"],
+                                         self.settings["GLUU_GATEWAY_IMAGE_NAME"],
+                                         self.settings["GLUU_GATEWAY_IMAGE_TAG"],
+                                         self.settings["KONG_DATABASE"],
+                                         self.settings["KONG_PG_USER"],
+                                         self.settings["POSTGRES_URL"],
+                                         self.settings["KONG_NAMESPACE"]))
+
+    def uninstall_gluu_gateway_dbmode(self):
+        exec_cmd("helm delete {} --namespace={}".format(self.settings['KONG_HELM_RELEASE_NAME'],
+                                                        self.settings["KONG_NAMESPACE"]))
 
     def uninstall_gluu_gateway_ui(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_GATEWAY_UI_HELM_RELEASE_NAME'],

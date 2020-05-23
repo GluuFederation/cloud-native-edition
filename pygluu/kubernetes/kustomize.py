@@ -1031,7 +1031,7 @@ class Kustomize(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["KONG_NAMESPACE"], "app=ingress-kong", self.timeout)
 
-    def deploy_gg_ui(self):
+    def deploy_gluu_gateway_ui(self):
         self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.setup_tls(namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
@@ -1048,7 +1048,7 @@ class Kustomize(object):
             self.kubernetes.check_pods_statuses(self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
                                                 "app=gg-kong-ui", self.timeout)
 
-    def uninstall_gg_ui(self):
+    def uninstall_gluu_gateway_ui(self):
         self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], "app=gg-ui")
         self.kubernetes.delete_service("gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
@@ -1059,7 +1059,7 @@ class Kustomize(object):
         self.deploy_kong()
         self.kustomize_gluu_gateway_ui()
         self.adjust_fqdn_yaml_entries()
-        self.deploy_gg_ui()
+        self.deploy_gluu_gateway_ui()
 
     def deploy_redis(self):
         self.uninstall_redis()
@@ -1444,7 +1444,7 @@ class Kustomize(object):
             if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 self.uninstall_postgres()
                 self.uninstall_kong()
-                self.uninstall_gg_ui()
+                self.uninstall_gluu_gateway_ui()
 
             if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 self.uninstall_kubedb()

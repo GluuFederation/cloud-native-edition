@@ -55,6 +55,9 @@ def create_parser():
                                                "This also installs the nginx-ingress chart")
     subparsers.add_parser("helm-uninstall", help="Uninstall Gluu Enterprise Edition using helm. "
                                                  "This also uninstalls the nginx-ingress chart")
+    subparsers.add_parser("helm-install-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
+    subparsers.add_parser("helm-uninstall-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
+
     subparsers.add_parser("helm-install-gluu", help="Install Gluu Enterprise Edition using helm. "
                                                     "This assumes nginx-ingress is installed")
     subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Enterprise Edition using helm. "
@@ -135,7 +138,7 @@ def main():
             kustomize = Kustomize(settings, timeout)
             kustomize.uninstall_postgres()
             kustomize.uninstall_kong()
-            kustomize.uninstall_gg_ui()
+            kustomize.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")
@@ -143,29 +146,26 @@ def main():
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
             kustomize = Kustomize(settings, timeout)
+            helm = Helm(settings)
             if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
                 kustomize.uninstall_kubedb(helm=True)
                 kustomize.deploy_kubedb(helm=True)
             if settings["INSTALL_REDIS"] == "Y":
                 kustomize.uninstall_redis()
                 kustomize.deploy_redis()
-            if settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                kustomize.deploy_postgres()
-
-            helm = Helm(settings)
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
             settings = prompts.prompt_helm
+            kustomize = Kustomize(settings, timeout)
             helm = Helm(settings)
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
-            if settings["INSTALL_REDIS"] == "Y":
-                kustomize = Kustomize(settings, timeout)
-                kustomize.uninstall_redis()
-                kustomize.uninstall_kubedb(helm=True)
-                time.sleep(30)
-                kustomize.uninstall()
+            helm.uninstall_gluu_gateway_dbmode()
+            helm.uninstall_gluu_gateway_ui()
+            logger.info("Please wait...")
+            time.sleep(30)
+            kustomize.uninstall()
 
         elif args.subparser_name == "helm-install-gluu":
             settings = prompts.prompt_helm
@@ -173,11 +173,21 @@ def main():
             helm.uninstall_gluu()
             helm.install_gluu(install_ingress=False)
 
-        elif args.subparser_name == "helm-install-gluu-gateway-ui":
+        elif args.subparser_name == "helm-install-gg-dbmode":
+            kustomize = Kustomize(settings, timeout)
+            kustomize.deploy_postgres()
             settings = prompts.prompt_helm
             helm = Helm(settings)
-            helm.uninstall_gluu_gateway_ui()
+            helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
+
+        elif args.subparser_name == "helm-uninstall-gg-dbmode":
+            kustomize = Kustomize(settings, timeout)
+            kustomize.uninstall_postgres()
+            settings = prompts.prompt_helm
+            helm = Helm(settings)
+            helm.uninstall_gluu_gateway_dbmode()
+            helm.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gluu":
             settings = prompts.prompt_helm

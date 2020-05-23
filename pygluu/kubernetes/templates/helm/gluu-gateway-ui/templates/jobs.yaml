@@ -27,7 +27,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.gluuGatewayPostgresPasswordSecretName }}
+                  name: {{ include "gluu-gateway-ui.fullname" . }}-postgres-pass
                   key: DB_PASSWORD
           envFrom:
           - configMapRef:
