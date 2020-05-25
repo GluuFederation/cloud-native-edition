@@ -571,7 +571,7 @@ class Prompt(object):
         Prompts for Gluu Gateway
         """
         if not self.settings["INSTALL_GLUU_GATEWAY"]:
-            prompt = input("Install Gluu Gateway (alpha) [Y/N]?[Y]")
+            prompt = input("Install Gluu Gateway Database mode (alpha) [Y/N]?[Y]")
             if prompt == "N" or prompt == "n":
                 prompt = "N"
             else:
