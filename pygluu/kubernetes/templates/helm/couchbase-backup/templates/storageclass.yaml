@@ -5,9 +5,25 @@ metadata:
   labels:
     k8s-addon: storage-aws.addons.k8s.io
   name: {{ include "couchbase-backup.name" . }}-gp2-storage
-parameters:
-  type: {{ .Values.persistence.type }}
-  fsType: {{ .Values.persistence.fsType }}
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "false"
 provisioner: {{ .Values.persistence.provisioner }}
+parameters:
+  {{- if eq .Values.persistence.provisioner "kubernetes.io/aws-ebs" }}
+  type: {{ .Values.persistence.awsVolumeType }}
+  fsType: {{ .Values.persistence.fsType }}
+  {{- else if eq .Values.persistence.provisioner "kubernetes.io/gce-pd" }}
+  type: {{ .Values.persistence.gcePdStorageType }}
+  {{- else if eq .Values.persistence.provisioner "kubernetes.io/azure-disk" }}
+  storageAccountType: {{ .Values.persistence.azureStorageAccountType }}
+  kind: {{ .Values.persistence.azureStorageKind }}
+  {{- else if eq .Values.persistence.provisioner "dobs.csi.digitalocean.com" }}
+  {{- else }}
+  pool: {{ .Values.persistence.pool }}
+  fsType: {{ .Values.persistence.fsType }}
+  {{- end }}
+allowVolumeExpansion: true
 reclaimPolicy: {{ .Values.persistence.reclaimPolicy }}
 volumeBindingMode: {{ .Values.persistence.volumeBindingMode }}
+mountOptions:
+  - debug

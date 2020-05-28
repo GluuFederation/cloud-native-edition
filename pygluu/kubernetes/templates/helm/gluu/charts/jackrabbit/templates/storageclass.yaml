@@ -19,6 +19,7 @@ parameters:
   {{- else if eq .Values.global.provisioner "kubernetes.io/azure-disk" }}
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
+  {{- else if eq .Values.global.provisioner "dobs.csi.digitalocean.com" }}
   {{- else }}
   pool: {{ .Values.global.pool }}
   fsType: {{ .Values.global.fsType }}

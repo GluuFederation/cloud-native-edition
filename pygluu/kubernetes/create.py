@@ -91,6 +91,10 @@ def main():
         if args.subparser_name == "install" or args.subparser_name == "install-no-wait":
             kustomize = Kustomize(settings, timeout)
             kustomize.uninstall()
+            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
+                helm = Helm(settings)
+                helm.uninstall_kubedb()
+                helm.install_kubedb()
             kustomize.install()
 
         if args.subparser_name == "install-ldap-backup":
@@ -101,6 +105,9 @@ def main():
             logger.info("Removing all Gluu resources...")
             kustomize = Kustomize(settings, timeout)
             kustomize.uninstall()
+            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
+                helm = Helm(settings)
+                helm.uninstall_kubedb()
 
         elif args.subparser_name == "upgrade":
             logger.info("Starting upgrade...")
@@ -145,12 +152,12 @@ def main():
 
         elif args.subparser_name == "helm-install":
             settings = prompts.prompt_helm
-            kustomize = Kustomize(settings, timeout)
             helm = Helm(settings)
             if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                kustomize.uninstall_kubedb(helm=True)
-                kustomize.deploy_kubedb(helm=True)
+                helm.uninstall_kubedb()
+                helm.install_kubedb()
             if settings["INSTALL_REDIS"] == "Y":
+                kustomize = Kustomize(settings, timeout)
                 kustomize.uninstall_redis()
                 kustomize.deploy_redis()
             helm.install_gluu()
@@ -166,6 +173,7 @@ def main():
             logger.info("Please wait...")
             time.sleep(30)
             kustomize.uninstall()
+            helm.uninstall_kubedb()
 
         elif args.subparser_name == "helm-install-gluu":
             settings = prompts.prompt_helm

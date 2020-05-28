@@ -167,17 +167,26 @@ class Couchbase(object):
 
         storage_class_parser = Parser("./couchbase-backup.yaml", "StorageClass")
 
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            storage_class_parser["provisioner"] = "kubernetes.io/gce-pd"
-            del storage_class_parser["parameters"]["fsType"]
-            del storage_class_parser["metadata"]["labels"]["k8s-addon"]
+        if self.settings["DEPLOYMENT_ARCH"] == "gke" or \
+                self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                self.settings["DEPLOYMENT_ARCH"] == "do":
+            try:
+                del storage_class_parser["parameters"]["fsType"]
+                del storage_class_parser["metadata"]["labels"]["k8s-addon"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
             storage_class_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
 
-        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
             storage_class_parser["provisioner"] = "kubernetes.io/gce-pd"
-            del storage_class_parser["parameters"]["fsType"]
-            del storage_class_parser["metadata"]["labels"]["k8s-addon"]
-            storage_class_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+
+        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+            storage_class_parser["provisioner"] = "kubernetes.io/azure-disk"
+
+        elif self.settings["DEPLOYMENT_ARCH"] == "do":
+            storage_class_parser["provisioner"] = "dobs.csi.digitalocean.com"
+            del storage_class_parser["allowedTopologies"]
+
         storage_class_parser.dump_it()
 
         self.kubernetes.create_objects_from_dict("./couchbase-backup.yaml")
@@ -422,14 +431,20 @@ class Couchbase(object):
             self.analyze_couchbase_cluster_yaml()
         cb_namespace = self.settings["COUCHBASE_NAMESPACE"]
         storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
-        if self.settings['DEPLOYMENT_ARCH'] == "gke":
-            storage_class_file_parser["provisioner"] = "kubernetes.io/gce-pd"
+        if self.settings['DEPLOYMENT_ARCH'] == "gke" or \
+                self.settings['DEPLOYMENT_ARCH'] == "aks" or \
+                self.settings['DEPLOYMENT_ARCH'] == "do":
             try:
                 del storage_class_file_parser["parameters"]["encrypted"]
             except KeyError:
                 logger.info("Key not found")
             storage_class_file_parser["parameters"]["type"] = self.settings["COUCHBASE_VOLUME_TYPE"]
-            storage_class_file_parser.dump_it()
+        if self.settings['DEPLOYMENT_ARCH'] == "gke":
+            storage_class_file_parser["provisioner"] = "kubernetes.io/gce-pd"
+        elif self.settings['DEPLOYMENT_ARCH'] == "aks":
+            storage_class_file_parser["provisioner"] = "kubernetes.io/azure-disk"
+        elif self.settings['DEPLOYMENT_ARCH'] == "do":
+            storage_class_file_parser["provisioner"] = "dobs.csi.digitalocean.com"
         elif self.settings['DEPLOYMENT_ARCH'] == "microk8s":
             storage_class_file_parser["provisioner"] = "microk8s.io/hostpath"
             try:
@@ -451,7 +466,7 @@ class Couchbase(object):
                 storage_class_file_parser["parameters"]["type"] = self.settings["COUCHBASE_VOLUME_TYPE"]
             except KeyError:
                 logger.info("Key not found")
-            storage_class_file_parser.dump_it()
+        storage_class_file_parser.dump_it()
 
         logger.info("Installing Couchbase...")
         couchbase_crts_keys = Path("couchbase_crts_keys")

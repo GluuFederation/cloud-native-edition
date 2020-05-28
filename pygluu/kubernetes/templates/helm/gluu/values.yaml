@@ -6,7 +6,7 @@ global:
   cloud:
     enabled: false
 
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4

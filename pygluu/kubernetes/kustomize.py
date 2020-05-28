@@ -45,6 +45,13 @@ dynamic_ldap_azure_folder = Path("./ldap/overlays/azure/dynamic-dn/")
 dynamic_jcr_azure_folder = Path("./jackrabbit/overlays/azure/dynamic-dn/")
 static_ldap_azure_folder = Path("./ldap/overlays/azure/static-dn/")
 static_jcr_azure_folder = Path("./jackrabbit/overlays/azure/static-dn/")
+# DIGITAL OCEAN
+local_ldap_do_folder = Path("./ldap/overlays/do/local-storage/")
+local_jcr_do_folder = Path("./jackrabbit/overlays/do/local-storage/")
+dynamic_ldap_do_folder = Path("./ldap/overlays/do/dynamic-dn/")
+dynamic_jcr_do_folder = Path("./jackrabbit/overlays/do/dynamic-dn/")
+static_ldap_do_folder = Path("./ldap/overlays/do/static-dn/")
+static_jcr_do_folder = Path("./jackrabbit/overlays/do/static-dn/")
 
 
 def register_op_client(namespace, client_name, op_host, oxd_url):
@@ -158,6 +165,14 @@ class Kustomize(object):
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
             parser.dump_it()
+        elif self.settings["DEPLOYMENT_ARCH"] == "do":
+            parser["provisioner"] = "dobs.csi.digitalocean.com"
+            try:
+                del parser["parameters"]
+                del parser["allowedTopologies"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser.dump_it()
         elif self.settings['DEPLOYMENT_ARCH'] == "microk8s":
             try:
                 parser["provisioner"] = "microk8s.io/hostpath"
@@ -250,6 +265,21 @@ class Kustomize(object):
                 ldap_kustomize_yaml_directory = local_ldap_azure_folder
                 jcr_kustomize_yaml_directory = local_jcr_azure_folder
 
+        elif self.settings["DEPLOYMENT_ARCH"] == "do":
+            output_yamls_folder = Path("gluu_do_yamls")
+            if self.settings["APP_VOLUME_TYPE"] == 22:
+                copy(dynamic_ldap_eks_folder, dynamic_ldap_do_folder)
+                copy(dynamic_jcr_eks_folder, dynamic_jcr_do_folder)
+
+                self.analyze_storage_class(dynamic_ldap_do_folder.joinpath("storageclasses.yaml"))
+                self.analyze_storage_class(dynamic_jcr_do_folder.joinpath("storageclasses.yaml"))
+
+                ldap_kustomize_yaml_directory = dynamic_ldap_do_folder
+                jcr_kustomize_yaml_directory = dynamic_jcr_do_folder
+
+            elif self.settings["APP_VOLUME_TYPE"] == 23:
+                ldap_kustomize_yaml_directory = static_ldap_do_folder
+                jcr_kustomize_yaml_directory = static_jcr_do_folder
         else:
             output_yamls_folder = Path("gluu_microk8s_yamls")
             ldap_kustomize_yaml_directory = local_ldap_microk8s_folder
@@ -262,7 +292,8 @@ class Kustomize(object):
     def adjust_fqdn_yaml_entries(self):
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" \
                 or self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
-                or self.settings["DEPLOYMENT_ARCH"] == "gke":
+                or self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
+                or self.settings["DEPLOYMENT_ARCH"] == "do":
             for k, v in self.adjust_yamls_for_fqdn_status.items():
                 parser = Parser(k, v)
                 volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -276,7 +307,9 @@ class Kustomize(object):
                         logger.info("Key not deleted as it does not exist inside yaml.")
                     cm_parser.dump_it()
                     if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
-                            self.settings["DEPLOYMENT_ARCH"] == "minikube" or self.settings["DEPLOYMENT_ARCH"] == "gke":
+                            self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
+                            self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
+                            or self.settings["DEPLOYMENT_ARCH"] == "do":
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings["GLUU_FQDN"]]
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                     else:
@@ -428,8 +461,8 @@ class Kustomize(object):
         if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
             configmap_parser["data"]["GLUU_SYNC_CASA_MANIFESTS"] = "true"
         # oxTrust
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "N":
-            configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "false"
+        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
+            configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # oxdserver
         if "oxd-server" in app_file:
             configmap_parser["data"]["ADMIN_KEYSTORE_PASSWORD"] = self.settings["OXD_SERVER_PW"]
@@ -745,7 +778,7 @@ class Kustomize(object):
                 = self.settings["LDAP_STORAGE_SIZE"]
         statefulset_parser.dump_it()
         if self.settings["APP_VOLUME_TYPE"] != 7 and self.settings["APP_VOLUME_TYPE"] != 12 and \
-                self.settings["APP_VOLUME_TYPE"] != 17:
+                self.settings["APP_VOLUME_TYPE"] != 17 and self.settings["APP_VOLUME_TYPE"] != 22:
             pv_parser = Parser(app_file, "PersistentVolume")
             pv_parser["spec"]["capacity"]["storage"] = self.settings["JACKRABBIT_STORAGE_SIZE"]
             if "ldap" in app_file:
@@ -839,7 +872,8 @@ class Kustomize(object):
 
             self.check_lb()
 
-        if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
+        if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
+                or self.settings["DEPLOYMENT_ARCH"] == "do":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             ip = None
             while True:
@@ -869,29 +903,6 @@ class Kustomize(object):
 
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nginx.yaml"),
                                                  self.settings["GLUU_NAMESPACE"])
-
-    def deploy_kubedb(self, helm=False):
-        self.uninstall_kubedb()
-        self.kubernetes.create_namespace(name="gluu-kubedb")
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
-                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
-
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or helm:
-            try:
-                exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-                exec_cmd("helm repo update")
-                exec_cmd("helm install kubedb-operator appscode/kubedb  --version v0.13.0-rc.0 "
-                         "--namespace gluu-kubedb")
-                self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb", self.timeout)
-                exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.13.0-rc.0 "
-                         "--namespace gluu-kubedb")
-            except FileNotFoundError:
-                logger.error("Helm v3 is not installed. Please install it to continue "
-                             "https://helm.sh/docs/intro/install/")
-                raise SystemExit(1)
-        else:
-            exec_cmd("bash ./redis/kubedb.sh --namespace=gluu-kubedb")
 
     def deploy_postgres(self):
         self.uninstall_postgres()
@@ -1324,10 +1335,6 @@ class Kustomize(object):
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.setup_tls(namespace=self.settings["GLUU_NAMESPACE"])
 
-        if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
-            self.kubernetes = Kubernetes()
-            self.deploy_kubedb()
-
         if self.settings["INSTALL_REDIS"] == "Y":
             self.kubernetes = Kubernetes()
             self.deploy_redis()
@@ -1446,8 +1453,6 @@ class Kustomize(object):
                 self.uninstall_kong()
                 self.uninstall_gluu_gateway_ui()
 
-            if self.settings["INSTALL_REDIS"] == "Y" or self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                self.uninstall_kubedb()
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
@@ -1540,27 +1545,6 @@ class Kustomize(object):
             with contextlib.suppress(FileNotFoundError):
                 time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
                 shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
-
-    def uninstall_kubedb(self, helm=False):
-        logger.info("Deleting KubeDB...This may take a little while.")
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
-                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
-
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or helm:
-            try:
-                exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-                exec_cmd("helm repo update")
-                exec_cmd("helm delete kubedb-operator --namespace gluu-kubedb")
-                exec_cmd("helm delete kubedb-catalog --namespace gluu-kubedb")
-                time.sleep(20)
-            except FileNotFoundError:
-                logger.error("Helm v3 is not installed. Please install it to continue "
-                             "https://helm.sh/docs/intro/install/")
-                raise SystemExit(1)
-        else:
-            exec_cmd("bash ./redis/kubedb.sh --uninstall --purge  --namespace=gluu-kubedb")
-        self.kubernetes.delete_namespace(name="gluu-kubedb")
 
     def uninstall_redis(self):
         logger.info("Removing gluu-redis-cluster...")
