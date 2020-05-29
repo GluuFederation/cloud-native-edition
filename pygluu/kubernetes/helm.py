@@ -220,6 +220,10 @@ class Helm(object):
         values_file_parser["global"]["oxd-server"]["enabled"] = False
         if self.settings["ENABLE_OXD"] == "Y":
             values_file_parser["global"]["oxd-server"]["enabled"] = True
+            values_file_parser["oxd-server"]["configmap"]["adminKeystorePassword"] = self.settings["OXD_SERVER_PW"]
+            values_file_parser["oxd-server"]["configmap"]["applicationKeystorePassword"] = self.settings["OXD_SERVER_PW"]
+            values_file_parser["oxd-server"]["configmap"]["applicationKeystoreCn"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
+            values_file_parser["oxd-server"]["configmap"]["adminKeystoreCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
 
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":

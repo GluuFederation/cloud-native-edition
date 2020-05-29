@@ -195,8 +195,8 @@ oxd-server:
   configmap:
     adminKeystorePassword: Passw0rd
     applicationKeystorePassword: Passw0rd
-    applicationKeystoreCn: oxd_server
-    adminKeystoreCn: oxd_server
+    applicationKeystoreCn: oxd-server
+    adminKeystoreCn: oxd-server
 
   image:
     repository: gluufederation/oxd-server
