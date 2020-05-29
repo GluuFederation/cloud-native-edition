@@ -71,6 +71,8 @@ class Helm(object):
         if install_ingress:
             self.kubernetes.delete_custom_resource("virtualservers.k8s.nginx.org")
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
+            self.kubernetes.delete_cluster_role("ingress-nginx-nginx-ingress")
+            self.kubernetes.delete_cluster_role_binding("ingress-nginx-nginx-ingress")
             self.kubernetes.delete_namespace(self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.delete_cluster_role(
@@ -131,7 +133,9 @@ class Helm(object):
                     time.sleep(10)
             self.settings["LB_ADD"] = lb_hostname
 
-        if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks":
+        if self.settings["DEPLOYMENT_ARCH"] == "gke" or \
+                self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                self.settings["DEPLOYMENT_ARCH"] == "do":
             if install_ingress:
                 exec_cmd(command)
             ip = None
@@ -164,6 +168,9 @@ class Helm(object):
             values_file_parser["global"]["cloud"]["enabled"] = True
         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
             provisioner = "kubernetes.io/azure-disk"
+            values_file_parser["global"]["cloud"]["enabled"] = True
+        elif self.settings["DEPLOYMENT_ARCH"] == "do":
+            provisioner = "dobs.csi.digitalocean.com"
             values_file_parser["global"]["cloud"]["enabled"] = True
         else:
             provisioner = "microk8s.io/hostpath"
@@ -213,6 +220,10 @@ class Helm(object):
         values_file_parser["global"]["oxd-server"]["enabled"] = False
         if self.settings["ENABLE_OXD"] == "Y":
             values_file_parser["global"]["oxd-server"]["enabled"] = True
+            values_file_parser["oxd-server"]["configmap"]["adminKeystorePassword"] = self.settings["OXD_SERVER_PW"]
+            values_file_parser["oxd-server"]["configmap"]["applicationKeystorePassword"] = self.settings["OXD_SERVER_PW"]
+            values_file_parser["oxd-server"]["configmap"]["applicationKeystoreCn"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
+            values_file_parser["oxd-server"]["configmap"]["adminKeystoreCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
 
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
@@ -395,6 +406,25 @@ class Helm(object):
                                          self.settings["POSTGRES_URL"],
                                          self.settings["KONG_NAMESPACE"]))
 
+    def install_kubedb(self):
+        self.uninstall_kubedb()
+        self.kubernetes.create_namespace(name="gluu-kubedb")
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
+                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
+        try:
+            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
+            exec_cmd("helm repo update")
+            exec_cmd("helm install kubedb-operator appscode/kubedb  --version v0.13.0-rc.0 "
+                     "--namespace gluu-kubedb")
+            self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb")
+            exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.13.0-rc.0 "
+                     "--namespace gluu-kubedb")
+        except FileNotFoundError:
+            logger.error("Helm v3 is not installed. Please install it to continue "
+                         "https://helm.sh/docs/intro/install/")
+            raise SystemExit(1)
+
     def uninstall_gluu_gateway_dbmode(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['KONG_HELM_RELEASE_NAME'],
                                                         self.settings["KONG_NAMESPACE"]))
@@ -402,6 +432,25 @@ class Helm(object):
     def uninstall_gluu_gateway_ui(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_GATEWAY_UI_HELM_RELEASE_NAME'],
                                                         self.settings["GLUU_GATEWAY_UI_NAMESPACE"]))
+
+    def uninstall_kubedb(self):
+        logger.info("Deleting KubeDB...This may take a little while.")
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
+                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
+
+        try:
+            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
+            exec_cmd("helm repo update")
+            exec_cmd("helm delete kubedb-operator --namespace gluu-kubedb")
+            exec_cmd("helm delete kubedb-catalog --namespace gluu-kubedb")
+            time.sleep(20)
+        except FileNotFoundError:
+            logger.error("Helm v3 is not installed. Please install it to continue "
+                         "https://helm.sh/docs/intro/install/")
+            raise SystemExit(1)
+
+        self.kubernetes.delete_namespace(name="gluu-kubedb")
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],

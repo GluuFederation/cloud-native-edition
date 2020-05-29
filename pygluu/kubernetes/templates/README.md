@@ -165,7 +165,7 @@
 | `USE_ARN`                                       | Use ssl provided from ACM AWS                                                    | `""`, `"Y"` or `"N"`                                                                        |
 | `ARN_AWS_IAM`                                   | The arn string                                                                   | `""` or `"<arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX>"`    |
 | `LB_ADD`                                        | AWS loadbalancer address                                                         | `"<loadbalancer_address>"`                                                                  |
-| `DEPLOYMENT_ARCH`                               | Deployment architecture                                                          | `"microk8s"`, `"minikube"`, `"eks"`, `"gke"` or `"aks"`                                     |
+| `DEPLOYMENT_ARCH`                               | Deployment architecture                                                          | `"microk8s"`, `"minikube"`, `"eks"`, `"gke"`, `"aks"`  or `"do"`                                   |
 | `PERSISTENCE_BACKEND`                           | Backend persistence type                                                         | `"ldap"`, `"couchbase"` or `"hybrid"`                                                       |
 | `REDIS_URL`                                     | Redis url with port. Used when Redis is deployed for Cache.                      | i.e `"redis:6379"`, `"clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379"`       |
 | `REDIS_TYPE`                                    | Type of Redis deployed                                                           | `"SHARDED"`, `"STANDALONE"`, `"CLUSTER"`, or `"SENTINEL"`                                   |
@@ -305,6 +305,9 @@
 | `16`     | Azure                    | volumes on host                          |
 | `17`     | Azure                    | Persistent Disk  dynamically provisioned |
 | `18`     | Azure                    | Persistent Disk  statically provisioned  |
+| `21`     | Digital Ocean            | volumes on host                          |
+| `22`     | Digital Ocean            | Persistent Disk  dynamically provisioned |
+| `23`     | Digital Ocean            | Persistent Disk  statically provisioned  |
 
 ### Uninstall Gluu using Kustomize
 

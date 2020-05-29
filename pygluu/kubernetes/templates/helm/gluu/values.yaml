@@ -6,7 +6,7 @@ global:
   cloud:
     enabled: false
 
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4
@@ -195,8 +195,8 @@ oxd-server:
   configmap:
     adminKeystorePassword: Passw0rd
     applicationKeystorePassword: Passw0rd
-    applicationKeystoreCn: oxd_server
-    adminKeystoreCn: oxd_server
+    applicationKeystoreCn: oxd-server
+    adminKeystoreCn: oxd-server
 
   image:
     repository: gluufederation/oxd-server

@@ -948,6 +948,7 @@ class Prompt(object):
             print("| [3] Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)|")
             print("| [4] Google Cloud Engine - Google Kubernetes Engine (GKE)         |")
             print("| [5] Microsoft Azure (AKS)                                        |")
+            print("| [6] Digital Ocean [Beta]                                         |")
             print("|------------------------------------------------------------------|")
             prompt = input("Deploy on ?[1]")
             if prompt == "2":
@@ -958,6 +959,8 @@ class Prompt(object):
                 prompt = "gke"
             elif prompt == "5":
                 prompt = "aks"
+            elif prompt == "6":
+                prompt = "do"
             else:
                 prompt = "microk8s"
             self.settings["DEPLOYMENT_ARCH"] = prompt
@@ -1107,14 +1110,17 @@ class Prompt(object):
                         if add.type == "ExternalIP":
                             ip = add.address
                             node_ip_list.append(ip)
-                    node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
-                    node_zone_list.append(node_zone)
+                    # Digital Ocean does not provide zone support yet
+                    if self.settings["DEPLOYMENT_ARCH"] != "do":
+                        node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
+                        node_zone_list.append(node_zone)
                     node_name_list.append(node_name)
             self.settings["NODES_NAMES"] = node_name_list
             self.settings["NODES_ZONES"] = node_zone_list
             self.settings["NODES_IPS"] = node_ip_list
             if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                     or self.settings["DEPLOYMENT_ARCH"] == "gke" \
+                    or self.settings["DEPLOYMENT_ARCH"] == "do" \
                     or self.settings["DEPLOYMENT_ARCH"] == "aks":
                 #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
                 return "22.22.22.22"
@@ -1214,6 +1220,7 @@ class Prompt(object):
 
         if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "gke" \
+                or self.settings["DEPLOYMENT_ARCH"] == "do" \
                 or self.settings["DEPLOYMENT_ARCH"] == "aks":
             if not self.settings["NODE_SSH_KEY"]:
                 self.settings["NODE_SSH_KEY"] = input(
@@ -1352,6 +1359,16 @@ class Prompt(object):
                     prompt = input("What type of volume path [17]")
                     if not prompt:
                         prompt = 17
+                elif self.settings["DEPLOYMENT_ARCH"] == "do":
+                    print("|------------------------------------------------------------------|")
+                    print("|Digital Ocean                                                     |")
+                    print("|------------------------------------------------------------------|")
+                    print("| [21] volumes on host                                             |")
+                    print("| [22] Persistent Disk  dynamically provisioned                    |")
+                    print("| [23] Persistent Disk  statically provisioned                     |")
+                    prompt = input("What type of volume path [22]")
+                    if not prompt:
+                        prompt = 22
                 prompt = int(prompt)
                 self.settings["APP_VOLUME_TYPE"] = prompt
 
@@ -1361,14 +1378,17 @@ class Prompt(object):
             if self.settings["APP_VOLUME_TYPE"] == 18:
                 self.prompt_disk_uris()
 
-            if self.settings["APP_VOLUME_TYPE"] > 2 and not self.settings["LDAP_VOLUME"]:
-                logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
-                logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
-                logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
-                prompt = input("Please enter the volume type.[io1]")
-                if not prompt:
-                    prompt = "io1"
-                self.settings["LDAP_VOLUME"] = prompt
+            if not not self.settings["LDAP_VOLUME"]:
+                if self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                        self.settings["DEPLOYMENT_ARCH"] == "eks" or \
+                        self.settings["DEPLOYMENT_ARCH"] == "gke":
+                    logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
+                    logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
+                    logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
+                    prompt = input("Please enter the volume type.[io1]")
+                    if not prompt:
+                        prompt = "io1"
+                    self.settings["LDAP_VOLUME"] = prompt
 
         if not self.settings["DEPLOY_MULTI_CLUSTER"]:
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" \
