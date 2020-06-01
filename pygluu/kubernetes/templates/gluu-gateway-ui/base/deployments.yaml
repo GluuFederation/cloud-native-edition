@@ -37,7 +37,7 @@ spec:
             - /bin/sh
             - -c
             - |
-                /usr/bin/python /scripts/update-lb-ip.py &
+                /usr/bin/python3 /scripts/update-lb-ip.py &
                 /app/scripts/entrypoint.sh
           ports:
             - containerPort: 443

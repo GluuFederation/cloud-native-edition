@@ -1378,7 +1378,7 @@ class Prompt(object):
             if self.settings["APP_VOLUME_TYPE"] == 18:
                 self.prompt_disk_uris()
 
-            if not not self.settings["LDAP_VOLUME"]:
+            if not self.settings["LDAP_VOLUME"]:
                 if self.settings["DEPLOYMENT_ARCH"] == "aks" or \
                         self.settings["DEPLOYMENT_ARCH"] == "eks" or \
                         self.settings["DEPLOYMENT_ARCH"] == "gke":

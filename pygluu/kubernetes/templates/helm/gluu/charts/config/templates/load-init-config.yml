@@ -34,7 +34,15 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ include "config.fullname" . }}-config-cm
-        command: ["/bin/sh", "-c"]
-        args: ["tini -g -- /app/scripts/entrypoint.sh load && /usr/bin/python /scripts/tls_generator.py"]
+        command:
+          - tini
+          - -g
+          - --
+          - /bin/sh
+          - -c
+          - |
+              /app/scripts/entrypoint.sh load
+              /usr/bin/python3 /scripts/tls_generator.py
+
       restartPolicy: Never
           

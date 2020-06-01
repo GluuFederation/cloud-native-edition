@@ -1,10 +1,10 @@
 apiVersion: v2
 name: gluu-upgrade
-description: A Helm chart for Kubernetes
+description: A Helm chart for upgrading gluu server
 type: application
-version: 1.0.0
-appVersion: 4.1.1_02
+version: 1.0.4
+appVersion: 4.2.0_dev
 maintainers:
-- name: GLUU
+- name: Gluu
 email: support@gluu.org
-home: https://www.gluu.org/ee
+home: https://gluu.org/docs/gluu-server

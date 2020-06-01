@@ -37,7 +37,7 @@ spec:
             - /bin/sh
             - -c
             - |
-                /usr/bin/python /scripts/update-lb-ip.py &
+                /usr/bin/python3 /scripts/updatelbip.py &
                 /app/scripts/entrypoint.sh
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -48,8 +48,12 @@ spec:
           envFrom:
             - configMapRef: 
                 name: {{ include "casa.fullname" . }}
-          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumeMounts:
+          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            - name: {{ include "casa.fullname" .}}-updatelbip
+              mountPath: "/scripts"
+          {{- end }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
@@ -71,14 +75,19 @@ spec:
             periodSeconds: 30
           resources:
 {{- toYaml .Values.resources | nindent 12 }}
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
       volumes:
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass
         - name: cb-crt 
           secret:
             secretName: {{ .Release.Name }}-cb-crt  
+      {{- end }}
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "casa.fullname" . }}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
       {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:

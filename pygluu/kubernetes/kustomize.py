@@ -383,7 +383,7 @@ class Kustomize(object):
 
                 if k != self.key_rotate_yaml and k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
                     parser["spec"]["template"]["spec"]["containers"][0]["command"] = \
-                        ['/bin/sh', '-c', '/usr/bin/python /scripts/update-lb-ip.py & \n/app/scripts/entrypoint.sh\n']
+                        ['/bin/sh', '-c', '/usr/bin/python3 /scripts/update-lb-ip.py & \n/app/scripts/entrypoint.sh\n']
                     volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
                     parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"][len(volume_mount_list) - 1] = \
                         dict([('mountPath', '/scripts'), ('name', 'update-lb-ip')])

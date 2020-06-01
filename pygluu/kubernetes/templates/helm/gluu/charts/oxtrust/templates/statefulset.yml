@@ -29,7 +29,7 @@ spec:
           - /bin/sh
           - -c
           - |
-              /usr/bin/python /scripts/updatelbip.py &
+              /usr/bin/python3 /scripts/updatelbip.py &
               /app/scripts/entrypoint.sh
         {{- end }}
         resources:
