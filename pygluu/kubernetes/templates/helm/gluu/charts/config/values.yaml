@@ -11,6 +11,18 @@ countryCode: US
 state: TE
 city: SLC
 ldapType: opendj
+gluuLdapInit: true
+gluuLdapInitPort: 1636
+gluuOxtrustConfigGeneration: true
+
+configmap:
+  #support for oxtrust API
+  gluuOxtrustApiEnabled: false
+  gluuOxtrustApiTestMode: false
+  gluuCasaEnabled: true
+  gluuPassportEnabled: false
+  gluuRadiusEnabled: false
+  gluuSamlEnabled: true
 
 nameOverride: ""
 fullNameOverride: ""

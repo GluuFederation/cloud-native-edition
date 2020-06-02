@@ -131,6 +131,14 @@ config:
   city: SLC
   # ldapType only OpenDJ is supported
   ldapType: opendj
+  configmap:
+    gluuOxtrustApiEnabled: false
+    gluuOxtrustApiTestMode: false
+    # Auto install other services. If enabled the respective service chart will be installed
+    gluuPassportEnabled: false
+    gluuCasaEnabled: false
+    gluuRadiusEnabled: false
+    gluuSamlEnabled: true
 
   image:
     repository: gluufederation/config-init
@@ -175,14 +183,6 @@ persistence:
     repository: gluufederation/persistence
     tag: 4.1.1_03
     pullPolicy: Always
-  configmap:
-    gluuOxtrustApiEnabled: false
-    gluuOxtrustApiTestMode: false
-    # Auto install other services. If enabled the respective service chart will be installed
-    gluuPassportEnabled: false 
-    gluuCasaEnabled: false   
-    gluuRadiusEnabled: false 
-    gluuSamlEnabled: true
 
 oxauth:
   image:

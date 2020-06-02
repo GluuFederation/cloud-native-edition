@@ -44,7 +44,7 @@ spec:
           value: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
         envFrom:
         - configMapRef:
-            name: {{ template "oxtrust.fullname" . }}-cm
+            name: {{ .Release.Name }}-config-cm
         volumeMounts:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxtrust.fullname" .}}-updatelbip

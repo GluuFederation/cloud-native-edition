@@ -12,7 +12,6 @@ from .couchbase import Couchbase
 from ast import literal_eval
 import time
 import socket
-import base64
 
 logger = get_logger("gluu-helm          ")
 
@@ -78,8 +77,13 @@ class Helm(object):
                 self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
             self.kubernetes.delete_cluster_role_binding(
                 self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
-            exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com")
-            exec_cmd("helm repo update")
+            try:
+                exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com")
+                exec_cmd("helm repo update")
+            except FileNotFoundError:
+                logger.error("Helm v3 is not installed. Please install it to continue "
+                             "https://helm.sh/docs/intro/install/")
+                raise SystemExit(1)
         command = "helm install {} stable/nginx-ingress --namespace={}".format(
             self.settings['NGINX_INGRESS_RELEASE_NAME'], self.settings["NGINX_INGRESS_NAMESPACE"])
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
@@ -249,19 +253,19 @@ class Helm(object):
         values_file_parser["opendj"]["replicas"] = self.settings["LDAP_REPLICAS"]
         values_file_parser["opendj"]["persistence"]["size"] = self.settings["LDAP_STORAGE_SIZE"]
         if self.settings["ENABLE_OXTRUST_API_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuOxtrustApiEnabled"] = True
+            values_file_parser["config"]["configmap"]["gluuOxtrustApiEnabled"] = True
         if self.settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuOxtrustApiTestMode"] = True
+            values_file_parser["config"]["configmap"]["gluuOxtrustApiTestMode"] = True
         if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuCasaEnabled"] = True
+            values_file_parser["config"]["configmap"]["gluuCasaEnabled"] = True
             values_file_parser["global"]["gluuSyncCasaManifests"] = True
 
         if self.settings["ENABLE_OXPASSPORT_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuPassportEnabled"] = True
+            values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
         if self.settings["ENABLE_RADIUS_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuRadiusEnabled"] = True
+            values_file_parser["config"]["configmap"]["gluuRadiusEnabled"] = True
         if self.settings["ENABLE_SAML_BOOLEAN"] == "true":
-            values_file_parser["persistence"]["configmap"]["gluuSamlEnabled"] = True
+            values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
         values_file_parser["oxd-server"]["configmap"]["adminKeystorePassword"] = self.settings["OXD_SERVER_PW"]
         values_file_parser["oxd-server"]["configmap"]["applicationKeystorePassword"] = self.settings["OXD_SERVER_PW"]
@@ -310,18 +314,23 @@ class Helm(object):
             couchbase_app.install()
         self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
-        exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
-            self.settings['GLUU_HELM_RELEASE_NAME'], self.values_file, self.settings["GLUU_NAMESPACE"]))
+        try:
+            exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
+                self.settings['GLUU_HELM_RELEASE_NAME'], self.values_file, self.settings["GLUU_NAMESPACE"]))
 
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            values_file = Path("./helm/ldap-backup/values.yaml").resolve()
-            values_file_parser = Parser(values_file, True)
-            values_file_parser["ldapPass"] = self.settings["LDAP_PW"]
-            values_file_parser.dump_it()
+            if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
+                    self.settings["PERSISTENCE_BACKEND"] == "ldap":
+                values_file = Path("./helm/ldap-backup/values.yaml").resolve()
+                values_file_parser = Parser(values_file, True)
+                values_file_parser["ldapPass"] = self.settings["LDAP_PW"]
+                values_file_parser.dump_it()
 
-            exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
-                self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
+                exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
+                    self.ldap_backup_release_name, self.settings["GLUU_NAMESPACE"]))
+        except FileNotFoundError:
+            logger.error("Helm v3 is not installed. Please install it to continue "
+                         "https://helm.sh/docs/intro/install/")
+            raise SystemExit(1)
 
     def install_gluu_gateway_ui(self):
         self.uninstall_gluu_gateway_ui()

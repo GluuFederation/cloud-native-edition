@@ -40,7 +40,7 @@ spec:
         - containerPort: {{ .Values.ports.containerPort }}
         envFrom:
         - configMapRef:
-            name: {{ template "oxauth.fullname" . }}-cm
+            name: {{ .Release.Name }}-config-cm
         volumeMounts:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "oxauth.fullname" .}}-updatelbip

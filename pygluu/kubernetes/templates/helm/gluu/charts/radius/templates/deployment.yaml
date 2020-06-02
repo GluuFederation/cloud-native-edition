@@ -41,7 +41,7 @@ spec:
             containerPort: 1813
         envFrom:
           - configMapRef:
-              name: {{ include "radius.fullname" . }}
+              name: {{ .Release.Name }}-config-cm
         volumeMounts:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
           - name: {{ include "radius.fullname" .}}-updatelbip

@@ -20,7 +20,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
-            name: {{ include "persistence.fullname" . }}
+            name: {{ .Release.Name }}-config-cm
         {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
         volumeMounts:
           - name: cb-pass

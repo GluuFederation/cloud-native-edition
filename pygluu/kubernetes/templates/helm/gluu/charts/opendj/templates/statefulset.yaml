@@ -25,7 +25,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
-            name: {{ include "opendj.fullname" . }}
+            name: {{ .Release.Name }}-config-cm
         ports:
         {{- range $key, $value := .Values.ports }}
           - containerPort: {{ $value.targetPort }}

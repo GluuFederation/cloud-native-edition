@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ include "cr-rotate.fullname" . }}
+                name: {{ .Release.Name }}-config-cm
           {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumeMounts:
             - name: cb-pass

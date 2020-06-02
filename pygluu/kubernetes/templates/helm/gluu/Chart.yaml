@@ -40,11 +40,11 @@ dependencies:
   
     - name: oxpassport
       version: 1.0.4
-      condition: persistence.configmap.gluuPassportEnabled
+      condition: config.configmap.gluuPassportEnabled
 
     - name: casa
       version: 1.0.4
-      condition: persistence.configmap.gluuCasaEnabled
+      condition: config.configmap.gluuCasaEnabled
   
     - name: key-rotation
       condition: global.key-rotation.enabled
@@ -55,7 +55,7 @@ dependencies:
       condition: global.cr-rotate.enabled
   
     - name: radius
-      condition: persistence.configmap.gluuRadiusEnabled
+      condition: config.configmap.gluuRadiusEnabled
       version: 1.0.4
 
     - name: oxd-server

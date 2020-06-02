@@ -33,7 +33,7 @@ spec:
             subPath: tls_generator.py
         envFrom:
         - configMapRef:
-            name: {{ include "config.fullname" . }}-config-cm
+            name: {{ .Release.Name }}-config-cm
         command:
           - tini
           - -g

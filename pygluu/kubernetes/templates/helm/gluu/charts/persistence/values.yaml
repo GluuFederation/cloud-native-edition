@@ -11,12 +11,3 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-configmap:
-  #support for oxtrust API
-  gluuOxtrustApiEnabled: false
-  gluuOxtrustApiTestMode: false
-  gluuCasaEnabled: true
-  gluuPassportEnabled: false
-  gluuRadiusEnabled: false
-  gluuSamlEnabled: true  
