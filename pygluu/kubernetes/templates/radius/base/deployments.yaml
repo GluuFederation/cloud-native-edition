@@ -34,7 +34,7 @@ spec:
         - containerPort: 1813
         envFrom:
         - configMapRef:
-            name: radius-cm
+            name: gluu-config-cm
         volumeMounts:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"

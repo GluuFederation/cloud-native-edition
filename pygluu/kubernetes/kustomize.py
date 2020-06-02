@@ -300,12 +300,6 @@ class Kustomize(object):
                 volume_list = parser["spec"]["template"]["spec"]["volumes"]
 
                 if k != self.cr_rotate_yaml and k != self.key_rotate_yaml and k != self.gluu_upgrade_yaml:
-                    cm_parser = Parser(k, "ConfigMap")
-                    try:
-                        del cm_parser["data"]["LB_ADDR"]
-                    except KeyError:
-                        logger.info("Key not deleted as it does not exist inside yaml.")
-                    cm_parser.dump_it()
                     if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
                             self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                             self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
@@ -351,12 +345,10 @@ class Kustomize(object):
                 parser.dump_it()
 
         else:
+            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
+            cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
+            cm_parser.dump_it()
             for k, v in self.adjust_yamls_for_fqdn_status.items():
-                # oxAuth
-                cm_parser = Parser(k, "ConfigMap")
-                cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
-                cm_parser.dump_it()
-
                 parser = Parser(k, v)
                 # Check Couchbase entries
                 if k != self.oxd_server_yaml and self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -430,9 +422,18 @@ class Kustomize(object):
 
     def parse_configmap(self, app_file):
         if "config" in app_file:
-            configmap_parser = Parser(app_file, "ConfigMap", "config-cm")
+            configmap_parser = Parser(app_file, "ConfigMap", "gluu-config-cm")
         else:
             configmap_parser = Parser(app_file, "ConfigMap")
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" \
+                or self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
+                or self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
+                or self.settings["DEPLOYMENT_ARCH"] == "do":
+            try:
+                del configmap_parser["data"]["LB_ADDR"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+
         configmap_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
         configmap_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
         configmap_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings["GLUU_NAMESPACE"]
@@ -483,15 +484,16 @@ class Kustomize(object):
             app_file = str(self.output_yaml_directory.joinpath(app_filename).resolve())
             command = self.kubectl + " kustomize ./{}/base > {} ".format(app, app_file)
             if app == "config":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "CONFIG_IMAGE_NAME", "CONFIG_IMAGE_TAG")
+                self.parse_configmap(app_file)
 
             if app == "ldap":
                 if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                         self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     command = self.kubectl + " kustomize " + str(
                         self.ldap_kustomize_yaml_directory.resolve()) + " > " + app_file
-                    self.build_manifest(app, kustomization_file, command, app_file,
+                    self.build_manifest(app, kustomization_file, command,
                                         "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
                     self.adjust_ldap_jackrabbit(app_file)
                     self.remove_resources(app_file, "StatefulSet")
@@ -499,13 +501,13 @@ class Kustomize(object):
             if app == "jackrabbit" and self.settings["INSTALL_JACKRABBIT"] == "Y":
                 command = self.kubectl + " kustomize " + str(
                     self.jcr_kustomize_yaml_directory.resolve()) + " > " + app_file
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
                 self.adjust_ldap_jackrabbit(app_file)
                 self.remove_resources(app_file, "StatefulSet")
 
             if app == "persistence":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG")
                 if self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     persistence_job_parser = Parser(app_file, "Job")
@@ -514,31 +516,31 @@ class Kustomize(object):
                     persistence_job_parser.dump_it()
 
             if app == "oxauth":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "oxtrust":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG")
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxshibboleth" and self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "OXSHIBBOLETH_IMAGE_NAME", "OXSHIBBOLETH_IMAGE_TAG")
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxpassport" and self.settings["ENABLE_OXPASSPORT"] == "Y":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "key-rotation" and self.settings["ENABLE_KEY_ROTATE"] == "Y":
-                self.build_manifest(app, kustomization_file, command, app_file,
+                self.build_manifest(app, kustomization_file, command,
                                     "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG")
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
@@ -550,7 +552,6 @@ class Kustomize(object):
                                                image_name_key="CACHE_REFRESH_ROTATE_IMAGE_NAME",
                                                image_tag_key="CACHE_REFRESH_ROTATE_IMAGE_TAG")
                 subprocess_cmd(command)
-                self.parse_configmap(app_file)
                 self.remove_resources(app_file, "DaemonSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "DaemonSet"
 
@@ -575,7 +576,6 @@ class Kustomize(object):
                                                image_name_key="CASA_IMAGE_NAME",
                                                image_tag_key="CASA_IMAGE_TAG")
                 subprocess_cmd(command)
-                self.parse_configmap(app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
@@ -586,7 +586,6 @@ class Kustomize(object):
                                                image_name_key="RADIUS_IMAGE_NAME",
                                                image_tag_key="RADIUS_IMAGE_TAG")
                 subprocess_cmd(command)
-                self.parse_configmap(app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
@@ -595,14 +594,13 @@ class Kustomize(object):
                     logger.info("Building {} manifests".format(app))
                     subprocess_cmd(command)
 
-    def build_manifest(self, app, kustomization_file, command, app_file, image_name_key, image_tag_key):
+    def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key):
         logger.info("Building {} manifests".format(app))
         self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
                                        namespace=self.settings["GLUU_NAMESPACE"],
                                        image_name_key=image_name_key,
                                        image_tag_key=image_tag_key)
         subprocess_cmd(command)
-        self.parse_configmap(app_file)
 
     def kustomize_gluu_upgrade(self):
         self.update_kustomization_yaml(kustomization_yaml="upgrade/base/kustomization.yaml",
@@ -1321,9 +1319,7 @@ class Kustomize(object):
                     couchbase_app = Couchbase(self.settings)
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
                                                                           encoded_cb_pass_string)
-        if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
-            self.kubernetes = Kubernetes()
-            self.deploy_jackrabbit()
+
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             self.kubernetes = Kubernetes()
             if restore:
@@ -1331,6 +1327,10 @@ class Kustomize(object):
                 self.save_a_copy_of_config()
             else:
                 self.deploy_config()
+
+        if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
+            self.kubernetes = Kubernetes()
+            self.deploy_jackrabbit()
 
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.setup_tls(namespace=self.settings["GLUU_NAMESPACE"])

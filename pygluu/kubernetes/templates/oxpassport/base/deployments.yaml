@@ -33,7 +33,7 @@ spec:
         - containerPort: 8090
         envFrom:
         - configMapRef:
-            name: oxpassport-cm
+            name: gluu-config-cm
         livenessProbe:
           httpGet:
             path: /passport/token

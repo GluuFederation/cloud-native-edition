@@ -17,7 +17,7 @@ spec:
         image: gluufederation/key-rotation:4.1.0_01
         envFrom:
         - configMapRef:
-            name: key-rotation-cm
+            name: gluu-config-cm
         volumeMounts:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"

@@ -10,27 +10,3 @@ resources:
 images:
   - name: gluufederation/casa
     newTag: 4.2.0_dev
-configMapGenerator:
-  - name: casa-cm
-    literals:
-      - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
-      - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
-      - GLUU_DOCUMENT_STORE_TYPE="JCA"
-      - GLUU_JCA_SYNC_INTERVAL=300
-      - GLUU_JCA_URL="http://jackrabbit:8080"
-      - GLUU_CONTAINER_METADATA="kubernetes"
-      - GLUU_CONFIG_ADAPTER="kubernetes"
-      - GLUU_SECRET_ADAPTER="kubernetes"
-      - DOMAIN=FQDN
-      - GLUU_MAX_RAM_PERCENTAGE="75.0"
-      - LB_ADDR=LBADDR
-      - GLUU_OXAUTH_BACKEND="oxauth:8080"
-      - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE
-      - GLUU_PERSISTENCE_LDAP_MAPPING=LDAPMAPPING
-      - GLUU_LDAP_URL="opendj:1636"
-      - GLUU_COUCHBASE_URL=COUCHBASEURL
-      - GLUU_COUCHBASE_USER=CBUSER
-      - GLUU_COUCHBASE_CERT_FILE="/etc/certs/couchbase.crt"
-      - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"
-      - GLUU_CACHE_TYPE=GLUUCACHETYPE
-      - GLUU_OXD_SERVER_URL="oxd-server:8443"

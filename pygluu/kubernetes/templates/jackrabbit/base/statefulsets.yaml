@@ -29,7 +29,7 @@ spec:
         image: gluufederation/jackrabbit:4.1.1_dev
         envFrom:
         - configMapRef:
-            name: jackrabbit-cm
+            name: gluu-config-cm
         ports:
           - containerPort: 8080
             name: jackrabbit

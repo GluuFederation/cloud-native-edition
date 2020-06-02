@@ -9,9 +9,4 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/jackrabbit
-    newTag: 4.1.1_dev
-configMapGenerator:
-  - name: jackrabbit-cm
-    literals:
-      - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
-      - GLUU_CONFIG_ADAPTER="kubernetes"
+    newTag: 4.2.0_dev

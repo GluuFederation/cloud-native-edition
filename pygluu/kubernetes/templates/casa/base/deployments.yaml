@@ -72,4 +72,4 @@ spec:
         - containerPort: 8080
         envFrom:
         - configMapRef:
-            name: casa-cm
+            name: gluu-config-cm

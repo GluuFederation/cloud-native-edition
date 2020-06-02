@@ -49,7 +49,7 @@ spec:
         - containerPort: 8080
         envFrom:
         - configMapRef:
-            name: oxshibboleth-cm
+            name: gluu-config-cm
         livenessProbe:
           httpGet:
             path: /idp

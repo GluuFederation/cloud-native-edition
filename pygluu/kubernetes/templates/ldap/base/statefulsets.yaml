@@ -29,7 +29,7 @@ spec:
         image: gluufederation/wrends:4.1.0_01
         envFrom:
         - configMapRef:
-            name: opendj-cm
+            name: gluu-config-cm
         ports:
           - containerPort: 1636
             name: ldaps

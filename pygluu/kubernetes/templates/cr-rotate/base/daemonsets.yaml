@@ -16,7 +16,7 @@ spec:
         image: gluufederation/cr-rotate:4.1.0_01
         envFrom:
         - configMapRef:
-            name: cr-rotate-cm
+            name: gluu-config-cm
         volumeMounts:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
