@@ -42,8 +42,7 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 8080
+            - containerPort: 8080
               protocol: TCP
           envFrom:
             - configMapRef: 
@@ -64,13 +63,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /casa/health-check
-              port: http
+              port: 8080
             initialDelaySeconds: 25
             periodSeconds: 25
           readinessProbe:
             httpGet:
               path: /casa/health-check
-              port: http
+              port: 8080
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:
