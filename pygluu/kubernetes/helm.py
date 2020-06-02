@@ -73,7 +73,6 @@ class Helm(object):
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
             self.kubernetes.delete_cluster_role("ingress-nginx-nginx-ingress")
             self.kubernetes.delete_cluster_role_binding("ingress-nginx-nginx-ingress")
-            self.kubernetes.delete_namespace(self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
             self.kubernetes.delete_cluster_role(
                 self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
@@ -449,8 +448,6 @@ class Helm(object):
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
             raise SystemExit(1)
-
-        self.kubernetes.delete_namespace(name="gluu-kubedb")
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings['GLUU_HELM_RELEASE_NAME'],
