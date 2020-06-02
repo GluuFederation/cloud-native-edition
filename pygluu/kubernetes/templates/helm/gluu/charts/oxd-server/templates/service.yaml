@@ -16,4 +16,3 @@ spec:
       name: {{ include "oxd-server.name" . }}-app-connector
   selector:
     app: {{ include "oxd-server.name" . }}
-    release: {{ .Release.Name }}
