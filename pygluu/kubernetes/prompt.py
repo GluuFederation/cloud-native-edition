@@ -96,8 +96,10 @@ class Prompt(object):
                                 COUCHBASE_INDEX_STORAGE="",
                                 COUCHBASE_QUERY_STORAGE="",
                                 COUCHBASE_ANALYTICS_STORAGE="",
-                                COUCHBASE_BACKUP_SCHEDULE="",
-                                COUCHBASE_BACKUP_RESTORE_POINTS="",
+                                COUCHBASE_INCR_BACKUP_SCHEDULE="",
+                                COUCHBASE_FULL_BACKUP_SCHEDULE="",
+                                COUCHBASE_BACKUP_RETENTION_TIME="",
+                                COUCHBASE_BACKUP_STORAGE_SIZE="",
                                 LDAP_BACKUP_SCHEDULE="",
                                 NUMBER_OF_EXPECTED_USERS="",
                                 EXPECTED_TRANSACTIONS_PER_SEC="",
@@ -642,19 +644,34 @@ class Prompt(object):
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "couchbase":
 
-            if not self.settings["COUCHBASE_BACKUP_SCHEDULE"]:
-                prompt = input("Please input couchbase backup cron job schedule. This will run backup job every "
+            if not self.settings["COUCHBASE_INCR_BACKUP_SCHEDULE"]:
+                prompt = input("Please input couchbase backup cron job schedule for incremental backups. "
+                               "This will run backup job every "
                                "30 mins by default.[*/30 * * * *]: ")
                 if not prompt:
                     prompt = "*/30 * * * *"
-                self.settings["COUCHBASE_BACKUP_SCHEDULE"] = prompt
+                self.settings["COUCHBASE_INCR_BACKUP_SCHEDULE"] = prompt
 
-            if not self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]:
-                prompt = input("Please input number of restore points to save in the persistent volume. "
-                               "[3]: ")
+            if not self.settings["COUCHBASE_FULL_BACKUP_SCHEDULE"]:
+                prompt = input("Please input couchbase backup cron job schedule for full backups. "
+                               "This will run backup job on Saturday at 2am [0 2 * * 6]: ")
                 if not prompt:
-                    prompt = 3
-                self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"] = prompt
+                    prompt = "0 2 * * 6"
+                self.settings["COUCHBASE_FULL_BACKUP_SCHEDULE"] = prompt
+
+            if not self.settings["COUCHBASE_BACKUP_RETENTION_TIME"]:
+                prompt = input("Please enter the time period in which to retain existing backups. "
+                               "Older backups outside this time frame are deleted "
+                               "[168h]: ")
+                if not prompt:
+                    prompt = "168h"
+                self.settings["COUCHBASE_BACKUP_RETENTION_TIME"] = prompt
+
+            if not self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"]:
+                prompt = input("Size of couchbase backup volume storage [20Gi]:")
+                if not prompt:
+                    prompt = "20Gi"
+                self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"] = prompt
 
         elif self.settings["PERSISTENCE_BACKEND"] == "ldap":
 

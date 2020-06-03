@@ -152,63 +152,18 @@ class Couchbase(object):
         """
         Setups Couchbase backup strategy
         """
-        encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
-        encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
-        encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
-        encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
-        encoded_cb_url_bytes = base64.b64encode(self.settings["COUCHBASE_URL"].encode("utf-8"))
-        encoded_cb_url_string = str(encoded_cb_url_bytes, "utf-8")
-        self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
-                                                          namespace=self.settings["COUCHBASE_NAMESPACE"],
-                                                          literal="username",
-                                                          value_of_literal=encoded_cb_user_string,
-                                                          second_literal="password",
-                                                          value_of_second_literal=encoded_cb_pass_string)
-
-        self.kubernetes.patch_or_create_namespaced_configmap(name="cb-restore-points",
-                                                             namespace=self.settings["COUCHBASE_NAMESPACE"],
-                                                             literal="restorepoints",
-                                                             value_of_literal=str(
-                                                                 self.settings["COUCHBASE_BACKUP_RESTORE_POINTS"]))
-
-        kustomize_parser = Parser("couchbase/backup/kustomization.yaml", "Kustomization")
-        kustomize_parser["namespace"] = self.settings["COUCHBASE_NAMESPACE"]
-        kustomize_parser.dump_it()
-        cron_job_parser = Parser("couchbase/backup/cronjobs.yaml", "CronJob")
-        cron_job_parser["spec"]["schedule"] = self.settings["COUCHBASE_BACKUP_SCHEDULE"]
-        cron_job_parser.dump_it()
-        command = "kubectl kustomize couchbase/backup > ./couchbase-backup.yaml"
-        subprocess_cmd(command)
-        self.kubernetes.patch_or_create_namespaced_secret(name="cb-url",
-                                                          namespace=self.settings["COUCHBASE_NAMESPACE"],
-                                                          literal="url",
-                                                          value_of_literal=encoded_cb_url_string)
-
-        storage_class_parser = Parser("./couchbase-backup.yaml", "StorageClass")
-
-        if self.settings["DEPLOYMENT_ARCH"] == "gke" or \
-                self.settings["DEPLOYMENT_ARCH"] == "aks" or \
-                self.settings["DEPLOYMENT_ARCH"] == "do":
-            try:
-                del storage_class_parser["parameters"]["fsType"]
-                del storage_class_parser["metadata"]["labels"]["k8s-addon"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            storage_class_parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
-
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            storage_class_parser["provisioner"] = "kubernetes.io/gce-pd"
-
-        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
-            storage_class_parser["provisioner"] = "kubernetes.io/azure-disk"
-
-        elif self.settings["DEPLOYMENT_ARCH"] == "do":
-            storage_class_parser["provisioner"] = "dobs.csi.digitalocean.com"
-            del storage_class_parser["allowedTopologies"]
-
-        storage_class_parser.dump_it()
-
-        self.kubernetes.create_objects_from_dict("./couchbase-backup.yaml")
+        couchbase_backup_file = Path("./couchbase/backup/couchbase-backup.yaml")
+        parser = Parser(couchbase_backup_file, "CouchbaseBackup")
+        parser["spec"]["full"]["schedule"] = self.settings["COUCHBASE_FULL_BACKUP_SCHEDULE"]
+        parser["spec"]["incremental"]["schedule"] = self.settings["COUCHBASE_INCR_BACKUP_SCHEDULE"]
+        parser["spec"]["backupRetention"] = self.settings["COUCHBASE_BACKUP_RETENTION_TIME"]
+        parser["spec"]["size"] = self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"]
+        parser.dump_it()
+        self.kubernetes.create_namespaced_custom_object(filepath=couchbase_backup_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbasebackups",
+                                                        namespace=self.settings["COUCHBASE_NAMESPACE"])
 
     @property
     def calculate_couchbase_resources(self):
