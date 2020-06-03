@@ -918,11 +918,17 @@ class Prompt(object):
         custom_cb_key = Path("./pkey.key")
         if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
             if not self.settings['COUCHBASE_SUBJECT_ALT_NAME']:
-                self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = ["*.{}.{}.svc".format(
-                    self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
-                    "*.{}.svc".format(self.settings["COUCHBASE_NAMESPACE"]),
-                    "*.{}.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
-                                     self.settings["COUCHBASE_FQDN"])]
+                self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = [
+                    "*.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"]),
+                    "*.{}.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
+                    "*.{}.{}.svc".format(self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
+                    "{}-srv".format(self.settings["COUCHBASE_CLUSTER_NAME"]),
+                    "{}-srv.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                     self.settings["COUCHBASE_NAMESPACE"]),
+                    "{}-srv.{}.svc".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                       self.settings["COUCHBASE_NAMESPACE"]),
+                    "localhost"
+                ]
             if not self.settings["COUCHBASE_CN"]:
                 prompt = input("Enter Couchbase certificate common name.[Couchbase CA]")
                 if not prompt:

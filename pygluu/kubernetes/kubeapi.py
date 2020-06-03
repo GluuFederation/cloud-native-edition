@@ -476,7 +476,7 @@ class Kubernetes(object):
             self.check_create_error_and_response(e, "RoleBinding", role_binding_name)
             return False
 
-    def create_namespaced_custom_object(self, filepath, group, version, plural, namespace="default",):
+    def create_namespaced_custom_object(self, filepath, group, version, plural, namespace="default"):
         """Create custom object using file in namespace"""
         yaml_objects = Parser(filepath).return_manifests_dict
         for manifest in yaml_objects:

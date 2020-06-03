@@ -1,17 +1,17 @@
-apiVersion: couchbase.com/v1
+apiVersion: couchbase.com/v2
 kind: CouchbaseCluster
 metadata:
   name: CLUSTERNAME #DO NOT CHANGE THIS LINE
 spec:
-  baseImage: couchbase/server
-  version: enterprise-6.5.0
+  image: couchbase/server:6.5.0
   antiAffinity: false
-  tls:
-    static:
-      member:
+  networking:
+    tls:
+      static:
         serverSecret: couchbase-server-tls
-      operatorSecret: couchbase-operator-tls
-  authSecret: cb-auth
+        operatorSecret: couchbase-operator-tls
+  security:
+    adminSecret: cb-auth
   exposeAdminConsole: true
   adminConsoleServices:
     - data
@@ -20,69 +20,35 @@ spec:
     - client
   exposedFeatureServiceType: NodePort
   cluster:
-    dataServiceMemoryQuota: 4024
-    indexServiceMemoryQuota: 1024
-    searchServiceMemoryQuota: 1024
-    eventingServiceMemoryQuota: 1024
-    analyticsServiceMemoryQuota: 1024
+    autoCompaction:
+      databaseFragmentationThreshold:
+        percent: 30
+        size: 1Gi
+      viewFragmentationThreshold:
+        percent: 30
+        size: 1Gi
+      parallelCompaction: false
+      timeWindow:
+        start: 02:00
+        end: 06:00
+        abortCompactionOutsideWindow: true
+      tombstonePurgeInterval: 72h
+    dataServiceMemoryQuota: 4024Mi
+    indexServiceMemoryQuota: 1024Mi
+    searchServiceMemoryQuota: 1024Mi
+    eventingServiceMemoryQuota: 1024Mi
+    analyticsServiceMemoryQuota: 1024Mi
     indexStorageSetting: memory_optimized
-    autoFailoverTimeout: 10
+    autoFailoverTimeout: 10s
     autoFailoverMaxCount: 3
     autoFailoverOnDataDiskIssues: true
-    autoFailoverOnDataDiskIssuesTimePeriod: 120
+    autoFailoverOnDataDiskIssuesTimePeriod: 120s
     autoFailoverServerGroup: false
   buckets:
-    - name: gluu #DO NOT CHANGE THIS LINE
-      type: couchbase
-      memoryQuota: 800
-      replicas: 1
-      ioPriority: high
-      evictionPolicy: valueOnly
-      conflictResolution: seqno
-      enableFlush: true
-      enableIndexReplica: false
-      compressionMode: passive
-    - name: gluu_cache #DO NOT CHANGE THIS LINE
-      type: couchbase
-      memoryQuota: 800
-      replicas: 1
-      ioPriority: high
-      evictionPolicy: valueOnly
-      conflictResolution: seqno
-      enableFlush: true
-      enableIndexReplica: false
-      compressionMode: passive
-    - name: gluu_site #DO NOT CHANGE THIS LINE
-      type: couchbase
-      memoryQuota: 800
-      replicas: 1
-      ioPriority: high
-      evictionPolicy: valueOnly
-      conflictResolution: seqno
-      enableFlush: true
-      enableIndexReplica: false
-      compressionMode: passive
-    - name: gluu_token #DO NOT CHANGE THIS LINE
-      type: couchbase
-      memoryQuota: 800
-      replicas: 1
-      ioPriority: high
-      evictionPolicy: valueOnly
-      conflictResolution: seqno
-      enableFlush: true
-      enableIndexReplica: false
-      compressionMode: passive
-    - name: gluu_user #DO NOT CHANGE THIS LINE
-      type: couchbase
-      memoryQuota: 800
-      replicas: 1
-      ioPriority: high
-      evictionPolicy: valueOnly
-      conflictResolution: seqno
-      enableFlush: true
-      enableIndexReplica: false
-      compressionMode: passive
-
+    managed: true
+    selector:
+      matchLabels:
+        cluster: gluu-couchbase
   servers:
     - name: analytics-us-west-2a
       size: 1

@@ -31,6 +31,21 @@ def extract_couchbase_tar(tar_file):
     tr.close()
 
 
+def set_memory_for_buckets(memory_quota):
+    buckets = ["gluu", "gluu-site", "gluu-user"]
+    ephemeral_buckets = ["gluu-cache", "gluu-token"]
+
+    for bucket in buckets:
+        parser = Parser("./couchbase/couchbase-buckets.yaml", "CouchbaseBucket", bucket)
+        parser["spec"]["memoryQuota"] = str(memory_quota + 100) + "Mi"
+        parser.dump_it()
+
+    for bucket in ephemeral_buckets:
+        parser = Parser("./couchbase/couchbase-ephemeral-buckets.yaml", "CouchbaseEphemeralBucket", bucket)
+        parser["spec"]["memoryQuota"] = str(memory_quota + 100) + "Mi"
+        parser.dump_it()
+
+
 def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_service_name, mem_req, mem_limit,
                                       cpu_req, cpu_limit):
     """
@@ -80,11 +95,11 @@ class Couchbase(object):
         self.kubernetes = Kubernetes()
         self.storage_class_file = Path("./couchbase/storageclasses.yaml")
         self.couchbase_cluster_file = Path("./couchbase/couchbase-cluster.yaml")
+        self.couchbase_buckets_file = Path("./couchbase/couchbase-buckets.yaml")
+        self.couchbase_ephemeral_buckets_file = Path("./couchbase/couchbase-ephemeral-buckets.yaml")
         self.couchbase_source_folder_pattern, self.couchbase_source_file = self.get_couchbase_files
-        self.couchbase_admission_file = self.couchbase_source_file.joinpath("admission.yaml")
-        self.couchbbase_custom_resource_definition_file = self.couchbase_source_file.joinpath("crd.yaml")
-        self.couchbase_operator_role_file = self.couchbase_source_file.joinpath("operator-role.yaml")
-        self.couchbase_operator_deployment_file = self.couchbase_source_file.joinpath("operator-deployment.yaml")
+        self.couchbase_custom_resource_definition_file = self.couchbase_source_file.joinpath("crd.yaml")
+        self.couchbase_operator_dac_file = self.couchbase_source_file.joinpath("operator_dac.yaml")
         self.filename = ""
 
     @property
@@ -98,6 +113,10 @@ class Couchbase(object):
             directory = Path('.')
             try:
                 couchbase_tar_file = list(directory.glob(couchbase_tar_pattern))[0]
+                if "_1." in str(couchbase_tar_file.resolve()):
+                    logger.fatal("Couchbase Autonomous Operator version must be > 2.0")
+                    sys.exit()
+
             except IndexError:
                 logger.fatal("Couchbase package not found.")
                 logger.info("Please download the couchbase kubernetes package and place it inside the same directory "
@@ -196,7 +215,7 @@ class Couchbase(object):
         """
         Return a dictionary containing couchbase resource information calculated
         Alpha
-        :return: 
+        :return:
         """
         tps = int(self.settings["EXPECTED_TRANSACTIONS_PER_SEC"])
         number_of_data_nodes = 0
@@ -326,7 +345,7 @@ class Couchbase(object):
         """
         parser = Parser("./couchbase/couchbase-cluster.yaml", "CouchbaseCluster")
         parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
-        number_of_buckets = len(parser["spec"]["buckets"])
+        number_of_buckets = 5
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
             resources_servers = [{"name": "allServices", "size": 1,
@@ -390,14 +409,13 @@ class Couchbase(object):
         if self.settings["NODES_ZONES"]:
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["spec"]["serverGroups"] = unique_zones
-        parser["spec"]["cluster"]["dataServiceMemoryQuota"] = data_service_memory_quota
-        parser["spec"]["cluster"]["indexServiceMemoryQuota"] = index_service_memory_quota
-        parser["spec"]["cluster"]["searchServiceMemoryQuota"] = search_service_memory_quota
-        parser["spec"]["cluster"]["eventingServiceMemoryQuota"] = eventing_service_memory_quota
-        parser["spec"]["cluster"]["analyticsServiceMemoryQuota"] = analytics_service_memory_quota
+        parser["spec"]["cluster"]["dataServiceMemoryQuota"] = str(data_service_memory_quota) + "Mi"
+        parser["spec"]["cluster"]["indexServiceMemoryQuota"] = str(index_service_memory_quota) + "Mi"
+        parser["spec"]["cluster"]["searchServiceMemoryQuota"] = str(search_service_memory_quota) + "Mi"
+        parser["spec"]["cluster"]["eventingServiceMemoryQuota"] = str(eventing_service_memory_quota) + "Mi"
+        parser["spec"]["cluster"]["analyticsServiceMemoryQuota"] = str(analytics_service_memory_quota) + "Mi"
 
-        for i in range(number_of_buckets):
-            parser["spec"]["buckets"][i]["memoryQuota"] = int(memory_quota + 100)
+        set_memory_for_buckets(memory_quota)
         parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
         parser["spec"]["servers"] = resources_servers
 
@@ -491,15 +509,6 @@ class Couchbase(object):
         shutil.copyfile(ca_cert_filepath, Path("./couchbase_crts_keys/couchbase.crt"))
         shutil.copyfile(chain_pem_filepath, tls_cert_filepath)
         shutil.copyfile(pkey_filepath, tls_private_key_filepath)
-        with open(tls_cert_filepath) as content_file:
-            tls_crt_content = content_file.read()
-            encoded_tls_crt_bytes = base64.b64encode(tls_crt_content.encode("utf-8"))
-            encoded_tls_crt_string = str(encoded_tls_crt_bytes, "utf-8")
-
-        with open(tls_private_key_filepath) as content_file:
-            tls_key_content = content_file.read()
-            encoded_tls_key_bytes = base64.b64encode(tls_key_content.encode("utf-8"))
-            encoded_tls_key_string = str(encoded_tls_key_bytes, "utf-8")
 
         encoded_ca_crt_string = self.settings["COUCHBASE_CRT"]
         if not encoded_ca_crt_string:
@@ -531,33 +540,6 @@ class Couchbase(object):
                                                           literal=ca_cert_filepath.name,
                                                           value_of_literal=encoded_ca_crt_string)
 
-        couchbase_admission_file_secret_parser = Parser(self.couchbase_admission_file, "Secret")
-        couchbase_admission_file_secret_parser["data"]["tls-cert-file"] = encoded_tls_crt_string
-        couchbase_admission_file_secret_parser["data"]["tls-private-key-file"] = encoded_tls_key_string
-        couchbase_admission_file_secret_parser.dump_it()
-
-        couchbase_admission_file_mutating_webhook_configuration_parser = Parser(self.couchbase_admission_file,
-                                                                                "MutatingWebhookConfiguration")
-        couchbase_admission_file_mutating_webhook_configuration_parser["webhooks"][0]["clientConfig"]["caBundle"] \
-            = encoded_tls_crt_string
-        couchbase_admission_file_mutating_webhook_configuration_parser["webhooks"][0]["clientConfig"]["service"][
-            "namespace"] = cb_namespace
-        couchbase_admission_file_mutating_webhook_configuration_parser.dump_it()
-
-        couchbase_admission_file_validating_webhook_configuration_parser = Parser(self.couchbase_admission_file,
-                                                                                  "ValidatingWebhookConfiguration")
-        couchbase_admission_file_validating_webhook_configuration_parser["webhooks"][0][
-            "clientConfig"]["caBundle"] = encoded_tls_crt_string
-        couchbase_admission_file_validating_webhook_configuration_parser["webhooks"][0]["clientConfig"]["service"][
-            "namespace"] = cb_namespace
-        couchbase_admission_file_validating_webhook_configuration_parser.dump_it()
-
-        couchbase_admission_file_cluster_role_binding_parser = Parser(self.couchbase_admission_file,
-                                                                      "ClusterRoleBinding")
-        couchbase_admission_file_cluster_role_binding_parser["subjects"][0]["namespace"] \
-            = cb_namespace
-        couchbase_admission_file_cluster_role_binding_parser.dump_it()
-
         encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
         encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
         encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
@@ -565,16 +547,21 @@ class Couchbase(object):
 
         self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
-        self.kubernetes.create_objects_from_dict(self.couchbase_admission_file, namespace=cb_namespace)
-        self.kubernetes.create_objects_from_dict(self.couchbbase_custom_resource_definition_file,
+        command = "./{}/bin/cbopcfg > {}".format(self.couchbase_source_file, self.couchbase_operator_dac_file)
+        subprocess_cmd(command)
+        couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
+        couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
+        couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
+        couchbase_cluster_parser.dump_it()
+
+
+
+        self.kubernetes.create_objects_from_dict(self.couchbase_custom_resource_definition_file,
                                                  namespace=cb_namespace)
-        self.kubernetes.create_objects_from_dict(self.couchbase_operator_role_file, namespace=cb_namespace)
-        self.kubernetes.create_namespaced_service_account(name="couchbase-operator", namespace=cb_namespace)
-        self.kubernetes.create_namespaced_role_binding(role_binding_name="couchbase-operator",
-                                                       service_account_name="couchbase-operator",
-                                                       role_name="couchbase-operator",
-                                                       namespace=cb_namespace)
-        self.kubernetes.create_objects_from_dict(self.couchbase_operator_deployment_file, namespace=cb_namespace)
+
+        self.kubernetes.create_objects_from_dict(self.couchbase_operator_dac_file,
+                                                 namespace=cb_namespace)
+
         self.kubernetes.check_pods_statuses(cb_namespace, "app=couchbase-operator", 700)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
@@ -587,8 +574,18 @@ class Couchbase(object):
         self.kubernetes.create_objects_from_dict(self.storage_class_file, namespace=cb_namespace)
         self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
                                                         group="couchbase.com",
-                                                        version="v1",
+                                                        version="v2",
                                                         plural="couchbaseclusters",
+                                                        namespace=cb_namespace)
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_buckets_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbasebuckets",
+                                                        namespace=cb_namespace)
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_ephemeral_buckets_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbaseephemeralbuckets",
                                                         namespace=cb_namespace)
 
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled", 700)
@@ -624,6 +621,17 @@ class Couchbase(object):
         self.kubernetes.delete_service("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_deployment_using_name("couchbase-operator-admission",
                                                      self.settings["COUCHBASE_NAMESPACE"])
+        self.kubernetes.delete_service("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
+        self.kubernetes.delete_custom_resource("couchbasebackuprestores.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbasebackups.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbasebuckets.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbaseephemeralbuckets.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbasereplications.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbaserolebindings.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbasegroups.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbasememcachedbuckets.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbaseusers.couchbase.com")
+
         self.kubernetes.delete_service_account("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_secret("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_secret("couchbase-operator-tls", self.settings["COUCHBASE_NAMESPACE"])

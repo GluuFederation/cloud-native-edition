@@ -1,0 +1,50 @@
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: gluu
+  labels:
+    cluster: gluu-couchbase
+spec:
+  name: gluu #DO NOT CHANGE THIS LINE
+  memoryQuota: 100Mi
+  replicas: 1
+  ioPriority: high
+  evictionPolicy: valueOnly
+  conflictResolution: seqno
+  enableFlush: true
+  enableIndexReplica: false
+  compressionMode: passive
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: gluu-site
+  labels:
+    cluster: gluu-couchbase
+spec:
+  name: gluu_site  #DO NOT CHANGE THIS LINE
+  memoryQuota: 100Mi
+  replicas: 1
+  ioPriority: high
+  evictionPolicy: valueOnly
+  conflictResolution: seqno
+  enableFlush: true
+  enableIndexReplica: false
+  compressionMode: passive
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: gluu-user
+  labels:
+    cluster: gluu-couchbase
+spec:
+  name: gluu_user  #DO NOT CHANGE THIS LINE
+  memoryQuota: 100Mi
+  replicas: 1
+  ioPriority: high
+  evictionPolicy: valueOnly
+  conflictResolution: seqno
+  enableFlush: true
+  enableIndexReplica: false
+  compressionMode: passive
