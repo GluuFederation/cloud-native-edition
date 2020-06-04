@@ -78,7 +78,7 @@ jobs:
         cat gke_cluster_name
         sudo gcloud auth activate-service-account --key-file sa.json
         sudo gcloud config set project ${{ secrets.google_project }}
-        sudo gcloud container clusters create $GKE_NAME --num-nodes 1 --machine-type n2-standard-4 --zone ${{ secrets.google_region }}-a --additional-zones ${{ secrets.google_region }}-b,${{ secrets.google_region }}-c
+        sudo gcloud container clusters create $GKE_NAME --num-nodes 2 --machine-type n2-standard-4 --zone ${{ secrets.google_region }}-a
         sudo gcloud container clusters get-credentials $GKE_NAME --zone ${{ secrets.google_region }}-a
 
     - name: Create settings.json
@@ -148,8 +148,10 @@ jobs:
           "COUCHBASE_INDEX_STORAGE": "",
           "COUCHBASE_QUERY_STORAGE": "",
           "COUCHBASE_ANALYTICS_STORAGE": "",
-          "COUCHBASE_BACKUP_SCHEDULE": "*/30 * * * *",
-          "COUCHBASE_BACKUP_RESTORE_POINTS": 1,
+          "COUCHBASE_INCR_BACKUP_SCHEDULE": "*/30 * * * *",
+          "COUCHBASE_FULL_BACKUP_SCHEDULE": "*/30 * * * *",
+          "COUCHBASE_BACKUP_RETENTION_TIME": "24h",
+          "COUCHBASE_BACKUP_STORAGE_SIZE": "5Gi",
           "LDAP_BACKUP_SCHEDULE": "*/30 * * * *",
           "NUMBER_OF_EXPECTED_USERS": "",
           "EXPECTED_TRANSACTIONS_PER_SEC": "",
