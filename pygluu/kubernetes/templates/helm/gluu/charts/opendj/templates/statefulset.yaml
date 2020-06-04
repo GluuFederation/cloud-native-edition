@@ -56,5 +56,9 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.size }}
+      {{- if eq .Values.global.provisioner  "kubernetes.io/no-provisioner" }}
+      storageClassName: {{ .Release.Name }}-local-storage
+      {{- else}}
       storageClassName: {{ include "opendj.fullname" . | quote }}
+      {{- end }}
 {{- end }}

@@ -1,0 +1,25 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+{{- if eq .Values.global.provisioner "kubernetes.io/no-provisioner" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opendj.fullname" . }}
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Release.Name }}-local-storage #deployed in config chart
+  local:
+    path: /opt
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .Values.global.nodeName }}
+{{- end }}

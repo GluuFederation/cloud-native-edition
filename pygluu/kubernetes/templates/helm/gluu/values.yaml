@@ -7,7 +7,7 @@ global:
     enabled: false
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
-  provisioner: k8s.io/minikube-hostpath
+  provisioner: kubernetes.io/no-provisioner
   pool: default
   fsType: ext4
   gcePdStorageType: pd-standard
@@ -16,13 +16,16 @@ global:
   reclaimPolicy: Retain
   nginxNamespace: ingress
 
+  #nodeName used when deploying to a cluster on bare metal. Defines which node to bind pv to 
+  nodeName: node-1
+
   #service names to be used globally/by other charts
   oxAuthServiceName: oxauth
   oxTrustServiceName: oxtrust
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "10.0.2.15" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -55,7 +58,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: couchbase
+  gluuPersistenceType: ldap
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
