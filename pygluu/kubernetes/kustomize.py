@@ -1063,7 +1063,6 @@ class Kustomize(object):
         self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], "app=gg-ui")
         self.kubernetes.delete_service("gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
-        self.kubernetes.delete_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
     def install_gluu_gateway_dbmode(self):
         self.deploy_postgres()
@@ -1492,9 +1491,6 @@ class Kustomize(object):
             self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
             for extension in nginx_ingress_extensions_names:
                 self.kubernetes.delete_ingress(extension)
-            self.kubernetes.delete_namespace("ingress-nginx")
-            if not self.settings["GLUU_NAMESPACE"] == "default":
-                self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         with contextlib.suppress(FileNotFoundError):
             os.remove("oxd-server.keystore")
         with contextlib.suppress(FileNotFoundError):
@@ -1554,7 +1550,6 @@ class Kustomize(object):
         except (SystemError, Exception):
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
         self.kubernetes.delete_storage_class("redis-sc")
-        self.kubernetes.delete_namespace(name=self.settings["REDIS_NAMESPACE"])
 
     def uninstall_kong(self):
         logger.info("Removing gluu gateway kong...")
@@ -1572,7 +1567,6 @@ class Kustomize(object):
         self.kubernetes.delete_service("kong-validation-webhook", self.settings["KONG_NAMESPACE"])
         self.kubernetes.delete_service("kong-admin", self.settings["KONG_NAMESPACE"])
         self.kubernetes.delete_deployment_using_name("ingress-kong", self.settings["KONG_NAMESPACE"])
-        self.kubernetes.delete_namespace(name=self.settings["KONG_NAMESPACE"])
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
@@ -1581,4 +1575,3 @@ class Kustomize(object):
         except (SystemError, Exception):
             exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
         self.kubernetes.delete_storage_class("postgres-sc")
-        self.kubernetes.delete_namespace(name=self.settings["POSTGRES_NAMESPACE"])

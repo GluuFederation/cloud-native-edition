@@ -425,7 +425,6 @@ class Couchbase(object):
         """
         Installs Couchbase
         """
-        self.kubernetes.delete_namespace(self.settings["GLUU_NAMESPACE"])
         self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
         if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
             self.analyze_couchbase_cluster_yaml()
@@ -628,5 +627,4 @@ class Couchbase(object):
         self.kubernetes.delete_service_account("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_secret("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
         self.kubernetes.delete_secret("couchbase-operator-tls", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_namespace(self.settings["COUCHBASE_NAMESPACE"])
         shutil.rmtree(Path("./couchbase-source-folder"), ignore_errors=True)
