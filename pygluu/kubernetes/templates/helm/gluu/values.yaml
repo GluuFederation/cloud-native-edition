@@ -6,8 +6,8 @@ global:
   cloud:
     enabled: false
 
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
-  provisioner: kubernetes.io/no-provisioner
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com, kubernetes.io/no-provisioner
+  provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4
   gcePdStorageType: pd-standard
@@ -25,7 +25,7 @@ global:
   ldapServiceName: opendj
 
   # Networking configs
-  nginxIp: "10.0.2.15" # SHOULD BE CHANGED FOR CLOUD
+  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
@@ -58,7 +58,7 @@ global:
   configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
-  gluuPersistenceType: ldap
+  gluuPersistenceType: couchbase
   # options REDIS/NATIVE_PERSISTENCE
   gluuCacheType: NATIVE_PERSISTENCE
   # options: default/user/site/cache/statistic
