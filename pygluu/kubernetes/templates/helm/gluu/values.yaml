@@ -6,7 +6,7 @@ global:
   cloud:
     enabled: false
 
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com, kubernetes.io/no-provisioner
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4
@@ -15,6 +15,9 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
   nginxNamespace: ingress
+
+  #nodeName used when deploying to a cluster on bare metal. Defines which node to bind pv to 
+  nodeName: node-1
 
   #service names to be used globally/by other charts
   oxAuthServiceName: oxauth

@@ -55,4 +55,8 @@ spec:
       resources:
         requests:
           storage: {{ .Values.storage.size }}
+      {{- if eq .Values.global.provisioner "kubernetes.io/no-provisioner" }}
+      storageClassName: {{ .Release.Name }}-local-storage
+      {{- else }}
       storageClassName: {{ include "jackrabbit.fullname" . | quote }}
+      {{- end }}
