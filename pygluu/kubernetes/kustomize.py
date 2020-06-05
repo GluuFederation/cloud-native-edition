@@ -98,7 +98,7 @@ class Kustomize(object):
 
         self.all_apps = ["casa", "config", "cr-rotate", "key-rotation", "ldap", "oxauth", "oxd-server",
                          "oxpassport", "oxshibboleth", "oxtrust", "persistence", "radius", "upgrade",
-                         "jackrabbit", "gluu-gateway-ui", "update-lb-ip"]
+                         "jackrabbit", "gluu-gateway-ui", "update-lb-ip", "fido2", "scim"]
         self.settings = settings
         self.kubernetes = Kubernetes()
         self.timeout = timeout
@@ -110,6 +110,8 @@ class Kustomize(object):
         self.jackrabbit_yaml = str(self.output_yaml_directory.joinpath("jackrabbit.yaml").resolve())
         self.persistence_yaml = str(self.output_yaml_directory.joinpath("persistence.yaml").resolve())
         self.oxauth_yaml = str(self.output_yaml_directory.joinpath("oxauth.yaml").resolve())
+        self.fido2_yaml = str(self.output_yaml_directory.joinpath("fido2.yaml").resolve())
+        self.scim_yaml = str(self.output_yaml_directory.joinpath("scim.yaml").resolve())
         self.oxtrust_yaml = str(self.output_yaml_directory.joinpath("oxtrust.yaml").resolve())
         self.gluu_upgrade_yaml = str(self.output_yaml_directory.joinpath("upgrade.yaml").resolve())
         self.oxshibboleth_yaml = str(self.output_yaml_directory.joinpath("oxshibboleth.yaml").resolve())
@@ -521,6 +523,18 @@ class Kustomize(object):
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
+            if app == "fido2":
+                self.build_manifest(app, kustomization_file, command,
+                                    "FIDO2_IMAGE_NAME", "FIDO2_IMAGE_TAG")
+                self.remove_resources(app_file, "Deployment")
+                self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
+
+            if app == "scim":
+                self.build_manifest(app, kustomization_file, command,
+                                    "SCIM_IMAGE_NAME", "SCIM_IMAGE_TAG")
+                self.remove_resources(app_file, "Deployment")
+                self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
+
             if app == "oxtrust":
                 self.build_manifest(app, kustomization_file, command,
                                     "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG")
@@ -655,7 +669,7 @@ class Kustomize(object):
 
     def prepare_alb(self):
         services = [self.oxauth_yaml, self.oxtrust_yaml, self.casa_yaml,
-                    self.oxpassport_yaml, self.oxshibboleth_yaml]
+                    self.oxpassport_yaml, self.oxshibboleth_yaml, self.fido2_yaml, self.scim_yaml]
         for service in services:
             if Path(service).is_file():
                 service_parser = Parser(service, "Service")
@@ -892,15 +906,14 @@ class Kustomize(object):
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
                              "gluu-casa", "gluu-ingress-fido2-configuration"]
 
+        ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         for ingress_name in ingress_name_list:
-            yaml = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
-            parser = Parser(yaml, "Ingress", ingress_name)
+            parser = Parser(ingress_file, "Ingress", ingress_name)
             parser["spec"]["tls"][0]["hosts"][0] = self.settings["GLUU_FQDN"]
             parser["spec"]["rules"][0]["host"] = self.settings["GLUU_FQDN"]
             parser.dump_it()
 
-        self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nginx.yaml"),
-                                                 self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.create_objects_from_dict(ingress_file, self.settings["GLUU_NAMESPACE"])
 
     def deploy_postgres(self):
         self.uninstall_postgres()
@@ -1142,6 +1155,20 @@ class Kustomize(object):
         self.kubernetes.patch_namespaced_deployment_scale(name="oxauth", replicas=self.settings["OXAUTH_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
+    def deploy_fido2(self):
+        self.kubernetes.create_objects_from_dict(self.fido2_yaml)
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=fido2", self.timeout)
+        self.kubernetes.patch_namespaced_deployment_scale(name="fido2", replicas=self.settings["FIDO2_REPLICAS"],
+                                                          namespace=self.settings["GLUU_NAMESPACE"])
+
+    def deploy_scim(self):
+        self.kubernetes.create_objects_from_dict(self.scim_yaml)
+        if not self.settings["AWS_LB_TYPE"] == "alb":
+            self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=scim", self.timeout)
+        self.kubernetes.patch_namespaced_deployment_scale(name="scim", replicas=self.settings["SCIM_REPLICAS"],
+                                                          namespace=self.settings["GLUU_NAMESPACE"])
+
     def deploy_oxd(self):
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
@@ -1272,6 +1299,8 @@ class Kustomize(object):
         key_rotate_image = self.settings["KEY_ROTATE_IMAGE_NAME"] + ":" + self.settings["KEY_ROTATE_IMAGE_TAG"]
         ldap_image = self.settings["LDAP_IMAGE_NAME"] + ":" + self.settings["LDAP_IMAGE_TAG"]
         oxauth_image = self.settings["OXAUTH_IMAGE_NAME"] + ":" + self.settings["OXAUTH_IMAGE_TAG"]
+        fido2_image = self.settings["FIDO2_IMAGE_NAME"] + ":" + self.settings["FIDO2_IMAGE_TAG"]
+        scim_image = self.settings["SCIM_IMAGE_NAME"] + ":" + self.settings["SCIM_IMAGE_TAG"]
         oxd_image = self.settings["OXD_IMAGE_NAME"] + ":" + self.settings["OXD_IMAGE_TAG"]
         oxpassport_image = self.settings["OXPASSPORT_IMAGE_NAME"] + ":" + self.settings["OXPASSPORT_IMAGE_TAG"]
         oxshibboleth_image = self.settings["OXSHIBBOLETH_IMAGE_NAME"] + ":" + self.settings["OXSHIBBOLETH_IMAGE_TAG"]
@@ -1288,6 +1317,10 @@ class Kustomize(object):
                                                      image=ldap_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_deployment(name="oxauth",
                                                     image=oxauth_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="fido2",
+                                                    image=fido2_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="scim",
+                                                    image=scim_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_deployment(name="oxd-server",
                                                     image=oxd_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_deployment(name="oxpassport",
@@ -1368,6 +1401,15 @@ class Kustomize(object):
                 self.deploy_update_lb_ip()
         self.kubernetes = Kubernetes()
         self.deploy_oxauth()
+
+        if self.settings["ENABLE_FIDO2"] == "Y":
+            self.kubernetes = Kubernetes()
+            self.deploy_fido2()
+
+        if self.settings["ENABLE_SCIM"] == "Y":
+            self.kubernetes = Kubernetes()
+            self.deploy_scim()
+
         if self.settings["ENABLE_OXD"] == "Y":
             self.kubernetes = Kubernetes()
             self.deploy_oxd()
@@ -1407,11 +1449,11 @@ class Kustomize(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit"]
+                              "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit", "fido2", "scim"]
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
-        gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=oxd-server", "app=oxpassport",
-                                      "app=radius", "app=key-rotation", "app=jackrabbit"]
+        gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=oxd-server",
+                                      "app=oxpassport", "app=radius", "app=key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]

@@ -12,6 +12,7 @@ from .couchbase import Couchbase
 from ast import literal_eval
 import time
 import socket
+import base64
 
 logger = get_logger("gluu-helm          ")
 
@@ -204,7 +205,12 @@ class Helm(object):
         values_file_parser["global"]["oxtrust"]["enabled"] = True
         values_file_parser["global"]["config"]["enabled"] = True
         values_file_parser["global"]["opendj"]["enabled"] = False
-
+        values_file_parser["global"]["fido2"]["enabled"] = False
+        if self.settings["ENABLE_FIDO2"] == "Y":
+            values_file_parser["global"]["fido2"]["enabled"] = True
+        values_file_parser["global"]["scim"]["enabled"] = False
+        if self.settings["ENABLE_SCIM"] == "Y":
+            values_file_parser["global"]["scim"]["enabled"] = True
         if self.settings["INSTALL_JACKRABBIT"] == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
             values_file_parser["global"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
@@ -393,6 +399,12 @@ class Helm(object):
     def install_gluu_gateway_dbmode(self):
         self.uninstall_gluu_gateway_dbmode()
         self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
+        encoded_kong_pass_bytes = base64.b64encode(self.settings["KONG_PG_PASSWORD"].encode("utf-8"))
+        encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
+                                                          namespace=self.settings["KONG_NAMESPACE"],
+                                                          literal="KONG_PG_PASSWORD",
+                                                          value_of_literal=encoded_kong_pass_string)
         exec_cmd("helm repo add kong https://charts.konghq.com")
         exec_cmd("helm repo update")
         exec_cmd("helm install {} kong/kong "

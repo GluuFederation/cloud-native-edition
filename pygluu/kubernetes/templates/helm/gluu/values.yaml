@@ -20,6 +20,8 @@ global:
   oxAuthServiceName: oxauth
   oxTrustServiceName: oxtrust
   ldapServiceName: opendj
+  scimServiceName: scim
+  fido2ServiceName: fido2
 
   # Networking configs
   nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
@@ -77,6 +79,12 @@ global:
 
   # Enable installation of services
   oxauth:
+    enabled: true
+
+  fido2:
+    enabled: true
+
+  scim:
     enabled: true
 
   config:
@@ -190,6 +198,18 @@ oxauth:
     tag: 4.1.1_06
     pullPolicy: Always
 
+fido2:
+  image:
+    repository: gluufederation/fido2
+    tag: 4.2.0_dev
+    pullPolicy: Always
+
+scim:
+  image:
+    repository: gluufederation/scim
+    tag: 4.2.0_dev
+    pullPolicy: Always
+
 oxd-server:
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
   configmap:
@@ -214,6 +234,8 @@ oxd-server:
   #  memory: 128Mi
 
 nginx:
+  # TODO: Remove gluuVersion after depreciating versions < 4.2
+  gluuVersion: "4.1"
   # ingress resources
   ingress:
     enabled: true

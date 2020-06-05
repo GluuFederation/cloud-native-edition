@@ -137,10 +137,14 @@ class Prompt(object):
                                 OXD_SERVER_REPLICAS="",
                                 CASA_REPLICAS="",
                                 RADIUS_REPLICAS="",
+                                FIDO2_REPLICAS="",
+                                SCIM_REPLICAS="",
                                 ENABLE_OXTRUST_API="",
                                 ENABLE_OXTRUST_TEST_MODE="",
                                 ENABLE_CACHE_REFRESH="",
                                 ENABLE_OXD="",
+                                ENABLE_FIDO2="",
+                                ENABLE_SCIM="",
                                 ENABLE_RADIUS="",
                                 ENABLE_OXPASSPORT="",
                                 ENABLE_OXSHIBBOLETH="",
@@ -167,6 +171,10 @@ class Prompt(object):
                                 JACKRABBIT_IMAGE_TAG="",
                                 OXAUTH_IMAGE_NAME="",
                                 OXAUTH_IMAGE_TAG="",
+                                FIDO2_IMAGE_NAME="",
+                                FIDO2_IMAGE_TAG="",
+                                SCIM_IMAGE_NAME="",
+                                SCIM_IMAGE_TAG="",
                                 OXD_IMAGE_NAME="",
                                 OXD_IMAGE_TAG="",
                                 OXPASSPORT_IMAGE_NAME="",
@@ -693,6 +701,20 @@ class Prompt(object):
             prompt = int(prompt)
             self.settings["OXAUTH_REPLICAS"] = prompt
 
+        if not self.settings["FIDO2_REPLICAS"]:
+            prompt = input("Number of fido2 replicas [1]:")
+            if not prompt:
+                prompt = 1
+            prompt = int(prompt)
+            self.settings["FIDO2_REPLICAS"] = prompt
+
+        if not self.settings["SCIM_REPLICAS"]:
+            prompt = input("Number of scim replicas [1]:")
+            if not prompt:
+                prompt = 1
+            prompt = int(prompt)
+            self.settings["SCIM_REPLICAS"] = prompt
+
         if not self.settings["OXTRUST_REPLICAS"]:
             prompt = input("Number of oxTrust replicas [1]:")
             if not prompt:
@@ -1071,6 +1093,30 @@ class Prompt(object):
         if self.settings["ENABLE_CASA"] == "Y":
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
+
+        if not self.settings["ENABLE_FIDO2"]:
+            prompt = input("Deploy fido2[N]?[Y/N]")
+            if prompt == "Y" or prompt == "y":
+                prompt = "Y"
+            else:
+                prompt = "N"
+            self.settings["ENABLE_FIDO2"] = prompt
+
+        if not self.settings["ENABLE_SCIM"]:
+            prompt = input("Deploy scim[N]?[Y/N]")
+            if prompt == "Y" or prompt == "y":
+                prompt = "Y"
+            else:
+                prompt = "N"
+            self.settings["ENABLE_SCIM"] = prompt
+
+        if not self.settings["ENABLE_OXD"]:
+            prompt = input("Deploy oxd server[N]?[Y/N]")
+            if prompt == "Y" or prompt == "y":
+                prompt = "Y"
+            else:
+                prompt = "N"
+            self.settings["ENABLE_OXD"] = prompt
 
         if self.settings["ENABLE_OXD"] == "Y":
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:

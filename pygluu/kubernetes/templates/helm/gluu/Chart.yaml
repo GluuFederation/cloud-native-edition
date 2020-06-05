@@ -26,6 +26,14 @@ dependencies:
       condition: global.oxauth.enabled
       version: 1.0.4
 
+    - name: fido2
+      condition: global.fido2.enabled
+      version: 1.0.4
+
+    - name: scim
+      condition: global.scim.enabled
+      version: 1.0.4
+
     - name: oxtrust
       condition: global.oxtrust.enabled
       version: 1.0.4

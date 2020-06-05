@@ -9,7 +9,7 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 8080
-
+gluuVersion: "4.1"
 ingress:
   enabled: true
   annotations: {}

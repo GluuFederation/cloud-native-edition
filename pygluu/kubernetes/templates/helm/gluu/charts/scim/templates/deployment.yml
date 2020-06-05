@@ -1,0 +1,89 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "scim.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    APP_NAME: scim
+{{ include "scim.labels" . | indent 4}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "scim.name" . }}
+  template:
+    metadata:
+      labels:
+        APP_NAME: scim
+        app: {{ include "scim.name" . }}
+    spec:
+      containers:
+      - name: {{ template "gluu.fullname" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+              /usr/bin/python3 /scripts/updatelbip.py &
+              /app/scripts/entrypoint.sh
+        {{- end}}
+        resources:
+          requests:
+            memory: {{ .Values.requests.memory }}
+          # limits:
+          #   memory: {{ .Values.limits.memory }}
+        ports:
+        - containerPort: {{ .Values.ports.containerPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config-cm
+        volumeMounts:
+        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          - name: {{ include "scim.fullname" .}}-updatelbip
+            mountPath: "/scripts"
+        {{- end }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt 
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt 
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /scim/restv1/scim-configuration
+            port: {{ .Values.ports.containerPort }}
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /scim/restv1/scim-configuration
+            port: {{ .Values.ports.containerPort }}
+          initialDelaySeconds: 25
+          periodSeconds: 25
+      {{- if eq .Values.global.isDomainRegistered "false" }}
+      hostAliases:
+      - ip: {{ .Values.global.nginxIp }}
+        hostnames:
+        - {{ .Values.global.domain }}
+      {{- end }}
+      volumes:
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        - name: cb-pass
+          secret:
+            secretName: {{ .Release.Name }}-cb-pass
+        - name: cb-crt 
+          secret:
+            secretName: {{ .Release.Name }}-cb-crt 
+      {{- end }}
+      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        - name: {{ include "scim.fullname" . }}-updatelbip
+          configMap:
+            name: {{ .Release.Name }}-updatelbip
+      {{- end }}
+      
