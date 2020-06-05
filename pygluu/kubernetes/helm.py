@@ -356,8 +356,8 @@ class Helm(object):
             values_file_parser["cloud"]["enabled"] = False
         values_file_parser["cloud"]["provider"] = self.settings["DEPLOYMENT_ARCH"]
         values_file_parser["dbUser"] = self.settings["GLUU_GATEWAY_UI_PG_USER"]
-        values_file_parser["kongAdminUrl"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
-            self.settings["KONG_NAMESPACE"])
+        values_file_parser["kongAdminUrl"] = "https://{}-kong-admin.{}.svc.cluster.local:8444".format(
+            self.settings["KONG_HELM_RELEASE_NAME"], self.settings["KONG_NAMESPACE"])
         values_file_parser["dbHost"] = self.settings["POSTGRES_URL"]
         values_file_parser["dbDatabase"] = self.settings["GLUU_GATEWAY_UI_DATABASE"]
         values_file_parser["oxdServerUrl"] = oxd_server_url
