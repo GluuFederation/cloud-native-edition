@@ -385,6 +385,12 @@ class Helm(object):
     def install_gluu_gateway_dbmode(self):
         self.uninstall_gluu_gateway_dbmode()
         self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
+        encoded_kong_pass_bytes = base64.b64encode(self.settings["KONG_PG_PASSWORD"].encode("utf-8"))
+        encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
+                                                          namespace=self.settings["KONG_NAMESPACE"],
+                                                          literal="KONG_PG_PASSWORD",
+                                                          value_of_literal=encoded_kong_pass_string)
         exec_cmd("helm repo add kong https://charts.konghq.com")
         exec_cmd("helm repo update")
         exec_cmd("helm install {} kong/kong "
