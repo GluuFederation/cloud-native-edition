@@ -42,8 +42,7 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 8080
+            - containerPort: 8080
               protocol: TCP
           envFrom:
             - configMapRef: 
@@ -53,20 +52,20 @@ spec:
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
-            - name: cb-crt 
+            - name: cb-crt
               mountPath: "/etc/certs/couchbase.crt"
               subPath: couchbase.crt
           {{- end }}
           livenessProbe:
             httpGet:
               path: /casa/health-check
-              port: http
+              port: 8080
             initialDelaySeconds: 25
             periodSeconds: 25
           readinessProbe:
             httpGet:
               path: /casa/health-check
-              port: http
+              port: 8080
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:
@@ -76,7 +75,7 @@ spec:
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass
-        - name: cb-crt 
+        - name: cb-crt
           secret:
             secretName: {{ .Release.Name }}-cb-crt  
       {{- end }}
