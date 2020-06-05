@@ -87,7 +87,7 @@ jobs:
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
-          "GLUU_VERSION": "4.1",
+          "GLUU_VERSION": "4.2.0_dev",
           "GLUU_UPGRADE_TARGET_VERSION": "",
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "GLUU_HELM_RELEASE_NAME": "helm",
