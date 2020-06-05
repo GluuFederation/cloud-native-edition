@@ -396,7 +396,7 @@ class Helm(object):
                  "--set ingressController.installCRDs=false "
                  "--set image.repository={} "
                  "--set image.tag={} "
-                 "--set env.database={} "
+                 "--set env.database=postgres "
                  "--set env.pg_user={} "
                  "--set env.pg_password.valueFrom.secretKeyRef.name=kong-postgres-pass "
                  "--set env.pg_password.valueFrom.secretKeyRef.key=KONG_PG_PASSWORD "
@@ -406,7 +406,6 @@ class Helm(object):
                  "--namespace={}".format(self.settings["KONG_HELM_RELEASE_NAME"],
                                          self.settings["GLUU_GATEWAY_IMAGE_NAME"],
                                          self.settings["GLUU_GATEWAY_IMAGE_TAG"],
-                                         self.settings["KONG_DATABASE"],
                                          self.settings["KONG_PG_USER"],
                                          self.settings["POSTGRES_URL"],
                                          self.settings["KONG_NAMESPACE"]))
