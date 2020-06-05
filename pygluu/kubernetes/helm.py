@@ -203,9 +203,9 @@ class Helm(object):
 
         if self.settings["INSTALL_JACKRABBIT"] == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
-            values_file_parser["global"]["gluuJcaRmiUrl"] = True
-            values_file_parser["global"]["gluuJcaUrl"] = True
-            values_file_parser["global"]["gluuJcaUsername"] = True
+            values_file_parser["global"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
+            values_file_parser["global"]["gluuJcaUrl"] = self.settings["JACKRABBIT_URL"]
+            values_file_parser["global"]["gluuJcaUsername"] = self.settings["JACKRABBIT_USER"]
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
