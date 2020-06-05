@@ -67,7 +67,7 @@ spec:
           exec:
             command:
             - cat
-            - /etc/gluu-radius-health
+            - /tmp/gluu-radius-health
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
