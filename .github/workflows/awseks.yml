@@ -255,7 +255,7 @@ jobs:
       id: test_kubernetes_couchbase_kustomize
       run: |
         cd /home/runner/work/test/
-        wget ${{ secrets.cbpackage }}
+        wget ${{ secrets.cboldpackage }}
         cat settings.json | sed 's/"PERSISTENCE_BACKEND": "ldap"/"PERSISTENCE_BACKEND": "couchbase"/g'  > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz install-couchbase
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' > tmpfile.py && mv tmpfile.py settings.json

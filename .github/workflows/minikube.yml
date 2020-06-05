@@ -188,7 +188,7 @@ jobs:
       if: ${{ matrix.persistence-backends == '"couchbase"' }}
       run: |
           cd /home/runner/work/test/
-          wget ${{ secrets.cbpackage }}
+          wget ${{ secrets.cboldpackage }}
           sudo ./pygluu-kubernetes.pyz install-couchbase
           COUCHBASE_IP=$(kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
