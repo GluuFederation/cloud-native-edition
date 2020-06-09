@@ -18,8 +18,8 @@ spec:
         image: gluufederation/oxpassport:4.1.0_01
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "300m"
+            memory: "700Mi"
+            cpu: "500m"
           limits:
             memory: "700Mi"
             cpu: "500m"

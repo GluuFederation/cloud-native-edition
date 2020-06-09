@@ -48,8 +48,8 @@ spec:
             memory: "1500Mi"
             cpu: "1000m"
           limits:
-            memory: "2000Mi"
-            cpu: "1500m"
+            memory: "1500Mi"
+            cpu: "1000m"
         readinessProbe:
           tcpSocket:
             port: 8080

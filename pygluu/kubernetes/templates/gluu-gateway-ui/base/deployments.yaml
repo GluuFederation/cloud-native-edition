@@ -39,6 +39,13 @@ spec:
             - |
                 /usr/bin/python3 /scripts/update-lb-ip.py &
                 /app/scripts/entrypoint.sh
+          resources:
+            requests:
+              memory: "2000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "2000Mi"
+              cpu: "1000m"
           ports:
             - containerPort: 443
               name: gg-kong-ui
