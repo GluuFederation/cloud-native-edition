@@ -62,13 +62,19 @@ spec:
           limits:
             memory: "2000Mi"
             cpu: "1500m"
-        readinessProbe:
-          tcpSocket:
-            port: 1636
-          initialDelaySeconds: 25
-          periodSeconds: 25
         livenessProbe:
-          tcpSocket:
-            port: 1636
+          exec:
+            command:
+            - python3
+            - /app/scripts/healthcheck.py
           initialDelaySeconds: 30
           periodSeconds: 30
+          failureThreshold: 20
+        readinessProbe:
+          exec:
+            command:
+            - python3
+            - /app/scripts/healthcheck.py
+          initialDelaySeconds: 25
+          periodSeconds: 25
+          failureThreshold: 20
