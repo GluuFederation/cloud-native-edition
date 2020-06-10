@@ -46,6 +46,8 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}
   volumeClaimTemplates:
   - metadata:
       name: jackrabbit-volume

@@ -47,6 +47,8 @@ spec:
             port: 1636
           initialDelaySeconds: 30
           periodSeconds: 30
+        resources:
+{{- toYaml .Values.resources | nindent 10}}
   volumeClaimTemplates:
   - metadata:
       name: opendj-volume

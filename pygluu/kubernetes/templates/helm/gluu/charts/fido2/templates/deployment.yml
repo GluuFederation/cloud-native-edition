@@ -31,11 +31,6 @@ spec:
               /usr/bin/python3 /scripts/updatelbip.py &
               /app/scripts/entrypoint.sh
         {{- end}}
-        resources:
-          requests:
-            memory: {{ .Values.requests.memory }}
-          # limits:
-          #   memory: {{ .Values.limits.memory }}
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
         envFrom:
@@ -66,6 +61,8 @@ spec:
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
