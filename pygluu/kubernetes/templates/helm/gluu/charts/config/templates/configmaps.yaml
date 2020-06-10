@@ -113,8 +113,6 @@ data:
             ssl_cert = v1.read_namespaced_secret( 'gluu', namespace ).data['ssl_cert']
             ssl_key = v1.read_namespaced_secret( "gluu", namespace ).data['ssl_key']
             
-            print('ssl_cert / {} \n ssl_key: {}'.format(ssl_cert, ssl_key) )
-
         return ssl_cert, ssl_key
 
     def create_tls(cert, key):
