@@ -431,6 +431,28 @@ class Kubernetes(object):
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('storageclass/{} has been removed or does not exist'.format(name))
 
+    def delete_namespaced_custom_object(self, filepath, group, version, plural, namespace="default"):
+        """Delete custom object using file in namespace"""
+        starting_time = time.time()
+        response = True
+        while response:
+            yaml_objects = Parser(filepath).return_manifests_dict
+            for manifest in yaml_objects:
+                try:
+                    resp = self.custom_def_cli.delete_namespaced_custom_object(group=group,
+                                                                               version=version,
+                                                                               namespace=namespace,
+                                                                               plural=plural,
+                                                                               name=manifest["metadata"]["name"],
+                                                                               body=manifest)
+
+                    logger.info('Deleted {}/{} in namespace  {}'.format(manifest["kind"],
+                                                                        manifest["metadata"]["name"], namespace))
+                except client.rest.ApiException as e:
+                    response = self.check_error_and_response(starting_time, e)
+                else:
+                    response = self.check_error_and_response(starting_time, resp)
+
     def create_namespace(self, name):
         """Create namespace using name"""
         body = client.V1Secret()

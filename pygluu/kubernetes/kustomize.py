@@ -1256,7 +1256,6 @@ class Kustomize(object):
             pass
 
     def setup_backup_ldap(self):
-        subprocess_cmd("alias kubectl='microk8s.kubectl'")
         encoded_ldap_pw_bytes = base64.b64encode(self.settings["LDAP_PW"].encode("utf-8"))
         encoded_ldap_pw_string = str(encoded_ldap_pw_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="ldap-auth",
@@ -1283,7 +1282,7 @@ class Kustomize(object):
         cron_job_parser = Parser("ldap/backup/cronjobs.yaml", "CronJob")
         cron_job_parser["spec"]["schedule"] = self.settings["LDAP_BACKUP_SCHEDULE"]
         cron_job_parser.dump_it()
-        command = "kubectl kustomize ldap/backup > ./ldap-backup.yaml"
+        command = self.kubectl + " kustomize ldap/backup > ./ldap-backup.yaml"
         subprocess_cmd(command)
         self.kubernetes.create_objects_from_dict("./ldap-backup.yaml")
 
@@ -1586,12 +1585,15 @@ class Kustomize(object):
 
     def uninstall_redis(self):
         logger.info("Removing gluu-redis-cluster...")
-        self.kubernetes.delete_custom_resource("couchbaseclusters.couchbase.com")
-        try:
-            exec_cmd("kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
-        except (SystemError, Exception):
-            exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["REDIS_NAMESPACE"]))
+        logger.info("Removing redis...")
+        redis_yaml = Path("./redis/redis.yaml")
+        self.kubernetes.delete_namespaced_custom_object(filepath=redis_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="redises",
+                                                        namespace=self.settings["REDIS_NAMESPACE"])
         self.kubernetes.delete_storage_class("redis-sc")
+        self.kubernetes.delete_service("kubedb", self.settings["REDIS_NAMESPACE"])
 
     def uninstall_kong(self):
         logger.info("Removing gluu gateway kong...")
@@ -1612,8 +1614,12 @@ class Kustomize(object):
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
-        try:
-            exec_cmd("kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
-        except (SystemError, Exception):
-            exec_cmd("microk8s.kubectl delete all -n {} --all".format(self.settings["POSTGRES_NAMESPACE"]))
+        postgres_yaml = Path("./postgres/postgres.yaml")
+        self.kubernetes.delete_namespaced_custom_object(filepath=postgres_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="postgreses",
+                                                        namespace=self.settings["POSTGRES_NAMESPACE"])
         self.kubernetes.delete_storage_class("postgres-sc")
+        self.kubernetes.delete_service("kubedb", self.settings["REDIS_NAMESPACE"])
+
