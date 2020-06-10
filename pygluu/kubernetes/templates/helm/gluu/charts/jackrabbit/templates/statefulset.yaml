@@ -46,8 +46,12 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
+        {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+        resources: {}
+        {{- else }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: jackrabbit-volume
