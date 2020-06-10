@@ -133,6 +133,9 @@ class Kustomize(object):
 
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
             kubectl = "microk8s.kubectl"
+            # Check if running in container and settings.json mounted
+            if Path("./installer-settings.json").exists():
+                kubectl = "kubectl"
         else:
             kubectl = "kubectl"
         return kubectl
