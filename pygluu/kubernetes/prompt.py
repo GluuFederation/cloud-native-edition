@@ -200,6 +200,11 @@ class Prompt(object):
     def get_settings(self):
         """Get merged settings (default and custom settings from json file).
         """
+        # Check if running in container and settings.json mounted
+        try:
+            shutil.copy(Path("./installer-settings.json"), "./settings.json")
+        except FileNotFoundError:
+            logger.info("No installation settings mounted as /installer-settings.json. Checking settings.json...")
         filename = Path("./settings.json")
         try:
             with open(filename) as f:
