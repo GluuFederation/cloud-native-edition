@@ -71,8 +71,12 @@ spec:
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
+        {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+        resources: {}
+        {{- else }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
       volumes:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "radius.fullname" .}}-updatelbip

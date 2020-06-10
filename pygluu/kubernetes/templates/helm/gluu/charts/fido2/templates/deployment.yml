@@ -61,8 +61,12 @@ spec:
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25
+        {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+        resources: {}
+        {{- else }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
