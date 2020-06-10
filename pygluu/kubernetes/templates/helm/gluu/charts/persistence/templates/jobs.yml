@@ -30,6 +30,8 @@ spec:
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
         {{- end }}
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
       volumes:
         - name: cb-pass

@@ -42,6 +42,8 @@ spec:
             - name: {{ include "oxd-server.name" . }}-updatelbip
               mountPath: /scripts
             {{- end }}
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}
       volumes:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxd-server.name" . }}-updatelbip

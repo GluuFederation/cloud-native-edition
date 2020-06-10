@@ -53,6 +53,8 @@ spec:
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
+        resources:
+{{- toYaml .Values.resources | nindent 10}}
   volumeClaimTemplates:
   - metadata:
       name: opendj-volume

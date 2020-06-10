@@ -71,6 +71,8 @@ spec:
           initialDelaySeconds: 25
           periodSeconds: 25
           failureThreshold: 20
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}
       volumes:
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "radius.fullname" .}}-updatelbip
