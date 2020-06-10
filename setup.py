@@ -39,6 +39,7 @@ setup(
         "ruamel.yaml>=0.16.5",
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
+        "requests",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "pyDes>=2.0.0",  # TODO: Remove the following as soon as the update secret is moved to backend
         "google-api-python-client>=1.8.0", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "requests_oauthlib>=1.3.0", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
@@ -50,15 +51,13 @@ setup(
         "google-auth>=1.0.1", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "ipaddress>=1.0.17;python_version=='2.7'", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
-        "requests", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
-        "requests-oauthlib", # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
     ],
     classifiers=[
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache 2.0 License",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3s",
         "Programming Language :: Python :: 3.6",
     ],
     include_package_data=True,
