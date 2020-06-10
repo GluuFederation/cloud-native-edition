@@ -23,7 +23,7 @@ loadBalancerIp: ""
 dbUser: "konga"
 dbAdapter: "postgres"
 dbPassword: password
-kongAdminUrl: "kong-admin.kong.svc.cluster.local:8444"
+kongAdminUrl: "gg-kong-admin.kong.svc.cluster.local:8444"
 dbHost: "postgres.postgres.svc.cluster.local"
 dbSsl: "false"
 dbPort: "5432"

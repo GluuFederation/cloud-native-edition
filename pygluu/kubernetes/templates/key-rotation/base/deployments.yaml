@@ -27,11 +27,11 @@ spec:
             subPath: couchbase.crt
         resources:
           requests:
-            memory: "500Mi"
+            memory: "300Mi"
             cpu: "300m"
           limits:
-            memory: "700Mi"
-            cpu: "500m"
+            memory: "300Mi"
+            cpu: "300m"
       volumes:
       - name: cb-pass
         secret:

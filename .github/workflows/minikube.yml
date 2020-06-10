@@ -9,7 +9,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7]
-        gluu-version: ['"4.0"', '"4.1"']
+        gluu-version: ['"4.2.0_dev"']
         persistence-backends: ['"ldap"','"couchbase"']
     steps:
     - name: Checkout code
@@ -164,7 +164,11 @@ jobs:
           "OXD_SERVER_REPLICAS": 1,
           "CASA_REPLICAS": 1,
           "RADIUS_REPLICAS": 1,
+          "FIDO2_REPLICAS": 1,
+          "SCIM_REPLICAS": 1,
           "ENABLE_OXTRUST_API": "N",
+          "ENABLE_FIDO2": "Y",
+          "ENABLE_SCIM": "Y",
           "ENABLE_OXTRUST_TEST_MODE": "N",
           "ENABLE_CACHE_REFRESH": "N",
           "ENABLE_OXD": "Y",

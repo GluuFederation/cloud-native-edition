@@ -27,9 +27,9 @@ spec:
         resources:
           requests:
             memory: "200Mi"
-            cpu: "100m"
+            cpu: "200m"
           limits:
-            memory: "300Mi"
+            memory: "200Mi"
             cpu: "200m"
       volumes:
       - name: cb-pass

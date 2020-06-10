@@ -502,7 +502,7 @@ class Couchbase(object):
 
         self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
-        command = "./{}/bin/cbopcfg --namespace {} > {}".format(self.couchbase_source_file,
+        command = "./{}/bin/cbopcfg -backup true --namespace {} > {}".format(self.couchbase_source_file,
                                                                 self.settings["COUCHBASE_NAMESPACE"],
                                                                 self.couchbase_operator_dac_file)
         subprocess_cmd(command)
