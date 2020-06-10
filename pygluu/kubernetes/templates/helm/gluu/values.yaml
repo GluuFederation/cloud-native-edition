@@ -161,13 +161,13 @@ config:
   image:
     repository: gluufederation/config-init
     tag: 4.2.0_dev
-  resources: 
-    limits:
-      cpu: 200m
-      memory: 400Mi
-    requests:
-      cpu: 200m
-      memory: 400Mi
+  resources: {}
+    # limits:
+    #   cpu: 200m
+    #   memory: 400Mi
+    # requests:
+    #   cpu: 200m
+    #   memory: 400Mi
 
 cr-rotate:
   image:
@@ -177,10 +177,10 @@ cr-rotate:
   resources: 
     limits:
       cpu: 200m
-      memory: 400Mi
+      memory: 200Mi
     requests:
       cpu: 200m
-      memory: 400Mi   
+      memory: 200Mi   
 
 key-rotation:
   image:
@@ -190,11 +190,11 @@ key-rotation:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 300m
+      memory: 300Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 300m
+      memory: 300Mi
 
 jackrabbit:
   replicas: 1
@@ -207,11 +207,11 @@ jackrabbit:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 1500m
+      memory: 1000Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 1500m
+      memory: 1000Mi
 
 opendj:
   # options true/false : must be enabled if cache type is REDIS
@@ -227,11 +227,11 @@ opendj:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 1500m
+      memory: 2000Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 1500m
+      memory: 200Mi
 
 # persistence layer
 persistence:
@@ -240,13 +240,13 @@ persistence:
     tag: 4.1.1_03
     pullPolicy: Always
   # default resource limits
-  resources: 
-    limits:
-      cpu: 210m
-      memory: 420Mi
-    requests:
-      cpu: 210m
-      memory: 420Mi
+  resources: {}
+    # limits:
+    #   cpu: 210m
+    #   memory: 420Mi
+    # requests:
+    #   cpu: 210m
+    #   memory: 420Mi
 
 oxauth:
   image:
@@ -256,11 +256,11 @@ oxauth:
   # default resource limits
   resources: 
     limits:
-      cpu: 220m
-      memory: 400Mi
+      cpu: 2500m
+      memory: 2500Mi
     requests:
-      cpu: 220m
-      memory: 400Mi
+      cpu: 2500m
+      memory: 25000Mi
 
 fido2:
   image:
@@ -270,11 +270,11 @@ fido2:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
 
 scim:
   image:
@@ -284,11 +284,11 @@ scim:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
 
 oxd-server:
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
@@ -305,10 +305,10 @@ oxd-server:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
+      cpu: 1000m
       memory: 400Mi
     requests:
-      cpu: 200m
+      cpu: 1000m
       memory: 400Mi
 
 nginx:
@@ -334,11 +334,11 @@ oxpassport:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 700Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 700Mi
 
 oxshibboleth:
   image:
@@ -348,11 +348,11 @@ oxshibboleth:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
 
 oxtrust:
   image:
@@ -362,11 +362,11 @@ oxtrust:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 500m
+      memory: 500Mi
 
 radius:
   image:
@@ -376,8 +376,8 @@ radius:
   # default resource limits
   resources: 
     limits:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 700m
+      memory: 700Mi
     requests:
-      cpu: 200m
-      memory: 400Mi
+      cpu: 700m
+      memory: 700Mi
