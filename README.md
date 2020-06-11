@@ -1,10 +1,10 @@
-![microk8s](https://github.com/GluuFederation/cloud-native-edition/workflows/microk8s/badge.svg?branch=4.1)
-![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.1)
-![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.1)
-![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.1)
+![microk8s](https://github.com/GluuFederation/cloud-native-edition/workflows/microk8s/badge.svg?branch=4.2)
+![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.2)
+![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.2)
+![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.2)
 
 
-# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.3-green.svg?style=for-the-badge)
+# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.4-green.svg?style=for-the-badge)
 
 ## Kubernetes recipes
 
