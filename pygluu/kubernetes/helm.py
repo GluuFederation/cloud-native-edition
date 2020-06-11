@@ -43,7 +43,8 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
                                                        app_label="app=oxauth",
-                                                       namespace=namespace)
+                                                       namespace=namespace,
+                                                       stdout=False)
 
         client_registration_response_dict = literal_eval(client_registration_response)
         oxd_id = client_registration_response_dict["oxd_id"]
