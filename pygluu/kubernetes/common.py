@@ -25,10 +25,11 @@ def update_settings_json_file(settings):
         json.dump(settings, file, indent=2)
 
 
-def exec_cmd(cmd):
+def exec_cmd(cmd, output_file=None):
     """
     Execute command cmd
     :param cmd:
+    :param output_file:
     :return:
     """
     args = shlex.split(cmd)
@@ -38,10 +39,13 @@ def exec_cmd(cmd):
                              stderr=subprocess.PIPE)
     stdout, stderr = popen.communicate()
     retcode = popen.returncode
-
+    if stdout and output_file:
+        with open(output_file, "w+") as file:
+            file.write(str(stdout, "utf-8"))
+    else:
+        logger.info(str(stdout, "utf-8"))
     if retcode != 0:
         logger.error(str(stderr, "utf-8"))
-    logger.info(str(stdout, "utf-8"))
     return stdout, stderr, retcode
 
 
@@ -63,16 +67,6 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def subprocess_cmd(command):
-    """Execute command
-    :param command:
-    :return:
-    """
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    proc_stdout = process.communicate()[0].strip()
-    return proc_stdout
-
-
 def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
     """Execute ssh command and remove directory.
     :param key:
@@ -80,8 +74,8 @@ def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
     :param node_ip:
     :param folder_to_be_removed:
     """
-    subprocess_cmd("ssh -oStrictHostKeyChecking=no -i {} {}@{} sudo rm -rf {}"
-                   .format(key, user, node_ip, folder_to_be_removed))
+    exec_cmd("ssh -oStrictHostKeyChecking=no -i {} {}@{} sudo rm -rf {}"
+             .format(key, user, node_ip, folder_to_be_removed))
 
 
 def check_port(host, port):

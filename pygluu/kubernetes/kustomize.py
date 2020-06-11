@@ -11,7 +11,7 @@ import contextlib
 from pathlib import Path
 from ast import literal_eval
 from .yamlparser import Parser
-from .common import get_logger, subprocess_cmd, copy, exec_cmd, ssh_and_remove
+from .common import get_logger, copy, exec_cmd, ssh_and_remove
 from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
@@ -487,33 +487,33 @@ class Kustomize(object):
             app_filename = app + ".yaml"
             kustomization_file = "./{}/base/kustomization.yaml".format(app)
             app_file = str(self.output_yaml_directory.joinpath(app_filename).resolve())
-            command = self.kubectl + " kustomize ./{}/base > {} ".format(app, app_file)
+            command = self.kubectl + " kustomize ./{}/base".format(app)
             if app == "config":
                 self.build_manifest(app, kustomization_file, command,
-                                    "CONFIG_IMAGE_NAME", "CONFIG_IMAGE_TAG")
+                                    "CONFIG_IMAGE_NAME", "CONFIG_IMAGE_TAG", app_file)
                 self.parse_configmap(app_file)
 
             if app == "ldap":
                 if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                         self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     command = self.kubectl + " kustomize " + str(
-                        self.ldap_kustomize_yaml_directory.resolve()) + " > " + app_file
+                        self.ldap_kustomize_yaml_directory.resolve())
                     self.build_manifest(app, kustomization_file, command,
-                                        "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
+                                        "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG", app_file)
                     self.adjust_ldap_jackrabbit(app_file)
                     self.remove_resources(app_file, "StatefulSet")
 
             if app == "jackrabbit" and self.settings["INSTALL_JACKRABBIT"] == "Y":
                 command = self.kubectl + " kustomize " + str(
-                    self.jcr_kustomize_yaml_directory.resolve()) + " > " + app_file
+                    self.jcr_kustomize_yaml_directory.resolve())
                 self.build_manifest(app, kustomization_file, command,
-                                    "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
+                                    "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG", app_file)
                 self.adjust_ldap_jackrabbit(app_file)
                 self.remove_resources(app_file, "StatefulSet")
 
             if app == "persistence":
                 self.build_manifest(app, kustomization_file, command,
-                                    "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG")
+                                    "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG", app_file)
                 if self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     persistence_job_parser = Parser(app_file, "Job")
                     del persistence_job_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -522,43 +522,43 @@ class Kustomize(object):
 
             if app == "oxauth":
                 self.build_manifest(app, kustomization_file, command,
-                                    "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
+                                    "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "fido2":
                 self.build_manifest(app, kustomization_file, command,
-                                    "FIDO2_IMAGE_NAME", "FIDO2_IMAGE_TAG")
+                                    "FIDO2_IMAGE_NAME", "FIDO2_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "scim":
                 self.build_manifest(app, kustomization_file, command,
-                                    "SCIM_IMAGE_NAME", "SCIM_IMAGE_TAG")
+                                    "SCIM_IMAGE_NAME", "SCIM_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "oxtrust":
                 self.build_manifest(app, kustomization_file, command,
-                                    "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG")
+                                    "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxshibboleth" and self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
                 self.build_manifest(app, kustomization_file, command,
-                                    "OXSHIBBOLETH_IMAGE_NAME", "OXSHIBBOLETH_IMAGE_TAG")
+                                    "OXSHIBBOLETH_IMAGE_NAME", "OXSHIBBOLETH_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxpassport" and self.settings["ENABLE_OXPASSPORT"] == "Y":
                 self.build_manifest(app, kustomization_file, command,
-                                    "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG")
+                                    "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "key-rotation" and self.settings["ENABLE_KEY_ROTATE"] == "Y":
                 self.build_manifest(app, kustomization_file, command,
-                                    "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG")
+                                    "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
@@ -568,7 +568,7 @@ class Kustomize(object):
                                                namespace=self.settings["GLUU_NAMESPACE"],
                                                image_name_key="CACHE_REFRESH_ROTATE_IMAGE_NAME",
                                                image_tag_key="CACHE_REFRESH_ROTATE_IMAGE_TAG")
-                subprocess_cmd(command)
+                exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "DaemonSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "DaemonSet"
 
@@ -578,7 +578,7 @@ class Kustomize(object):
                                                namespace=self.settings["GLUU_NAMESPACE"],
                                                image_name_key="OXD_IMAGE_NAME",
                                                image_tag_key="OXD_IMAGE_TAG")
-                subprocess_cmd(command)
+                exec_cmd(command, output_file=app_file)
                 self.parse_configmap(app_file)
                 self.remove_resources(app_file, "Deployment")
                 oxd_server_service_parser = Parser(app_file, "Deployment")
@@ -592,7 +592,7 @@ class Kustomize(object):
                                                namespace=self.settings["GLUU_NAMESPACE"],
                                                image_name_key="CASA_IMAGE_NAME",
                                                image_tag_key="CASA_IMAGE_TAG")
-                subprocess_cmd(command)
+                exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
@@ -602,30 +602,30 @@ class Kustomize(object):
                                                namespace=self.settings["GLUU_NAMESPACE"],
                                                image_name_key="RADIUS_IMAGE_NAME",
                                                image_tag_key="RADIUS_IMAGE_TAG")
-                subprocess_cmd(command)
+                exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "update-lb-ip" and self.settings["IS_GLUU_FQDN_REGISTERED"] == "N":
                 if self.settings["DEPLOYMENT_ARCH"] == "eks":
                     logger.info("Building {} manifests".format(app))
-                    subprocess_cmd(command)
+                    exec_cmd(command, output_file=app_file)
 
-    def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key):
+    def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key, app_file):
         logger.info("Building {} manifests".format(app))
         self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
                                        namespace=self.settings["GLUU_NAMESPACE"],
                                        image_name_key=image_name_key,
                                        image_tag_key=image_tag_key)
-        subprocess_cmd(command)
+        exec_cmd(command, output_file=app_file)
 
     def kustomize_gluu_upgrade(self):
         self.update_kustomization_yaml(kustomization_yaml="upgrade/base/kustomization.yaml",
                                        namespace=self.settings["GLUU_NAMESPACE"],
                                        image_name_key="UPGRADE_IMAGE_NAME",
                                        image_tag_key="UPGRADE_IMAGE_TAG")
-        command = self.kubectl + " kustomize upgrade/base > " + self.gluu_upgrade_yaml
-        subprocess_cmd(command)
+        command = self.kubectl + " kustomize upgrade/base"
+        exec_cmd(command, output_file=self.gluu_upgrade_yaml)
         upgrade_cm_parser = Parser(self.gluu_upgrade_yaml, "ConfigMap")
         upgrade_cm_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         upgrade_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings["GLUU_CACHE_TYPE"]
@@ -647,13 +647,13 @@ class Kustomize(object):
 
     def kustomize_gluu_gateway_ui(self):
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
-            command = self.kubectl + " kustomize gluu-gateway-ui/base > " + self.gg_ui_yaml
+            command = self.kubectl + " kustomize gluu-gateway-ui/base"
             kustomization_file = "./gluu-gateway-ui/base/kustomization.yaml"
             self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
                                            namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
                                            image_name_key="GLUU_GATEWAY_UI_IMAGE_NAME",
                                            image_tag_key="GLUU_GATEWAY_UI_IMAGE_TAG")
-            subprocess_cmd(command)
+            exec_cmd(command, output_file=self.gg_ui_yaml)
             self.parse_gluu_gateway_ui_configmap()
             postgres_full_add = "'postgresql://" + self.settings["GLUU_GATEWAY_UI_PG_USER"] + ":" + \
                                 self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"] + "@" + self.settings["POSTGRES_URL"] + \
@@ -830,8 +830,6 @@ class Kustomize(object):
 
     def deploy_nginx(self):
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
-        if self.settings["DEPLOYMENT_ARCH"] == "minikube":
-            subprocess_cmd("minikube addons enable ingress")
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/mandatory.yaml"))
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             if self.settings["AWS_LB_TYPE"] == "nlb":
@@ -1285,8 +1283,8 @@ class Kustomize(object):
         cron_job_parser = Parser("ldap/backup/cronjobs.yaml", "CronJob")
         cron_job_parser["spec"]["schedule"] = self.settings["LDAP_BACKUP_SCHEDULE"]
         cron_job_parser.dump_it()
-        command = self.kubectl + " kustomize ldap/backup > ./ldap-backup.yaml"
-        subprocess_cmd(command)
+        command = self.kubectl + " kustomize ldap/backup"
+        exec_cmd(command, output_file="./ldap-backup.yaml")
         self.kubernetes.create_objects_from_dict("./ldap-backup.yaml")
 
     def upgrade(self):
@@ -1544,7 +1542,7 @@ class Kustomize(object):
         else:
             for node_ip in self.settings["NODES_IPS"]:
                 if self.settings["DEPLOYMENT_ARCH"] == "minikube":
-                    subprocess_cmd("minikube ssh 'sudo rm -rf /data'")
+                    exec_cmd("minikube ssh 'sudo rm -rf /data'")
                 elif self.settings["DEPLOYMENT_ARCH"] == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
@@ -1557,9 +1555,9 @@ class Kustomize(object):
                 if self.settings["DEPLOYMENT_ARCH"] == "gke":
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:
-                            subprocess_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
+                            exec_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
                                            format(node_name, zone))
-                            subprocess_cmd(
+                            exec_cmd(
                                 "gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/jackrabbit'".
                                 format(node_name, zone))
         if not restore:

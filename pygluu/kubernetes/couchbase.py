@@ -9,7 +9,7 @@ import shutil
 import tarfile
 from .kubeapi import Kubernetes
 from .yamlparser import Parser
-from .common import get_logger, update_settings_json_file, subprocess_cmd
+from .common import get_logger, update_settings_json_file, exec_cmd
 from .pycert import setup_crts
 import sys
 import base64
@@ -306,7 +306,8 @@ class Couchbase(object):
             resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
                                   "pod": {"volumeMounts": {"default": "pvc-general",
-                                          "data": "pvc-data", "index": "pvc-index", "analytics": ["pvc-analytics"]}}}]
+                                                           "data": "pvc-data", "index": "pvc-index",
+                                                           "analytics": ["pvc-analytics"]}}}]
             data_service_memory_quota = 1024
             index_service_memory_quota = 512
             search_service_memory_quota = 512
@@ -502,10 +503,9 @@ class Couchbase(object):
 
         self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
-        command = "./{}/bin/cbopcfg -backup true --namespace {} > {}".format(self.couchbase_source_file,
-                                                                self.settings["COUCHBASE_NAMESPACE"],
-                                                                self.couchbase_operator_dac_file)
-        subprocess_cmd(command)
+        command = "./{}/bin/cbopcfg -backup true --namespace {}".format(self.couchbase_source_file,
+                                                                        self.settings["COUCHBASE_NAMESPACE"])
+        exec_cmd(command, output_file=self.couchbase_operator_dac_file)
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"

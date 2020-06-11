@@ -11,7 +11,7 @@ import shutil
 import json
 import base64
 from .kubeapi import Kubernetes
-from .common import update_settings_json_file, get_logger, subprocess_cmd, prompt_password
+from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password
 
 logger = get_logger("gluu-prompt        ")
 
@@ -330,6 +330,7 @@ class Prompt(object):
         """
         Manual prompts for image names and tags if changed from default or at a different repository.
         """
+
         def prompt_and_set_setting(service, image_name_key, image_tag_key):
             name_prompt = input(service + " image name [{}]".format(self.settings[image_name_key]))
             tag_prompt = input(service + " image tag [{}]".format(self.settings[image_tag_key]))
@@ -422,9 +423,9 @@ class Prompt(object):
         if self.settings["APP_VOLUME_TYPE"] == 11:
             for node_name in self.settings["NODES_NAMES"]:
                 for zone in self.settings["NODES_ZONES"]:
-                    response = subprocess_cmd("gcloud compute ssh user@{} --zone={} "
-                                              "--command='echo $HOME'".format(node_name,
-                                                                              zone))
+                    response = exec_cmd("gcloud compute ssh user@{} --zone={} "
+                                        "--command='echo $HOME'".format(node_name,
+                                                                        zone))
                     self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
                     if self.settings["GOOGLE_NODE_HOME_DIR"]:
                         break
@@ -968,9 +969,9 @@ class Prompt(object):
                     "*.{}.{}.svc".format(self.settings["COUCHBASE_CLUSTER_NAME"], self.settings["COUCHBASE_NAMESPACE"]),
                     "{}-srv".format(self.settings["COUCHBASE_CLUSTER_NAME"]),
                     "{}-srv.{}".format(self.settings["COUCHBASE_CLUSTER_NAME"],
-                                     self.settings["COUCHBASE_NAMESPACE"]),
-                    "{}-srv.{}.svc".format(self.settings["COUCHBASE_CLUSTER_NAME"],
                                        self.settings["COUCHBASE_NAMESPACE"]),
+                    "{}-srv.{}.svc".format(self.settings["COUCHBASE_CLUSTER_NAME"],
+                                           self.settings["COUCHBASE_NAMESPACE"]),
                     "localhost"
                 ]
             if not self.settings["COUCHBASE_CN"]:
@@ -1303,7 +1304,7 @@ class Prompt(object):
                     self.settings["NODE_SSH_KEY"] = "~/.ssh/id_rsa"
 
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
-            subprocess_cmd("microk8s.enable {} {} {}".format("dns", "ingress", "storage"))
+            exec_cmd("microk8s.enable {} {} {}".format("dns", "ingress", "storage"))
 
         if not self.settings["HOST_EXT_IP"]:
             ip = self.gather_ip
