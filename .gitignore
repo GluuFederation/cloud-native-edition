@@ -103,5 +103,5 @@ ENV/
 .mypy_cache/
 
 *.pyz
-
+/pygluu/kubernetes/kubernetes-client
 .DS_Store
