@@ -1303,6 +1303,7 @@ class Prompt(object):
                 prompt = "Y"
             else:
                 prompt = "N"
+            self.settings["TEST_ENVIRONMENT"] = prompt
 
         if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "gke" \
