@@ -192,7 +192,9 @@ class Helm(object):
             values_file_parser["global"]["gluuRedisUseSsl"] = self.settings["REDIS_USE_SSL"]
             values_file_parser["global"]["gluuRedisSslTruststore"] = self.settings["REDIS_SSL_TRUSTSTORE"]
             values_file_parser["global"]["gluuRedisSentinelGroup"] = self.settings["REDIS_SENTINEL_GROUP"]
-
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
+                or self.settings["TEST_ENVIRONMENT"] == "Y":
+            values_file_parser["cloud"]["testEnviroment"] = True
         values_file_parser["global"]["lbAddr"] = self.settings["LB_ADD"]
         values_file_parser["global"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["global"]["gluuPersistenceLdapMapping"] = "default"

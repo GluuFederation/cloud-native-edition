@@ -807,7 +807,8 @@ class Kustomize(object):
             pv_parser.dump_it()
 
     def remove_resources(self, app_file, kind):
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
+                or self.settings["TEST_ENVIRONMENT"] == "Y":
             parser = Parser(app_file, kind)
             try:
                 logger.info("Removing resources limits and requests from {}".format(app_file))
