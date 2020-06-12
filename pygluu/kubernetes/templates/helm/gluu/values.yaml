@@ -232,7 +232,7 @@ opendj:
       memory: 2000Mi
     requests:
       cpu: 1500m
-      memory: 200Mi
+      memory: 2000Mi
 
 # persistence layer
 persistence:
@@ -261,7 +261,7 @@ oxauth:
       memory: 2500Mi
     requests:
       cpu: 2500m
-      memory: 25000Mi
+      memory: 2500Mi
 
 fido2:
   image:
