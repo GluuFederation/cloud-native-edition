@@ -164,11 +164,11 @@ config:
     tag: 4.2.0_dev
   resources: {}
     # limits:
-    #   cpu: 200m
-    #   memory: 400Mi
+    #   cpu: 500m
+    #   memory: 500Mi
     # requests:
-    #   cpu: 200m
-    #   memory: 400Mi
+    #   cpu: 500m
+    #   memory: 500Mi
 
 cr-rotate:
   image:
@@ -243,11 +243,11 @@ persistence:
   # default resource limits
   resources: {}
     # limits:
-    #   cpu: 210m
-    #   memory: 420Mi
+    #   cpu: 500m
+    #   memory: 500Mi
     # requests:
-    #   cpu: 210m
-    #   memory: 420Mi
+    #   cpu: 500m
+    #   memory: 500Mi
 
 oxauth:
   image:
