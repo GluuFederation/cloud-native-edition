@@ -351,9 +351,6 @@ class Kustomize(object):
                 parser.dump_it()
 
         else:
-            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
-            cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
-            cm_parser.dump_it()
             for k, v in self.adjust_yamls_for_fqdn_status.items():
                 parser = Parser(k, v)
                 # Check Couchbase entries
@@ -889,6 +886,9 @@ class Kustomize(object):
                                                              joinpath("nginx/patch-configmap-l4.yaml"))
 
             self.check_lb()
+            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
+            cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
+            cm_parser.dump_it()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "do":
@@ -1176,6 +1176,9 @@ class Kustomize(object):
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxd(self):
+        cm_parser = Parser(self.oxd_server_yaml, "ConfigMap")
+        cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
+        cm_parser.dump_it()
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)
@@ -1356,6 +1359,13 @@ class Kustomize(object):
                     couchbase_app = Couchbase(self.settings)
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings["COUCHBASE_CRT"],
                                                                           encoded_cb_pass_string)
+        if not restore:
+            self.kubernetes = Kubernetes()
+            if self.settings["AWS_LB_TYPE"] == "alb":
+                self.prepare_alb()
+                self.deploy_alb()
+            else:
+                self.deploy_nginx()
 
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             self.kubernetes = Kubernetes()
@@ -1388,14 +1398,6 @@ class Kustomize(object):
                 if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
                     self.setup_backup_ldap()
 
-        if not restore:
-            self.kubernetes = Kubernetes()
-            if self.settings["AWS_LB_TYPE"] == "alb":
-                self.prepare_alb()
-                self.deploy_alb()
-            else:
-                self.deploy_nginx()
-        self.adjust_fqdn_yaml_entries()
         if not restore:
             self.kubernetes = Kubernetes()
             self.deploy_persistence()
@@ -1537,7 +1539,7 @@ class Kustomize(object):
             self.kubernetes.delete_service_account(nginx_service_account_name, "ingress-nginx")
             self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
             for extension in nginx_ingress_extensions_names:
-                self.kubernetes.delete_ingress(extension)
+                self.kubernetes.delete_ingress(extension, self.settings["GLUU_NAMESPACE"])
         with contextlib.suppress(FileNotFoundError):
             os.remove("oxd-server.keystore")
         with contextlib.suppress(FileNotFoundError):
