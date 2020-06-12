@@ -31,11 +31,6 @@ spec:
               /usr/bin/python3 /scripts/updatelbip.py &
               /app/scripts/entrypoint.sh
         {{- end}}
-        resources:
-          requests:
-            memory: {{ .Values.requests.memory }}
-          # limits:
-          #   memory: {{ .Values.limits.memory }}
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
         envFrom:
@@ -66,6 +61,14 @@ spec:
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25
+        {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+        resources: {}
+        {{- else if .Values.global.cloud.testEnviroment }}
+        resources: {}
+        {{- else }}
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}

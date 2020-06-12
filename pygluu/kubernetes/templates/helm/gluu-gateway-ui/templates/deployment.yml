@@ -32,12 +32,7 @@ spec:
               /app/scripts/entrypoint.sh
         {{- end}}
         resources:
-          requests:
-            memory: {{ .Values.requests.memory }}
-            cpu: {{ .Values.requests.cpu }}
-          limits:
-            memory: {{ .Values.limits.memory }}
-            cpu: {{ .Values.limits.cpu }}
+{{- toYaml .Values.resources | nindent 10 }}
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
         env:
