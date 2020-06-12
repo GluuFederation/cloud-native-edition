@@ -1,137 +1,518 @@
 # The Kubernetes recipes
 
-1.  If deploying on the cloud make sure to take a look at the cloud specific notes before continuing.
+## System Requirements for cloud deployments
 
-    * [Amazon Web Services (AWS) - EKS](#amazon-web-services-aws---eks)
-    * [GCE (Google Cloud Engine) - GKE](#gce-google-cloud-engine---gke)
+!!!note
+    For local deployments like `minikube` and `microk8s`  or cloud installations for demoing  Gluu may set the resources to the minimum and hence  can have `8GB RAM`, `4 CPU`, and `50GB disk` in total to run all services.
+  
+Please calculate the minimum required resources as per services deployed. The following table contains default recommended resources to start with. Depending on the use of each service the resources may be increased or decreased. 
+
+|Service           | CPU Unit   |    RAM      |   Disk Space     | Processor Type | Required                           |
+|------------------|------------|-------------|------------------|----------------|------------------------------------|
+|oxAuth            | 2.5        |    2.5GB    |   N/A            |  64 Bit        | Yes                                |
+|LDAP              | 1.5        |    2GB      |   10GB           |  64 Bit        | Only if couchbase is not installed |
+|fido2             | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|scim              | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|config - job      | 0.5        |    0.5GB    |   N/A            |  64 Bit        | Yes on fresh installs              |
+|jackrabbit        | 1.5        |    1GB      |   10GB           |  64 Bit        | Yes                                |
+|persistence - job | 0.5        |    0.5GB    |   N/A            |  64 Bit        | Yes on fresh installs              |
+|oxTrust           | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|oxShibboleth      | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|oxPassport        | 0.5        |    0.7GB    |   N/A            |  64 Bit        | No                                 |
+|oxd-server        | 1          |    0.4GB    |   N/A            |  64 Bit        | No                                 |
+|nginx             | 1          |    1GB      |   N/A            |  64 Bit        | Yes if not ALB                     |
+|key-rotation      | 0.3        |    0.3GB    |   N/A            |  64 Bit        | No                                 |
+|cr-rotate         | 0.2        |    0.2GB    |   N/A            |  64 Bit        | No                                 |
+|casa              | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|radius            | 0.7        |    0.7GB    |   N/A            |  64 Bit        | No                                 |
+
+
+1. Configure cloud or local kubernetes cluster:
+
+=== "EKS"
+    ## Amazon Web Services (AWS) - EKS
+      
+    ### Setup Cluster
+    
+    -  Follow this [guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+     to install a cluster with worker nodes. Please make sure that you have all the `IAM` policies for the AWS user that will be creating the cluster and volumes.
+    
+    ### Requirements
+    
+    -   The above guide should also walk you through installing `kubectl` , `aws-iam-authenticator` and `aws cli` on the VM you will be managing your cluster and nodes from. Check to make sure.
+    
+            aws-iam-authenticator help
+            aws-cli
+            kubectl version
+    
+    !!!note
+        Default  AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
+      
+
+=== "GKE"
+    ## GCE (Google Cloud Engine) - GKE
+    
+    ### Setup Cluster
+
+    1.  Install [gcloud](https://cloud.google.com/sdk/docs/quickstarts)
+    
+    1.  Install kubectl using `gcloud components install kubectl` command
+    
+    1.  Create cluster using a command such as the following example:
+    
+            gcloud container clusters create exploringgluu --num-nodes 2 --machine-type e2-highcpu-8 --zone us-west1-a
+    
+        where `CLUSTER_NAME` is the name you choose for the cluster and `ZONE_NAME` is the name of [zone](https://cloud.google.com/compute/docs/regions-zones/) where the cluster resources live in.
+    
+    1.  Configure `kubectl` to use the cluster:
+    
+            gcloud container clusters get-credentials CLUSTER_NAME --zone ZONE_NAME
+    
+        where `CLUSTER_NAME` is the name you choose for the cluster and `ZONE_NAME` is the name of [zone](https://cloud.google.com/compute/docs/regions-zones/) where the cluster resources live in.
+    
+        Afterwards run `kubectl cluster-info` to check whether `kubectl` is ready to interact with the cluster.
+        
+    1.  If a connection is not made to google consul using google account the call to the api will fail. Either connect to google consul using an associated google account and run any `kubectl` command like `kubectl get pod` or create a service account using a json key [file](https://cloud.google.com/docs/authentication/getting-started).
+    
+
+    
+=== "DOKS"
+    ## DigitalOcean Kubernetes (DOKS)
+    
+    ### Setup Cluster
+    
+    -  Follow this [guide](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/) to create digital ocean kubernetes service cluster and connect to it.
+
+=== "AKS"
+    ## Azure - AKS
     
     !!!warning
-        * [Azure - AKS](#azure---aks) pending
-
-    If deploying locally make sure to take a look at the specific notes bellow before continuing.
-    
-      * [Minikube](#minikube)
-      * [MicroK8s](#microk8s)
-
-1. Install using one of the following :
-
-     * [Kustomize](#install-gluu-using-pygluu-kubernetes-with-kustomize)
-     * [Helm](#install-gluu-using-helm)
-     
-## Amazon Web Services (AWS) - EKS
-  
-### Setup Cluster
-
--  Follow this [guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
- to install a cluster with worker nodes. Please make sure that you have all the `IAM` policies for the AWS user that will be creating the cluster and volumes.
-
-### Requirements
-
--   The above guide should also walk you through installing `kubectl` , `aws-iam-authenticator` and `aws cli` on the VM you will be managing your cluster and nodes from. Check to make sure.
-
-        aws-iam-authenticator help
-        aws-cli
-        kubectl version
-
-!!!note
-    Default  AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
-  
-## GCE (Google Cloud Engine) - GKE
-
-### Setup Cluster
-
-1.  Install [gcloud](https://cloud.google.com/sdk/docs/quickstarts)
-
-1.  Install kubectl using `gcloud components install kubectl` command
-
-1.  Create cluster using a command such as the following as an example:
-
-        gcloud container clusters create exploringgluu --num-nodes 2 --machine-type n1-standard-2 --zone us-west1-a --additional-zones us-west1-b,us-west1-c
-
-    where `CLUSTER_NAME` is the name you choose for the cluster and `ZONE_NAME` is the name of [zone](https://cloud.google.com/compute/docs/regions-zones/) where the cluster resources live in.
-
-1.  Configure `kubectl` to use the cluster:
-
-        gcloud container clusters get-credentials CLUSTER_NAME --zone ZONE_NAME
-
-    where `CLUSTER_NAME` is the name you choose for the cluster and `ZONE_NAME` is the name of [zone](https://cloud.google.com/compute/docs/regions-zones/) where the cluster resources live in.
-
-    Afterwards run `kubectl cluster-info` to check whether `kubectl` is ready to interact with the cluster.
-    
-1.  If a connection is not made to google consul using google account the call to the api will fail. Either connect to google consul using an associated google account and run any `kubectl` command like `kubectl get pod` or create a service account using a json key [file](https://cloud.google.com/docs/authentication/getting-started).
-
-
-## Azure - AKS
-
-!!!warning
-    Pending
-    
-### Requirements
-
--  Follow this [guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) to install Azure CLI on the VM that will be managing the cluster and nodes. Check to make sure.
-
--  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-a-resource-group) to create the resource group for the AKS setup.
-
--  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-aks-cluster) to create the AKS cluster
-
--  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#connect-to-the-cluster) to connect to the AKS cluster
-
-## Minikube
-
-### Requirements
-
-1. Install [minikube](https://github.com/kubernetes/minikube/releases).
-
-1. Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-
-1. Create cluster:
-
-    ```bash
-    minikube start
-    ```
+        Pending
         
-1. Configure `kubectl` to use the cluster:
+    ### Requirements
+    
+    -  Follow this [guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) to install Azure CLI on the VM that will be managing the cluster and nodes. Check to make sure.
+    
+    -  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-a-resource-group) to create the resource group for the AKS setup.
+    
+    -  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-aks-cluster) to create the AKS cluster
+    
+    -  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#connect-to-the-cluster) to connect to the AKS cluster
 
-        kubectl config use-context minikube
-1. Enable ingress on minikube
+      
+=== "Minikube"
+    ## Minikube
+    
+    ### Requirements
+    
+    1. Install [minikube](https://github.com/kubernetes/minikube/releases).
+    
+    1. Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+    
+    1. Create cluster:
+    
+        ```bash
+        minikube start
+        ```
+            
+    1. Configure `kubectl` to use the cluster:
+    
+            kubectl config use-context minikube
+    1. Enable ingress on minikube
+    
+        ```bash
+        minikube addons enable ingress
+        ```
+    
+=== "MicroK8s"
+    ## MicroK8s
+    
+    ### Requirements
+    
+    1. Install [MicroK8s](https://microk8s.io/)
+    
+    1. Make sure all ports are open for [microk8s](https://microk8s.io/docs/)
+    
+    1. Enable `helm3`, `storage`, `ingress` and `dns`.
+    
+        ```bash
+        sudo microk8s.enable helm3 storage ingress dns
+        ```
+           
+2. Install using one of the following :
 
-    ```bash
-    minikube addons enable ingress
-    ```
+=== "Kustomize"
+    ## Install Gluu using `pygluu-kubernetes`
+    
+    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+    
+    1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+    
+    
+    1. Run :
+    
+        ```bash
+        ./pygluu-kubernetes.pyz install
+        ```
+        
+    !!!note
+        Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/cloud-native-edition/releases). 
+    
+    ### Uninstall
 
+    1. Run :
+    
+        ```bash
+        ./pygluu-kubernetes.pyz uninstall
+        ```
 
-## MicroK8s
-
-### Requirements
-
-1. Install [MicroK8s](https://microk8s.io/)
-
-1. Make sure all ports are open for [microk8s](https://microk8s.io/docs/)
-
-1. Enable `helm3`, `storage`, `ingress` and `dns`.
-
-    ```bash
-    sudo microk8s.enable helm3 storage ingress dns
-    ```
-
-
-## Install Gluu using `pygluu-kubernetes` with Kustomize
-
-1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
-
-1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
-
-
-1. Run :
-
-    ```bash
-    ./pygluu-kubernetes.pyz install
+=== "Helm"
+    ## Install Gluu using Helm
+    
+    ### Prerequisites
+    
+    - Kubernetes 1.x
+    - Persistent volume provisioner support in the underlying infrastructure
+    - Install [Helm3](https://helm.sh/docs/using_helm/)
+    
+    ### Quickstart
+    
+    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+    
+    1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+    
+    1. Run :
+    
+      ```bash
+      ./pygluu-kubernetes.pyz helm-install
+      ```
+      
+    #### Installing Gluu using Helm manually
+    
+    1. Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
+    
+       ```bash
+       helm repo add stable https://kubernetes-charts.storage.googleapis.com
+       helm repo update
+       helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
+       ```
+    
+    1.  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
+    
+        - If the FQDN is not registered acquire the loadbalancers ip if on **GCE**, or **Azure** using `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'` and if on **AWS** get the loadbalancers addresss using `kubectl -n ingress-nginx get svc ingress-nginx \--output jsonpath='{.status.loadBalancer.ingress[0].hostname}'`.
+    
+    1.  - If deploying on the cloud make sure to take a look at the helm cloud specific notes before continuing.
+    
+          * [EKS](#eks-helm-notes)
+          * [GKE](#gke-helm-notes)
+    
+        - If deploying locally make sure to take a look at the helm specific notes bellow before continuing.
+    
+          * [Minikube](#minikube-helm-notes)
+          * [MicroK8s](#microk8s-helm-notes)
+    
+    1.  **Optional:** If using couchbase as the persistence backend.
+        
+        1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+        
+        1. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
+    
+        1.  Run:
+        
+           ```bash
+           ./pygluu-kubernetes.pyz couchbase-install
+           ```
+           
+        1. Open `settings.json` file generated from the previous step and copy over the values of `COUCHBASE_URL` and `COUCHBASE_USER`   to `global.gluuCouchbaseUrl` and `global.gluuCouchbaseUser` in `values.yaml` respectively. 
+    
+    1.  Make sure you are in the same directory as the `values.yaml` file and run:
+    
+       ```bash
+       helm install <release-name> -f values.yaml -n <namespace> .
+       ```
+    
+    ### EKS helm notes
+    
+    #### Required changes to the `values.yaml`
+    
+      Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appropriate values :
+    
+      ```yaml
+      #global values to be used across charts
+      global:
+        provisioner: kubernetes.io/aws-ebs #CHANGE-THIS
+        lbAddr: "" #CHANGE-THIS to the address received in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
+        domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+        isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
+    
+      nginx:
+        ingress:
+          enabled: true
+          path: /
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+          tls:
+            - secretName: tls-certificate
+              hosts:
+                - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      ```    
+    
+      Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
+    
+    ### GKE helm notes
+    
+    #### Required changes to the `values.yaml`
+    
+      Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+    
+      ```yaml
+      #global values to be used across charts
+      global:
+        provisioner: kubernetes.io/gce-pd #CHANGE-THIS
+        lbAddr: ""
+        domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+          # Networking configs
+        nginxIp: "" #CHANGE-THIS  to the IP received from the previous step
+        isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
+      nginx:
+        ingress:
+          enabled: true
+          path: /
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+          tls:
+            - secretName: tls-certificate
+              hosts:
+                - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      ```
+    
+      Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
+    
+    ### Minikube helm notes
+    
+    #### Required changes to the `values.yaml`
+    
+      Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+    
+      ```yaml
+      #global values to be used across charts
+      global:
+        provisioner: k8s.io/minikube-hostpath #CHANGE-THIS
+        lbAddr: ""
+        domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+        nginxIp: "" #CHANGE-THIS  to the IP of minikube <minikube ip>
+    
+      nginx:
+        ingress:
+          enabled: true
+          path: /
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+          tls:
+            - secretName: tls-certificate
+              hosts:
+                - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      ```
+    
+      Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
+    
+    - Map gluus FQDN at `/etc/hosts` file  to the minikube IP as shown below.
+    
+        ```bash
+        ##
+        # Host Database
+        #
+        # localhost is used to configure the loopback interface
+        # when the system is booting.  Do not change this entry.
+        ##
+        192.168.99.100	demoexample.gluu.org #minikube IP and example domain
+        127.0.0.1	localhost
+        255.255.255.255	broadcasthost
+        ::1             localhost
+        ```
+    
+    ### Microk8s helm notes
+      
+    #### Required changes to the `values.yaml`
+    
+      Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
+    
+      ```yaml
+      #global values to be used across charts
+      global:
+        provisioner: microk8s.io/hostpath #CHANGE-THIS
+        lbAddr: ""
+        domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+        nginxIp: "" #CHANGE-THIS  to the IP of the microk8s vm
+    
+      nginx:
+        ingress:
+          enabled: true
+          path: /
+          hosts:
+            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+          tls:
+            - secretName: tls-certificate
+              hosts:
+                - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
+      ```
+    
+      Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
+    
+    - Map gluus FQDN at `/etc/hosts` file  to the microk8s vm IP as shown below.
+    
+      ```bash
+      ##
+      # Host Database
+      #
+      # localhost is used to configure the loopback interface
+      # when the system is booting.  Do not change this entry.
+      ##
+      192.168.99.100	demoexample.gluu.org #microk8s IP and example domain
+      127.0.0.1	localhost
+      255.255.255.255	broadcasthost
+      ::1             localhost
+      ```
+      
+    ### Uninstalling the Chart
+    
+    To uninstall/delete `my-release` deployment:
+    
+    `helm delete <my-release>`
+    
+    If during installation the release was not defined, release name is checked by running `$ helm ls` then deleted using the previous command and the default release name.
+    
+    ### Configuration
+    
+    | Parameter                                          | Description                                                                                                                      | Default                             |
+    | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+    | `global.cloud.enabled`                             | Whether to enable cloud provisioning.                                                                                            | `false`                             |
+    | `global.provisioner`                               | Which cloud provisioner to use when deploying                                                                                    | `k8s.io/minikube-hostpath`          |
+    | `global.ldapServiceName`                           | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                            |
+    | `global.nginxIp`                                   | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
+    | `global.oxAuthServiceName`                         | `oxauth` service name - should not be changed                                                                                    |  `oxauth`                           |
+    | `global.oxTrustServiceName`                        | `oxtrust` service name - should not be changed                                                                                   | `oxtrust`                           |
+    | `global.domain`                                    | DNS domain name                                                                                                                  | `demoexample.gluu.org`              |
+    | `global.isDomainRegistered`                        | Whether the domain to be used is registered or not                                                                               | `false`                             |
+    | `global.gluuLdapUrl`                               | wrends/ldap server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                      |
+    | `global.gluuJcaSyncInterval`                       | Jackrabbit sync interval                                                                                                         |  `300`                              |
+    | `global.gluuJcaRmiUrl`                             | Jackrabbit rmi url. Port and service name of Jackrabbit.                                                                         |  `jackrabbit:8080/rmi`              |
+    | `global.gluuJcaUrl`                                | Jackrabbit url. Port and service name of Jackrabbit                                                                              |  `jackrabbit:8080`                  |
+    | `global.gluuJcaUsername`                           | Jackrabbit username                                                                                                              |  `admin`                            |
+    | `global.gluuJcaPasswordFile`                       | Jackrabbit password file location                                                                                                |  `/etc/gluu/conf/jca_password`      |
+    | `global.gluuMaxFraction`                           | Controls how much of total RAM is up for grabs in containers running Java apps                                                   |  `1`                                |
+    | `global.configAdapterName`                         | The config backend adapter                                                                                                       | `Kubernetes`                        |
+    | `global.configSecretAdapter`                       | The secrets adapter                                                                                                              | `Kubernetes`                        |
+    | `global.gluuPersistenceType`                       | Which database backend to use                                                                                                    | `ldap`                              |
+    | `global.gluuCouchbaseUrl`                          | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                            | `cbgluu.cbns.svc.cluster.local`     |
+    | `global.gluuCouchbaseUser`                         | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                           | `admin`                             |
+    | `global.gluuCouchbasePassFile`                     | Location of `couchbase_password` file                                                                                            | `/etc/gluu/conf/couchbase_password` |
+    | `global.gluuCouchbaseCertFile`                     | Location of `couchbase.crt` used by cb for tls termination                                                                       | `/etc/gluu/conf/couchbase.crt`      |
+    | `global.gluuRedisUrl`                              | Redis url with port. Used when Redis is deployed for Cache.                                                                      | `redis:6379`                        |
+    | `global.gluuRedisType`                             | Type of Redis deployed.                                                                                                          | `"SHARDED"`, `"STANDALONE"`, `"CLUSTER"`, or `"SENTINEL"`      |
+    | `global.gluuRedisUseSsl`                           | Redis SSL use                                                                                                                    | `"false"` or `"true"`               |
+    | `global.gluuRedisSslTruststore`                    | Redis SSL truststore. If using cloud provider services this is left empty.                                                       | ``                                  |
+    | `global.gluuRedisSentinelGroup`                    | Redis Sentinel group                                                                                                             | ``      |
+    | `global.oxshibboleth.enabled`                      | Whether to allow installation of oxshibboleth chart                                                                              | `false`                             |
+    | `global.key-rotation.enabled`                      | Allow key rotation                                                                                                               | `false`                             |
+    | `global.cr-rotate.enabled`                         | Allow cache rotation deployment                                                                                                  | `false`                             |
+    | `global.radius.enabled`                            | Enabled radius installation                                                                                                      | `false`                             |
+    | `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
+    | `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
+    | `global.config.enabled`                            | Either to install config chart or not.                                                                                           | `true`                              |   
+    | `config.orgName`                                   | Organisation Name                                                                                                                | `Gluu`                              |
+    | `config.email`                                     | Email to be registered with ssl                                                                                                  | `support@gluu.org`                  |
+    | `config.adminPass`                                 | Admin password to log in to the UI                                                                                               | `P@ssw0rd`                          |
+    | `config.domain`                                    | FQDN                                                                                                                             | `demoexample.gluu.org`              |
+    | `config.countryCode`                               | Country code of where the Org is located                                                                                         | `US`                                |
+    | `config.state`                                     | State                                                                                                                            | `TX`                                |
+    | `config.ldapType`                                  | Type of LDAP server to use.                                                                                                      | `opendj`                            |
+    | `global.oxauth.enabled`                            | Whether to allow installation of oxauth subchart. Should be left as true                                                         |  `true`                             |
+    | `global.opendj.enabled`                            | Allow installation of ldap Should left as true                                                                                   | `true`                              |
+    | `global.gluuCacheType`                             | Options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE`                |
+    | `opendj.gluuRedisEnabled`                          | Used if cache type is redis                                                                                                      | `false`                             |
+    | `global.persistence.enabled`                       | Whether to enable persistence layer. Must ALWAYS remain true                                                                     | `true`                              |
+    | `persistence.configmap.gluuCasaEnabled`            | Enable auto install of casa chart/service while installing Gluu server chart                                                     | `false`                             |
+    | `persistence.configmap.gluuPassportEnabled`        | Auto install passport service chart                                                                                              | `false`                             |
+    | `persistence.configmap.gluuRadiusEnabled`          | Auto install radius service chart                                                                                                | `false`                             |
+    | `persistence.configmap.gluuSamlEnabled`            | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not.                         | `true`                              |
+    | `oxd-server.enabled`                               | Enable or disable installation of OXD server                                                                                     | `false`                             |
+    | `oxd-server.configmap.adminKeystorePassword`       | Admin keystore password                                                                                                          | `examplePass`                       |
+    | `oxd-server.configmap.applicationKeystorePassword` | Password used to decrypt the keystore                                                                                            | `examplePass`                       |  
+    | `nginx.ingress.enabled`                            | Set routing rules to different services                                                                                          | `true`                              |
+    | `nginx.ingress.hosts`                              | Gluu FQDN                                                                                                                        | `demoexample.gluu.org`              |
+    
+    ### Persistence
+    
+    !!!NOTE
+        Enabling support of `oxtrust API` and `oxtrust TEST_MODE`. To enable `oxtrust API` support and or `oxtrust TEST_MODE` , set  `gluuOxtrustApiEnabled`  and `gluuOxtrustApiTestMode` true respectively.
+    
+     ```yaml
+     # persistence layer
+     persistence:
+       configmap:
+          gluuOxtrustApiEnabled: true
+    
+     ```
+    
+     Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
+    
+     ```yaml
+    # persistence layer
+    persistence:
+      configmap:
+         gluuOxtrustApiTestMode: true
+    
     ```
     
-!!!note
-    Prompts will ask for the rest of the information needed. You may generate the manifests (yaml files) and continue to deployment or just generate the  manifests (yaml files) during the execution of `pygluu-kubernetes.pyz`. `pygluu-kubernetes.pyz` will output a file called `settings.json` holding all the parameters. More information about this file and the vars it holds is [below](#settingsjson-parameters-file-contents) but  please don't manually create this file as the script can generate it using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/cloud-native-edition/releases). 
+    ### Instructions on how to install different services
+    
+    Enabling the following services automatically install the corresponding associated chart. To enable/disable them set `true` or `false` in the persistence configs as shown below.  
+    
+    ```yaml
+    # persistence layer
+    persistence:
+      enabled: true
+      configmap:
+        # Auto install other services. If enabled the respective service chart will be installed
+        gluuPassportEnabled: false
+        gluuCasaEnabled: false
+        gluuRadiusEnabled: false
+        gluuSamlEnabled: false
+    ```
+    
+    ### oxd-server
+    
+    > **_NOTE:_** If these two are not provided `oxd-server` will fail to start.   
+    > **_NOTE:_** For these passwords, stick to digits and numbers only.
+    
+    ```yaml
+    oxd-server:
+      configmap:
+        adminKeystorePassword: admin-example-password
+        applicationKeystorePassword: app-example-pass
+    
+    ```
+    
+    ### Casa
+    
+    - Casa is dependant on `oxd-server`. To install it `oxd-server` must be enabled.
+    
+    ### Other optional services
+    
+    Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values to `true` under the global block.
+    
+    For example, to enable `cr-rotate` set
+    
+    ```yaml
+    global:
+      cr-rotate:
+        enabled: true
+    ```
 
 ### `settings.json` parameters file contents
+
+This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases) cloud native edition installer.
 
 !!!note
     Please generate this file using [`pygluu-kubernetes.pyz generate-settings`](https://github.com/GluuFederation/cloud-native-edition/releases).
@@ -139,22 +520,26 @@
 | Parameter                                       | Description                                                                      | Options                                                                                     |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `ACCEPT_GLUU_LICENSE`                           | Accept the [License](https://www.gluu.org/license/cloud-native-edition/)         | `"Y"` or `"N"`                                                                              |
-| `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.0"` or `"4.1"`                                                                          |
+| `ADMIN_PW`                                      | Password of oxTrust 6 chars min: 1 capital, 1 small, 1 digit and 1 special char  | `"P@ssw0rd"`                                                                                |
+| `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.2"`                                                                                     |
+| `GLUU_UPGRADE_TARGET_VERSION`                   | Gluu upgrade version                                                             | `"4.2"`                                                                                     |
 | `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |
-| `KONG_HELM_RELEASE_NAME`                        | Gluu Gateway (Kong) Helm release name [alpha]                                    | `"<name>"`                                                                                  |
-| `GLUU_GATEWAY_UI_HELM_RELEASE_NAME`             |  Gluu Gateway UI release name  [alpha]                                           | `"<name>"`                                                                                  |
-| `INSTALL_GLUU_GATEWAY`                          | Install Gluu Gateway Database mode [alpha]                                       | `"Y"` or `"N"`                                                                              |
-| `POSTGRES_NAMESPACE`                            | Postgres namespace - Gluu Gateway  [alpha]                                       | `"<name>"`                                                                                  |
-| `KONG_NAMESPACE`                                | Kong namespace - Gluu Gateway  [alpha]                                           | `"<name>"`                                                                                  |
-| `GLUU_GATEWAY_UI_NAMESPACE`                     | Gluu Gateway UI namespace - Gluu Gateway [alpha]                                 | `"<name>"`                                                                                  |
-| `KONG_PG_USER`                                  | Kong Postgres user - Gluu Gateway [alpha]                                        | `"<name>"`                                                                                  |
-| `KONG_PG_PASSWORD`                              | Kong Postgres password - Gluu Gateway [alpha]                                    | `"<name>"`                                                                                  |
-| `GLUU_GATEWAY_UI_PG_USER`                       | Gluu Gateway UI Postgres user - Gluu Gateway [alpha]                             | `"<name>"`                                                                                  |
-| `GLUU_GATEWAY_UI_PG_PASSWORD`                   | Gluu Gateway UI Postgres password - Gluu Gateway [alpha]                         | `"<name>"`                                                                                  |
-| `KONG_DATABASE`                                 | Kong Postgres Database name - Gluu Gateway [alpha]                               | `"<name>"`                                                                                  |
-| `GLUU_GATEWAY_UI_DATABASE`                      | Gluu Gateway UI Postgres Database name - Gluu Gateway [alpha]                    | `"<name>"`                                                                                  |
-| `POSTGRES_REPLICAS`                             | Postgres number of replicas - Gluu Gateway [alpha]                               | `"<name>"`                                                                                  |
-| `POSTGRES_URL`                                  | Postgres URL ( Can be local or remote) - Gluu Gateway [alpha]                    |  i.e `"<servicename>.<namespace>.svc.cluster.local"`                                        |
+| `KONG_HELM_RELEASE_NAME`                        | Gluu Gateway (Kong) Helm release name                                            | `"<name>"`                                                                                  |
+| `NGINX_INGRESS_NAMESPACE`                       | Nginx namespace                                                                  | `"<name>"`                                                                                  |
+| `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Helm release name                                                          | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_HELM_RELEASE_NAME`             |  Gluu Gateway UI release name                                                    | `"<name>"`                                                                                  |
+| `INSTALL_GLUU_GATEWAY`                          | Install Gluu Gateway Database mode                                               | `"Y"` or `"N"`                                                                              |
+| `POSTGRES_NAMESPACE`                            | Postgres namespace - Gluu Gateway                                                | `"<name>"`                                                                                  |
+| `KONG_NAMESPACE`                                | Kong namespace - Gluu Gateway                                                    | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_NAMESPACE`                     | Gluu Gateway UI namespace - Gluu Gateway                                         | `"<name>"`                                                                                  |
+| `KONG_PG_USER`                                  | Kong Postgres user - Gluu Gateway                                                | `"<name>"`                                                                                  |
+| `KONG_PG_PASSWORD`                              | Kong Postgres password - Gluu Gateway                                            | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_PG_USER`                       | Gluu Gateway UI Postgres user - Gluu Gateway                                     | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_PG_PASSWORD`                   | Gluu Gateway UI Postgres password - Gluu Gateway                                 | `"<name>"`                                                                                  |
+| `KONG_DATABASE`                                 | Kong Postgres Database name - Gluu Gateway                                       | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_DATABASE`                      | Gluu Gateway UI Postgres Database name - Gluu Gateway                            | `"<name>"`                                                                                  |
+| `POSTGRES_REPLICAS`                             | Postgres number of replicas - Gluu Gateway                                       | `"<name>"`                                                                                  |
+| `POSTGRES_URL`                                  | Postgres URL ( Can be local or remote) - Gluu Gateway                            |  i.e `"<servicename>.<namespace>.svc.cluster.local"`                                        |
 | `NODES_IPS`                                     | List of kubernetes cluster node ips                                              | `["<ip>", "<ip2>", "<ip3>"]`                                                                |
 | `NODES_ZONES`                                   | List of kubernetes cluster node zones                                            | `["<node1_zone>", "<node2_zone>", "<node3_zone>"]`                                          |
 | `NODES_NAMES`                                   | List of kubernetes cluster node names                                            | `["<node1_name>", "<node2_name>", "<node3_name>"]`                                          |
@@ -184,6 +569,7 @@
 | `COUCHBASE_FQDN`                                | Couchbase FQDN                                                                   | `""` or i.e `"<clustername>.<namespace>.gluu.org"`                                          |
 | `COUCHBASE_URL`                                 | Couchbase internal address to the cluster                                        | `""` or i.e `"<clustername>.<namespace>.svc.cluster.local"`                                 |
 | `COUCHBASE_USER`                                | Couchbase username                                                               | `""` or i.e `"admin"`                                                                       |
+| `COUCHBASE_PASSWORD`                            | Password of CB 6 chars min: 1 capital, 1 small, 1 digit and 1 special char       | `"P@ssw0rd"`                                                                                  |
 | `COUCHBASE_CRT`                                 | Couchbase CA certification                                                       | `""` or i.e `<crt content not encoded>`                                                     |
 | `COUCHBASE_CN`                                  | Couchbase certificate common name                                                | `""`                                                                                        |
 | `COUCHBASE_SUBJECT_ALT_NAME`                    | Couchbase SAN                                                                    | `""` or i.e `"cb.gluu.org"`                                                                 |
@@ -226,19 +612,23 @@
 | `EMAIL`                                         | Gluu email                                                                       | `"<email>"` i.e `"support@gluu.org"`                                                        |
 | `CITY`                                          | Gluu city                                                                        | `"<city>"` i.e `"Austin"`                                                                   |
 | `ORG_NAME`                                      | Gluu organization name                                                           | `"<org-name>"` i.e `"Gluu"`                                                                 |
+| `LDAP_PW`                                       | Password of LDAP 6 chars min: 1 capital, 1 small, 1 digit and 1 special char     | `"P@ssw0rd"`                                                                                  |
 | `GMAIL_ACCOUNT`                                 | Gmail account for GKE installation                                               | `""` or`"<gmail>"` i.e                                                                      |
 | `GOOGLE_NODE_HOME_DIR`                          | User node home directory, used if the hosts volume is used                       | `"Y"` or `"N"`                                                                              |
 | `IS_GLUU_FQDN_REGISTERED`                       | Is Gluu FQDN globally resolvable                                                 | `"Y"` or `"N"`                                                                              |
 | `OXD_APPLICATION_KEYSTORE_CN`                   | OXD application keystore common name                                             | `"<name>"` i.e `"oxd_server"`                                                               |
 | `OXD_ADMIN_KEYSTORE_CN`                         | OXD admin keystore common name                                                   | `"<name>"` i.e `"oxd_server"`                                                               |
+| `OXD_SERVER_PW`                                 | OXD admin password string of alphabetical chars and numbers                      | `"<name>"` i.e `"oxd_server"`                                                               |
 | `LDAP_STORAGE_SIZE`                             | LDAP volume storage size                                                         | `""` i.e `"4Gi"`                                                                            |
+| `FIDO2_REPLICAS`                                | Number of FIDO2 replicas                                                         | min `"1"`                                                                                   |
+| `SCIM_REPLICAS`                                 | Number of SCIM replicas                                                          | min `"1"`                                                                                   |
 | `OXAUTH_REPLICAS`                               | Number of oxAuth replicas                                                        | min `"1"`                                                                                   |
 | `OXTRUST_REPLICAS`                              | Number of oxTrust replicas                                                       | min `"1"`                                                                                   |
 | `LDAP_REPLICAS`                                 | Number of LDAP replicas                                                          | min `"1"`                                                                                   |
 | `OXSHIBBOLETH_REPLICAS`                         | Number of oxShibboleth replicas                                                  | min `"1"`                                                                                   |
 | `OXPASSPORT_REPLICAS`                           | Number of oxPassport replicas                                                    | min `"1"`                                                                                   |
 | `OXD_SERVER_REPLICAS`                           | Number of oxdServer replicas                                                     | min `"1"`                                                                                   |
-| `CASA_REPLICAS`                                 | Number of Casa replicas [alpha]                                                  | min `"1"`                                                                                   |
+| `CASA_REPLICAS`                                 | Number of Casa replicas                                                          | min `"1"`                                                                                   |
 | `RADIUS_REPLICAS`                               | Number of Radius replica                                                         | min `"1"`                                                                                   |
 | `ENABLE_OXTRUST_API`                            | Enable oxTrust-api                                                               | `"Y"` or `"N"`                                                                              |
 | `ENABLE_OXTRUST_TEST_MODE`                      | Enable oxTrust Test Mode                                                         | `"Y"` or `"N"`                                                                              |
@@ -247,7 +637,9 @@
 | `ENABLE_RADIUS`                                 | Enable Radius installation                                                       | `"Y"` or `"N"`                                                                              |
 | `ENABLE_OXPASSPORT`                             | Enable oxPassport installation                                                   | `"Y"` or `"N"`                                                                              |
 | `ENABLE_OXSHIBBOLETH`                           | Enable oxShibboleth installation                                                 | `"Y"` or `"N"`                                                                              |
-| `ENABLE_CASA`                                   | Enable Casa installation [alpha]                                                 | `"Y"` or `"N"`                                                                              |
+| `ENABLE_CASA`                                   | Enable Casa installation                                                         | `"Y"` or `"N"`                                                                              |
+| `ENABLE_FIDO2`                                  | Enable Fido2 installation                                                        | `"Y"` or `"N"`                                                                              |
+| `ENABLE_SCIM`                                   | Enable SCIM installation                                                         | `"Y"` or `"N"`                                                                              |
 | `ENABLE_KEY_ROTATE`                             | Enable key rotate installation                                                   | `"Y"` or `"N"`                                                                              |
 | `ENABLE_OXTRUST_API_BOOLEAN`                    | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_OXTRUST_TEST_MODE_BOOLEAN`              | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
@@ -257,37 +649,41 @@
 | `ENABLE_SAML_BOOLEAN`                           | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `EDIT_IMAGE_NAMES_TAGS`                         | Manually place the image source and tag                                          | `"Y"` or `"N"`                                                                              |
 | `JACKRABBIT_IMAGE_NAME`                         | Jackrabbit image repository name                                                 | i.e `"gluufederation/jackrabbit"`                                                           |
-| `JACKRABBIT_IMAGE_TAG`                          | Jackrabbit image tag                                                             | i.e `"4.1.0_01"`                                                                            |
+| `JACKRABBIT_IMAGE_TAG`                          | Jackrabbit image tag                                                             | i.e `"4.2.0_02"`                                                                            |
 | `CASA_IMAGE_NAME`                               | Casa image repository name                                                       | i.e `"gluufederation/casa"`                                                                 |
-| `CASA_IMAGE_TAG`                                | Casa image tag                                                                   | i.e `"4.1.0_01"`                                                                            |
+| `CASA_IMAGE_TAG`                                | Casa image tag                                                                   | i.e `"4.2.0_02"`                                                                            |
 | `CONFIG_IMAGE_NAME`                             | Config image repository name                                                     | i.e `"gluufederation/config-init"`                                                          |
-| `CONFIG_IMAGE_TAG`                              | Config image tag                                                                 | i.e `"4.1.0_01"`                                                                            |
+| `CONFIG_IMAGE_TAG`                              | Config image tag                                                                 | i.e `"4.2.0_02"`                                                                            |
 | `CACHE_REFRESH_ROTATE_IMAGE_NAME`               | Cache refresh image repository name                                              | i.e `"gluufederation/cr-rotate"`                                                            |
-| `CACHE_REFRESH_ROTATE_IMAGE_TAG`                | Cache refresh  image tag                                                         | i.e `"4.1.0_01"`                                                                            |
+| `CACHE_REFRESH_ROTATE_IMAGE_TAG`                | Cache refresh  image tag                                                         | i.e `"4.2.0_02"`                                                                            |
 | `KEY_ROTATE_IMAGE_NAME`                         | Key rotate image repository name                                                 | i.e `"gluufederation/key-rotation"`                                                         |
-| `KEY_ROTATE_IMAGE_TAG`                          | Key rotate image tag                                                             | i.e `"4.1.0_01"`                                                                            |
+| `KEY_ROTATE_IMAGE_TAG`                          | Key rotate image tag                                                             | i.e `"4.2.0_02"`                                                                            |
 | `LDAP_IMAGE_NAME`                               | LDAP image repository name                                                       | i.e `"gluufederation/wrends"`                                                               |
-| `LDAP_IMAGE_TAG`                                | LDAP image tag                                                                   | i.e `"4.1.0_01"`                                                                            |
+| `LDAP_IMAGE_TAG`                                | LDAP image tag                                                                   | i.e `"4.2.0_02"`                                                                            |
 | `OXAUTH_IMAGE_NAME`                             | oxAuth image repository name                                                     | i.e `"gluufederation/oxauth"`                                                               |
-| `OXAUTH_IMAGE_TAG`                              | oxAuth image tag                                                                 | i.e `"4.1.0_01"`                                                                            |
+| `OXAUTH_IMAGE_TAG`                              | oxAuth image tag                                                                 | i.e `"4.2.0_02"`                                                                            |
 | `OXD_IMAGE_NAME`                                | oxd image repository name                                                        | i.e `"gluufederation/oxd-server"`                                                           |
-| `OXD_IMAGE_TAG`                                 | oxd image tag                                                                    | i.e `"4.1.0_01"`                                                                            |
+| `OXD_IMAGE_TAG`                                 | oxd image tag                                                                    | i.e `"4.2.0_02"`                                                                            |
 | `OXPASSPORT_IMAGE_NAME`                         | oxPassport image repository name                                                 | i.e `"gluufederation/oxpassport"`                                                           |
-| `OXPASSPORT_IMAGE_TAG`                          | oxPassport image tag                                                             | i.e `"4.1.0_01"`                                                                            |
+| `OXPASSPORT_IMAGE_TAG`                          | oxPassport image tag                                                             | i.e `"4.2.0_02"`                                                                            |
+| `FIDO2_IMAGE_NAME`                              | FIDO2 image repository name                                                      | i.e `"gluufederation/oxpassport"`                                                           |
+| `FIDO2_IMAGE_TAG`                               | FIDO2 image tag                                                                  | i.e `"4.2.0_02"`                                                                            |
+| `SCIM_IMAGE_NAME`                               | SCIM image repository name                                                       | i.e `"gluufederation/oxpassport"`                                                           |
+| `SCIM_IMAGE_TAG`                                | SCIM image tag                                                                   | i.e `"4.2.0_02"`                                                                            |
 | `OXSHIBBOLETH_IMAGE_NAME`                       | oxShibboleth image repository name                                               | i.e `"gluufederation/oxshibboleth"`                                                         |
-| `OXSHIBBOLETH_IMAGE_TAG`                        | oxShibboleth image tag                                                           | i.e `"4.1.0_01"`                                                                            |
+| `OXSHIBBOLETH_IMAGE_TAG`                        | oxShibboleth image tag                                                           | i.e `"4.2.0_02"`                                                                            |
 | `OXTRUST_IMAGE_NAME`                            | oxTrust image repository name                                                    | i.e `"gluufederation/oxtrust"`                                                              |
-| `OXTRUST_IMAGE_TAG`                             | oxTrust image tag                                                                | i.e `"4.1.0_01"`                                                                            |
+| `OXTRUST_IMAGE_TAG`                             | oxTrust image tag                                                                | i.e `"4.2.0_02"`                                                                            |
 | `PERSISTENCE_IMAGE_NAME`                        | Persistence image repository name                                                | i.e `"gluufederation/persistence"`                                                          |
-| `PERSISTENCE_IMAGE_TAG`                         | Persistence image tag                                                            | i.e `"4.1.0_01"`                                                                            |
+| `PERSISTENCE_IMAGE_TAG`                         | Persistence image tag                                                            | i.e `"4.2.0_02"`                                                                            |
 | `RADIUS_IMAGE_NAME`                             | Radius image repository name                                                     | i.e `"gluufederation/radius"`                                                               |
-| `RADIUS_IMAGE_TAG`                              | Radius image tag                                                                 | i.e `"4.1.0_01"`                                                                            |
+| `RADIUS_IMAGE_TAG`                              | Radius image tag                                                                 | i.e `"4.2.0_02"`                                                                            |
 | `GLUU_GATEWAY_IMAGE_NAME`                       | Gluu Gateway image repository name                                               | i.e `"gluufederation/gluu-gateway"`                                                         |
 | `GLUU_GATEWAY_IMAGE_TAG`                        | Gluu Gateway image tag                                                           | i.e `"4.2.0"`                                                                               |
 | `GLUU_GATEWAY_UI_IMAGE_NAME`                    | Gluu Gateway UI image repository name                                            | i.e `"gluufederation/gluu-gateway-ui"`                                                      |
 | `GLUU_GATEWAY_UI_IMAGE_TAG`                     | Gluu Gateway UI image tag                                                        | i.e `"4.2.0"`                                                                               |
 | `UPGRADE_IMAGE_NAME`                            | Gluu upgrade image repository name                                               | i.e `"gluufederation/upgrade"`                                                              |
-| `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.1.0_01"`                                                                            |
+| `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.2.0_02"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
 
 ### `APP_VOLUME_TYPE`-options
@@ -310,357 +706,7 @@
 | `21`     | Digital Ocean            | volumes on host                          |
 | `22`     | Digital Ocean            | Persistent Disk  dynamically provisioned |
 | `23`     | Digital Ocean            | Persistent Disk  statically provisioned  |
-
-### Uninstall Gluu using Kustomize
-
-1. Run :
-
-    ```bash
-    ./pygluu-kubernetes.pyz uninstall
-    ```
     
-## Install Gluu using Helm
-
-### Prerequisites
-
-- Kubernetes 1.x
-- Persistent volume provisioner support in the underlying infrastructure
-- Install [Helm3](https://helm.sh/docs/using_helm/)
-
-### Quickstart
-
-1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
-
-1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
-
-1. Run :
-
-  ```bash
-  ./pygluu-kubernetes.pyz helm-install
-  ```
-
-#### Installing Gluu using Helm manually
-
-1. Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
-
-   ```bash
-   helm repo add stable https://kubernetes-charts.storage.googleapis.com
-   helm repo update
-   helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
-   ```
-
-1.  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
-
-    - If the FQDN is not registered acquire the loadbalancers ip if on **GCE**, or **Azure** using `kubectl get svc <release-name>-nginx-ingress-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'` and if on **AWS** get the loadbalancers addresss using `kubectl -n ingress-nginx get svc ingress-nginx \--output jsonpath='{.status.loadBalancer.ingress[0].hostname}'`.
-
-1.  - If deploying on the cloud make sure to take a look at the helm cloud specific notes before continuing.
-
-      * [EKS](#eks-helm-notes)
-      * [GKE](#gke-helm-notes)
-
-    - If deploying locally make sure to take a look at the helm specific notes bellow before continuing.
-
-      * [Minikube](#minikube-helm-notes)
-      * [MicroK8s](#microk8s-helm-notes)
-
-1.  **Optional:** If using couchbase as the persistence backend.
-    
-    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
-    
-    1. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
-
-    1.  Run:
-    
-       ```bash
-       ./pygluu-kubernetes.pyz couchbase-install
-       ```
-       
-    1. Open `settings.json` file generated from the previous step and copy over the values of `COUCHBASE_URL` and `COUCHBASE_USER`   to `global.gluuCouchbaseUrl` and `global.gluuCouchbaseUser` in `values.yaml` respectively. 
-
-1.  Make sure you are in the same directory as the `values.yaml` file and run:
-
-   ```bash
-   helm install <release-name> -f values.yaml -n <namespace> .
-   ```
-
-### EKS helm notes
-
-#### Required changes to the `values.yaml`
-
-  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appropriate values :
-
-  ```yaml
-  #global values to be used across charts
-  global:
-    provisioner: kubernetes.io/aws-ebs #CHANGE-THIS
-    lbAddr: "" #CHANGE-THIS to the address received in the previous step axx-109xx52.us-west-2.elb.amazonaws.com
-    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-    isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
-
-  nginx:
-    ingress:
-      enabled: true
-      path: /
-      hosts:
-        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-      tls:
-        - secretName: tls-certificate
-          hosts:
-            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-  ```    
-
-  Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
-
-### GKE helm notes
-
-#### Required changes to the `values.yaml`
-
-  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
-
-  ```yaml
-  #global values to be used across charts
-  global:
-    provisioner: kubernetes.io/gce-pd #CHANGE-THIS
-    lbAddr: ""
-    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-      # Networking configs
-    nginxIp: "" #CHANGE-THIS  to the IP received from the previous step
-    isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
-  nginx:
-    ingress:
-      enabled: true
-      path: /
-      hosts:
-        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-      tls:
-        - secretName: tls-certificate
-          hosts:
-            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-  ```
-
-  Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
-
-### Minikube helm notes
-
-#### Required changes to the `values.yaml`
-
-  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
-
-  ```yaml
-  #global values to be used across charts
-  global:
-    provisioner: k8s.io/minikube-hostpath #CHANGE-THIS
-    lbAddr: ""
-    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-    nginxIp: "" #CHANGE-THIS  to the IP of minikube <minikube ip>
-
-  nginx:
-    ingress:
-      enabled: true
-      path: /
-      hosts:
-        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-      tls:
-        - secretName: tls-certificate
-          hosts:
-            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-  ```
-
-  Tweak the optional [parameters](#configuration) in `values.yaml` to fit the setup needed.
-
-- Map gluus FQDN at `/etc/hosts` file  to the minikube IP as shown below.
-
-    ```bash
-    ##
-    # Host Database
-    #
-    # localhost is used to configure the loopback interface
-    # when the system is booting.  Do not change this entry.
-    ##
-    192.168.99.100	demoexample.gluu.org #minikube IP and example domain
-    127.0.0.1	localhost
-    255.255.255.255	broadcasthost
-    ::1             localhost
-    ```
-
-### Microk8s helm notes
-  
-#### Required changes to the `values.yaml`
-
-  Inside the global `values.yaml` change the marked keys with `CHANGE-THIS`  to the appopriate values :
-
-  ```yaml
-  #global values to be used across charts
-  global:
-    provisioner: microk8s.io/hostpath #CHANGE-THIS
-    lbAddr: ""
-    domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-    nginxIp: "" #CHANGE-THIS  to the IP of the microk8s vm
-
-  nginx:
-    ingress:
-      enabled: true
-      path: /
-      hosts:
-        - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-      tls:
-        - secretName: tls-certificate
-          hosts:
-            - demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-  ```
-
-  Tweak the optional [parameteres](#configuration) in `values.yaml` to fit the setup needed.
-
-- Map gluus FQDN at `/etc/hosts` file  to the microk8s vm IP as shown below.
-
-  ```bash
-  ##
-  # Host Database
-  #
-  # localhost is used to configure the loopback interface
-  # when the system is booting.  Do not change this entry.
-  ##
-  192.168.99.100	demoexample.gluu.org #microk8s IP and example domain
-  127.0.0.1	localhost
-  255.255.255.255	broadcasthost
-  ::1             localhost
-  ```
-  
-### Uninstalling the Chart
-
-To uninstall/delete `my-release` deployment:
-
-`helm delete <my-release>`
-
-If during installation the release was not defined, release name is checked by running `$ helm ls` then deleted using the previous command and the default release name.
-
-### Configuration
-
-| Parameter                                          | Description                                                                                                                      | Default                             |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `global.cloud.enabled`                             | Whether to enable cloud provisioning.                                                                                            | `false`                             |
-| `global.provisioner`                               | Which cloud provisioner to use when deploying                                                                                    | `k8s.io/minikube-hostpath`          |
-| `global.ldapServiceName`                           | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                            |
-| `global.nginxIp`                                   | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
-| `global.oxAuthServiceName`                         | `oxauth` service name - should not be changed                                                                                    |  `oxauth`                           |
-| `global.oxTrustServiceName`                        | `oxtrust` service name - should not be changed                                                                                   | `oxtrust`                           |
-| `global.domain`                                    | DNS domain name                                                                                                                  | `demoexample.gluu.org`              |
-| `global.isDomainRegistered`                        | Whether the domain to be used is registered or not                                                                               | `false`                             |
-| `global.gluuLdapUrl`                               | wrends/ldap server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                      |
-| `global.gluuJcaSyncInterval`                       | Jackrabbit sync interval                                                                                                         |  `300`                              |
-| `global.gluuJcaRmiUrl`                             | Jackrabbit rmi url. Port and service name of Jackrabbit.                                                                         |  `jackrabbit:8080/rmi`              |
-| `global.gluuJcaUrl`                                | Jackrabbit url. Port and service name of Jackrabbit                                                                              |  `jackrabbit:8080`                  |
-| `global.gluuJcaUsername`                           | Jackrabbit username                                                                                                              |  `admin`                            |
-| `global.gluuJcaPasswordFile`                       | Jackrabbit password file location                                                                                                |  `/etc/gluu/conf/jca_password`      |
-| `global.gluuMaxFraction`                           | Controls how much of total RAM is up for grabs in containers running Java apps                                                   |  `1`                                |
-| `global.configAdapterName`                         | The config backend adapter                                                                                                       | `Kubernetes`                        |
-| `global.configSecretAdapter`                       | The secrets adapter                                                                                                              | `Kubernetes`                        |
-| `global.gluuPersistenceType`                       | Which database backend to use                                                                                                    | `ldap`                              |
-| `global.gluuCouchbaseUrl`                          | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                            | `cbgluu.cbns.svc.cluster.local`     |
-| `global.gluuCouchbaseUser`                         | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                           | `admin`                             |
-| `global.gluuCouchbasePassFile`                     | Location of `couchbase_password` file                                                                                            | `/etc/gluu/conf/couchbase_password` |
-| `global.gluuCouchbaseCertFile`                     | Location of `couchbase.crt` used by cb for tls termination                                                                       | `/etc/gluu/conf/couchbase.crt`      |
-| `global.gluuRedisUrl`                              | Redis url with port. Used when Redis is deployed for Cache.                                                                      | `redis:6379`                        |
-| `global.gluuRedisType`                             | Type of Redis deployed.                                                                                                          | `"SHARDED"`, `"STANDALONE"`, `"CLUSTER"`, or `"SENTINEL"`      |
-| `global.gluuRedisUseSsl`                           | Redis SSL use                                                                                                                    | `"false"` or `"true"`               |
-| `global.gluuRedisSslTruststore`                    | Redis SSL truststore. If using cloud provider services this is left empty.                                                       | ``                                  |
-| `global.gluuRedisSentinelGroup`                    | Redis Sentinel group                                                                                                             | ``      |
-| `global.oxshibboleth.enabled`                      | Whether to allow installation of oxshibboleth chart                                                                              | `false`                             |
-| `global.key-rotation.enabled`                      | Allow key rotation                                                                                                               | `false`                             |
-| `global.cr-rotate.enabled`                         | Allow cache rotation deployment                                                                                                  | `false`                             |
-| `global.radius.enabled`                            | Enabled radius installation                                                                                                      | `false`                             |
-| `global.oxtrust.enabled`                           | Allow installation of oxtrust                                                                                                    |  `true`                             |
-| `global.nginx.enabled`                             | Allow installation of nginx. Should be allowed unless another nginx is being deployed                                            |  `true`                             |
-| `global.config.enabled`                            | Either to install config chart or not.                                                                                           | `true`                              |   
-| `config.orgName`                                   | Organisation Name                                                                                                                | `Gluu`                              |
-| `config.email`                                     | Email to be registered with ssl                                                                                                  | `support@gluu.org`                  |
-| `config.adminPass`                                 | Admin password to log in to the UI                                                                                               | `P@ssw0rd`                          |
-| `config.domain`                                    | FQDN                                                                                                                             | `demoexample.gluu.org`              |
-| `config.countryCode`                               | Country code of where the Org is located                                                                                         | `US`                                |
-| `config.state`                                     | State                                                                                                                            | `TX`                                |
-| `config.ldapType`                                  | Type of LDAP server to use.                                                                                                      | `opendj`                            |
-| `global.oxauth.enabled`                            | Whether to allow installation of oxauth subchart. Should be left as true                                                         |  `true`                             |
-| `global.opendj.enabled`                            | Allow installation of ldap Should left as true                                                                                   | `true`                              |
-| `global.gluuCacheType`                             | Options `REDIS` or `NATIVE_PERSISTENCE` If `REDIS` is used redis chart must be enabled and `gluuRedisEnabled` config set to true | `NATIVE_PERSISTENCE`                |
-| `opendj.gluuRedisEnabled`                          | Used if cache type is redis                                                                                                      | `false`                             |
-| `global.persistence.enabled`                       | Whether to enable persistence layer. Must ALWAYS remain true                                                                     | `true`                              |
-| `persistence.configmap.gluuCasaEnabled`            | Enable auto install of casa chart/service while installing Gluu server chart                                                     | `false`                             |
-| `persistence.configmap.gluuPassportEnabled`        | Auto install passport service chart                                                                                              | `false`                             |
-| `persistence.configmap.gluuRadiusEnabled`          | Auto install radius service chart                                                                                                | `false`                             |
-| `persistence.configmap.gluuSamlEnabled`            | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not.                         | `true`                              |
-| `oxd-server.enabled`                               | Enable or disable installation of OXD server                                                                                     | `false`                             |
-| `oxd-server.configmap.adminKeystorePassword`       | Admin keystore password                                                                                                          | `examplePass`                       |
-| `oxd-server.configmap.applicationKeystorePassword` | Password used to decrypt the keystore                                                                                            | `examplePass`                       |  
-| `nginx.ingress.enabled`                            | Set routing rules to different services                                                                                          | `true`                              |
-| `nginx.ingress.hosts`                              | Gluu FQDN                                                                                                                        | `demoexample.gluu.org`              |
-
-### Persistence
-
-!!!NOTE
-    Enabling support of `oxtrust API` and `oxtrust TEST_MODE`. To enable `oxtrust API` support and or `oxtrust TEST_MODE` , set  `gluuOxtrustApiEnabled`  and `gluuOxtrustApiTestMode` true respectively.
-
- ```yaml
- # persistence layer
- persistence:
-   configmap:
-      gluuOxtrustApiEnabled: true
-
- ```
-
- Consequently, to enable `oxtrust TEST_MODE` set the variable `gluuOxtrustApiTestMode` in the same persistence service to true
-
- ```yaml
-# persistence layer
-persistence:
-  configmap:
-     gluuOxtrustApiTestMode: true
-
-```
-
-### Instructions on how to install different services
-
-Enabling the following services automatically install the corresponding associated chart. To enable/disable them set `true` or `false` in the persistence configs as shown below.  
-
-```yaml
-# persistence layer
-persistence:
-  enabled: true
-  configmap:
-    # Auto install other services. If enabled the respective service chart will be installed
-    gluuPassportEnabled: false
-    gluuCasaEnabled: false
-    gluuRadiusEnabled: false
-    gluuSamlEnabled: false
-```
-
-### oxd-server
-
-> **_NOTE:_** If these two are not provided `oxd-server` will fail to start.   
-> **_NOTE:_** For these passwords, stick to digits and numbers only.
-
-```yaml
-oxd-server:
-  configmap:
-    adminKeystorePassword: admin-example-password
-    applicationKeystorePassword: app-example-pass
-
-```
-
-### Casa
-
-- Casa is dependant on `oxd-server`. To install it `oxd-server` must be enabled.
-
-### Other optional services
-
-Other optional services like `key-rotation`, `cr-rotation`, and `radius` are enabled by setting their corresponding values to `true` under the global block.
-
-For example, to enable `cr-rotate` set
-
-```yaml
-global:
-  cr-rotate:
-    enabled: true
-```
 
 ## Use Couchbase solely as the persistence layer
 
