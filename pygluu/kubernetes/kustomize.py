@@ -363,20 +363,20 @@ class Kustomize(object):
 
                     couchbase_password_v_index = next(
                         (index for (index, d) in enumerate(volume_list) if d["name"] == "cb-pass"), None)
-                    if couchbase_password_v_index:
+                    if couchbase_password_v_index is not None:
                         del volume_list[couchbase_password_v_index]
                     couchbase_crt_v_index = next(
                         (index for (index, d) in enumerate(volume_list) if d["name"] == "cb-crt"), None)
-                    if couchbase_crt_v_index:
+                    if couchbase_crt_v_index is not None:
                         del volume_list[couchbase_crt_v_index]
 
                     couchbase_password_vm_index = next(
                         (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "cb-pass"), None)
-                    if couchbase_password_vm_index:
+                    if couchbase_password_vm_index is not None:
                         del volume_mount_list[couchbase_password_vm_index]
                     couchbase_crt_vm_index = next(
                         (index for (index, d) in enumerate(volume_mount_list) if d["name"] == "cb-crt"), None)
-                    if couchbase_crt_vm_index:
+                    if couchbase_crt_vm_index is not None:
                         del volume_mount_list[couchbase_crt_vm_index]
 
                 if k != self.key_rotate_yaml and k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
@@ -610,6 +610,9 @@ class Kustomize(object):
             if app == "update-lb-ip" and self.settings["IS_GLUU_FQDN_REGISTERED"] == "N":
                 if self.settings["DEPLOYMENT_ARCH"] == "eks":
                     logger.info("Building {} manifests".format(app))
+                    parser = Parser(kustomization_file, "Kustomization")
+                    parser["namespace"] = self.settings["GLUU_NAMESPACE"]
+                    parser.dump_it()
                     exec_cmd(command, output_file=app_file)
 
     def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key, app_file):
@@ -1397,10 +1400,10 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_persistence()
 
-        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" and self.settings["IS_GLUU_FQDN_REGISTERED"] != "y":
-            if self.settings["DEPLOYMENT_ARCH"] == "eks":
-                self.kubernetes = Kubernetes()
-                self.deploy_update_lb_ip()
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" and self.settings["DEPLOYMENT_ARCH"] == "eks":
+            self.kubernetes = Kubernetes()
+            self.deploy_update_lb_ip()
+
         self.kubernetes = Kubernetes()
         self.deploy_oxauth()
 
@@ -1624,5 +1627,5 @@ class Kustomize(object):
                                                         plural="postgreses",
                                                         namespace=self.settings["POSTGRES_NAMESPACE"])
         self.kubernetes.delete_storage_class("postgres-sc")
-        self.kubernetes.delete_service("kubedb", self.settings["REDIS_NAMESPACE"])
+        self.kubernetes.delete_service("kubedb", self.settings["POSTGRES_NAMESPACE"])
 
