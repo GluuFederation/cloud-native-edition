@@ -10,7 +10,7 @@ jobs:
       matrix:
         python-version: [3.7]
         gluu-version: ['"4.2.0_dev"']
-        persistence-backends: ['"ldap"','"couchbase"']
+        persistence-backends: ['"ldap"']
     steps:
     - name: Checkout code
       uses: actions/checkout@master
@@ -62,6 +62,7 @@ jobs:
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
+          "TEST_ENVIRONMENT": "Y",
           "GLUU_VERSION": ${{ matrix.gluu-version }},
           "GLUU_UPGRADE_TARGET_VERSION": "",
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",

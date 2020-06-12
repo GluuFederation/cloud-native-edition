@@ -94,6 +94,7 @@ jobs:
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
+          "TEST_ENVIRONMENT": "Y",
           "GLUU_VERSION": "4.2.0_dev",
           "GLUU_UPGRADE_TARGET_VERSION": "",
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
