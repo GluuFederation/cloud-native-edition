@@ -5,6 +5,7 @@ global:
   # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
     enabled: false
+    testEnviroment: false
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
   provisioner: k8s.io/minikube-hostpath
@@ -15,6 +16,9 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
   nginxNamespace: ingress
+
+  #nodeName used when deploying to a cluster on bare metal. Defines which node to bind pv to 
+  nodeName: node-1
 
   #service names to be used globally/by other charts
   oxAuthServiceName: oxauth
@@ -122,6 +126,13 @@ casa:
     repository: gluufederation/casa
     tag: 4.2.0_dev
     pullPolicy: Always
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -150,19 +161,41 @@ config:
 
   image:
     repository: gluufederation/config-init
-    tag: 4.1.1_01
+    tag: 4.2.0_dev
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 500Mi
+    # requests:
+    #   cpu: 500m
+    #   memory: 500Mi
 
 cr-rotate:
   image:
     repository: gluufederation/cr-rotate
     tag: 4.1.1_02
     pullPolicy: Always
+  resources: 
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 200m
+      memory: 200Mi   
 
 key-rotation:
   image:
     repository: gluufederation/key-rotation
     tag: 4.1.1_03
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
 
 jackrabbit:
   replicas: 1
@@ -172,6 +205,14 @@ jackrabbit:
     repository: gluufederation/jackrabbit
     tag: 4.1.1_01
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 1500m
+      memory: 1000Mi
+    requests:
+      cpu: 1500m
+      memory: 1000Mi
 
 opendj:
   # options true/false : must be enabled if cache type is REDIS
@@ -184,6 +225,14 @@ opendj:
     repository: gluufederation/wrends
     tag: 4.1.1_02
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 1500m
+      memory: 2000Mi
+    requests:
+      cpu: 1500m
+      memory: 2000Mi
 
 # persistence layer
 persistence:
@@ -191,24 +240,56 @@ persistence:
     repository: gluufederation/persistence
     tag: 4.1.1_03
     pullPolicy: Always
+  # default resource limits
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 500Mi
+    # requests:
+    #   cpu: 500m
+    #   memory: 500Mi
 
 oxauth:
   image:
     repository: gluufederation/oxauth
     tag: 4.1.1_06
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 2500m
+      memory: 2500Mi
+    requests:
+      cpu: 2500m
+      memory: 2500Mi
 
 fido2:
   image:
     repository: gluufederation/fido2
     tag: 4.2.0_dev
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
 
 scim:
   image:
     repository: gluufederation/scim
     tag: 4.2.0_dev
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
 
 oxd-server:
   # A dummy keystore CHANGE THIS TO YOUR OWN KEYSTORE
@@ -222,16 +303,14 @@ oxd-server:
     repository: gluufederation/oxd-server
     tag: 4.1.1_01
     pullPolicy: Always
-
-  resources: {}
-  # If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+    requests:
+      cpu: 1000m
+      memory: 400Mi
 
 nginx:
   # TODO: Remove gluuVersion after depreciating versions < 4.2
@@ -253,29 +332,53 @@ oxpassport:
     repository: gluufederation/oxpassport
     tag: 4.1.1_01
     pullPolicy: Always
-  # If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 700Mi
+    requests:
+      cpu: 500m
+      memory: 700Mi
 
 oxshibboleth:
   image:
     repository: gluufederation/oxshibboleth
     tag: 4.1.1_03
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
 
 oxtrust:
   image:
     repository: gluufederation/oxtrust
     tag: 4.1.1_03
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
 
 radius:
   image:
     repository: gluufederation/radius
     tag: 4.1.1_01
     pullPolicy: Always
+  # default resource limits
+  resources: 
+    limits:
+      cpu: 700m
+      memory: 700Mi
+    requests:
+      cpu: 700m
+      memory: 700Mi

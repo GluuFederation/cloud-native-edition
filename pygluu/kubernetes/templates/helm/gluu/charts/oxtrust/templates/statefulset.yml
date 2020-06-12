@@ -32,11 +32,14 @@ spec:
               /usr/bin/python3 /scripts/updatelbip.py &
               /app/scripts/entrypoint.sh
         {{- end }}
+        {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+        resources: {}
+        {{- else if .Values.global.cloud.testEnviroment }}
+        resources: {}
+        {{- else }}
         resources:
-          requests:
-            memory: {{ .Values.requests.memory }}
-          # limits:
-          #   memory: {{ .Values.limits.memory }}
+{{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: {{ .Values.service.port }}
         env:
