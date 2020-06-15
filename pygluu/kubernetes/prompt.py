@@ -129,6 +129,7 @@ class Prompt(object):
                                 OXD_SERVER_PW="",
                                 OXD_APPLICATION_KEYSTORE_CN="",
                                 OXD_ADMIN_KEYSTORE_CN="",
+                                OXD_SERVER_STORAGE="",
                                 LDAP_STORAGE_SIZE="",
                                 OXAUTH_REPLICAS="",
                                 OXTRUST_REPLICAS="",
@@ -1138,6 +1139,12 @@ class Prompt(object):
                 self.settings["OXD_ADMIN_KEYSTORE_CN"] = prompt
             if not self.settings["OXD_SERVER_PW"]:
                 self.settings["OXD_SERVER_PW"] = prompt_password("OXD-server")
+            if not self.settings["OXD_SERVER_STORAGE"]:
+                prompt = input("oxd server storage type , h2 or redis [h2]")
+                if not prompt:
+                    prompt = "h2"
+                self.settings["OXD_SERVER_STORAGE"] = prompt
+                self.settings["OXD_SERVER_PW"] = prompt_password("OXD-server")
 
         if not self.settings["ENABLE_OXTRUST_API"]:
             prompt = input("Enable oxTrust Api [N]?[Y/N]")
@@ -1515,7 +1522,7 @@ class Prompt(object):
             else:
                 self.settings["GLUU_CACHE_TYPE"] = "NATIVE_PERSISTENCE"
 
-        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
+        if self.settings["GLUU_CACHE_TYPE"] == "REDIS" or self.settings["OXD_SERVER_STORAGE"] == "redis":
             self.prompt_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \

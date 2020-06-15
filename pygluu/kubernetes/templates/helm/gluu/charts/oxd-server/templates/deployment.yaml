@@ -37,7 +37,29 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "oxd-server.fullname" . }}
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -k
+                - https://localhost:8443/health-check
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - curl
+                - -k
+                - https://localhost:8443/health-check
+            initialDelaySeconds: 25
+            periodSeconds: 25
           volumeMounts:
+            - name: {{ include "oxd-server.name" . }}-admin-password
+              mountPath: /etc/gluu/conf/admin_keystore_password
+              subPath: admin_keystore_password
+            - name: {{ include "oxd-server.name" . }}-app-password
+              mountPath: /etc/gluu/conf/app_keystore_password
+              subPath: app_keystore_password
             {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
             - name: {{ include "oxd-server.name" . }}-updatelbip
               mountPath: /scripts
@@ -51,6 +73,18 @@ spec:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
       volumes:
+        - name: {{ include "oxd-server.name" . }}-admin-password
+          secret:
+            secretName: {{ include "oxd-server.fullname" . }}
+            items:
+            - key: admin_keystore_password
+              path: admin_keystore_password
+        - name: {{ include "oxd-server.name" . }}-app-password
+          secret:
+            secretName: {{ include "oxd-server.fullname" . }}
+            items:
+            - key: app_keystore_password
+              path: app_keystore_password
         {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
         - name: {{ include "oxd-server.name" . }}-updatelbip
           configMap:

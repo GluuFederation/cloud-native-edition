@@ -469,11 +469,15 @@ class Kustomize(object):
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # oxdserver
         if "oxd-server" in app_file:
-            configmap_parser["data"]["ADMIN_KEYSTORE_PASSWORD"] = self.settings["OXD_SERVER_PW"]
-            configmap_parser["data"]["APPLICATION_KEYSTORE_PASSWORD"] = self.settings["OXD_SERVER_PW"]
             configmap_parser["data"]["APPLICATION_KEYSTORE_CN"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
             configmap_parser["data"]["ADMIN_KEYSTORE_CN"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
             configmap_parser["data"]["GLUU_SERVER_HOST"] = self.settings["GLUU_FQDN"]
+            configmap_parser["data"]["STORAGE"] = self.settings["OXD_SERVER_STORAGE"]
+            # In case redis is only used with oxd
+            if self.settings["GLUU_CACHE_TYPE"] != "REDIS" and self.settings["OXD_SERVER_STORAGE"] == "redis":
+                configmap_parser["data"]["GLUU_REDIS_URL"] = self.settings["REDIS_URL"]
+                configmap_parser["data"]["GLUU_REDIS_TYPE"] = self.settings["REDIS_TYPE"]
+
         # casa
         configmap_parser["data"]["GLUU_OXD_SERVER_URL"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"] + ":8443"
         configmap_parser.dump_it()
@@ -1179,6 +1183,15 @@ class Kustomize(object):
         cm_parser = Parser(self.oxd_server_yaml, "ConfigMap")
         cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
         cm_parser.dump_it()
+        # Create secret for oxd app and admin keystore
+        encoded_oxd_password_init_bytes = base64.b64encode(self.settings["OXD_SERVER_PW"].encode("utf-8"))
+        encoded_oxd_password_init_string = str(encoded_oxd_password_init_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="oxd-admin-app-keystore-password",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="admin_keystore_password",
+                                                          second_literal="app_keystore_password",
+                                                          value_of_literal=encoded_oxd_password_init_string,
+                                                          value_of_second_literal=encoded_oxd_password_init_string)
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)

@@ -28,11 +28,33 @@ spec:
         - configMapRef:
             name: oxd-server-cm
         volumeMounts:
+          - name: oxd-server-admin-password
+            mountPath: /etc/gluu/conf/admin_keystore_password
+            subPath: admin_keystore_password
+          - name: oxd-server-app-password
+            mountPath: /etc/gluu/conf/app_keystore_password
+            subPath: app_keystore_password
           #- mountPath: /opt/oxd-server/conf/oxd-server.keystore
           #  name: oxd-keystore-file
           #  subPath: oxd-server.keystore
           - mountPath: /scripts
             name: update-lb-ip
+        livenessProbe:
+          exec:
+            command:
+              - curl
+              - -k
+              - https://localhost:8443/health-check
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          exec:
+            command:
+              - curl
+              - -k
+              - https://localhost:8443/health-check
+          initialDelaySeconds: 25
+          periodSeconds: 25
         resources:
           requests:
             memory: "400Mi"
@@ -41,6 +63,18 @@ spec:
             memory: "400Mi"
             cpu: "1000m"
       volumes:
+      - name: oxd-server-admin-password
+        secret:
+          secretName: oxd-admin-app-keystore-password
+          items:
+            - key: admin_keystore_password
+              path: admin_keystore_password
+      - name: oxd-server-app-password
+        secret:
+          secretName: oxd-admin-app-keystore-password
+          items:
+            - key: app_keystore_password
+              path: app_keystore_password
       #- name: oxd-keystore-file
       #  secret:
       #    secretName: oxdkeystorecm
