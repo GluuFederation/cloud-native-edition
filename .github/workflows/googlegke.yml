@@ -131,7 +131,6 @@ jobs:
           "COUCHBASE_NAMESPACE": "cbns",
           "COUCHBASE_VOLUME_TYPE": "pd-standard",
           "COUCHBASE_CLUSTER_NAME": "cbgluu",
-          "COUCHBASE_FQDN": "*.cbns.svc.cluster.local",
           "COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local",
           "COUCHBASE_USER": "admin",
           "COUCHBASE_PASSWORD": "nTB5#|",

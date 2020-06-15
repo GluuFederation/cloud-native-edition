@@ -79,7 +79,6 @@ class Prompt(object):
                                 COUCHBASE_NAMESPACE="",
                                 COUCHBASE_VOLUME_TYPE="",
                                 COUCHBASE_CLUSTER_NAME="",
-                                COUCHBASE_FQDN="",
                                 COUCHBASE_URL="",
                                 COUCHBASE_USER="",
                                 COUCHBASE_PASSWORD="",
@@ -947,10 +946,6 @@ class Prompt(object):
                 prompt = default_cb_url_prompt
             self.settings["COUCHBASE_URL"] = prompt
 
-        if not self.settings["COUCHBASE_FQDN"]:
-            prompt = input("Please enter a couchbase domain for SAN.[<blank>]")
-            self.settings["COUCHBASE_FQDN"] = prompt
-
         if not self.settings["COUCHBASE_USER"]:
             prompt = input("Please enter couchbase username.[admin]")
             if not prompt:
@@ -960,9 +955,9 @@ class Prompt(object):
         if not self.settings["COUCHBASE_PASSWORD"]:
             self.settings["COUCHBASE_PASSWORD"] = prompt_password("Couchbase")
 
-        custom_cb_ca_crt = Path("./ca.crt")
-        custom_cb_crt = Path("./chain.pem")
-        custom_cb_key = Path("./pkey.key")
+        custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
+        custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
+        custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
         if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
             if not self.settings['COUCHBASE_SUBJECT_ALT_NAME']:
                 self.settings['COUCHBASE_SUBJECT_ALT_NAME'] = [
