@@ -1322,9 +1322,6 @@ class Prompt(object):
                 if not self.settings["NODE_SSH_KEY"]:
                     self.settings["NODE_SSH_KEY"] = "~/.ssh/id_rsa"
 
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
-            exec_cmd("microk8s.enable {} {} {}".format("dns", "ingress", "storage"))
-
         if not self.settings["HOST_EXT_IP"]:
             ip = self.gather_ip
             self.settings["HOST_EXT_IP"] = ip
