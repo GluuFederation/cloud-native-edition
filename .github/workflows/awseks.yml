@@ -188,6 +188,7 @@ jobs:
           "OXD_SERVER_PW": "n8H0NKuGTXsn",
           "OXD_APPLICATION_KEYSTORE_CN": "oxd-server",
           "OXD_ADMIN_KEYSTORE_CN": "oxd-server",
+          "OXD_SERVER_STORAGE": "h2",
           "LDAP_STORAGE_SIZE": "4Gi",
           "OXAUTH_REPLICAS": 1,
           "OXTRUST_REPLICAS": 1,
