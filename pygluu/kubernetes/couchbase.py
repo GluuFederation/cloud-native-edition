@@ -503,8 +503,8 @@ class Couchbase(object):
 
         self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
-        command = "./{}/bin/cbopcfg -backup true --namespace {}".format(self.couchbase_source_file,
-                                                                        self.settings["COUCHBASE_NAMESPACE"])
+        command = "./{}/bin/cbopcfg -backup=true -namespace={}".format(self.couchbase_source_file,
+                                                                       self.settings["COUCHBASE_NAMESPACE"])
         exec_cmd(command, output_file=self.couchbase_operator_dac_file)
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
