@@ -63,6 +63,20 @@ class Helm(object):
         self.settings = settings
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings['GLUU_HELM_RELEASE_NAME'] + "-ldap-backup"
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            if self.settings["INSTALL_REDIS"] == "Y" or \
+                    self.settings["INSTALL_GLUU_GATEWAY"] == "Y" or \
+                    self.settings["INSTALL_COUCHBASE"] == "Y":
+                user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
+                user_account = str(user_account, "utf-8").strip()
+
+                user, stderr, retcode = exec_cmd("whoami")
+                user = str(user, "utf-8").strip()
+                cluster_role_binding_name = "cluster-admin-{}".format(user)
+                self.kubernetes.create_cluster_role_binding(cluster_role_binding_name=cluster_role_binding_name,
+                                                            user_name=user_account,
+                                                            cluster_role_name="cluster-admin")
 
     def check_install_nginx_ingress(self, install_ingress=True):
         """
@@ -434,9 +448,6 @@ class Helm(object):
     def install_kubedb(self):
         self.uninstall_kubedb()
         self.kubernetes.create_namespace(name="gluu-kubedb")
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
-                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
         try:
             exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
             exec_cmd("helm repo update")
@@ -460,10 +471,6 @@ class Helm(object):
 
     def uninstall_kubedb(self):
         logger.info("Deleting KubeDB...This may take a little while.")
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            exec_cmd("kubectl create clusterrolebinding 'cluster-admin-$(whoami)' "
-                     "--clusterrole=cluster-admin --user='$(gcloud config get-value core/account)'")
-
         try:
             exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
             exec_cmd("helm repo update")

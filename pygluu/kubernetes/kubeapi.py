@@ -482,6 +482,22 @@ class Kubernetes(object):
             self.check_create_error_and_response(e, "ServiceAccount", name)
             return False
 
+    def create_cluster_role_binding(self, cluster_role_binding_name, user_name, cluster_role_name):
+        """Create role binding using name=role_binding_name in namespace
+        connecting role_name using service_account_name"""
+        metadata = client.V1ObjectMeta(name=cluster_role_binding_name)
+        role = client.V1RoleRef(kind="ClusterRole", name=cluster_role_name, api_group="rbac.authorization.k8s.io")
+        subject = client.V1Subject(kind="User", name=user_name)
+        body = client.V1ClusterRoleBinding(subjects=[subject], metadata=metadata, role_ref=role)
+
+        try:
+            self.rbac_cli.create_cluster_role_binding(body=body)
+            logger.info('Created cluster role binding {}'.format(cluster_role_binding_name))
+            return True
+        except client.rest.ApiException as e:
+            self.check_create_error_and_response(e, "ClusterRoleBinding", cluster_role_binding_name)
+            return False
+
     def create_namespaced_role_binding(self, role_binding_name, service_account_name, role_name, namespace="default"):
         """Create role binding using name=role_binding_name in namespace
         connecting role_name using service_account_name"""

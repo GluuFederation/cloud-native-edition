@@ -127,6 +127,20 @@ class Kustomize(object):
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
         self.gluu_config = ""
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            if self.settings["INSTALL_REDIS"] == "Y" or \
+                    self.settings["INSTALL_GLUU_GATEWAY"] == "Y" or \
+                    self.settings["INSTALL_COUCHBASE"] == "Y":
+                user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
+                user_account = str(user_account, "utf-8").strip()
+
+                user, stderr, retcode = exec_cmd("whoami")
+                user = str(user, "utf-8").strip()
+                cluster_role_binding_name = "cluster-admin-{}".format(user)
+                self.kubernetes.create_cluster_role_binding(cluster_role_binding_name=cluster_role_binding_name,
+                                                            user_name=user_account,
+                                                            cluster_role_name="cluster-admin")
 
     @property
     def detect_kubectl(self):
