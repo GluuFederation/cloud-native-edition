@@ -1393,7 +1393,7 @@ class Kustomize(object):
                 self.deploy_alb()
             else:
                 self.deploy_nginx()
-
+        self.adjust_fqdn_yaml_entries()
         if self.settings["DEPLOY_MULTI_CLUSTER"] != "Y" and self.settings["DEPLOY_MULTI_CLUSTER"] != "y":
             self.kubernetes = Kubernetes()
             if restore:

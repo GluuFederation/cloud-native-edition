@@ -424,9 +424,8 @@ class Prompt(object):
         if self.settings["APP_VOLUME_TYPE"] == 11:
             for node_name in self.settings["NODES_NAMES"]:
                 for zone in self.settings["NODES_ZONES"]:
-                    response = exec_cmd("gcloud compute ssh user@{} --zone={} "
-                                        "--command='echo $HOME'".format(node_name,
-                                                                        zone))
+                    response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
+                                                        "--command='echo $HOME'".format(node_name, zone))
                     self.settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
                     if self.settings["GOOGLE_NODE_HOME_DIR"]:
                         break
