@@ -80,9 +80,7 @@ data:
                 logging.exception(e)
             return False
         else:
-            print('tls-certificate already exists as /{}'. format(
-                secret
-            ))
+            print('tls-certificate already exists.')
           
 
     # check if gluu secret exists
@@ -90,8 +88,6 @@ data:
         if ( v1.read_namespaced_secret( 'gluu', namespace ) ):
             ssl_cert = v1.read_namespaced_secret( 'gluu', namespace ).data['ssl_cert']
             ssl_key = v1.read_namespaced_secret( "gluu", namespace ).data['ssl_key']
-            
-            print('ssl_cert / {} \n ssl_key: {}'.format(ssl_cert, ssl_key) )
 
         return ssl_cert, ssl_key
     
@@ -122,9 +118,7 @@ data:
                 logging.exception(e)
             return False
         else:
-            print('tls-certificate already exists as /{}'. format(
-                secret
-            ))
+            print('tls-certificate already exists.')
             
     def main():
         cert, key = get_certs()
