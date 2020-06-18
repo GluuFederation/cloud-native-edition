@@ -24,7 +24,6 @@ spec:
           host: opendj.{{ .Release.Namespace }}.svc.cluster.local
           port:
             number: 4444
-            protocol: TCP
     - route:
       - destination:
           host: opendj.{{ .Release.Namespace }}.svc.cluster.local

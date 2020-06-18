@@ -8,14 +8,4 @@ spec:
     tls:
       mode: ISTIO_MUTUAL
 
----
 
-apiVersion: authentication.istio.io/v1alpha1
-kind: Policy
-metadata:
-  name: {{ include "istio.name" . }}-oxtrust-receive-tls
-spec:
-  targets:
-  - name: oxtrust
-  peers:
-  - mtls: {}

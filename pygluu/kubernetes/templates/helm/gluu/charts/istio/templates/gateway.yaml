@@ -53,31 +53,4 @@ spec:
       protocol: TCP
     hosts:
     - oxpassport.{{ .Release.Namespace }}.svc.cluster.local
-  
-  # OPENDJ
-  - port:
-      number: 1636
-      name: tcp-ldaps
-      protocol: TCP
-    hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 1389
-      name: tcp-ldap
-      protocol: TCP
-    hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 8989
-      name: tcp-repl
-      protocol: TCP
-    hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
-  - port:
-      number: 4444
-      name: tcp-admin
-      protocol: TCP
-    hosts:
-    - opendj.{{ .Release.Namespace }}.svc.cluster.local
-
-    
+      

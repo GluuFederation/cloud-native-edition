@@ -7,15 +7,3 @@ spec:
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
-
----
-
-apiVersion: authentication.istio.io/v1alpha1
-kind: Policy 
-metadata:
-  name: {{ include "istio.name" . }}-casa-receive-mtls
-spec:
-  targets: 
-  - name: casa
-  peers:
-  - mtls: {}
