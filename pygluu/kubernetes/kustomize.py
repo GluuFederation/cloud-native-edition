@@ -324,8 +324,7 @@ class Kustomize(object):
                 self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["DEPLOYMENT_ARCH"] == "gke" or \
                 self.settings["DEPLOYMENT_ARCH"] == "aks" or \
-                self.settings["DEPLOYMENT_ARCH"] == "do" or \
-                self.settings["DEPLOYMENT_ARCH"] == "local":
+                self.settings["DEPLOYMENT_ARCH"] == "do":
             for k, v in self.adjust_yamls_for_fqdn_status.items():
                 parser = Parser(k, v)
                 volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -336,8 +335,7 @@ class Kustomize(object):
                             self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                             self.settings["DEPLOYMENT_ARCH"] == "gke" or \
                             self.settings["DEPLOYMENT_ARCH"] == "aks" or \
-                            self.settings["DEPLOYMENT_ARCH"] == "do" or \
-                            self.settings["DEPLOYMENT_ARCH"] == "local":
+                            self.settings["DEPLOYMENT_ARCH"] == "do":
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings["GLUU_FQDN"]]
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                     else:
@@ -461,8 +459,7 @@ class Kustomize(object):
                 self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                 self.settings["DEPLOYMENT_ARCH"] == "gke" or \
                 self.settings["DEPLOYMENT_ARCH"] == "aks" or \
-                self.settings["DEPLOYMENT_ARCH"] == "do" or \
-                self.settings["DEPLOYMENT_ARCH"] == "local":
+                self.settings["DEPLOYMENT_ARCH"] == "do":
             try:
                 del configmap_parser["data"]["LB_ADDR"]
             except KeyError:
@@ -640,7 +637,7 @@ class Kustomize(object):
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "update-lb-ip" and self.settings["IS_GLUU_FQDN_REGISTERED"] == "N":
-                if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                if self.settings["DEPLOYMENT_ARCH"] == "eks" or self.settings["DEPLOYMENT_ARCH"] == "local":
                     logger.info("Building {} manifests".format(app))
                     parser = Parser(kustomization_file, "Kustomization")
                     parser["namespace"] = self.settings["GLUU_NAMESPACE"]
@@ -861,22 +858,18 @@ class Kustomize(object):
                     break
                 if self.settings["DEPLOYMENT_ARCH"] == "eks":
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
+                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
                     self.settings["LB_ADD"] = hostname_ip
                     if self.settings["AWS_LB_TYPE"] == "nlb":
                         ip_static = socket.gethostbyname(str(hostname_ip))
                         if ip_static:
                             break
                 elif self.settings["DEPLOYMENT_ARCH"] == "local":
-                    hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).spec.cluster_ip
-                    self.settings["HOST_EXT_IP"] = hostname_ip
+                    self.settings["LB_ADD"] = "ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+                    break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
+                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].ip
                     self.settings["HOST_EXT_IP"] = hostname_ip
             except (TypeError, AttributeError):
                 logger.info("Waiting for address..")
@@ -928,15 +921,16 @@ class Kustomize(object):
                                                              joinpath("nginx/patch-configmap-l4.yaml"))
 
             self.wait_for_nginx_add()
-            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
-            cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
-            cm_parser.dump_it()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "do":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
         self.wait_for_nginx_add()
 
+        if self.settings["DEPLOYMENT_ARCH"] == "eks" or self.settings["DEPLOYMENT_ARCH"] == "local":
+            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
+            cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
+            cm_parser.dump_it()
         ingress_name_list = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
@@ -1446,9 +1440,10 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_persistence()
 
-        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y" and self.settings["DEPLOYMENT_ARCH"] == "eks":
-            self.kubernetes = Kubernetes()
-            self.deploy_update_lb_ip()
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] != "Y":
+            if self.settings["DEPLOYMENT_ARCH"] == "eks" or self.settings["DEPLOYMENT_ARCH"] == "local":
+                self.kubernetes = Kubernetes()
+                self.deploy_update_lb_ip()
 
         self.kubernetes = Kubernetes()
         self.deploy_oxauth()

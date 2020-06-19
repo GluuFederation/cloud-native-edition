@@ -94,10 +94,11 @@ class Helm(object):
                         if ip_static:
                             break
                 elif self.settings["DEPLOYMENT_ARCH"] == "local":
-                    hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).spec.cluster_ip
-                    self.settings["HOST_EXT_IP"] = hostname_ip
+                    self.settings["LB_ADD"] = self.settings['NGINX_INGRESS_RELEASE_NAME'] + \
+                                              "-nginx-ingress-controller." + \
+                                              self.settings["NGINX_INGRESS_NAMESPACE"] + \
+                                              ".svc.cluster.local"
+                    break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
                         name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
