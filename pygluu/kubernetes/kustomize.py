@@ -925,9 +925,10 @@ class Kustomize(object):
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "do":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
-        self.wait_for_nginx_add()
+            self.wait_for_nginx_add()
 
         if self.settings["DEPLOYMENT_ARCH"] == "eks" or self.settings["DEPLOYMENT_ARCH"] == "local":
+            self.wait_for_nginx_add()
             cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
             cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
             cm_parser.dump_it()
