@@ -5,20 +5,19 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxtrust.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
-  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+  - {{ .Release.Name }}-global-gtw
   http:
   - match:
     - uri:
-        prefix: /
-    rewrite:
-      uri: /identity
+        exact: /
     route:
-      - destination:
-          host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
-          port:
-            number: 8080
+    - destination:
+        host: oxtrust.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
 
 ---
 
@@ -29,7 +28,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxtrust.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -43,24 +42,4 @@ spec:
           host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 8080
---- 
-
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: {{ include "istio.fullname" . }}-oxtrust-identity
-  namespace: {{ .Release.Namespace }}
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
-  http:
-  - match:
-    - uri:
-        prefix: /identity
-    route:
-    - destination:
-        host: oxtrust.{{.Release.Namespace}}.svc.cluster.local
-        port:
-          number: 8080
+        weight: 100

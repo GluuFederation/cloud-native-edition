@@ -1,11 +1,11 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-openid-config
+  name: {{ include "istio.name" . }}-openid-config
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:
@@ -25,11 +25,11 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-uma2-config
+  name: {{ include "istio.name" . }}-uma2-config
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:
@@ -43,16 +43,17 @@ spec:
           host: oxauth.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 8080
+        weight: 100
 ---
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-webdiscovery
+  name: {{ include "istio.name" . }}-webdiscovery
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:
@@ -66,22 +67,23 @@ spec:
         host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
+      weight: 100
 
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-gluu
+  name: {{ include "istio.name" . }}-gluu
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:
   - match: 
     - uri:
-        prefix: /oxauth
+        exact: /oxauth
     route:
     - destination:
         host: oxauth.{{.Release.Namespace}}.svc.cluster.local
@@ -93,11 +95,11 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-webfinger
+  name: {{ include "istio.name" . }}-webfinger
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:
@@ -111,27 +113,52 @@ spec:
         host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
+      weight: 100
 ---
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-u2f-config
+  name: {{ include "istio.name" . }}-u2f-config
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-  - oxauth.{{.Release.Namespace}}.svc.cluster.local
+  - {{ .Values.global.domain }}
   gateways:
   - {{ .Release.Name }}-global-gtw 
   http:
   - match: 
     - uri:
-        prefix: /.well-known/fido-u2f-configuration
+        prefix: /.well-known/fido-configuration
     rewrite:
-      uri: /oxauth/restv1/fido-u2f-configuration
+      uri: /oxauth/restv1/fido-configuration
     route:
     - destination:
         host: oxauth.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
-          
+      weight: 100
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.name" . }}-fido2-configuration
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+  - {{ .Values.global.domain }}
+  gateways:
+  - {{ .Release.Name }}-global-gtw 
+  http:
+  - match: 
+    - uri:
+        prefix: /.well-known/fido2-configuration
+    rewrite:
+      uri: /oxauth/restv1/fido2/configuration
+    route:
+    - destination:
+        host: oxauth.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100

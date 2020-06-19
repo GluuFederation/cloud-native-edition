@@ -13,7 +13,7 @@ spec:
       name: http-oxtrust
       protocol: HTTP
     hosts:
-      - oxtrust.{{.Release.Namespace}}.svc.cluster.local
+      - {{ .Values.global.domain }}
     tls:
       httpsRedirect: true
   - port:
@@ -21,7 +21,7 @@ spec:
       name: https
       protocol: HTTPS
     hosts:
-      - "*"
+      - {{ .Values.global.domain }}
     tls:
       mode: SIMPLE # enable https on this port
       credentialName: tls-certificate # fetch cert from k8s secret
@@ -31,26 +31,26 @@ spec:
       name: http-oxauth
       protocol: HTTP
     hosts:
-      - oxauth.{{.Release.Namespace}}.svc.cluster.local
+      - {{ .Values.global.domain }}
   # oxshibboleth
   - port:
-      number: 8081
+      number: 8080
       name: http-oxshibboleth
       protocol: HTTP 
     hosts:
-      - oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
+      - {{ .Values.global.domain }}
   # # casa
   - port:
       number: 8080
       name: http-casa
       protocol: HTTP
     hosts:
-      - casa.{{ .Release.Namespace }}.svc.cluster.local
+      - {{ .Values.global.domain }}
   # oxpassport
   - port:
       number: 8090
       name: http-oxpassport
       protocol: HTTP
     hosts:
-    - oxpassport.{{ .Release.Namespace }}.svc.cluster.local
+    - {{ .Values.global.domain }}
       

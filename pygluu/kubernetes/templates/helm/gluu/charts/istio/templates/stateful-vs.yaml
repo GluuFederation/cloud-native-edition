@@ -1,0 +1,38 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "istio.name" .}}-stateful
+  namespace: {{ .Release.Namespace }}
+spec:
+  gateways:
+  - {{ .Release.Name }}-global-gtw 
+  hosts:
+  - {{ .Values.global.domain }}
+  http:
+  - match:
+    - uri:
+        exact: /identity
+    route:
+    - destination:
+        host: oxtrust.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+  - match:
+    - uri:
+        exact: /idp
+    route:
+    - destination:
+        host: oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+  - match:
+    - uri:
+        exact: /passport
+    route:
+    - destination:
+        host: oxpassport.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8090
+      weight: 100

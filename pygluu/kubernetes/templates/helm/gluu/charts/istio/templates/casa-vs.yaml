@@ -1,19 +1,21 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "istio.fullname" . }}-casa
-  namespace: {{ .Release.Namespace }}
+  creationTimestamp: null
+  name: {{ include "istio.name" .}}-casa
+  namespace: default
 spec:
-  hosts:
-  - casa.{{ .Release.Namespace }}.svc.cluster.local
   gateways:
-  - {{ .Release.Name }}-global-gtw 
+  - {{ .Release.Name }}-global-gtw
+  hosts:
+  - {{ .Values.global.domain }}
   http:
   - match:
     - uri:
-        prefix: /casa
+        exact: /casa
     route:
-      - destination:
-          host: casa.{{ .Release.Namespace }}.svc.cluster.local
-          port:
-            number: 8080
+    - destination:
+        host: casa.default.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
