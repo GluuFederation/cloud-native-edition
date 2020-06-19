@@ -19,7 +19,7 @@ from .couchbase import Couchbase
 
 logger = get_logger("gluu-kustomize     ")
 
-# Local Deployments
+# TEST ENVIORNMENT DEPLOYMENTS
 local_ldap_minikube_folder = Path("./ldap/overlays/minikube/local-storage/")
 local_jcr_minikube_folder = Path("./jackrabbit/overlays/minikube/local-storage/")
 local_ldap_microk8s_folder = Path("./ldap/overlays/microk8s/local-storage/")
@@ -52,6 +52,9 @@ dynamic_ldap_do_folder = Path("./ldap/overlays/do/dynamic-dn/")
 dynamic_jcr_do_folder = Path("./jackrabbit/overlays/do/dynamic-dn/")
 static_ldap_do_folder = Path("./ldap/overlays/do/static-dn/")
 static_jcr_do_folder = Path("./jackrabbit/overlays/do/static-dn/")
+# LOCAL DEPLOYMENTS
+hostpath_ldap_local_folder = Path("./ldap/overlays/local/hostpath/")
+hostpath_jcr_local_folder = Path("./jackrabbit/overlays/local/hostpath/")
 
 
 def register_op_client(namespace, client_name, op_host, oxd_url):
@@ -285,6 +288,12 @@ class Kustomize(object):
                 ldap_kustomize_yaml_directory = local_ldap_azure_folder
                 jcr_kustomize_yaml_directory = local_jcr_azure_folder
 
+        elif self.settings["DEPLOYMENT_ARCH"] == "local":
+            output_yamls_folder = Path("gluu_local_yamls")
+            if self.settings["APP_VOLUME_TYPE"] == 26:
+                ldap_kustomize_yaml_directory = hostpath_ldap_local_folder
+                jcr_kustomize_yaml_directory = hostpath_jcr_local_folder
+
         elif self.settings["DEPLOYMENT_ARCH"] == "do":
             output_yamls_folder = Path("gluu_do_yamls")
             if self.settings["APP_VOLUME_TYPE"] == 22:
@@ -310,10 +319,13 @@ class Kustomize(object):
         return output_yamls_folder, ldap_kustomize_yaml_directory, jcr_kustomize_yaml_directory
 
     def adjust_fqdn_yaml_entries(self):
-        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" \
-                or self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
-                or self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
-                or self.settings["DEPLOYMENT_ARCH"] == "do":
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" or \
+                self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
+                self.settings["DEPLOYMENT_ARCH"] == "gke" or \
+                self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                self.settings["DEPLOYMENT_ARCH"] == "do" or \
+                self.settings["DEPLOYMENT_ARCH"] == "local":
             for k, v in self.adjust_yamls_for_fqdn_status.items():
                 parser = Parser(k, v)
                 volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -322,8 +334,10 @@ class Kustomize(object):
                 if k != self.cr_rotate_yaml and k != self.key_rotate_yaml and k != self.gluu_upgrade_yaml:
                     if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
                             self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
-                            self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
-                            or self.settings["DEPLOYMENT_ARCH"] == "do":
+                            self.settings["DEPLOYMENT_ARCH"] == "gke" or \
+                            self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                            self.settings["DEPLOYMENT_ARCH"] == "do" or \
+                            self.settings["DEPLOYMENT_ARCH"] == "local":
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings["GLUU_FQDN"]]
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                     else:
@@ -442,10 +456,13 @@ class Kustomize(object):
             configmap_parser = Parser(app_file, "ConfigMap", "gluu-config-cm")
         else:
             configmap_parser = Parser(app_file, "ConfigMap")
-        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" \
-                or self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
-                or self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
-                or self.settings["DEPLOYMENT_ARCH"] == "do":
+        if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y" or \
+                self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
+                self.settings["DEPLOYMENT_ARCH"] == "gke" or \
+                self.settings["DEPLOYMENT_ARCH"] == "aks" or \
+                self.settings["DEPLOYMENT_ARCH"] == "do" or \
+                self.settings["DEPLOYMENT_ARCH"] == "local":
             try:
                 del configmap_parser["data"]["LB_ADDR"]
             except KeyError:
@@ -812,7 +829,8 @@ class Kustomize(object):
                 = self.settings["LDAP_STORAGE_SIZE"]
         statefulset_parser.dump_it()
         if self.settings["APP_VOLUME_TYPE"] != 7 and self.settings["APP_VOLUME_TYPE"] != 12 and \
-                self.settings["APP_VOLUME_TYPE"] != 17 and self.settings["APP_VOLUME_TYPE"] != 22:
+                self.settings["APP_VOLUME_TYPE"] != 17 and self.settings["APP_VOLUME_TYPE"] != 22 and \
+                self.settings["APP_VOLUME_TYPE"] != 26:
             pv_parser = Parser(app_file, "PersistentVolume")
             pv_parser["spec"]["capacity"]["storage"] = self.settings["JACKRABBIT_STORAGE_SIZE"]
             if "ldap" in app_file:
@@ -835,22 +853,42 @@ class Kustomize(object):
                 logger.info("Key not deleted as it does not exist inside yaml.")
             parser.dump_it()
 
-    def check_lb(self):
-        lb_hostname = None
+    def wait_for_nginx_add(self):
+        hostname_ip = None
         while True:
             try:
-                if lb_hostname:
+                if hostname_ip:
                     break
-                lb_hostname = self.kubernetes.read_namespaced_service(
-                    name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
-            except TypeError:
-                logger.info("Waiting for loadbalancer address..")
+                if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
+                    self.settings["LB_ADD"] = hostname_ip
+                    if self.settings["AWS_LB_TYPE"] == "nlb":
+                        ip_static = socket.gethostbyname(str(hostname_ip))
+                        if ip_static:
+                            break
+                elif self.settings["DEPLOYMENT_ARCH"] == "local":
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).spec.cluster_ip
+                    self.settings["HOST_EXT_IP"] = hostname_ip
+                else:
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
+                    self.settings["HOST_EXT_IP"] = hostname_ip
+            except (TypeError, AttributeError):
+                logger.info("Waiting for address..")
                 time.sleep(10)
-        self.settings["LB_ADD"] = lb_hostname
 
     def deploy_nginx(self):
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
-        self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/mandatory.yaml"))
+        if self.settings["DEPLOYMENT_ARCH"] == "local":
+            self.kubernetes.create_objects_from_dict(
+                self.output_yaml_directory.joinpath("nginx/baremetal.yaml"))
+        else:
+            self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/mandatory.yaml"))
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             if self.settings["AWS_LB_TYPE"] == "nlb":
                 if self.settings["USE_ARN"] == "Y":
@@ -869,20 +907,6 @@ class Kustomize(object):
                         {"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "https"})
                     svc_nlb_yaml_parser.dump_it()
                 self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/nlb-service.yaml"))
-                while True:
-                    try:
-                        ip_static = None
-                        lb_hostname = self.kubernetes.read_namespaced_service(
-                            name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
-                        try:
-                            ip_static = socket.gethostbyname(str(lb_hostname))
-                        except socket.gaierror:
-                            logger.warning("IP not assigned yet")
-                        if ip_static:
-                            break
-                    except TypeError:
-                        logger.info("Waiting for LB to receive an ip assignment from AWS")
-                    time.sleep(10)
             else:
                 if self.settings["USE_ARN"] == "Y":
                     svc_l7_yaml = self.output_yaml_directory.joinpath("nginx/service-l7.yaml")
@@ -903,7 +927,7 @@ class Kustomize(object):
                     self.kubernetes.create_objects_from_dict(self.output_yaml_directory.
                                                              joinpath("nginx/patch-configmap-l4.yaml"))
 
-            self.check_lb()
+            self.wait_for_nginx_add()
             cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
             cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
             cm_parser.dump_it()
@@ -911,18 +935,7 @@ class Kustomize(object):
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "do":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
-            ip = None
-            while True:
-                try:
-                    if ip:
-                        break
-                    ip = self.kubernetes.read_namespaced_service(
-                        name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].ip
-                except TypeError:
-                    logger.info("Waiting for the ip of the Loadbalancer")
-                    time.sleep(10)
-            logger.info(ip)
-            self.settings["HOST_EXT_IP"] = ip
+        self.wait_for_nginx_add()
 
         ingress_name_list = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
@@ -974,7 +987,9 @@ class Kustomize(object):
         postgres_parser["spec"]["replicas"] = self.settings["POSTGRES_REPLICAS"]
         postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings["POSTGRES_NAMESPACE"]
         postgres_parser["metadata"]["namespace"] = self.settings["POSTGRES_NAMESPACE"]
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
+                self.settings["TEST_ENVIRONMENT"] == "Y":
             try:
                 del postgres_parser["spec"]["podTemplate"]["spec"]["resources"]
             except KeyError:
@@ -1125,7 +1140,9 @@ class Kustomize(object):
         redis_parser["spec"]["cluster"]["replicas"] = self.settings["REDIS_NODES_PER_MASTER"]
         redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings["REDIS_NAMESPACE"]
         redis_parser["metadata"]["namespace"] = self.settings["REDIS_NAMESPACE"]
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
+                self.settings["DEPLOYMENT_ARCH"] == "local":
             del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
         redis_parser.dump_it()
         self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
@@ -1419,7 +1436,7 @@ class Kustomize(object):
             if restore:
                 self.run_backup_command()
                 self.mount_config()
-                self.check_lb()
+                self.wait_for_nginx_add()
             else:
                 self.deploy_ldap()
                 if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":

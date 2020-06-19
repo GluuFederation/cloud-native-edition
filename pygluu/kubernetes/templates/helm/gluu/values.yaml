@@ -7,7 +7,7 @@ global:
     enabled: false
     testEnviroment: false
 
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs dobs.csi.digitalocean.com
+  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs, dobs.csi.digitalocean.com, openebs.io/local
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4

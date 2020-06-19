@@ -78,6 +78,35 @@ class Helm(object):
                                                             user_name=user_account,
                                                             cluster_role_name="cluster-admin")
 
+    def wait_for_nginx_add(self):
+        hostname_ip = None
+        while True:
+            try:
+                if hostname_ip:
+                    break
+                if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
+                    self.settings["LB_ADD"] = hostname_ip
+                    if self.settings["AWS_LB_TYPE"] == "nlb":
+                        ip_static = socket.gethostbyname(str(hostname_ip))
+                        if ip_static:
+                            break
+                elif self.settings["DEPLOYMENT_ARCH"] == "local":
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).spec.cluster_ip
+                    self.settings["HOST_EXT_IP"] = hostname_ip
+                else:
+                    hostname_ip = self.kubernetes.read_namespaced_service(
+                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
+                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
+                    self.settings["HOST_EXT_IP"] = hostname_ip
+            except (TypeError, AttributeError):
+                logger.info("Waiting for address..")
+                time.sleep(10)
+
     def check_install_nginx_ingress(self, install_ingress=True):
         """
         Helm installs nginx ingress or checks to recieve and ip or address
@@ -105,23 +134,11 @@ class Helm(object):
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
             exec_cmd("minikube addons enable ingress")
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
-            lb_hostname = None
             if self.settings["AWS_LB_TYPE"] == "nlb":
                 if install_ingress:
                     nlb_annotation = "--set controller.service.annotations={" \
                                      "'service.beta.kubernetes.io/aws-load-balancer-type':'nlb'} "
                     exec_cmd(command + nlb_annotation)
-                while True:
-                    try:
-                        lb_hostname = self.kubernetes.read_namespaced_service(
-                            name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                            namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
-                        ip_static = socket.gethostbyname(str(lb_hostname))
-                        if ip_static:
-                            break
-                    except (TypeError, AttributeError):
-                        logger.info("Waiting for LB to receive an ip assignment from AWS")
-                    time.sleep(10)
             else:
                 if self.settings["USE_ARN"] == "Y":
                     if install_ingress:
@@ -140,36 +157,15 @@ class Helm(object):
                 else:
                     if install_ingress:
                         exec_cmd(command)
-            while True:
-                try:
-                    if lb_hostname:
-                        break
-                    lb_hostname = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].hostname
-                except (TypeError, AttributeError):
-                    logger.info("Waiting for loadbalancer address..")
-                    time.sleep(10)
-            self.settings["LB_ADD"] = lb_hostname
+            self.wait_for_nginx_add()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or \
                 self.settings["DEPLOYMENT_ARCH"] == "aks" or \
-                self.settings["DEPLOYMENT_ARCH"] == "do":
+                self.settings["DEPLOYMENT_ARCH"] == "do" or \
+                self.settings["DEPLOYMENT_ARCH"] == "local":
             if install_ingress:
                 exec_cmd(command)
-            ip = None
-            while True:
-                try:
-                    if ip:
-                        break
-                    ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller",
-                        namespace=self.settings["NGINX_INGRESS_NAMESPACE"]).status.load_balancer.ingress[0].ip
-                except (TypeError, AttributeError):
-                    logger.info("Waiting for the ip of the Loadbalancer")
-                    time.sleep(10)
-            logger.info(ip)
-            self.settings["HOST_EXT_IP"] = ip
+            self.wait_for_nginx_add()
 
     def analyze_global_values(self):
         """

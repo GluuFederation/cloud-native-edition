@@ -10,6 +10,14 @@ metadata:
     storage: opendj
   annotations:
     storageclass.beta.kubernetes.io/is-default-class: "false"
+    {{- if eq .Values.global.provisioner "openebs.io/local" }}
+    openebs.io/cas-type: local
+    cas.openebs.io/config: |
+      - name: StorageType
+        value: hostpath
+      - name: BasePath
+        value: /var/local-hostpath
+    {{- end }}
 provisioner: {{ .Values.global.provisioner }}
 parameters:
   {{- if eq .Values.global.provisioner "kubernetes.io/aws-ebs" }}
@@ -21,11 +29,13 @@ parameters:
   storageAccountType: {{ .Values.global.azureStorageAccountType }}
   kind: {{ .Values.global.azureStorageKind }}
   {{- else if eq .Values.global.provisioner "dobs.csi.digitalocean.com" }}
+  {{- else if eq .Values.global.provisioner "openebs.io/local" }}
   {{- else }}
   pool: {{ .Values.global.pool }}
   fsType: {{ .Values.global.fsType }}
   {{- end }}
 allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: {{ .Values.global.reclaimPolicy }}
 mountOptions:
   - debug

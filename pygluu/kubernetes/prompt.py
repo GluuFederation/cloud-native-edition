@@ -985,7 +985,7 @@ class Prompt(object):
         """
         if not self.settings["DEPLOYMENT_ARCH"]:
             print("|------------------------------------------------------------------|")
-            print("|                     Local Deployments                            |")
+            print("|                     Test Environment Deployments                 |")
             print("|------------------------------------------------------------------|")
             print("| [1]  Microk8s [default]                                          |")
             print("| [2]  Minikube                                                    |")
@@ -997,6 +997,11 @@ class Prompt(object):
             print("| [5] Microsoft Azure (AKS)                                        |")
             print("| [6] Digital Ocean [Beta]                                         |")
             print("|------------------------------------------------------------------|")
+            print("|                     Local Deployments                            |")
+            print("|------------------------------------------------------------------|")
+            print("| [7]  Manually provisioned Kubernetes cluster                     |")
+            print("|------------------------------------------------------------------|")
+
             prompt = input("Deploy on ?[1]")
             if prompt == "2":
                 prompt = "minikube"
@@ -1008,6 +1013,8 @@ class Prompt(object):
                 prompt = "aks"
             elif prompt == "6":
                 prompt = "do"
+            elif prompt == "7":
+                prompt = "local"
             else:
                 prompt = "microk8s"
             self.settings["DEPLOYMENT_ARCH"] = prompt
@@ -1188,7 +1195,7 @@ class Prompt(object):
                             ip = add.address
                             node_ip_list.append(ip)
                     # Digital Ocean does not provide zone support yet
-                    if self.settings["DEPLOYMENT_ARCH"] != "do":
+                    if self.settings["DEPLOYMENT_ARCH"] != "do" or self.settings["DEPLOYMENT_ARCH"] != "local":
                         node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                         node_zone_list.append(node_zone)
                     node_name_list.append(node_name)
@@ -1198,6 +1205,7 @@ class Prompt(object):
             if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                     or self.settings["DEPLOYMENT_ARCH"] == "gke" \
                     or self.settings["DEPLOYMENT_ARCH"] == "do" \
+                    or self.settings["DEPLOYMENT_ARCH"] == "local" \
                     or self.settings["DEPLOYMENT_ARCH"] == "aks":
                 #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
                 return "22.22.22.22"
@@ -1309,6 +1317,7 @@ class Prompt(object):
         if self.settings["DEPLOYMENT_ARCH"] == "eks" \
                 or self.settings["DEPLOYMENT_ARCH"] == "gke" \
                 or self.settings["DEPLOYMENT_ARCH"] == "do" \
+                or self.settings["DEPLOYMENT_ARCH"] == "local" \
                 or self.settings["DEPLOYMENT_ARCH"] == "aks":
             if not self.settings["NODE_SSH_KEY"]:
                 self.settings["NODE_SSH_KEY"] = input(
@@ -1454,6 +1463,16 @@ class Prompt(object):
                     prompt = input("What type of volume path [22]")
                     if not prompt:
                         prompt = 22
+                elif self.settings["DEPLOYMENT_ARCH"] == "local":
+                    print("|------------------------------------------------------------------|")
+                    print("|Local Deployment                                                  |")
+                    print("|------------------------------------------------------------------|")
+                    print("| [26] OpenEBS Local PV Hostpath                                   |")
+                    print("|------------------------------------------------------------------|")
+                    logger.info("OpenEBS must be installed before")
+                    prompt = input("What type of volume path [26]")
+                    if not prompt:
+                        prompt = 26
                 prompt = int(prompt)
                 self.settings["APP_VOLUME_TYPE"] = prompt
 
