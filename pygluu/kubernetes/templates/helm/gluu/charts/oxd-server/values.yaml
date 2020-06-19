@@ -11,6 +11,14 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+ports:
+  - port: 8444
+    targetPort: 8444
+    name: tcp-admin-gui
+  - port: 8443
+    targetPort: 8443
+    name: tls-app-conn
+
 configmap:
   adminKeystorePassword: Passw0rd
   applicationKeystorePassword: Passw0rd

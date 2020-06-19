@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      name: http-k-rotation
+      name: {{ .Values.service.name }}
   selector:
     app: {{ include "key-rotation.name" . }}
     release: {{ .Release.Name }}

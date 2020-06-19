@@ -13,7 +13,7 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      name: http-cr-rotate
+      name: {{ .Values.service.name }}
   selector:
     app: {{ include "cr-rotate.name" . }}
     release: {{ .Release.Name }}

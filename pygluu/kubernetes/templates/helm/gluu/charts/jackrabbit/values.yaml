@@ -20,7 +20,7 @@ storage:
 
 #servicePorts values used in StatefulSet container
 ports:
-  jackrabbit:
+  http-jackrabbit:
     port: 8080
     targetPort: 8080
 # VolumeMounts for StatefulSet

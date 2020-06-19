@@ -11,6 +11,7 @@ fullnameOverride: ""
 
 service:
   port: 8084
+  name: http-cr-rotate
 
 configMap:
   gluuContainerMetadata: kubernetes

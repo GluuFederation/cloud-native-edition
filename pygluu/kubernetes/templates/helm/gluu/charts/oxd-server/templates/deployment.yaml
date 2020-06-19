@@ -32,8 +32,10 @@ spec:
                 /app/scripts/entrypoint.sh
           {{- end }}
           ports:
-            - containerPort: 8444
-            - containerPort: 8443   
+            {{- range $key, $value := .Values.ports }}  
+            - containerPort: {{ $value.targetPort }}
+              name: {{ $value.name }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "oxd-server.fullname" . }}
