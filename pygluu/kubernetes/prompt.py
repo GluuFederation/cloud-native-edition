@@ -17,13 +17,18 @@ logger = get_logger("gluu-prompt        ")
 
 
 class Prompt(object):
-    def __init__(self):
+    def __init__(self, accept_license=False, version=""):
         self.settings = self.default_settings
         self.kubernetes = Kubernetes()
         self.get_settings()
         self.config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
                                 "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
+
+        if accept_license:
+            self.settings["ACCEPT_GLUU_LICENSE"] = "Y"
         self.prompt_license()
+
+        self.settings["GLUU_VERSION"] = version
         self.prompt_version()
 
     @property
@@ -218,12 +223,14 @@ class Prompt(object):
     def get_supported_versions(self):
         """Get Gluu versions from gluu_versions.json
         """
+        versions = {}
+        version_number = 0
+
         filename = Path("./gluu_versions.json")
         try:
             with open(filename) as f:
                 versions = json.load(f)
             logger.info("Currently supported versions are : ")
-            version_number = 0
             for k, v in versions.items():
                 logger.info(k)
                 if "_dev" in k:
@@ -231,23 +238,25 @@ class Prompt(object):
                 else:
                     if float(k) > version_number:
                         version_number = float(k)
-            version_number = str(version_number)
-            return versions, version_number
         except FileNotFoundError:
             pass
+        finally:
+            version_number = str(version_number)
+            return versions, version_number
 
     def prompt_version(self):
-        """
-        Prompts for Gluu versions
+        """Prompts for Gluu versions
         """
         versions, version_number = self.get_supported_versions
+
         if not self.settings["GLUU_VERSION"]:
             prompt = input("Please enter the current version of Gluu or the version to be installed [{}]"
                            .format(version_number))
             if not prompt:
                 prompt = version_number
             self.settings["GLUU_VERSION"] = prompt
-        image_names_and_tags = versions[self.settings["GLUU_VERSION"]]
+
+        image_names_and_tags = versions.get(self.settings["GLUU_VERSION"], {})
         self.settings.update(image_names_and_tags)
 
     def confirm_params(self):
@@ -445,7 +454,7 @@ class Prompt(object):
                     prompt = "demoexample.gluu.org"
                 self.settings["GLUU_FQDN"] = prompt
             regex_bool = re.match(
-                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
+                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',  # noqa: W605
                 self.settings["GLUU_FQDN"])
             if regex_bool:
                 break
@@ -1020,10 +1029,9 @@ class Prompt(object):
             self.settings["DEPLOYMENT_ARCH"] = prompt
 
     def prompt_license(self):
+        """Prompts user to accept Apache 2.0 license
         """
-        Prompts user to accept Apache 2.0 license
-        """
-        if not self.settings["ACCEPT_GLUU_LICENSE"]:
+        if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
             with open("./LICENSE") as f:
                 print(f.read())
             prompt = input("Do you accept the Gluu license stated above[Y/N].[N]")
