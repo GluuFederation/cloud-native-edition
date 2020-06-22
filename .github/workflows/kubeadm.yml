@@ -47,7 +47,6 @@ jobs:
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
         masternode=$(sudo kubectl get node --selector='node-role.kubernetes.io/master' --output=jsonpath={.items..metadata.name})
-        sudo kubectl taint node "$masternode" node-role.kubernetes.io/master:NoSchedule-
 
     - name: Install dependencies
       run: |
@@ -92,7 +91,7 @@ jobs:
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "GLUU_HELM_RELEASE_NAME": "gluu",
           "NGINX_INGRESS_RELEASE_NAME": "ningress",
-          "INSTALL_GLUU_GATEWAY": "Y",
+          "INSTALL_GLUU_GATEWAY": "N",
           "POSTGRES_NAMESPACE": "postgres",
           "KONG_NAMESPACE": "gluu-gateway",
           "GLUU_GATEWAY_UI_NAMESPACE": "gg-ui",
@@ -225,6 +224,7 @@ jobs:
 
     - name: Install OpenEBS
       run: |
+          sudo kubectl taint node "$masternode" node-role.kubernetes.io/master:NoSchedule-
           sudo kubectl apply -f https://openebs.github.io/charts/1.11.0/openebs-operator.yaml
           sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/maya-apiserver || sudo kubectl logs -l openebs.io/component-name=maya-apiserver -n openebs
           sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-provisioner || sudo kubectl logs -l openebs.io/component-name=openebs-provisioner -n openebs
