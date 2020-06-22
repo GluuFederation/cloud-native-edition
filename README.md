@@ -2,6 +2,7 @@
 ![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.2)
 ![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.2)
 ![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.2)
+![kubeadm](https://github.com/GluuFederation/cloud-native-edition/workflows/kubeadm/badge.svg?branch=4.2)
 
 
 # pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.4-green.svg?style=for-the-badge)

@@ -1,0 +1,250 @@
+name: kubeadm
+# This builds, packages and tests pygluu-kubernetes
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
+        gluu-version: ['"4.2.0_dev"']
+        test-cases: ["install", "helm-install-gluu"]
+        persistence-backends: ['"ldap"','"couchbase"']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@master
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt-get update
+        sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
+    - name: Install Kubernetes ( Kubeadm)
+      run: |
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        sudo apt-get install curl -y
+        sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+        sudo apt-get install kubeadm kubelet kubectl -y
+        sudo apt-mark hold kubeadm kubelet kubectl
+        sudo kubeadm versions
+
+    - name: Initialize Kubernetes ( Kubeadm)
+      run: |
+        sudo swapoff –a
+        sudo hostnamectl set-hostname master-node
+        sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+        sudo mkdir -p $HOME/.kube
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
+        sudo kubectl taint node mymasternode node-role.kubernetes.io/master:NoSchedule-
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo python3 -m pip install --upgrade pip
+        sudo pip3 install setuptools --upgrade
+        sudo pip3 install pyOpenSSL --upgrade
+        sudo pip3 install requests --upgrade
+
+    - name: Deploy Flannel ( Pod Network)
+      run: |
+        sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+    - name: Lint with flake8
+      run: |
+        sudo pip3 install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        sudo flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        sudo flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Build Zipapp
+      run: |
+        sudo apt-get update
+        sudo apt-get install build-essential
+        sudo pip3 install shiv
+        mkdir /home/runner/work/test
+        cp -r ./* /home/runner/work/test/
+        cd /home/runner/work/test/
+        sudo make zipapp
+
+    - name: Test 1 settings(LDAP)
+      id: test1_settings
+      run: |
+        ip=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+        cat <<EOF > /home/runner/work/test/settings.json
+        {
+          "ACCEPT_GLUU_LICENSE": "Y",
+          "TEST_ENVIRONMENT": "Y",
+          "GLUU_VERSION": ${{ matrix.gluu-version }},
+          "GLUU_UPGRADE_TARGET_VERSION": "",
+          "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
+          "GLUU_HELM_RELEASE_NAME": "gluu",
+          "NGINX_INGRESS_RELEASE_NAME": "ningress",
+          "INSTALL_GLUU_GATEWAY": "Y",
+          "POSTGRES_NAMESPACE": "postgres",
+          "KONG_NAMESPACE": "gluu-gateway",
+          "GLUU_GATEWAY_UI_NAMESPACE": "gg-ui",
+          "KONG_PG_USER": "kong",
+          "KONG_PG_PASSWORD": "MUs6#@",
+          "GLUU_GATEWAY_UI_PG_USER": "konga",
+          "GLUU_GATEWAY_UI_PG_PASSWORD": "MUs6#@",
+          "KONG_DATABASE": "kong",
+          "GLUU_GATEWAY_UI_DATABASE": "konga",
+          "POSTGRES_REPLICAS": 3,
+          "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
+          "KONG_HELM_RELEASE_NAME": "kong",
+          "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
+          "NODES_IPS": [
+            "$ip"
+          ],
+          "NODES_ZONES": [],
+          "NODES_NAMES": [],
+          "NODE_SSH_KEY": "",
+          "HOST_EXT_IP": "$ip",
+          "VERIFY_EXT_IP": "",
+          "AWS_LB_TYPE": "",
+          "USE_ARN": "",
+          "ARN_AWS_IAM": "",
+          "LB_ADD": "",
+          "REDIS_URL": "",
+          "REDIS_TYPE": "",
+          "REDIS_PW": "",
+          "REDIS_USE_SSL": "false",
+          "DEPLOYMENT_ARCH": "local",
+          "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
+          "INSTALL_JACKRABBIT": "Y",
+          "JACKRABBIT_STORAGE_SIZE": "4Gi",
+          "JACKRABBIT_URL": "http://jackrabbit:8080",
+          "JACKRABBIT_USER": "admin",
+          "INSTALL_COUCHBASE": "Y",
+          "COUCHBASE_NAMESPACE": "cbns",
+          "COUCHBASE_VOLUME_TYPE": "io1",
+          "COUCHBASE_CLUSTER_NAME": "cbgluu",
+          "COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local",
+          "COUCHBASE_USER": "admin",
+          "COUCHBASE_PASSWORD": "nTB5#|",
+          "COUCHBASE_CRT": "",
+          "COUCHBASE_CN": "Couchbase CN",
+          "COUCHBASE_SUBJECT_ALT_NAME": "",
+          "COUCHBASE_CLUSTER_FILE_OVERRIDE": "N",
+          "COUCHBASE_USE_LOW_RESOURCES": "Y",
+          "COUCHBASE_DATA_NODES": "",
+          "COUCHBASE_QUERY_NODES": "",
+          "COUCHBASE_INDEX_NODES": "",
+          "COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES": "",
+          "COUCHBASE_GENERAL_STORAGE": "",
+          "COUCHBASE_DATA_STORAGE": "",
+          "COUCHBASE_INDEX_STORAGE": "",
+          "COUCHBASE_QUERY_STORAGE": "",
+          "COUCHBASE_ANALYTICS_STORAGE": "",
+          "COUCHBASE_BACKUP_SCHEDULE": "*/30 * * * *",
+          "COUCHBASE_BACKUP_RESTORE_POINTS": 1,
+          "LDAP_BACKUP_SCHEDULE": "*/30 * * * *",
+          "NUMBER_OF_EXPECTED_USERS": "",
+          "EXPECTED_TRANSACTIONS_PER_SEC": "",
+          "USING_CODE_FLOW": "",
+          "USING_SCIM_FLOW": "",
+          "USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW": "",
+          "DEPLOY_MULTI_CLUSTER": "N",
+          "HYBRID_LDAP_HELD_DATA": "",
+          "LDAP_VOLUME": "",
+          "APP_VOLUME_TYPE": 1,
+          "LDAP_STATIC_VOLUME_ID": "",
+          "LDAP_STATIC_DISK_URI": "",
+          "GLUU_CACHE_TYPE": "NATIVE_PERSISTENCE",
+          "GLUU_NAMESPACE": "gluu",
+          "GLUU_FQDN": "demoexample.gluu.org",
+          "COUNTRY_CODE": "US",
+          "STATE": "TX",
+          "EMAIL": "support@gluu.org",
+          "CITY": "Austin",
+          "ORG_NAME": "Gluu",
+          "GMAIL_ACCOUNT": "",
+          "GOOGLE_NODE_HOME_DIR": "",
+          "IS_GLUU_FQDN_REGISTERED": "N",
+          "LDAP_PW": "nTB5#|",
+          "ADMIN_PW": "@4n,Js",
+          "OXD_SERVER_PW": "n8H0NKuGTXsn",
+          "OXD_APPLICATION_KEYSTORE_CN": "oxd-server",
+          "OXD_ADMIN_KEYSTORE_CN": "oxd-server",
+          "OXD_SERVER_STORAGE": "h2",
+          "LDAP_STORAGE_SIZE": "4Gi",
+          "OXAUTH_REPLICAS": 1,
+          "OXTRUST_REPLICAS": 1,
+          "LDAP_REPLICAS": 1,
+          "FIDO2_REPLICAS": 1,
+          "SCIM_REPLICAS": 1,
+          "OXSHIBBOLETH_REPLICAS": 1,
+          "OXPASSPORT_REPLICAS": 1,
+          "OXD_SERVER_REPLICAS": 1,
+          "CASA_REPLICAS": 1,
+          "RADIUS_REPLICAS": 1,
+          "ENABLE_OXTRUST_API": "N",
+          "ENABLE_OXTRUST_TEST_MODE": "N",
+          "ENABLE_CACHE_REFRESH": "N",
+          "ENABLE_OXD": "Y",
+          "ENABLE_RADIUS": "Y",
+          "ENABLE_OXPASSPORT": "Y",
+          "ENABLE_OXSHIBBOLETH": "Y",
+          "ENABLE_FIDO2": "Y",
+          "ENABLE_SCIM": "Y",
+          "ENABLE_CASA": "Y",
+          "ENABLE_KEY_ROTATE": "Y",
+          "ENABLE_OXTRUST_API_BOOLEAN": "true",
+          "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
+          "ENABLE_RADIUS_BOOLEAN": "true",
+          "ENABLE_OXPASSPORT_BOOLEAN": "true",
+          "ENABLE_CASA_BOOLEAN": "true",
+          "ENABLE_SAML_BOOLEAN": "true",
+          "EDIT_IMAGE_NAMES_TAGS": "N",
+          "CONFIRM_PARAMS": "Y"
+        }
+        EOF
+
+
+    - name: Install Helm v3
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+        sudo helm version
+
+    - name: Install Couchbase
+      if: ${{ matrix.persistence-backends == '"couchbase"' }}
+      run: |
+          cd /home/runner/work/test/
+          wget ${{ secrets.cbpackage }}
+          sudo ./pygluu-kubernetes.pyz install-couchbase
+          COUCHBASE_IP=$(sudo kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
+          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
+
+
+
+    - name: Test Pygluu kubernetes
+      id: test_kubernetes
+      run: |
+          cd /home/runner/work/test/
+          sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
+          sleep 30
+          sudo kubectl get po -n cbns
+          sudo kubectl get po -n gluu
+          cat /home/runner/work/test/settings.json
+          sudo kubectl -n gluu wait --for=condition=available --timeout=900s deploy/gluu-oxauth || sudo kubectl logs -l app=oxauth -n gluu
+          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -n gluu
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -n gluu
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -n gluu
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -n gluu
+          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -n gluu
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-radius || sudo kubectl logs -l app=radius -n gluu
+
