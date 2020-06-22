@@ -26,7 +26,7 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh
           - -c
@@ -42,7 +42,7 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
-          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
             mountPath: /scripts
           {{- end }}
@@ -81,7 +81,7 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
-      {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+      {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
       - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
         configMap:
           name: {{ .Release.Name }}-updatelbip

@@ -23,7 +23,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+          {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           command:
             - /bin/sh
             - -c 
@@ -60,7 +60,7 @@ spec:
             - name: {{ include "oxd-server.name" . }}-app-password
               mountPath: /etc/gluu/conf/app_keystore_password
               subPath: app_keystore_password
-            {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+            {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
             - name: {{ include "oxd-server.name" . }}-updatelbip
               mountPath: /scripts
             {{- end }}
@@ -85,7 +85,7 @@ spec:
             items:
             - key: app_keystore_password
               path: app_keystore_password
-        {{- if and (and .Values.global.cloud.enabled (eq .Values.global.isDomainRegistered "false") ) (eq .Values.global.provisioner "kubernetes.io/aws-ebs") }}
+        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
         - name: {{ include "oxd-server.name" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip

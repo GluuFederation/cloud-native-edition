@@ -2,9 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 #global values to be used across charts
 global:
-  # cloud.enabled specifies whether it's cloud deployment or not
   cloud:
-    enabled: false
     testEnviroment: false
 
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs, dobs.csi.digitalocean.com, openebs.io/local
