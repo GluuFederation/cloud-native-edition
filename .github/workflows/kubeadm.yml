@@ -149,8 +149,10 @@ jobs:
           "COUCHBASE_INDEX_STORAGE": "",
           "COUCHBASE_QUERY_STORAGE": "",
           "COUCHBASE_ANALYTICS_STORAGE": "",
-          "COUCHBASE_BACKUP_SCHEDULE": "*/30 * * * *",
-          "COUCHBASE_BACKUP_RESTORE_POINTS": 1,
+          "COUCHBASE_INCR_BACKUP_SCHEDULE": "*/30 * * * *",
+          "COUCHBASE_FULL_BACKUP_SCHEDULE": "*/30 * * * *",
+          "COUCHBASE_BACKUP_RETENTION_TIME": "24h",
+          "COUCHBASE_BACKUP_STORAGE_SIZE": "5Gi",
           "LDAP_BACKUP_SCHEDULE": "*/30 * * * *",
           "NUMBER_OF_EXPECTED_USERS": "",
           "EXPECTED_TRANSACTIONS_PER_SEC": "",
@@ -220,6 +222,19 @@ jobs:
         chmod 700 get_helm.sh
         ./get_helm.sh
         sudo helm version
+
+    - name: Install OpenEBS
+      run: |
+          sudo kubectl apply -f https://openebs.github.io/charts/1.11.0/openebs-operator.yaml
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/maya-apiserver || sudo kubectl logs -l openebs.io/component-name=maya-apiserver -n openebs
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-provisioner || sudo kubectl logs -l openebs.io/component-name=openebs-provisioner -n openebs
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-snapshot-operator || sudo kubectl logs -l openebs.io/component-name=openebs-snapshot-operator -n openebs
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-ndm-operator || sudo kubectl logs -l openebs.io/component-name=ndm-operator -n openebs
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-admission-server || sudo kubectl logs -l openebs.io/component-name=admission-webhook -n openebs
+          sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/openebs-ndm-operator || sudo kubectl logs -l openebs.io/component-name=ndm-operator -n openebs
+
+
+
 
     - name: Install Couchbase
       if: ${{ matrix.persistence-backends == '"couchbase"' }}
