@@ -173,21 +173,18 @@ class Helm(object):
         Parses Gluu values.yaml with the input information from prompts
         """
         values_file_parser = Parser(self.values_file, True)
-        values_file_parser["global"]["cloud"]["enabled"] = False
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
             provisioner = "k8s.io/minikube-hostpath"
         elif self.settings["DEPLOYMENT_ARCH"] == "eks":
             provisioner = "kubernetes.io/aws-ebs"
-            values_file_parser["global"]["cloud"]["enabled"] = True
         elif self.settings["DEPLOYMENT_ARCH"] == "gke":
             provisioner = "kubernetes.io/gce-pd"
-            values_file_parser["global"]["cloud"]["enabled"] = True
         elif self.settings["DEPLOYMENT_ARCH"] == "aks":
             provisioner = "kubernetes.io/azure-disk"
-            values_file_parser["global"]["cloud"]["enabled"] = True
         elif self.settings["DEPLOYMENT_ARCH"] == "do":
             provisioner = "dobs.csi.digitalocean.com"
-            values_file_parser["global"]["cloud"]["enabled"] = True
+        elif self.settings["DEPLOYMENT_ARCH"] == "local":
+            provisioner = "openebs.io/local"
         else:
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner

@@ -91,7 +91,6 @@ jobs:
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/
-        sed -e '408,440d' pygluu/kubernetes/templates/nginx/baremetal.yaml > tmpfile && mv tmpfile pygluu/kubernetes/templates/nginx/baremetal.yaml
         sudo make zipapp
 
     - name: Test 1 settings(LDAP)

@@ -877,11 +877,7 @@ class Kustomize(object):
 
     def deploy_nginx(self):
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
-        if self.settings["DEPLOYMENT_ARCH"] == "local":
-            self.kubernetes.create_objects_from_dict(
-                self.output_yaml_directory.joinpath("nginx/baremetal.yaml"))
-        else:
-            self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/mandatory.yaml"))
+        self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/mandatory.yaml"))
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             if self.settings["AWS_LB_TYPE"] == "nlb":
                 if self.settings["USE_ARN"] == "Y":
