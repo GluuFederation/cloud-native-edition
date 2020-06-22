@@ -111,7 +111,7 @@ jobs:
           ],
           "NODES_ZONES": [],
           "NODES_NAMES": [],
-          "NODE_SSH_KEY": "",
+          "NODE_SSH_KEY": "~/.ssh/id_rsa",
           "HOST_EXT_IP": "$ip",
           "VERIFY_EXT_IP": "",
           "AWS_LB_TYPE": "",
