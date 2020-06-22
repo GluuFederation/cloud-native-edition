@@ -46,6 +46,8 @@ jobs:
         sudo update-alternatives --set arptables /usr/sbin/arptables-legacy || echo ""
         sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy || echo ""
         sudo ufw allow 22/tcp
+        sudo ufw allow 8443/tcp
+        sudo ufw allow 443/tcp
         sudo ufw allow 6443/tcp
         sudo ufw allow 2379/tcp
         sudo ufw allow 2380/tcp
