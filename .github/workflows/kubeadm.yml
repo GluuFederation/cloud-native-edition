@@ -46,7 +46,6 @@ jobs:
         sudo mkdir -p $HOME/.kube
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
-        masternode=$(sudo kubectl get node --selector='node-role.kubernetes.io/master' --output=jsonpath={.items..metadata.name})
 
     - name: Install dependencies
       run: |
@@ -224,6 +223,7 @@ jobs:
 
     - name: Install OpenEBS
       run: |
+          masternode=$(sudo kubectl get node --selector='node-role.kubernetes.io/master' --output=jsonpath={.items..metadata.name})
           sudo kubectl taint node "$masternode" node-role.kubernetes.io/master:NoSchedule-
           sudo kubectl apply -f https://openebs.github.io/charts/1.11.0/openebs-operator.yaml
           sudo kubectl -n openebs wait --for=condition=available --timeout=300s deploy/maya-apiserver || sudo kubectl logs -l openebs.io/component-name=maya-apiserver -n openebs
