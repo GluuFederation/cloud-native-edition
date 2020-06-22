@@ -28,7 +28,8 @@ class Prompt(object):
             self.settings["ACCEPT_GLUU_LICENSE"] = "Y"
         self.prompt_license()
 
-        self.settings["GLUU_VERSION"] = version
+        if not self.settings["GLUU_VERSION"]:
+            self.settings["GLUU_VERSION"] = version
         self.prompt_version()
 
     @property
