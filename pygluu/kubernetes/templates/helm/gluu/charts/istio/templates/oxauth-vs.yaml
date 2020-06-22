@@ -19,6 +19,7 @@ spec:
           host: oxauth.{{.Release.Namespace}}.svc.cluster.local
           port:
             number: 8080
+        weight: 100
 
 ---
 

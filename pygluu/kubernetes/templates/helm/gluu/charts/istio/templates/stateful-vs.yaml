@@ -9,7 +9,8 @@ spec:
   hosts:
   - {{ .Values.global.domain }}
   http:
-  - match:
+  - name: oxtrust-route
+    match:
     - uri:
         exact: /identity
     route:
@@ -18,18 +19,24 @@ spec:
         port:
           number: 8080
       weight: 100
-  - match:
+  - name: shibboleth-route
+    match:
     - uri:
-        exact: /idp
+        prefix: /idp
+    rewrite:
+      uri: /identity
     route:
     - destination:
         host: oxshibboleth.{{ .Release.Namespace }}.svc.cluster.local
         port:
           number: 8080
       weight: 100
-  - match:
+  - name: passport-route
+    match:
     - uri:
-        exact: /passport
+        prefix: /passport
+    rewrite:
+      uri: /identity
     route:
     - destination:
         host: oxpassport.{{ .Release.Namespace }}.svc.cluster.local

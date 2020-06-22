@@ -25,32 +25,4 @@ spec:
     tls:
       mode: SIMPLE # enable https on this port
       credentialName: tls-certificate # fetch cert from k8s secret
-  # oxauth
-  - port:
-      number: 8080
-      name: http-oxauth
-      protocol: HTTP
-    hosts:
-      - {{ .Values.global.domain }}
-  # oxshibboleth
-  - port:
-      number: 8080
-      name: http-oxshibboleth
-      protocol: HTTP 
-    hosts:
-      - {{ .Values.global.domain }}
-  # # casa
-  - port:
-      number: 8080
-      name: http-casa
-      protocol: HTTP
-    hosts:
-      - {{ .Values.global.domain }}
-  # oxpassport
-  - port:
-      number: 8090
-      name: http-oxpassport
-      protocol: HTTP
-    hosts:
-    - {{ .Values.global.domain }}
-      
+  
