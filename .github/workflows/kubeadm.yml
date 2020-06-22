@@ -40,7 +40,6 @@ jobs:
 
     - name: Initialize Kubernetes ( Kubeadm)
       run: |
-        sudo swapoff –a
         sudo hostnamectl set-hostname master-node
         sudo kubeadm init --pod-network-cidr=10.244.0.0/16
         sudo mkdir -p $HOME/.kube
