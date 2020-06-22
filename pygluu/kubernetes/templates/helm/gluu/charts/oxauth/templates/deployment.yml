@@ -31,11 +31,6 @@ spec:
               /usr/bin/python3 /scripts/updatelbip.py &
               /app/scripts/entrypoint.sh
         {{- end}}
-        resources:
-          requests:
-            memory: {{ .Values.requests.memory }}
-          # limits:
-          #   memory: {{ .Values.limits.memory }}
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
         envFrom:
