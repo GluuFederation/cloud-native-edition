@@ -36,7 +36,7 @@ jobs:
         sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
         sudo apt-get install kubeadm kubelet kubectl -y
         sudo apt-mark hold kubeadm kubelet kubectl
-        sudo kubeadm versions
+        sudo kubeadm version
 
     - name: Initialize Kubernetes ( Kubeadm)
       run: |
@@ -46,7 +46,8 @@ jobs:
         sudo mkdir -p $HOME/.kube
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
-        sudo kubectl taint node mymasternode node-role.kubernetes.io/master:NoSchedule-
+        masternode=$(sudo kubectl get node --selector='node-role.kubernetes.io/master' --output=jsonpath={.items..metadata.name})
+        sudo kubectl taint node "$masternode" node-role.kubernetes.io/master:NoSchedule-
 
     - name: Install dependencies
       run: |
