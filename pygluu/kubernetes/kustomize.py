@@ -218,6 +218,10 @@ class Kustomize(object):
     @property
     def set_output_yaml_directory(self):
 
+        output_yamls_folder = Path("gluu_microk8s_yamls")
+        ldap_kustomize_yaml_directory = local_ldap_microk8s_folder
+        jcr_kustomize_yaml_directory = local_jcr_microk8s_folder
+
         if self.settings["DEPLOYMENT_ARCH"] == "minikube":
             copy(local_ldap_microk8s_folder, local_ldap_minikube_folder)
             copy(local_jcr_microk8s_folder, local_jcr_minikube_folder)
@@ -309,10 +313,6 @@ class Kustomize(object):
             elif self.settings["APP_VOLUME_TYPE"] == 23:
                 ldap_kustomize_yaml_directory = static_ldap_do_folder
                 jcr_kustomize_yaml_directory = static_jcr_do_folder
-        else:
-            output_yamls_folder = Path("gluu_microk8s_yamls")
-            ldap_kustomize_yaml_directory = local_ldap_microk8s_folder
-            jcr_kustomize_yaml_directory = local_jcr_microk8s_folder
 
         if not output_yamls_folder.exists():
             os.mkdir(output_yamls_folder)
