@@ -203,6 +203,7 @@ class Helm(object):
                 or self.settings["TEST_ENVIRONMENT"] == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
         values_file_parser["config"]["configmap"]["lbAddr"] = self.settings["LB_ADD"]
+        values_file_parser["global"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = self.settings["HYBRID_LDAP_HELD_DATA"]
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
