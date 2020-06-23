@@ -1194,9 +1194,6 @@ class Kustomize(object):
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxd(self):
-        cm_parser = Parser(self.oxd_server_yaml, "ConfigMap")
-        cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
-        cm_parser.dump_it()
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)
