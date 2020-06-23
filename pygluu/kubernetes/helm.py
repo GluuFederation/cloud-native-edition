@@ -188,29 +188,27 @@ class Helm(object):
         else:
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner
-        values_file_parser["global"]["nginxNamespace"] = self.settings["NGINX_INGRESS_NAMESPACE"]
         values_file_parser["global"]["nginxIp"] = self.settings["HOST_EXT_IP"]
         values_file_parser["global"]["domain"] = self.settings["GLUU_FQDN"]
         values_file_parser["global"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
             values_file_parser["global"]["isDomainRegistered"] = "true"
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
-            values_file_parser["global"]["gluuRedisUrl"] = self.settings["REDIS_URL"]
-            values_file_parser["global"]["gluuRedisType"] = self.settings["REDIS_TYPE"]
-            values_file_parser["global"]["gluuRedisUseSsl"] = self.settings["REDIS_USE_SSL"]
-            values_file_parser["global"]["gluuRedisSslTruststore"] = self.settings["REDIS_SSL_TRUSTSTORE"]
-            values_file_parser["global"]["gluuRedisSentinelGroup"] = self.settings["REDIS_SENTINEL_GROUP"]
+            values_file_parser["config"]["configmap"]["gluuRedisUrl"] = self.settings["REDIS_URL"]
+            values_file_parser["config"]["configmap"]["gluuRedisType"] = self.settings["REDIS_TYPE"]
+            values_file_parser["config"]["configmap"]["gluuRedisUseSsl"] = self.settings["REDIS_USE_SSL"]
+            values_file_parser["config"]["configmap"]["gluuRedisSslTruststore"] = self.settings["REDIS_SSL_TRUSTSTORE"]
+            values_file_parser["config"]["configmap"]["gluuRedisSentinelGroup"] = self.settings["REDIS_SENTINEL_GROUP"]
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
                 or self.settings["TEST_ENVIRONMENT"] == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
-        values_file_parser["global"]["lbAddr"] = self.settings["LB_ADD"]
-        values_file_parser["global"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
-        values_file_parser["global"]["gluuPersistenceLdapMapping"] = "default"
-        values_file_parser["global"]["gluuPersistenceLdapMapping"] = self.settings["HYBRID_LDAP_HELD_DATA"]
-        values_file_parser["global"]["gluuCouchbaseUrl"] = self.settings["COUCHBASE_URL"]
-        values_file_parser["global"]["gluuCouchbaseUser"] = self.settings["COUCHBASE_USER"]
-        values_file_parser["global"]["gluuCouchbaseCrt"] = self.settings["COUCHBASE_CRT"]
-        values_file_parser["global"]["gluuCouchbasePass"] = self.settings["COUCHBASE_PASSWORD"]
+        values_file_parser["config"]["configmap"]["lbAddr"] = self.settings["LB_ADD"]
+        values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
+        values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = self.settings["HYBRID_LDAP_HELD_DATA"]
+        values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings["COUCHBASE_URL"]
+        values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings["COUCHBASE_USER"]
+        values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings["COUCHBASE_CRT"]
+        values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings["COUCHBASE_PASSWORD"]
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True
@@ -224,9 +222,9 @@ class Helm(object):
             values_file_parser["global"]["scim"]["enabled"] = True
         if self.settings["INSTALL_JACKRABBIT"] == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
-            values_file_parser["global"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
-            values_file_parser["global"]["gluuJcaUrl"] = self.settings["JACKRABBIT_URL"]
-            values_file_parser["global"]["gluuJcaUsername"] = self.settings["JACKRABBIT_USER"]
+            values_file_parser["config"]["configmap"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
+            values_file_parser["config"]["configmap"]["gluuJcaUrl"] = self.settings["JACKRABBIT_URL"]
+            values_file_parser["config"]["configmap"]["gluuJcaUsername"] = self.settings["JACKRABBIT_USER"]
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -235,14 +233,14 @@ class Helm(object):
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             values_file_parser["global"]["oxshibboleth"]["enabled"] = True
-            values_file_parser["global"]["gluuSyncShibManifests"] = True
+            values_file_parser["config"]["configmap"]["gluuSyncShibManifests"] = True
 
         values_file_parser["global"]["oxd-server"]["enabled"] = False
         if self.settings["ENABLE_OXD"] == "Y":
             values_file_parser["global"]["oxd-server"]["enabled"] = True
-            values_file_parser["global"]["gluuOxdApplicationCertCn"] = \
+            values_file_parser["config"]["configmap"]["gluuOxdApplicationCertCn"] = \
                 self.settings["OXD_APPLICATION_KEYSTORE_CN"]
-            values_file_parser["global"]["gluuOxdAdminCertCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
+            values_file_parser["config"]["configmap"]["gluuOxdAdminCertCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
 
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
@@ -265,7 +263,7 @@ class Helm(object):
         values_file_parser["config"]["countryCode"] = self.settings["COUNTRY_CODE"]
         values_file_parser["config"]["state"] = self.settings["STATE"]
         values_file_parser["config"]["city"] = self.settings["CITY"]
-        values_file_parser["opendj"]["gluuCacheType"] = self.settings["GLUU_CACHE_TYPE"]
+        values_file_parser["config"]["configmap"]["gluuCacheType"] = self.settings["GLUU_CACHE_TYPE"]
         values_file_parser["opendj"]["replicas"] = self.settings["LDAP_REPLICAS"]
         values_file_parser["opendj"]["persistence"]["size"] = self.settings["LDAP_STORAGE_SIZE"]
         if self.settings["ENABLE_OXTRUST_API_BOOLEAN"] == "true":
@@ -274,7 +272,7 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuOxtrustApiTestMode"] = True
         if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
             values_file_parser["config"]["configmap"]["gluuCasaEnabled"] = True
-            values_file_parser["global"]["gluuSyncCasaManifests"] = True
+            values_file_parser["config"]["configmap"]["gluuSyncCasaManifests"] = True
 
         if self.settings["ENABLE_OXPASSPORT_BOOLEAN"] == "true":
             values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
@@ -371,10 +369,9 @@ class Helm(object):
             self.settings["OXD_APPLICATION_KEYSTORE_CN"], self.settings["GLUU_NAMESPACE"])
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
-        values_file_parser["cloud"]["isDomainRegistered"] = "false"
+        values_file_parser["global"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
-            values_file_parser["cloud"]["isDomainRegistered"] = "true"
-        values_file_parser["cloud"]["enabled"] = True
+            values_file_parser["global"]["isDomainRegistered"] = "true"
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             values_file_parser["cloud"]["enabled"] = False
         values_file_parser["cloud"]["provider"] = self.settings["DEPLOYMENT_ARCH"]

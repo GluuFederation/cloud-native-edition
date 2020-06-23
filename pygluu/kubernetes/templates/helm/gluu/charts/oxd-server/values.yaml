@@ -2,7 +2,9 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxd-server.
 replicaCount: 1
-
+service:
+  # This must match config.configMap.gluuOxdApplicationCertCn
+  oxdServerServiceName: oxd-server
 image:
   repository: gluufederation/oxd-server
   tag: 4.1.0_01

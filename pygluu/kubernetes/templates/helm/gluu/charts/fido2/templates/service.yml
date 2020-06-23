@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fido2.name" . }}
+  name: {{ .Values.service.fido2ServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "fido2.labels" . | indent 4}}
 spec:
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: {{ .Values.global.fido2ServiceName }}
+    name: {{ .Values.service.fido2ServiceName }}
   selector:
     app: {{ include "fido2.name" . }} #fido2
     

@@ -3,8 +3,6 @@
 # Default values for oxtrust.
 replicas: 1
 
-dynamicStorage: true
-
 image:
   repository: gluufederation/oxtrust
   tag: 4.1.0_01
@@ -14,6 +12,7 @@ service:
   type: ClusterIP
   port: 8080
   clusterIp: None
+  oxTrustServiceName: oxtrust
 
 #resources: 
 limits:
@@ -21,7 +20,7 @@ limits:
 requests:
   memory: 300Mi
 
-#containerPOrt ot connect the container with
+#containerPort to connect the container with
 containerPort: 8080
 
     

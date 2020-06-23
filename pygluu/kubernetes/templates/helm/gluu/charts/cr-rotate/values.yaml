@@ -11,3 +11,4 @@ fullnameOverride: ""
 
 service:
   port: 8080
+  crRotateServiceName: cr-rotate

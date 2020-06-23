@@ -1,28 +1,13 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # opendj Environament Variables
-# common ConfigMap values
-gluuLdapInit: true
-gluuLdapInitHost: localhost
-gluuLdapInitPort: 1636
-gluuOxtrustConfigGeneration: true
-gluuCertAltName: opendj
-# gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
-gluuRedisEnabled: false
-gluuRedisCacheType: REDIS
-gluuRedisUrl: redis:6379
-gluuRedisType: STANDALONE
-
-gluuLdapInitRepl: false
-gluuOxtrustConfigGenerationRepl: false
-
 nameOverride: ""
 fullnameOverride: ""
-
 # StatefulSet
 # values declaration
 replicas: 1
-
+service:
+  ldapServiceName: opendj
 image:
   repository: gluufederation/wrends
   tag: 4.1.0_01
@@ -38,16 +23,12 @@ persistence:
 ports:
   ldaps:
     port: 1636
-    targetPort: 1636
   ldap:
     port: 1389
-    targetPort: 1389
   replication:
     port: 8989
-    targetPort: 8989
   admin:
     port: 4444
-    targetPort: 4444
 # VolumeMounts for StatefulSet
 # opendj-init vm
 volumeMounts:

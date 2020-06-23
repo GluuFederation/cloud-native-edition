@@ -13,6 +13,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
+  radiusServiceName: radius
   ports:  
     radius-authentication:
       port: 1812

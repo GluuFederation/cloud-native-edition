@@ -3,7 +3,8 @@
 # jackrabbit Environament Variables
 nameOverride: ""
 fullnameOverride: ""
-
+service:
+  jackRabbitServiceName: jackrabbit
 # StatefulSet
 # values declaration
 replicas: 1
@@ -22,7 +23,6 @@ storage:
 ports:
   jackrabbit:
     port: 8080
-    targetPort: 8080
 # VolumeMounts for StatefulSet
 # jackrabbit-init vm
 volumeMounts:

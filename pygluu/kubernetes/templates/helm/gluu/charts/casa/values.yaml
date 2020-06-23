@@ -23,6 +23,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
+  casaServiceName: casa
   port: 8080
 
 resources:
@@ -36,9 +37,3 @@ resources:
   requests:
     # cpu: 100m
     memory: 1000Mi # 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

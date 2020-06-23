@@ -4,7 +4,7 @@
 global:
   cloud:
     testEnviroment: false
-
+  # OpenDJ and Jackrabbit storage class
   # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs, dobs.csi.digitalocean.com, openebs.io/local
   provisioner: k8s.io/minikube-hostpath
   pool: default
@@ -13,74 +13,14 @@ global:
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
   reclaimPolicy: Retain
-  nginxNamespace: ingress
-
-  #nodeName used when deploying to a cluster on bare metal. Defines which node to bind pv to 
-  nodeName: node-1
-
-  #service names to be used globally/by other charts
-  oxAuthServiceName: oxauth
-  oxTrustServiceName: oxtrust
-  ldapServiceName: opendj
-  scimServiceName: scim
-  fido2ServiceName: fido2
-
   # Networking configs
   nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
-
-  lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
-  # Options LOCAL / JCA (jackrabbit)
-  gluuDocumentStoreType: JCA
-  # Jackrabbit content repository
-  gluuJcaSyncInterval: 300
-  gluuJcaRmiUrl: http://jackrabbit:8080/rmi
-  gluuJcaUrl: http://jackrabbit:8080
-  gluuJcaUsername: admin
-  gluuJcaPasswordFile: /etc/gluu/conf/jca_password
-
-  gluuLdapUrl: opendj:1636
-  gluuOxtrustBackend: oxtrust:8080
-  gluuOxauthBackend: oxauth:8080
-  gluuOxdServerUrl: oxd-server:8443
-  # If REDIS is the Cache Type or if going to be used with oxd
-  gluuRedisUrl: redis:6379
-  gluuRedisUseSsl: "false"
-  gluuRedisType: STANDALONE
-  gluuRedisSslTruststore: ""
-  gluuRedisSentinelGroup: ""
-  gluuSyncShibManifests: false
-  gluuSyncCasaManifests: false
-  gluuMaxRamPercent: "75.0"
-  configAdapterName: kubernetes
-  containerMetadataName: kubernetes
-  configSecretAdapter: kubernetes
   #persistence types and options
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: couchbase
-  # options REDIS/NATIVE_PERSISTENCE
-  gluuCacheType: NATIVE_PERSISTENCE
-  # options: default/user/site/cache/statistic
-  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
-  gluuPersistenceLdapMapping: default
-
-  # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  # NOTE: For the CB instalation please check the documentation
-
-  gluuCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-  gluuCouchbasePass: P@ssw0rd
-  # gluuCouchbaseUrl is the couchbase service name
-  gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
-  gluuCouchbaseUser: admin
-  # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
-  gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
-  # gluuCouchbaseCertFile location of
-  gluuCouchbaseCertFile: /etc/certs/couchbase.crt
-  gluuOxdApplicationCertCn: oxd-server
-  gluuOxdAdminCertCn: oxd-server
-
   # Enable installation of services
   oxauth:
     enabled: true
@@ -122,6 +62,8 @@ global:
     enabled: false  
 
 casa:
+  service:
+    casaServiceName: casa
   image:
     repository: gluufederation/casa
     tag: 4.2.0_dev
@@ -144,13 +86,57 @@ config:
   adminPass: P@ssw0rd
   # ldapPass is the password for LDAP
   ldapPass: P@ssw0rd
+  #RedisPass is the password for redis admin if used
+  RedisPass: P@assw0rd
   # organisation location details
   countryCode: US
   state: TX
   city: SLC
-  # ldapType only OpenDJ is supported
-  ldapType: opendj
   configmap:
+    gluuOxdApplicationCertCn: oxd-server
+    gluuOxdAdminCertCn: oxd-server
+    # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+    # NOTE: For the CB instalation please check the documentation
+    gluuCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    gluuCouchbasePass: P@ssw0rd
+    # gluuCouchbaseUrl is the couchbase service name
+    gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
+    gluuCouchbaseUser: admin
+    # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
+    gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+    # gluuCouchbaseCertFile location of
+    gluuCouchbaseCertFile: /etc/certs/couchbase.crt
+    # options: default/user/site/cache/statistic
+    # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+    gluuPersistenceLdapMapping: default
+    # options REDIS/NATIVE_PERSISTENCE
+    gluuCacheType: NATIVE_PERSISTENCE
+    gluuSyncShibManifests: false
+    gluuSyncCasaManifests: false
+    gluuMaxRamPercent: "75.0"
+    configAdapterName: kubernetes
+    containerMetadataName: kubernetes
+    configSecretAdapter: kubernetes
+    # If REDIS is the Cache Type or if going to be used with oxd
+    gluuRedisUrl: redis:6379
+    gluuRedisUseSsl: "false"
+    gluuRedisType: STANDALONE
+    gluuRedisSslTruststore: ""
+    gluuRedisSentinelGroup: ""
+    gluuOxtrustBackend: oxtrust:8080
+    gluuOxauthBackend: oxauth:8080
+    gluuOxdServerUrl: oxd-server:8443
+    gluuLdapUrl: opendj:1636
+    # Jackrabbit content repository
+    gluuJcaSyncInterval: 300
+    gluuJcaRmiUrl: http://jackrabbit:8080/rmi
+    gluuJcaUrl: http://jackrabbit:8080
+    gluuJcaUsername: admin
+    gluuJcaPasswordFile: /etc/gluu/conf/jca_password
+    # Options LOCAL / JCA (jackrabbit)
+    gluuDocumentStoreType: JCA
+    lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
+    ldapServiceName: opendj
     gluuOxtrustApiEnabled: false
     gluuOxtrustApiTestMode: false
     # Auto install other services. If enabled the respective service chart will be installed
@@ -171,6 +157,8 @@ config:
     #   memory: 500Mi
 
 cr-rotate:
+  service:
+    crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
     tag: 4.1.1_02
@@ -184,6 +172,8 @@ cr-rotate:
       memory: 200Mi   
 
 key-rotation:
+  service:
+    keyRotationServiceName: key-rotation
   image:
     repository: gluufederation/key-rotation
     tag: 4.1.1_03
@@ -198,6 +188,8 @@ key-rotation:
       memory: 300Mi
 
 jackrabbit:
+  service:
+    jackRabbitServiceName: jackrabbit
   replicas: 1
   storage:
     size: 5Gi
@@ -216,7 +208,8 @@ jackrabbit:
 
 opendj:
   # options true/false : must be enabled if cache type is REDIS
-  gluuRedisEnabled: false
+  service:
+    ldapServiceName: opendj
   replicas: 1
   persistence:
     size: 5Gi
@@ -250,6 +243,8 @@ persistence:
     #   memory: 500Mi
 
 oxauth:
+  service:
+    oxAuthServiceName: oxauth
   image:
     repository: gluufederation/oxauth
     tag: 4.1.1_06
@@ -264,6 +259,8 @@ oxauth:
       memory: 2500Mi
 
 fido2:
+  service:
+    fido2ServiceName: fido2
   image:
     repository: gluufederation/fido2
     tag: 4.2.0_dev
@@ -278,6 +275,8 @@ fido2:
       memory: 500Mi
 
 scim:
+  service:
+    scimServiceName: scim
   image:
     repository: gluufederation/scim
     tag: 4.2.0_dev
@@ -292,6 +291,9 @@ scim:
       memory: 500Mi
 
 oxd-server:
+  service:
+    # This must match config.configMap.gluuOxdApplicationCertCn
+    oxdServerServiceName: oxd-server
   image:
     repository: gluufederation/oxd-server
     tag: 4.1.1_01
@@ -306,8 +308,6 @@ oxd-server:
       memory: 400Mi
 
 nginx:
-  # TODO: Remove gluuVersion after depreciating versions < 4.2
-  gluuVersion: "4.1"
   # ingress resources
   ingress:
     enabled: true
@@ -321,6 +321,8 @@ nginx:
 
 # oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
+  service:
+    oxPassportServiceName: oxpassport
   image:
     repository: gluufederation/oxpassport
     tag: 4.1.1_01
@@ -335,6 +337,8 @@ oxpassport:
       memory: 700Mi
 
 oxshibboleth:
+  service:
+    oxShibbolethServiceName: oxshibboleth
   image:
     repository: gluufederation/oxshibboleth
     tag: 4.1.1_03
@@ -349,6 +353,8 @@ oxshibboleth:
       memory: 500Mi
 
 oxtrust:
+  service:
+    oxTrustServiceName: oxtrust
   image:
     repository: gluufederation/oxtrust
     tag: 4.1.1_03
@@ -363,6 +369,8 @@ oxtrust:
       memory: 500Mi
 
 radius:
+  service:
+    radiusServiceName: radius
   image:
     repository: gluufederation/radius
     tag: 4.1.1_01

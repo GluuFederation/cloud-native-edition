@@ -1,15 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for nginx.
-replicaCount: 1
-
 nameOverride: ""
 fullnameOverride: ""
 
 service:
   type: ClusterIP
   port: 8080
-gluuVersion: "4.1"
 ingress:
   enabled: true
   annotations: {}

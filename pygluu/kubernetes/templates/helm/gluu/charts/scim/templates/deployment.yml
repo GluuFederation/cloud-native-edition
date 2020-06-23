@@ -57,18 +57,18 @@ spec:
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt 
         {{- end }}
-        livenessProbe:
-          httpGet:
-            path: /scim/restv1/scim-configuration
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /scim/restv1/scim-configuration
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 25
-          periodSeconds: 25
+        #livenessProbe:
+        #  httpGet:
+        #    path: /scim/restv1/scim-configuration
+        #    port: {{ .Values.ports.containerPort }}
+        #  initialDelaySeconds: 30
+        #  periodSeconds: 30
+        #readinessProbe:
+        #  httpGet:
+        #    path: /scim/restv1/scim-configuration
+        #    port: {{ .Values.ports.containerPort }}
+        #  initialDelaySeconds: 25
+        #  periodSeconds: 25
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.nginxIp }}
