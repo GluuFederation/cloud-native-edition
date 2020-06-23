@@ -16,4 +16,3 @@ spec:
     {{- end }}
   selector:
     app: {{ include "radius.name" . }}
-    

@@ -61,11 +61,9 @@ data:
   {{- if .Values.global.oxshibboleth.enabled }}
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
-  {{- if .Values.global.oxd-server.enabled }}
   GLUU_OXD_APPLICATION_CERT_CN: {{ .Values.configmap.gluuOxdApplicationCertCn | quote }}
   GLUU_OXD_ADMIN_CERT_CN: {{ .Values.configmap.gluuOxdAdminCertCn | quote }}
-  {{- end }}
-  {{ if eq .Values.global.gluuCacheType "REDIS" }}
+  {{ if eq .Values.configmap.gluuCacheType "REDIS" }}
   GLUU_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
   GLUU_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}

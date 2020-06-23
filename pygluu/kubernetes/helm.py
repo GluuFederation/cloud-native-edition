@@ -205,10 +205,11 @@ class Helm(object):
         values_file_parser["config"]["configmap"]["lbAddr"] = self.settings["LB_ADD"]
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings["PERSISTENCE_BACKEND"]
         values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = self.settings["HYBRID_LDAP_HELD_DATA"]
-        values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings["COUCHBASE_URL"]
-        values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings["COUCHBASE_USER"]
-        values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings["COUCHBASE_CRT"]
-        values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings["COUCHBASE_PASSWORD"]
+        if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
+            values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings["COUCHBASE_URL"]
+            values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings["COUCHBASE_USER"]
+            values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings["COUCHBASE_CRT"]
+            values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings["COUCHBASE_PASSWORD"]
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True

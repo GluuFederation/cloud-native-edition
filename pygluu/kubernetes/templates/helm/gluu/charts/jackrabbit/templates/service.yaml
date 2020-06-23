@@ -9,10 +9,8 @@ metadata:
 {{ include "jackrabbit.labels" . | indent 4}}
 spec:
   ports:
-    {{- range $key, $value := .Values.ports }}
-    - port: {{ $value.port }}
-      name: {{ $key }}
-    {{- end }}
+    - port: {{ .Values.ports.jackrabbit.port }}
+      name: {{ .Values.service.jackRabbitServiceName }}
   clusterIP: None
   selector:
     app: {{ include "jackrabbit.name" . }}

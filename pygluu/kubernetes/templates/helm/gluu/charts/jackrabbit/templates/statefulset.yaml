@@ -26,10 +26,9 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         ports:
-        {{- range $key, $value := .Values.ports }}
-          - containerPort: {{ $value.targetPort }}
-            name: {{ $key }}
-        {{- end }}
+          - name: {{ .Values.service.jackRabbitServiceName }}
+            containerPort: {{ .Values.ports.jackrabbit.port }}
+            protocol: TCP
         volumeMounts:
         {{- range $key, $values := .Values.volumeMounts }}
           - mountPath: {{$values.mountPath}}

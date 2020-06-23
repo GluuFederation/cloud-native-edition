@@ -602,7 +602,6 @@ class Kustomize(object):
                                                image_name_key="OXD_IMAGE_NAME",
                                                image_tag_key="OXD_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
-                self.parse_configmap(app_file)
                 self.remove_resources(app_file, "Deployment")
                 oxd_server_service_parser = Parser(app_file, "Deployment")
                 oxd_server_service_parser["metadata"]["name"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
