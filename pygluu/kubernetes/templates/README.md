@@ -523,6 +523,15 @@
   255.255.255.255	broadcasthost
   ::1             localhost
   ```
+
+### Istio Integration
+To  use Istio as the service mesh for Cloud native gluu server deployment. Please follow the following instructions.
+- Setup [istio](https://istio.io/latest/docs/setup/platform-setup/) on your preffered kubernetes platform before installing Istio.
+- Use [istioctl](https://istio.io/latest/docs/setup/install/istioctl/) to install istio on your kubernetes cluster. Make sure to enable Kiali.
+- Once Istio is installed grab the istio-ingress gateway `loadBalancer` IP. For instructions on this, checkout [nginx-ingress](#nginx-ingress)  
+  for specifics depending on your platform.
+- Populate the parameter `global.nginxIp` with the IP.
+- Enable istio installation `global.istio.enabled` and deploy Gluu server
   
 ### Uninstalling the Chart
 
