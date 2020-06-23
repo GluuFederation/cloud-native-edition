@@ -10,10 +10,21 @@ import re
 import shutil
 import json
 import base64
+
+import click
+
 from .kubeapi import Kubernetes
 from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password
 
 logger = get_logger("gluu-prompt        ")
+
+
+def confirm_yesno(text, *args, **kwargs):
+    """Like ``click.confirm`` but returns ``Y`` or ``N`` character
+    instead of boolean.
+    """
+    confirmed = click.confirm(text, *args, **kwargs)
+    return "Y" if confirmed else "N"
 
 
 class Prompt(object):
@@ -249,11 +260,10 @@ class Prompt(object):
         versions, version_number = self.get_supported_versions
 
         if not self.settings["GLUU_VERSION"]:
-            prompt = input("Please enter the current version of Gluu or the version to be installed [{}]"
-                           .format(version_number))
-            if not prompt:
-                prompt = version_number
-            self.settings["GLUU_VERSION"] = prompt
+            self.settings["GLUU_VERSION"] = click.prompt(
+                "Please enter the current version of Gluu or the version to be installed",
+                default=version_number,
+            )
 
         image_names_and_tags = versions.get(self.settings["GLUU_VERSION"], {})
         self.settings.update(image_names_and_tags)
@@ -987,8 +997,7 @@ class Prompt(object):
         return self.settings
 
     def prompt_arch(self):
-        """
-        Prompts for the kubernetes infrastructure used.
+        """Prompts for the kubernetes infrastructure used.
         # TODO: This should be auto-detected
         """
         if not self.settings["DEPLOYMENT_ARCH"]:
@@ -1010,22 +1019,17 @@ class Prompt(object):
             print("| [7]  Manually provisioned Kubernetes cluster                     |")
             print("|------------------------------------------------------------------|")
 
-            prompt = input("Deploy on ?[1]")
-            if prompt == "2":
-                prompt = "minikube"
-            elif prompt == "3":
-                prompt = "eks"
-            elif prompt == "4":
-                prompt = "gke"
-            elif prompt == "5":
-                prompt = "aks"
-            elif prompt == "6":
-                prompt = "do"
-            elif prompt == "7":
-                prompt = "local"
-            else:
-                prompt = "microk8s"
-            self.settings["DEPLOYMENT_ARCH"] = prompt
+            arch_map = {
+                1: "microk8s",
+                2: "minikube",
+                3: "eks",
+                4: "gke",
+                5: "aks",
+                6: "do",
+                7: "local",
+            }
+            choice = click.prompt("Deploy on", default=1)
+            self.settings["DEPLOYMENT_ARCH"] = arch_map.get(choice, "microk8s")
 
     def prompt_license(self):
         """Prompts user to accept Apache 2.0 license
@@ -1033,24 +1037,18 @@ class Prompt(object):
         if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
             with open("./LICENSE") as f:
                 print(f.read())
-            prompt = input("Do you accept the Gluu license stated above[Y/N].[N]")
-            if not prompt:
-                prompt = "N"
-            self.settings["ACCEPT_GLUU_LICENSE"] = prompt
+
+            self.settings["ACCEPT_GLUU_LICENSE"] = confirm_yesno("Do you accept the Gluu license stated above")
             if self.settings["ACCEPT_GLUU_LICENSE"] != "Y":
                 logger.info("License not accepted.")
                 raise SystemExit(1)
         update_settings_json_file(self.settings)
 
     def prompt_gluu_namespace(self):
-        """
-        Prompt to enable optional services
+        """Prompt to enable optional services
         """
         if not self.settings["GLUU_NAMESPACE"]:
-            prompt = input("Namespace to deploy Gluu in [gluu]:")
-            if not prompt:
-                prompt = "gluu"
-            self.settings["GLUU_NAMESPACE"] = prompt
+            self.settings["GLUU_NAMESPACE"] = click.prompt("Namespace to deploy Gluu in", default="gluu")
 
     def prompt_optional_services(self):
         if not self.settings["ENABLE_CACHE_REFRESH"]:
