@@ -240,13 +240,9 @@ class Helm(object):
         values_file_parser["global"]["oxd-server"]["enabled"] = False
         if self.settings["ENABLE_OXD"] == "Y":
             values_file_parser["global"]["oxd-server"]["enabled"] = True
-            values_file_parser["oxd-server"]["configmap"]["adminKeystorePassword"] = self.settings["OXD_SERVER_PW"]
-            values_file_parser["oxd-server"]["configmap"]["applicationKeystorePassword"] = \
-                self.settings["OXD_SERVER_PW"]
-            values_file_parser["oxd-server"]["configmap"]["applicationKeystoreCn"] = \
+            values_file_parser["global"]["gluuOxdApplicationCertCn"] = \
                 self.settings["OXD_APPLICATION_KEYSTORE_CN"]
-            values_file_parser["oxd-server"]["configmap"]["adminKeystoreCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
-            values_file_parser["oxd-server"]["configmap"]["storage"] = self.settings["OXD_SERVER_STORAGE"]
+            values_file_parser["global"]["gluuOxdAdminCertCn"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
 
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
@@ -287,8 +283,6 @@ class Helm(object):
         if self.settings["ENABLE_SAML_BOOLEAN"] == "true":
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
-        values_file_parser["oxd-server"]["configmap"]["adminKeystorePassword"] = self.settings["OXD_SERVER_PW"]
-        values_file_parser["oxd-server"]["configmap"]["applicationKeystorePassword"] = self.settings["OXD_SERVER_PW"]
         values_file_parser["oxpassport"]["resources"] = {}
         values_file_parser["nginx"]["ingress"]["enabled"] = True
         values_file_parser["nginx"]["ingress"]["hosts"] = [self.settings["GLUU_FQDN"]]

@@ -11,13 +11,6 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
-configmap:
-  adminKeystorePassword: Passw0rd
-  applicationKeystorePassword: Passw0rd
-  adminKeystorePasswordFile: /etc/gluu/conf/admin_keystore_password
-  applicationKeystorePasswordFile: /etc/gluu/conf/app_keystore_password
-  # h2 or redis
-  storage: h2
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

@@ -78,6 +78,8 @@ global:
   gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
   # gluuCouchbaseCertFile location of
   gluuCouchbaseCertFile: /etc/certs/couchbase.crt
+  gluuOxdApplicationCertCn: oxd-server
+  gluuOxdAdminCertCn: oxd-server
 
   # Enable installation of services
   oxauth:
@@ -290,16 +292,6 @@ scim:
       memory: 500Mi
 
 oxd-server:
-  configmap:
-    adminKeystorePassword: Passw0rd
-    applicationKeystorePassword: Passw0rd
-    adminKeystorePasswordFile: /etc/gluu/conf/admin_keystore_password
-    applicationKeystorePasswordFile: /etc/gluu/conf/app_keystore_password
-    applicationKeystoreCn: oxd-server
-    adminKeystoreCn: oxd-server
-    # h2 or redis
-    storage: h2
-
   image:
     repository: gluufederation/oxd-server
     tag: 4.1.1_01

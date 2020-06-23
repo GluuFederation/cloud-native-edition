@@ -131,10 +131,8 @@ class Prompt(object):
                                 IS_GLUU_FQDN_REGISTERED="",
                                 LDAP_PW="",
                                 ADMIN_PW="",
-                                OXD_SERVER_PW="",
                                 OXD_APPLICATION_KEYSTORE_CN="",
                                 OXD_ADMIN_KEYSTORE_CN="",
-                                OXD_SERVER_STORAGE="",
                                 LDAP_STORAGE_SIZE="",
                                 OXAUTH_REPLICAS="",
                                 OXTRUST_REPLICAS="",
@@ -265,7 +263,7 @@ class Prompt(object):
         Formats output of settings from prompts to the user. Passwords are not displayed.
         """
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
-                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "OXD_SERVER_PW", "REDIS_PW",
+                           "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
                            "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GLUU_GATEWAY_UI_PG_PASSWORD"]
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
@@ -1147,14 +1145,6 @@ class Prompt(object):
                 if not prompt:
                     prompt = "oxd-server"
                 self.settings["OXD_ADMIN_KEYSTORE_CN"] = prompt
-            if not self.settings["OXD_SERVER_PW"]:
-                self.settings["OXD_SERVER_PW"] = prompt_password("OXD-server")
-            if not self.settings["OXD_SERVER_STORAGE"]:
-                prompt = input("oxd server storage type , h2 or redis [h2]")
-                if not prompt:
-                    prompt = "h2"
-                self.settings["OXD_SERVER_STORAGE"] = prompt
-                self.settings["OXD_SERVER_PW"] = prompt_password("OXD-server")
 
         if not self.settings["ENABLE_OXTRUST_API"]:
             prompt = input("Enable oxTrust Api [N]?[Y/N]")
@@ -1541,7 +1531,7 @@ class Prompt(object):
             else:
                 self.settings["GLUU_CACHE_TYPE"] = "NATIVE_PERSISTENCE"
 
-        if self.settings["GLUU_CACHE_TYPE"] == "REDIS" or self.settings["OXD_SERVER_STORAGE"] == "redis":
+        if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
             self.prompt_redis()
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \

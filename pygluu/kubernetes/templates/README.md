@@ -386,7 +386,6 @@ Please calculate the minimum required resources as per services deployed. The fo
     
     | Parameter                                          | Description                                                                                                                      | Default                             |
     | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-    | `global.cloud.enabled`                             | Whether to enable cloud provisioning.                                                                                            | `false`                             |
     | `global.provisioner`                               | Which cloud provisioner to use when deploying                                                                                    | `k8s.io/minikube-hostpath`          |
     | `global.ldapServiceName`                           | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                            |
     | `global.nginxIp`                                   | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
@@ -437,8 +436,6 @@ Please calculate the minimum required resources as per services deployed. The fo
     | `persistence.configmap.gluuRadiusEnabled`          | Auto install radius service chart                                                                                                | `false`                             |
     | `persistence.configmap.gluuSamlEnabled`            | Auto enable SAML in oxshibboleth. This should be true whether or not `oxshibboleth` is installed or not.                         | `true`                              |
     | `oxd-server.enabled`                               | Enable or disable installation of OXD server                                                                                     | `false`                             |
-    | `oxd-server.configmap.adminKeystorePassword`       | Admin keystore password                                                                                                          | `examplePass`                       |
-    | `oxd-server.configmap.applicationKeystorePassword` | Password used to decrypt the keystore                                                                                            | `examplePass`                       |  
     | `nginx.ingress.enabled`                            | Set routing rules to different services                                                                                          | `true`                              |
     | `nginx.ingress.hosts`                              | Gluu FQDN                                                                                                                        | `demoexample.gluu.org`              |
     
@@ -618,8 +615,6 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `IS_GLUU_FQDN_REGISTERED`                       | Is Gluu FQDN globally resolvable                                                 | `"Y"` or `"N"`                                                                              |
 | `OXD_APPLICATION_KEYSTORE_CN`                   | OXD application keystore common name                                             | `"<name>"` i.e `"oxd_server"`                                                               |
 | `OXD_ADMIN_KEYSTORE_CN`                         | OXD admin keystore common name                                                   | `"<name>"` i.e `"oxd_server"`                                                               |
-| `OXD_SERVER_PW`                                 | OXD admin password string of alphabetical chars and numbers                      | `"<name>"` i.e `"oxd_server"`                                                               |
-| `OXD_SERVER_STORAGE`                            | OXD storage type                                                                 | `"h2"` or `"redis"`                                                                         |
 | `LDAP_STORAGE_SIZE`                             | LDAP volume storage size                                                         | `""` i.e `"4Gi"`                                                                            |
 | `FIDO2_REPLICAS`                                | Number of FIDO2 replicas                                                         | min `"1"`                                                                                   |
 | `SCIM_REPLICAS`                                 | Number of SCIM replicas                                                          | min `"1"`                                                                                   |
