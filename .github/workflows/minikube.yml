@@ -177,7 +177,7 @@ jobs:
           "ENABLE_OXPASSPORT": "Y",
           "ENABLE_OXSHIBBOLETH": "Y",
           "ENABLE_CASA": "Y",
-          "ENABLE_KEY_ROTATE": "Y",
+          "ENABLE_OXAUTH_KEY_ROTATE": "Y",
           "ENABLE_OXTRUST_API_BOOLEAN": "true",
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
           "ENABLE_RADIUS_BOOLEAN": "true",
