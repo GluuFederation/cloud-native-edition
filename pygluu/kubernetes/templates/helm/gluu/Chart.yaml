@@ -38,8 +38,8 @@ dependencies:
       condition: global.oxtrust.enabled
       version: 1.0.4
   
-    - name: nginx
-      condition: global.nginx.enabled
+    - name: nginx-ingress
+      condition: global.nginx-ingress.enabled
       version: 1.0.4
   
     - name: oxshibboleth

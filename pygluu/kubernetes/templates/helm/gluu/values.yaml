@@ -26,10 +26,10 @@ global:
     enabled: true
 
   fido2:
-    enabled: true
+    enabled: false
 
   scim:
-    enabled: true
+    enabled: false
 
   config:
     enabled: true
@@ -52,7 +52,7 @@ global:
   oxd-server:
     enabled: false 
 
-  nginx:
+  nginx-ingress:
     enabled: true
 
   key-rotation:
@@ -307,7 +307,7 @@ oxd-server:
       cpu: 1000m
       memory: 400Mi
 
-nginx:
+nginx-ingress:
   # ingress resources
   ingress:
     enabled: true
