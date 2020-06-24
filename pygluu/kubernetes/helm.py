@@ -248,15 +248,16 @@ class Helm(object):
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
             values_file_parser["opendj"]["gluuRedisEnabled"] = True
 
-        values_file_parser["global"]["nginx"]["enabled"] = True
+        values_file_parser["global"]["nginx-ingress"]["enabled"] = True
 
         values_file_parser["global"]["cr-rotate"]["enabled"] = False
         if self.settings["ENABLE_CACHE_REFRESH"] == "Y":
             values_file_parser["global"]["cr-rotate"]["enabled"] = True
 
-        values_file_parser["global"]["key-rotation"]["enabled"] = False
-        if self.settings["ENABLE_KEY_ROTATE"] == "Y":
-            values_file_parser["global"]["key-rotation"]["enabled"] = True
+        values_file_parser["global"]["oxauth-key-rotation"]["enabled"] = False
+        if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+            values_file_parser["global"]["oxauth-key-rotation"]["enabled"] = True
+            values_file_parser["oxauth-key-rotation"]["keysLife"] = self.settings["OXAUTH_KEYS_LIFE"]
 
         values_file_parser["config"]["orgName"] = self.settings["ORG_NAME"]
         values_file_parser["config"]["email"] = self.settings["EMAIL"]
@@ -284,17 +285,17 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
         values_file_parser["oxpassport"]["resources"] = {}
-        values_file_parser["nginx"]["ingress"]["enabled"] = True
-        values_file_parser["nginx"]["ingress"]["hosts"] = [self.settings["GLUU_FQDN"]]
-        values_file_parser["nginx"]["ingress"]["tls"][0]["hosts"] = [self.settings["GLUU_FQDN"]]
+        values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
+        values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings["GLUU_FQDN"]]
+        values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings["GLUU_FQDN"]]
         values_file_parser["casa"]["image"]["repository"] = self.settings["CASA_IMAGE_NAME"]
         values_file_parser["casa"]["image"]["tag"] = self.settings["CASA_IMAGE_TAG"]
         values_file_parser["config"]["image"]["repository"] = self.settings["CONFIG_IMAGE_NAME"]
         values_file_parser["config"]["image"]["tag"] = self.settings["CONFIG_IMAGE_TAG"]
         values_file_parser["cr-rotate"]["image"]["repository"] = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"]
         values_file_parser["cr-rotate"]["image"]["tag"] = self.settings["CACHE_REFRESH_ROTATE_IMAGE_TAG"]
-        values_file_parser["key-rotation"]["image"]["repository"] = self.settings["KEY_ROTATE_IMAGE_NAME"]
-        values_file_parser["key-rotation"]["image"]["tag"] = self.settings["KEY_ROTATE_IMAGE_TAG"]
+        values_file_parser["oxauth-key-rotation"]["image"]["repository"] = self.settings["CERT_MANAGER_IMAGE_NAME"]
+        values_file_parser["oxauth-key-rotation"]["image"]["tag"] = self.settings["CERT_MANAGER_IMAGE_TAG"]
         values_file_parser["opendj"]["image"]["repository"] = self.settings["LDAP_IMAGE_NAME"]
         values_file_parser["opendj"]["image"]["tag"] = self.settings["LDAP_IMAGE_TAG"]
         values_file_parser["persistence"]["image"]["repository"] = self.settings["PERSISTENCE_IMAGE_NAME"]

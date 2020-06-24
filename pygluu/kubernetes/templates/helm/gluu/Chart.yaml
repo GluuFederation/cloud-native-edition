@@ -54,8 +54,8 @@ dependencies:
       version: 1.0.4
       condition: config.configmap.gluuCasaEnabled
   
-    - name: key-rotation
-      condition: global.key-rotation.enabled
+    - name: oxauth-key-rotation
+      condition: global.oxauth-key-rotation.enabled
       version: 1.0.4
   
     - name: cr-rotate

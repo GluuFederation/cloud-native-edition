@@ -46,6 +46,7 @@ class Kubernetes(object):
         self.core_cli = client.CoreV1Api()
         self.apps_cli = client.AppsV1Api()
         self.jobs_cli = client.BatchV1Api()
+        self.cronjobs_cli = client.BatchV1beta1Api()
         self.rbac_cli = client.RbacAuthorizationV1Api()
         self.network_cli = client.NetworkingV1beta1Api()
         self.extenstion_cli = client.ExtensionsV1beta1Api()
@@ -216,6 +217,20 @@ class Kubernetes(object):
             else:
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('job with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
+
+    def delete_cronjob(self, namespace="default", app_label=None):
+        """Delete job using app label in namespace"""
+        starting_time = time.time()
+        response = True
+        while response:
+            try:
+                resp = self.cronjobs_cli.delete_collection_namespaced_cron_job(namespace=namespace, label_selector=app_label,
+                                                                      v1_delete_options=self.delete_options)
+            except client.rest.ApiException as e:
+                response = self.check_error_and_response(starting_time, e)
+            else:
+                response = self.check_error_and_response(starting_time, resp)
+        logger.info('cronjob with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
 
     def delete_secret(self, name, namespace="default"):
         """Delete secret using name in namespace"""

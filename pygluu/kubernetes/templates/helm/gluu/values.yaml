@@ -55,26 +55,11 @@ global:
   nginx-ingress:
     enabled: true
 
-  key-rotation:
+  oxauth-key-rotation:
     enabled: false
 
   cr-rotate:
     enabled: false  
-
-casa:
-  service:
-    casaServiceName: casa
-  image:
-    repository: gluufederation/casa
-    tag: 4.2.0_dev
-    pullPolicy: Always
-  resources:
-    requests:
-      memory: "500Mi"
-      cpu: "500m"
-    limits:
-      memory: "500Mi"
-      cpu: "500m"
 
 # Required environment variables for generating Gluu server initial config
 # values for config-init sub-chart
@@ -155,6 +140,20 @@ config:
     # requests:
     #   cpu: 500m
     #   memory: 500Mi
+casa:
+  service:
+    casaServiceName: casa
+  image:
+    repository: gluufederation/casa
+    tag: 4.2.0_dev
+    pullPolicy: Always
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
 
 cr-rotate:
   service:
@@ -171,11 +170,11 @@ cr-rotate:
       cpu: 200m
       memory: 200Mi   
 
-key-rotation:
-  service:
-    keyRotationServiceName: key-rotation
+oxauth-key-rotation:
+  # Keys life in hours
+  keysLife: 48
   image:
-    repository: gluufederation/key-rotation
+    repository: gluufederation/certmanager
     tag: 4.1.1_03
     pullPolicy: Always
   # default resource limits

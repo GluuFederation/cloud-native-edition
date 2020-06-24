@@ -165,13 +165,14 @@ class Prompt(object):
                                 ENABLE_OXPASSPORT="",
                                 ENABLE_OXSHIBBOLETH="",
                                 ENABLE_CASA="",
-                                ENABLE_KEY_ROTATE="",
+                                ENABLE_OXAUTH_KEY_ROTATE="",
                                 ENABLE_OXTRUST_API_BOOLEAN="false",
                                 ENABLE_OXTRUST_TEST_MODE_BOOLEAN="false",
                                 ENABLE_RADIUS_BOOLEAN="false",
                                 ENABLE_OXPASSPORT_BOOLEAN="false",
                                 ENABLE_CASA_BOOLEAN="false",
                                 ENABLE_SAML_BOOLEAN="false",
+                                OXAUTH_KEYS_LIFE="",
                                 EDIT_IMAGE_NAMES_TAGS="",
                                 CASA_IMAGE_NAME="",
                                 CASA_IMAGE_TAG="",
@@ -179,8 +180,8 @@ class Prompt(object):
                                 CONFIG_IMAGE_TAG="",
                                 CACHE_REFRESH_ROTATE_IMAGE_NAME="",
                                 CACHE_REFRESH_ROTATE_IMAGE_TAG="",
-                                KEY_ROTATE_IMAGE_NAME="",
-                                KEY_ROTATE_IMAGE_TAG="",
+                                CERT_MANAGER_IMAGE_NAME="",
+                                CERT_MANAGER_IMAGE_TAG="",
                                 LDAP_IMAGE_NAME="",
                                 LDAP_IMAGE_TAG="",
                                 JACKRABBIT_IMAGE_NAME="",
@@ -375,8 +376,8 @@ class Prompt(object):
             if self.settings["ENABLE_CACHE_REFRESH"] == "Y":
                 prompt_and_set_setting("CR-rotate", "CACHE_REFRESH_ROTATE_IMAGE_NAME", "CACHE_REFRESH_ROTATE_IMAGE_TAG")
             # KEY_ROTATE
-            if self.settings["ENABLE_KEY_ROTATE"] == "Y":
-                prompt_and_set_setting("Key rotate", "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG")
+            if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+                prompt_and_set_setting("Key rotate", "CERT_MANAGER_IMAGE_NAME", "CERT_MANAGER_IMAGE_TAG")
             # LDAP
             if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                     self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -1061,13 +1062,21 @@ class Prompt(object):
                 prompt = "N"
             self.settings["ENABLE_CACHE_REFRESH"] = prompt
 
-        if not self.settings["ENABLE_KEY_ROTATE"]:
+        if not self.settings["ENABLE_OXAUTH_KEY_ROTATE"]:
             prompt = input("Deploy Key-Rotation[N]?[Y/N]")
             if prompt == "Y" or prompt == "y":
                 prompt = "Y"
             else:
                 prompt = "N"
-            self.settings["ENABLE_KEY_ROTATE"] = prompt
+            self.settings["ENABLE_OXAUTH_KEY_ROTATE"] = prompt
+
+        if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+            if not self.settings["OXAUTH_KEYS_LIFE"]:
+                prompt = input("oxAuth keys life in hours [48]:")
+                if not prompt:
+                    prompt = 48
+                prompt = int(prompt)
+                self.settings["OXAUTH_KEYS_LIFE"] = prompt
 
         if not self.settings["ENABLE_RADIUS"]:
             prompt = input("Deploy Radius[N]?[Y/N]")
