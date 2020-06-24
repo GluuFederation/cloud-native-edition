@@ -725,19 +725,21 @@ class Prompt(object):
             prompt = int(prompt)
             self.settings["OXAUTH_REPLICAS"] = prompt
 
-        if not self.settings["FIDO2_REPLICAS"]:
-            prompt = input("Number of fido2 replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["FIDO2_REPLICAS"] = prompt
+        if self.settings["ENABLE_FIDO2"] == "Y":
+            if not self.settings["FIDO2_REPLICAS"]:
+                prompt = input("Number of fido2 replicas [1]:")
+                if not prompt:
+                    prompt = 1
+                prompt = int(prompt)
+                self.settings["FIDO2_REPLICAS"] = prompt
 
-        if not self.settings["SCIM_REPLICAS"]:
-            prompt = input("Number of scim replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["SCIM_REPLICAS"] = prompt
+        if self.settings["ENABLE_SCIM"] == "Y":
+            if not self.settings["SCIM_REPLICAS"]:
+                prompt = input("Number of scim replicas [1]:")
+                if not prompt:
+                    prompt = 1
+                prompt = int(prompt)
+                self.settings["SCIM_REPLICAS"] = prompt
 
         if not self.settings["OXTRUST_REPLICAS"]:
             prompt = input("Number of oxTrust replicas [1]:")
