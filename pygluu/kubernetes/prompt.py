@@ -543,36 +543,22 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_jackrabbit(self):
-        """
-        Prompts for Jackrabbit content repository
+        """Prompts for Jackrabbit content repository
         """
         if not self.settings["INSTALL_JACKRABBIT"]:
             logger.info("Jackrabbit must be installed. If the following prompt is answered with N it is assumed "
                         "the jackrabbit content repository is either installed locally or remotely")
-            prompt = input("Install Jackrabbit content repository[Y/N]?[Y]")
-            if prompt == "N" or prompt == "n":
-                prompt = "N"
-            else:
-                prompt = "Y"
-            self.settings["INSTALL_JACKRABBIT"] = prompt
+            self.settings["INSTALL_JACKRABBIT"] = confirm_yesno("Install Jackrabbit content repository", default=True)
+
         if self.settings["INSTALL_JACKRABBIT"] == "N":
             if not self.settings["JACKRABBIT_URL"]:
-                prompt = input("Please enter jackrabbit url [http://jackrabbit:8080]")
-                if not prompt:
-                    prompt = "http://jackrabbit:8080"
-                self.settings["JACKRABBIT_URL"] = prompt
+                self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url", default="http://jackrabbit:8080")
             if not self.settings["JACKRABBIT_USER"]:
-                prompt = input("Please enter jackrabbit user [admin]")
-                if not prompt:
-                    prompt = "admin"
-                self.settings["JACKRABBIT_USER"] = prompt
+                self.settings["JACKRABBIT_USER"] = click.prompt("Please enter jackrabbit user", default="admin")
             logger.info("Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod")
         else:
             if not self.settings["JACKRABBIT_STORAGE_SIZE"]:
-                prompt = input("Size of Jackrabbit content repository volume storage [4Gi]:")
-                if not prompt:
-                    prompt = "4Gi"
-                self.settings["JACKRABBIT_STORAGE_SIZE"] = prompt
+                self.settings["JACKRABBIT_STORAGE_SIZE"] = click.prompt("Size of Jackrabbit content repository volume storage", default="4Gi")
             self.settings["JACKRABBIT_USER"] = "admin"
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
@@ -604,60 +590,37 @@ class Prompt(object):
             self.settings["POSTGRES_URL"] = prompt
 
     def prompt_gluu_gateway(self):
-        """
-        Prompts for Gluu Gateway
+        """Prompts for Gluu Gateway
         """
         if not self.settings["INSTALL_GLUU_GATEWAY"]:
-            prompt = input("Install Gluu Gateway Database mode  [Y/N]?[N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["INSTALL_GLUU_GATEWAY"] = prompt
+            self.settings["INSTALL_GLUU_GATEWAY"] = confirm_yesno("Install Gluu Gateway Database mode")
+
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
             self.settings["ENABLE_OXD"] = "Y"
             self.prompt_postgres()
             if not self.settings["KONG_NAMESPACE"]:
-                prompt = input("Please enter a namespace for Gluu Gateway.[gluu-gateway]")
-                if not prompt:
-                    prompt = "gluu-gateway"
-                self.settings["KONG_NAMESPACE"] = prompt
+                self.settings["KONG_NAMESPACE"] = click.prompt("Please enter a namespace for Gluu Gateway", default="gluu-gateway")
 
             if not self.settings["GLUU_GATEWAY_UI_NAMESPACE"]:
-                prompt = input("Please enter a namespace for gluu gateway ui.[gg-ui]")
-                if not prompt:
-                    prompt = "gg-ui"
-                self.settings["GLUU_GATEWAY_UI_NAMESPACE"] = prompt
+                self.settings["GLUU_GATEWAY_UI_NAMESPACE"] = click.prompt("Please enter a namespace for gluu gateway ui", default="gg-ui")
 
             if not self.settings["KONG_PG_USER"]:
-                prompt = input("Please enter a user for gluu-gateway postgres database.[kong]")
-                if not prompt:
-                    prompt = "kong"
-                self.settings["KONG_PG_USER"] = prompt
+                self.settings["KONG_PG_USER"] = click.prompt("Please enter a user for gluu-gateway postgres database", default="kong")
 
             if not self.settings["KONG_PG_PASSWORD"]:
                 self.settings["KONG_PG_PASSWORD"] = prompt_password("gluu-gateway-postgres")
 
             if not self.settings["GLUU_GATEWAY_UI_PG_USER"]:
-                prompt = input("Please enter a user for gluu-gateway-ui postgres database.[konga]")
-                if not prompt:
-                    prompt = "konga"
-                self.settings["GLUU_GATEWAY_UI_PG_USER"] = prompt
+                self.settings["GLUU_GATEWAY_UI_PG_USER"] = click.prompt("Please enter a user for gluu-gateway-ui postgres database", default="konga")
 
             if not self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"]:
                 self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"] = prompt_password("gluu-gateway-ui-postgres")
 
             if not self.settings["KONG_DATABASE"]:
-                prompt = input("Please enter  gluu-gateway postgres database name.[kong]")
-                if not prompt:
-                    prompt = "kong"
-                self.settings["KONG_DATABASE"] = prompt
+                self.settings["KONG_DATABASE"] = click.prompt("Please enter gluu-gateway postgres database name", default="kong")
 
             if not self.settings["GLUU_GATEWAY_UI_DATABASE"]:
-                prompt = input("Please enter  gluu-gateway-ui postgres database name.[konga]")
-                if not prompt:
-                    prompt = "konga"
-                self.settings["GLUU_GATEWAY_UI_DATABASE"] = prompt
+                self.settings["GLUU_GATEWAY_UI_DATABASE"] = click.prompt("Please enter gluu-gateway-ui postgres database name", default="konga")
 
     def prompt_storage(self):
         """
@@ -1057,123 +1020,58 @@ class Prompt(object):
 
     def prompt_optional_services(self):
         if not self.settings["ENABLE_CACHE_REFRESH"]:
-            prompt = input("Deploy Cr-Rotate[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_CACHE_REFRESH"] = prompt
+            self.settings["ENABLE_CACHE_REFRESH"] = confirm_yesno("Deploy Cr-Rotate")
 
         if not self.settings["ENABLE_OXAUTH_KEY_ROTATE"]:
-            prompt = input("Deploy Key-Rotation[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_OXAUTH_KEY_ROTATE"] = prompt
+            self.settings["ENABLE_OXAUTH_KEY_ROTATE"] = confirm_yesno("Deploy Key-Rotation")
 
         if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
             if not self.settings["OXAUTH_KEYS_LIFE"]:
-                prompt = input("oxAuth keys life in hours [48]:")
-                if not prompt:
-                    prompt = 48
-                prompt = int(prompt)
-                self.settings["OXAUTH_KEYS_LIFE"] = prompt
+                self.settings["OXAUTH_KEYS_LIFE"] = click.prompt("oxAuth keys life in hours", default=48)
 
         if not self.settings["ENABLE_RADIUS"]:
-            prompt = input("Deploy Radius[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_RADIUS"] = prompt
+            self.settings["ENABLE_RADIUS"] = confirm_yesno("Deploy Radius")
         if self.settings["ENABLE_RADIUS"] == "Y":
             self.settings["ENABLE_RADIUS_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_OXPASSPORT"]:
-            prompt = input("Deploy Passport[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_OXPASSPORT"] = prompt
+            self.settings["ENABLE_OXPASSPORT"] = confirm_yesno("Deploy Passport")
         if self.settings["ENABLE_OXPASSPORT"] == "Y":
             self.settings["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_OXSHIBBOLETH"]:
-            prompt = input("Deploy Shibboleth SAML IDP[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_OXSHIBBOLETH"] = prompt
+            self.settings["ENABLE_OXSHIBBOLETH"] = confirm_yesno("Deploy Shibboleth SAML IDP")
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             self.settings["ENABLE_SAML_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_CASA"]:
-            prompt = input("[Testing Phase] Deploy Casa[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_CASA"] = prompt
+            self.settings["ENABLE_CASA"] = confirm_yesno("[Testing Phase] Deploy Casa")
         if self.settings["ENABLE_CASA"] == "Y":
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
 
         if not self.settings["ENABLE_FIDO2"]:
-            prompt = input("Deploy fido2[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_FIDO2"] = prompt
+            self.settings["ENABLE_FIDO2"] = confirm_yesno("Deploy fido2")
 
         if not self.settings["ENABLE_SCIM"]:
-            prompt = input("Deploy scim[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_SCIM"] = prompt
+            self.settings["ENABLE_SCIM"] = confirm_yesno("Deploy scim")
 
         if not self.settings["ENABLE_OXD"]:
-            prompt = input("Deploy oxd server[N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_OXD"] = prompt
+            self.settings["ENABLE_OXD"] = confirm_yesno("Deploy oxd server")
 
         if self.settings["ENABLE_OXD"] == "Y":
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:
-                prompt = input("oxd server application keystore name [oxd-server]?")
-                if not prompt:
-                    prompt = "oxd-server"
-                self.settings["OXD_APPLICATION_KEYSTORE_CN"] = prompt
+                self.settings["OXD_APPLICATION_KEYSTORE_CN"] = click.prompt("oxd server application keystore name", default="oxd-server")
             if not self.settings["OXD_ADMIN_KEYSTORE_CN"]:
-                prompt = input("oxd server admin keystore name [oxd-server]?")
-                if not prompt:
-                    prompt = "oxd-server"
-                self.settings["OXD_ADMIN_KEYSTORE_CN"] = prompt
+                self.settings["OXD_ADMIN_KEYSTORE_CN"] = click.prompt("oxd server admin keystore name", default="oxd-server")
 
         if not self.settings["ENABLE_OXTRUST_API"]:
-            prompt = input("Enable oxTrust Api [N]?[Y/N]")
-            if prompt == "Y" or prompt == "y":
-                prompt = "Y"
-            else:
-                prompt = "N"
-            self.settings["ENABLE_OXTRUST_API"] = prompt
+            self.settings["ENABLE_OXTRUST_API"] = confirm_yesno("Enable oxTrust API")
 
         if self.settings["ENABLE_OXTRUST_API"]:
             self.settings["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
             if not self.settings["ENABLE_OXTRUST_TEST_MODE"]:
-                prompt = input("Enable oxTrust Test Mode [N]?[Y/N]")
-                if prompt == "Y" or prompt == "y":
-                    prompt = "Y"
-                else:
-                    prompt = "N"
-                self.settings["ENABLE_OXTRUST_TEST_MODE"] = prompt
+                self.settings["ENABLE_OXTRUST_TEST_MODE"] = confirm_yesno("Enable oxTrust Test Mode")
         if self.settings["ENABLE_OXTRUST_TEST_MODE"] == "Y":
             self.settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
 

@@ -95,3 +95,34 @@ def test_prompt_gluu_namespace(monkeypatch, prompter, given, expected):
 
     prompter.prompt_gluu_namespace()
     assert prompter.settings["GLUU_NAMESPACE"] == expected
+
+
+def test_prompt_jackrabbit_enable(monkeypatch, prompter):
+    monkeypatch.setattr("click.confirm", lambda x, default: True)
+    monkeypatch.setattr("click.prompt", lambda x, default: "4Gi")
+
+    prompter.prompt_jackrabbit()
+    assert prompter.settings["INSTALL_JACKRABBIT"] == "Y"
+    assert prompter.settings["JACKRABBIT_USER"] == "admin"
+    assert prompter.settings["JACKRABBIT_URL"] == "http://jackrabbit:8080"
+    assert prompter.settings["JACKRABBIT_STORAGE_SIZE"] == "4Gi"
+
+
+def test_prompt_jackrabbit_disable_no_url(monkeypatch, prompter):
+    monkeypatch.setattr("click.confirm", lambda x, default: False)
+    monkeypatch.setattr("click.prompt", lambda x, default: "http://jackrabbit:8080")
+
+    prompter.settings["JACKRABBIT_USER"] = "admin"
+    prompter.prompt_jackrabbit()
+    assert prompter.settings["INSTALL_JACKRABBIT"] == "N"
+    assert prompter.settings["JACKRABBIT_URL"] == "http://jackrabbit:8080"
+
+
+def test_prompt_jackrabbit_disable_no_user(monkeypatch, prompter):
+    monkeypatch.setattr("click.confirm", lambda x, default: False)
+    monkeypatch.setattr("click.prompt", lambda x, default: "admin")
+
+    prompter.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
+    prompter.prompt_jackrabbit()
+    assert prompter.settings["INSTALL_JACKRABBIT"] == "N"
+    assert prompter.settings["JACKRABBIT_USER"] == "admin"
