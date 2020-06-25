@@ -87,7 +87,7 @@ data:
       "city": {{ .Values.city | quote }},
       "admin_pw": {{ .Values.adminPass | quote }},
       "ldap_pw": {{ .Values.ldapPass | quote }},
-      "redis_pw": {{ .Values.RedisPass | quote }},
+      "redis_pw": {{ .Values.redisPass | quote }},
       "email": {{ .Values.email | quote }},
       "org_name": {{ .Values.orgName | quote }}
     }

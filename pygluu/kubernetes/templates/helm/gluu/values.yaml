@@ -71,12 +71,12 @@ config:
   adminPass: P@ssw0rd
   # ldapPass is the password for LDAP
   ldapPass: P@ssw0rd
-  #RedisPass is the password for redis admin if used
-  RedisPass: P@assw0rd
+  #redisPass is the password for redis admin if used
+  redisPass: P@assw0rd
   # organisation location details
   countryCode: US
   state: TX
-  city: SLC
+  city: Austin
   configmap:
     gluuOxdApplicationCertCn: oxd-server
     gluuOxdAdminCertCn: oxd-server
@@ -128,7 +128,7 @@ config:
     gluuPassportEnabled: false
     gluuCasaEnabled: false
     gluuRadiusEnabled: false
-    gluuSamlEnabled: true
+    gluuSamlEnabled: false
 
   image:
     repository: gluufederation/config-init
@@ -140,51 +140,18 @@ config:
     # requests:
     #   cpu: 500m
     #   memory: 500Mi
-casa:
-  service:
-    casaServiceName: casa
-  image:
-    repository: gluufederation/casa
-    tag: 4.2.0_dev
-    pullPolicy: Always
-  resources:
-    requests:
-      memory: "500Mi"
-      cpu: "500m"
-    limits:
-      memory: "500Mi"
-      cpu: "500m"
 
-cr-rotate:
-  service:
-    crRotateServiceName: cr-rotate
-  image:
-    repository: gluufederation/cr-rotate
-    tag: 4.1.1_02
-    pullPolicy: Always
-  resources: 
-    limits:
-      cpu: 200m
-      memory: 200Mi
-    requests:
-      cpu: 200m
-      memory: 200Mi   
-
-oxauth-key-rotation:
-  # Keys life in hours
-  keysLife: 48
-  image:
-    repository: gluufederation/certmanager
-    tag: 4.1.1_03
-    pullPolicy: Always
-  # default resource limits
-  resources: 
-    limits:
-      cpu: 300m
-      memory: 300Mi
-    requests:
-      cpu: 300m
-      memory: 300Mi
+nginx-ingress:
+  # ingress resources
+  ingress:
+    enabled: true
+    path: /
+    hosts:
+      - demoexample.gluu.org
+    tls:
+    - secretName: tls-certificate # DON'T change
+      hosts:
+        - demoexample.gluu.org
 
 jackrabbit:
   service:
@@ -197,7 +164,7 @@ jackrabbit:
     tag: 4.1.1_01
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 1500m
       memory: 1000Mi
@@ -218,7 +185,7 @@ opendj:
     tag: 4.1.1_02
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 1500m
       memory: 2000Mi
@@ -244,12 +211,13 @@ persistence:
 oxauth:
   service:
     oxAuthServiceName: oxauth
+  replicas: 1
   image:
     repository: gluufederation/oxauth
     tag: 4.1.1_06
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 2500m
       memory: 2500Mi
@@ -257,15 +225,33 @@ oxauth:
       cpu: 2500m
       memory: 2500Mi
 
+oxtrust:
+  service:
+    oxTrustServiceName: oxtrust
+  replicas: 1
+  image:
+    repository: gluufederation/oxtrust
+    tag: 4.1.1_03
+    pullPolicy: Always
+  # default resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+
 fido2:
   service:
     fido2ServiceName: fido2
+  replicas: 1
   image:
     repository: gluufederation/fido2
     tag: 4.2.0_dev
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 500m
       memory: 500Mi
@@ -281,7 +267,7 @@ scim:
     tag: 4.2.0_dev
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 500m
       memory: 500Mi
@@ -293,12 +279,13 @@ oxd-server:
   service:
     # This must match config.configMap.gluuOxdApplicationCertCn
     oxdServerServiceName: oxd-server
+  replicas: 1
   image:
     repository: gluufederation/oxd-server
     tag: 4.1.1_01
     pullPolicy: Always
   # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 1000m
       memory: 400Mi
@@ -306,22 +293,28 @@ oxd-server:
       cpu: 1000m
       memory: 400Mi
 
-nginx-ingress:
-  # ingress resources
-  ingress:
-    enabled: true
-    path: /
-    hosts:
-      - demoexample.gluu.org
-    tls:
-    - secretName: tls-certificate # DON'T change
-      hosts:
-        - demoexample.gluu.org
+# oxd-server has to be enabled to install Casa
+casa:
+  service:
+    casaServiceName: casa
+  replicas: 1
+  image:
+    repository: gluufederation/casa
+    tag: 4.2.0_dev
+    pullPolicy: Always
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
 
 # oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
   service:
     oxPassportServiceName: oxpassport
+  replicas: 1
   image:
     repository: gluufederation/oxpassport
     tag: 4.1.1_01
@@ -338,24 +331,9 @@ oxpassport:
 oxshibboleth:
   service:
     oxShibbolethServiceName: oxshibboleth
+  replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.1.1_03
-    pullPolicy: Always
-  # default resource limits
-  resources: 
-    limits:
-      cpu: 500m
-      memory: 500Mi
-    requests:
-      cpu: 500m
-      memory: 500Mi
-
-oxtrust:
-  service:
-    oxTrustServiceName: oxtrust
-  image:
-    repository: gluufederation/oxtrust
     tag: 4.1.1_03
     pullPolicy: Always
   # default resource limits
@@ -370,6 +348,7 @@ oxtrust:
 radius:
   service:
     radiusServiceName: radius
+  replicas: 1
   image:
     repository: gluufederation/radius
     tag: 4.1.1_01
@@ -382,3 +361,34 @@ radius:
     requests:
       cpu: 700m
       memory: 700Mi
+
+cr-rotate:
+  service:
+    crRotateServiceName: cr-rotate
+  image:
+    repository: gluufederation/cr-rotate
+    tag: 4.1.1_02
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 200m
+      memory: 200Mi
+
+oxauth-key-rotation:
+  # Keys life in hours
+  keysLife: 48
+  image:
+    repository: gluufederation/certmanager
+    tag: 4.1.1_03
+    pullPolicy: Always
+  # default resource limits
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi

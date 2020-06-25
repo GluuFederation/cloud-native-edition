@@ -9,8 +9,8 @@ email: support@gluu.com
 adminPass: P@ssw0rd
 # ldapPass is the password for LDAP
 ldapPass: P@ssw0rd
-#RedisPass is the password for redis admin if used
-RedisPass: P@assw0rd
+#redisPass is the password for redis admin if used
+redisPass: P@assw0rd
 # organisation location details
 countryCode: US
 state: TX

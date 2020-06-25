@@ -17,7 +17,6 @@ persistence:
   size: 5Gi
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
-  dbStorageSize: 5Gi
 
 #servicePorts values used in StatefulSet container
 ports:

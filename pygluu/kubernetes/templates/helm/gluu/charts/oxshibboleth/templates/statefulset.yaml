@@ -10,7 +10,7 @@ metadata:
 {{ include "oxshibboleth.labels" . | indent 4 }}
 spec:
   serviceName: oxshibboleth
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: {{ include "oxshibboleth.name" . }}

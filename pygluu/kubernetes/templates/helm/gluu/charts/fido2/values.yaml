@@ -5,7 +5,7 @@ image:
   repository: gluufederation/fido2
   tag: 4.1.0_01
   pullPolicy: Always
-
+replicas: 1
 #Resources for the deployment
 requests:
   memory: 1000Mi

@@ -199,6 +199,7 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuRedisUseSsl"] = self.settings["REDIS_USE_SSL"]
             values_file_parser["config"]["configmap"]["gluuRedisSslTruststore"] = self.settings["REDIS_SSL_TRUSTSTORE"]
             values_file_parser["config"]["configmap"]["gluuRedisSentinelGroup"] = self.settings["REDIS_SENTINEL_GROUP"]
+            values_file_parser["config"]["redisPass"] = self.settings["REDIS_PW"]
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" \
                 or self.settings["TEST_ENVIRONMENT"] == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
