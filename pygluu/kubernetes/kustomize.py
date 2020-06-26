@@ -1025,10 +1025,6 @@ class Kustomize(object):
         kong_all_in_one_db_parser_crb["subjects"][0]["namespace"] = self.settings["KONG_NAMESPACE"]
         kong_all_in_one_db_parser_crb.dump_it()
 
-        kong_all_in_one_db_parser_cm = Parser(kong_all_in_one_db, "ConfigMap")
-        kong_all_in_one_db_parser_cm["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
-        kong_all_in_one_db_parser_cm.dump_it()
-
         kong_all_in_one_db_parser_svc_proxy = Parser(kong_all_in_one_db, "Service", "kong-proxy")
         kong_all_in_one_db_parser_svc_proxy["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
         kong_all_in_one_db_parser_svc_proxy.dump_it()
