@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Kubernetes ( Kubeadm)
       run: |
-        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key -
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
         sudo apt-get install curl -y
         sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
         sudo apt-get install kubeadm kubelet kubectl -y
