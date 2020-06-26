@@ -1045,7 +1045,7 @@ class Prompt(object):
             self.settings["ENABLE_SAML_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_CASA"]:
-            self.settings["ENABLE_CASA"] = confirm_yesno("[Testing Phase] Deploy Casa")
+            self.settings["ENABLE_CASA"] = confirm_yesno("Deploy Casa")
         if self.settings["ENABLE_CASA"] == "Y":
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
@@ -1211,7 +1211,9 @@ class Prompt(object):
         self.prompt_gluu_gateway()
         self.prompt_jackrabbit()
 
-        if not self.settings["TEST_ENVIRONMENT"]:
+        if not self.settings["TEST_ENVIRONMENT"] and \
+            self.settings["DEPLOYMENT_ARCH"] == "microk8s" and \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube":
             logger.info("A test environment means that the installer will strip all resource requirments, "
                         "and hence will use as much as needed only. The pods are subject to eviction. Please use "
                         " at least 8GB Ram , 4 CPU, and 50 GB disk.")
