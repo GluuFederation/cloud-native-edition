@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oxtrust
+  name: {{ .Values.service.oxTrustServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "oxtrust.labels" . | indent 4 }}
 spec:
   ports:
   - port: {{ .Values.service.port }}
-    name: {{ template "oxtrust.fullname" . }}
+    name: {{ .Values.service.oxTrustServiceName }}
   selector:
     app: {{ include "oxtrust.name" . }}
   clusterIP: {{ .Values.service.clusterIp }}

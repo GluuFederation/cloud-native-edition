@@ -6,54 +6,54 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
-  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
-  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+  GLUU_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
+  GLUU_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  GLUU_CONTAINER_METADATA: {{ .Values.global.containerMetadataName | quote }}
-  GLUU_MAX_RAM_PERCENTAGE: {{ .Values.global.gluuMaxRamPercent | quote }}
-  GLUU_CACHE_TYPE: {{ .Values.global.gluuCacheType | quote }}
-  GLUU_DOCUMENT_STORE_TYPE: {{ .Values.global.gluuDocumentStoreType | quote }}
-  GLUU_JCA_SYNC_INTERVAL: {{ .Values.global.gluuJcaSyncInterval | quote }}
-  GLUU_JCA_URL: {{ .Values.global.gluuJcaUrl | quote }}
+  GLUU_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
+  GLUU_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
+  GLUU_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
+  GLUU_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
+  GLUU_JCA_SYNC_INTERVAL: {{ .Values.configmap.gluuJcaSyncInterval | quote }}
+  GLUU_JCA_URL: {{ .Values.configmap.gluuJcaUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
-  GLUU_OXAUTH_BACKEND: {{ .Values.global.gluuOxauthBackend | quote }}
-  GLUU_OXD_SERVER_URL: {{ .Values.global.gluuOxdServerUrl | quote }}
+  GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
+  GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
-  LB_ADDR: {{ .Values.global.lbAddr }}
+  LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
   GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
   {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid")  }}
   # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
-  GLUU_LDAP_URL: {{ .Values.global.gluuLdapUrl | quote }}
+  GLUU_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  GLUU_COUCHBASE_URL: {{ .Values.global.gluuCouchbaseUrl }}
-  GLUU_COUCHBASE_USER: {{ .Values.global.gluuCouchbaseUser }}
-  GLUU_COUCHBASE_CERT_FILE: {{ .Values.global.gluuCouchbaseCertFile | quote }}
-  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.global.gluuCouchbasePassFile | quote }}
+  GLUU_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
+  GLUU_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
+  GLUU_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
+  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
   {{- end }}
   GLUU_KEY_ROTATION_FORCE: "false"
   GLUU_KEY_ROTATION_CHECK: "3600"
   GLUU_KEY_ROTATION_INTERVAL: "48"
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
-  GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.global.gluuPersistenceLdapMapping | quote }}
+  GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
   {{- end }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  GLUU_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
   GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
   GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  GLUU_SYNC_CASA_MANIFESTS: {{ .Values.global.gluuSyncCasaManifests | quote }}
-  GLUU_OXTRUST_BACKEND: {{ .Values.global.gluuOxtrustBackend | quote }}
-  GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.global.gluuSyncShibManifests | quote }}
+  GLUU_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  GLUU_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
+  GLUU_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
+  GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
-  GLUU_JCA_RMI_URL: {{ .Values.global.gluuJcaRmiUrl | quote }}
-  GLUU_JCA_USERNAME: {{ .Values.global.gluuJcaUsername | quote }}
-  GLUU_JCA_PASSWORD_FILE: {{ .Values.global.gluuJcaPasswordFile | quote }}
+  GLUU_JCA_RMI_URL: {{ .Values.configmap.gluuJcaRmiUrl | quote }}
+  GLUU_JCA_USERNAME: {{ .Values.configmap.gluuJcaUsername | quote }}
+  GLUU_JCA_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }}
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
@@ -61,12 +61,14 @@ data:
   {{- if .Values.global.oxshibboleth.enabled }}
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
-  {{ if eq .Values.global.gluuCacheType "REDIS" }}
-  GLUU_REDIS_URL: {{ .Values.global.gluuRedisUrl | quote }}
-  GLUU_REDIS_TYPE: {{ .Values.global.gluuRedisType | quote }}
-  GLUU_REDIS_USE_SSL: {{ .Values.global.gluuRedisUseSsl | quote }}
-  GLUU_REDIS_SSL_TRUSTSTORE: {{ .Values.global.gluuRedisSslTruststore | quote }}
-  GLUU_REDIS_SENTINEL_GROUP: {{ .Values.global.gluuRedisSentinelGroup | quote }}
+  GLUU_OXD_APPLICATION_CERT_CN: {{ .Values.configmap.gluuOxdApplicationCertCn | quote }}
+  GLUU_OXD_ADMIN_CERT_CN: {{ .Values.configmap.gluuOxdAdminCertCn | quote }}
+  {{ if eq .Values.configmap.gluuCacheType "REDIS" }}
+  GLUU_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
+  GLUU_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
+  GLUU_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}
+  GLUU_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
+  GLUU_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
   {{- end }}
 
 ---
@@ -85,7 +87,7 @@ data:
       "city": {{ .Values.city | quote }},
       "admin_pw": {{ .Values.adminPass | quote }},
       "ldap_pw": {{ .Values.ldapPass | quote }},
-      "redis_pw": {{ .Values.RedisPass | quote }},
+      "redis_pw": {{ .Values.redisPass | quote }},
       "email": {{ .Values.email | quote }},
       "org_name": {{ .Values.orgName | quote }}
     }

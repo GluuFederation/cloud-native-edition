@@ -1,0 +1,40 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: {{ include "oxauth-key-rotation.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "oxauth-key-rotation.name" . }}
+    release: {{ .Release.Name }}
+{{ include "oxauth-key-rotation.labels" . | indent 4 }}
+
+spec:
+  schedule: "0 */{{ .Values.keysLife }} * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .Chart.Name }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-config-cm
+              {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
+              resources: {}
+              {{- else if .Values.global.cloud.testEnviroment }}
+              resources: {}
+              {{- else }}
+              resources:
+    {{- toYaml .Values.resources | nindent 12 }}
+              {{- end }}
+              envFrom:
+                - configMapRef:
+                    name: gluu-config-cm
+              args: ["patch", "oxauth", "--opts", "interval:{{ .Values.keysLife }}"]
+          restartPolicy: Never
+

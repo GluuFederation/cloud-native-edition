@@ -26,17 +26,14 @@ spec:
         - containerPort: 8444
         envFrom:
         - configMapRef:
-            name: oxd-server-cm
+            name: gluu-config-cm
         volumeMounts:
-          - name: oxd-server-admin-password
-            mountPath: /etc/gluu/conf/admin_keystore_password
-            subPath: admin_keystore_password
-          - name: oxd-server-app-password
-            mountPath: /etc/gluu/conf/app_keystore_password
-            subPath: app_keystore_password
-          #- mountPath: /opt/oxd-server/conf/oxd-server.keystore
-          #  name: oxd-keystore-file
-          #  subPath: oxd-server.keystore
+          - name: cb-pass
+            mountPath: "/etc/gluu/conf/couchbase_password"
+            subPath: couchbase_password
+          - name: cb-crt
+            mountPath: "/etc/certs/couchbase.crt"
+            subPath: couchbase.crt
           - mountPath: /scripts
             name: update-lb-ip
         livenessProbe:
@@ -63,21 +60,12 @@ spec:
             memory: "400Mi"
             cpu: "1000m"
       volumes:
-      - name: oxd-server-admin-password
+      - name: cb-pass
         secret:
-          secretName: oxd-admin-app-keystore-password
-          items:
-            - key: admin_keystore_password
-              path: admin_keystore_password
-      - name: oxd-server-app-password
+          secretName: cb-pass
+      - name: cb-crt
         secret:
-          secretName: oxd-admin-app-keystore-password
-          items:
-            - key: app_keystore_password
-              path: app_keystore_password
-      #- name: oxd-keystore-file
-      #  secret:
-      #    secretName: oxdkeystorecm
+          secretName: cb-crt
       - name: update-lb-ip
         configMap:
           name: updatelbip

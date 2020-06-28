@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "key-rotation.name" -}}
+{{- define "oxauth-key-rotation.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "key-rotation.fullname" -}}
+{{- define "oxauth-key-rotation.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "key-rotation.chart" -}}
+{{- define "oxauth-key-rotation.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
     Common labels
 */}}
-{{- define "key-rotation.labels" -}}
-app: {{ include "key-rotation.name" . }}
-helm.sh/chart: {{ include "key-rotation.chart" . }}
+{{- define "oxauth-key-rotation.labels" -}}
+app: {{ include "oxauth-key-rotation.name" . }}
+helm.sh/chart: {{ include "oxauth-key-rotation.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}

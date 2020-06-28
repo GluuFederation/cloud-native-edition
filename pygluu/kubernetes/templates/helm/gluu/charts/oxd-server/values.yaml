@@ -1,8 +1,10 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxd-server.
-replicaCount: 1
-
+replicas: 1
+service:
+  # This must match config.configMap.gluuOxdApplicationCertCn
+  oxdServerServiceName: oxd-server
 image:
   repository: gluufederation/oxd-server
   tag: 4.1.0_01
@@ -11,13 +13,6 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
-configmap:
-  adminKeystorePassword: Passw0rd
-  applicationKeystorePassword: Passw0rd
-  adminKeystorePasswordFile: /etc/gluu/conf/admin_keystore_password
-  applicationKeystorePasswordFile: /etc/gluu/conf/app_keystore_password
-  # h2 or redis
-  storage: h2
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

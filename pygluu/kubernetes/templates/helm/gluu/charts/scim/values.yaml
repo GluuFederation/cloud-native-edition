@@ -1,21 +1,9 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-replicaCount: 1
-dynamicStorage: true
-
 image:
   repository: gluufederation/scim
   tag: 4.2.0_dev
   pullPolicy: Always
-
-persistence:
-  size: 10M
-  accessModes: ReadWriteOnce
-  storageClassName: ""
-
-#ConfigMap values
-gluuLdapUrl: opendj:1636
-gluuMaxRamFraction: 1
 
 #Resources for the deployment
 requests:
@@ -26,3 +14,7 @@ limits:
 #ports for the deployment
 ports:
   containerPort: 8080
+
+# service
+service:
+  scimServiceName: scim

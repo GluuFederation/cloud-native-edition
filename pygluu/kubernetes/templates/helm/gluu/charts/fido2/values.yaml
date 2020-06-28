@@ -1,22 +1,11 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-replicaCount: 1
-dynamicStorage: true
 
 image:
   repository: gluufederation/fido2
   tag: 4.1.0_01
   pullPolicy: Always
-
-persistence:
-  size: 10M
-  accessModes: ReadWriteOnce
-  storageClassName: ""
-
-#ConfigMap values
-gluuLdapUrl: opendj:1636
-gluuMaxRamFraction: 1
-
+replicas: 1
 #Resources for the deployment
 requests:
   memory: 1000Mi
@@ -26,3 +15,6 @@ limits:
 #ports for the deployment
 ports:
   containerPort: 8080
+
+service:
+  fido2ServiceName: fido2

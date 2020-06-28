@@ -160,8 +160,6 @@ def prompt_password(password):
             regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
             if regex_bool:
                 break
-        if password == "OXD-server":
-            random_password = ''.join(random.choice(keystore_chars) for _ in range(12))
 
         if password == "Redis":
             random_password = ''
@@ -174,7 +172,7 @@ def prompt_password(password):
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             regex_bool = True
-            if password != "OXD-server" and password != "Redis":
+            if password != "Redis":
                 regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
 
         if confirm_pw_prompt != pw_prompt:

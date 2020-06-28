@@ -1,7 +1,7 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for radius.
-replicaCount: 1
+replicas: 1
 
 image:
   repository: gluufederation/radius
@@ -13,6 +13,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
+  radiusServiceName: radius
   ports:  
     radius-authentication:
       port: 1812

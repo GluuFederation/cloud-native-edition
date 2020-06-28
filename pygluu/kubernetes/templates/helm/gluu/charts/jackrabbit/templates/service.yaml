@@ -3,17 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "jackrabbit.name" . }}
+  name: {{ .Values.service.jackRabbitServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "jackrabbit.labels" . | indent 4}}
 spec:
   ports:
-    {{- range $key, $value := .Values.ports }}
-    - port: {{ $value.port }}
-      targetPort: {{ $value.targetPort }}
-      name: {{ $key }}
-    {{- end }}
+    - port: {{ .Values.ports.jackrabbit.port }}
+      name: {{ .Values.service.jackRabbitServiceName }}
   clusterIP: None
   selector:
     app: {{ include "jackrabbit.name" . }}

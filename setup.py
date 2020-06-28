@@ -61,6 +61,7 @@ setup(
         "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "kubernetes==11.0.0",
         "Flask==1.1.2",
+        "Click!=7.0,>=6.7",
     ],
     dependency_links=[
         get_k8s_pkg(),  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream

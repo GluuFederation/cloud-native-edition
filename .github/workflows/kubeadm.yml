@@ -3,7 +3,7 @@ name: kubeadm
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       max-parallel: 4
       matrix:
@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Kubernetes ( Kubeadm)
       run: |
-        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
         sudo apt-get install curl -y
         sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
         sudo apt-get install kubeadm kubelet kubectl -y
@@ -217,7 +217,8 @@ jobs:
           "ENABLE_FIDO2": "Y",
           "ENABLE_SCIM": "Y",
           "ENABLE_CASA": "Y",
-          "ENABLE_KEY_ROTATE": "Y",
+          "ENABLE_OXAUTH_KEY_ROTATE": "Y",
+          "OXAUTH_KEYS_LIFE": 48,
           "ENABLE_OXTRUST_API_BOOLEAN": "true",
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
           "ENABLE_RADIUS_BOOLEAN": "true",

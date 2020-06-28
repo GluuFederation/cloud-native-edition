@@ -100,7 +100,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
 class Kustomize(object):
     def __init__(self, settings, timeout=300):
 
-        self.all_apps = ["casa", "config", "cr-rotate", "key-rotation", "ldap", "oxauth", "oxd-server",
+        self.all_apps = ["casa", "config", "cr-rotate", "oxauth-key-rotation", "ldap", "oxauth", "oxd-server",
                          "oxpassport", "oxshibboleth", "oxtrust", "persistence", "radius", "upgrade",
                          "jackrabbit", "gluu-gateway-ui", "update-lb-ip", "fido2", "scim"]
         self.settings = settings
@@ -120,7 +120,7 @@ class Kustomize(object):
         self.gluu_upgrade_yaml = str(self.output_yaml_directory.joinpath("upgrade.yaml").resolve())
         self.oxshibboleth_yaml = str(self.output_yaml_directory.joinpath("oxshibboleth.yaml").resolve())
         self.oxpassport_yaml = str(self.output_yaml_directory.joinpath("oxpassport.yaml").resolve())
-        self.key_rotate_yaml = str(self.output_yaml_directory.joinpath("key-rotation.yaml").resolve())
+        self.oxauth_key_rotate_yaml = str(self.output_yaml_directory.joinpath("oxauth-key-rotation.yaml").resolve())
         self.cr_rotate_yaml = str(self.output_yaml_directory.joinpath("cr-rotate.yaml").resolve())
         self.oxd_server_yaml = str(self.output_yaml_directory.joinpath("oxd-server.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
@@ -330,7 +330,7 @@ class Kustomize(object):
                 volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
                 volume_list = parser["spec"]["template"]["spec"]["volumes"]
 
-                if k != self.cr_rotate_yaml and k != self.key_rotate_yaml and k != self.gluu_upgrade_yaml:
+                if k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
                     if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or \
                             self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
                             self.settings["DEPLOYMENT_ARCH"] == "gke" or \
@@ -357,7 +357,7 @@ class Kustomize(object):
                         (index for (index, d) in enumerate(volume_list) if d["name"] == "update-lb-ip"), None)
                     if update_lb_ip_v_index is not None:
                         del volume_list[update_lb_ip_v_index]
-                if k != self.oxd_server_yaml and self.settings["PERSISTENCE_BACKEND"] == "ldap":
+                if self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     couchbase_password_v_index = next(
                         (index for (index, d) in enumerate(volume_list) if d["name"] == "cb-pass"), None)
                     if couchbase_password_v_index is not None:
@@ -380,7 +380,7 @@ class Kustomize(object):
             for k, v in self.adjust_yamls_for_fqdn_status.items():
                 parser = Parser(k, v)
                 # Check Couchbase entries
-                if k != self.oxd_server_yaml and self.settings["PERSISTENCE_BACKEND"] == "ldap":
+                if self.settings["PERSISTENCE_BACKEND"] == "ldap":
                     volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
                     volume_list = parser["spec"]["template"]["spec"]["volumes"]
 
@@ -402,7 +402,7 @@ class Kustomize(object):
                     if couchbase_crt_vm_index is not None:
                         del volume_mount_list[couchbase_crt_vm_index]
 
-                if k != self.key_rotate_yaml and k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
+                if k != self.cr_rotate_yaml and k != self.gluu_upgrade_yaml:
                     parser["spec"]["template"]["spec"]["containers"][0]["command"] = \
                         ['/bin/sh', '-c', '/usr/bin/python3 /scripts/update-lb-ip.py & \n/app/scripts/entrypoint.sh\n']
                     volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
@@ -497,15 +497,8 @@ class Kustomize(object):
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # oxdserver
         if "oxd-server" in app_file:
-            configmap_parser["data"]["APPLICATION_KEYSTORE_CN"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
-            configmap_parser["data"]["ADMIN_KEYSTORE_CN"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
-            configmap_parser["data"]["GLUU_SERVER_HOST"] = self.settings["GLUU_FQDN"]
-            configmap_parser["data"]["STORAGE"] = self.settings["OXD_SERVER_STORAGE"]
-            # In case redis is only used with oxd
-            if self.settings["GLUU_CACHE_TYPE"] != "REDIS" and self.settings["OXD_SERVER_STORAGE"] == "redis":
-                configmap_parser["data"]["GLUU_REDIS_URL"] = self.settings["REDIS_URL"]
-                configmap_parser["data"]["GLUU_REDIS_TYPE"] = self.settings["REDIS_TYPE"]
-
+            configmap_parser["data"]["GLUU_OXD_APPLICATION_CERT_CN"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
+            configmap_parser["data"]["GLUU_OXD_ADMIN_CERT_CN"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
         # casa
         configmap_parser["data"]["GLUU_OXD_SERVER_URL"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"] + ":8443"
         configmap_parser.dump_it()
@@ -586,11 +579,15 @@ class Kustomize(object):
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
-            if app == "key-rotation" and self.settings["ENABLE_KEY_ROTATE"] == "Y":
+            if app == "oxauth-key-rotation" and self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
                 self.build_manifest(app, kustomization_file, command,
-                                    "KEY_ROTATE_IMAGE_NAME", "KEY_ROTATE_IMAGE_TAG", app_file)
-                self.remove_resources(app_file, "Deployment")
-                self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
+                                    "CERT_MANAGER_IMAGE_NAME", "CERT_MANAGER_IMAGE_TAG", app_file)
+                self.remove_resources(app_file, "CronJob")
+                parser = Parser(app_file, "CronJob")
+                parser["spec"]["schedule"] = "0 */{} * * *".format(self.settings["OXAUTH_KEYS_LIFE"])
+                parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["args"] = \
+                    ["patch", "oxauth", "--opts", "interval:{}".format(self.settings["OXAUTH_KEYS_LIFE"])]
+                parser.dump_it()
 
             if app == "cr-rotate" and self.settings["ENABLE_CACHE_REFRESH"] == "Y":
                 logger.info("Building {} manifests".format(app))
@@ -609,7 +606,6 @@ class Kustomize(object):
                                                image_name_key="OXD_IMAGE_NAME",
                                                image_tag_key="OXD_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
-                self.parse_configmap(app_file)
                 self.remove_resources(app_file, "Deployment")
                 oxd_server_service_parser = Parser(app_file, "Deployment")
                 oxd_server_service_parser["metadata"]["name"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
@@ -1029,10 +1025,6 @@ class Kustomize(object):
         kong_all_in_one_db_parser_crb["subjects"][0]["namespace"] = self.settings["KONG_NAMESPACE"]
         kong_all_in_one_db_parser_crb.dump_it()
 
-        kong_all_in_one_db_parser_cm = Parser(kong_all_in_one_db, "ConfigMap")
-        kong_all_in_one_db_parser_cm["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
-        kong_all_in_one_db_parser_cm.dump_it()
-
         kong_all_in_one_db_parser_svc_proxy = Parser(kong_all_in_one_db, "Service", "kong-proxy")
         kong_all_in_one_db_parser_svc_proxy["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
         kong_all_in_one_db_parser_svc_proxy.dump_it()
@@ -1202,18 +1194,6 @@ class Kustomize(object):
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
     def deploy_oxd(self):
-        cm_parser = Parser(self.oxd_server_yaml, "ConfigMap")
-        cm_parser["data"]["LB_ADDR"] = self.settings["LB_ADD"]
-        cm_parser.dump_it()
-        # Create secret for oxd app and admin keystore
-        encoded_oxd_password_init_bytes = base64.b64encode(self.settings["OXD_SERVER_PW"].encode("utf-8"))
-        encoded_oxd_password_init_string = str(encoded_oxd_password_init_bytes, "utf-8")
-        self.kubernetes.patch_or_create_namespaced_secret(name="oxd-admin-app-keystore-password",
-                                                          namespace=self.settings["GLUU_NAMESPACE"],
-                                                          literal="admin_keystore_password",
-                                                          second_literal="app_keystore_password",
-                                                          value_of_literal=encoded_oxd_password_init_string,
-                                                          value_of_second_literal=encoded_oxd_password_init_string)
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)
@@ -1250,9 +1230,8 @@ class Kustomize(object):
                                                           replicas=self.settings["OXPASSPORT_REPLICAS"],
                                                           namespace=self.settings["GLUU_NAMESPACE"])
 
-    def deploy_key_rotation(self):
-        self.kubernetes.create_objects_from_dict(self.key_rotate_yaml)
-        self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=key-rotation", self.timeout)
+    def deploy_oxauth_key_rotation(self):
+        self.kubernetes.create_objects_from_dict(self.oxauth_key_rotate_yaml)
 
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
@@ -1339,7 +1318,7 @@ class Kustomize(object):
         casa_image = self.settings["CASA_IMAGE_NAME"] + ":" + self.settings["CASA_IMAGE_TAG"]
         cr_rotate_image = self.settings["CACHE_REFRESH_ROTATE_IMAGE_NAME"] + ":" + self.settings[
             "CACHE_REFRESH_ROTATE_IMAGE_TAG"]
-        key_rotate_image = self.settings["KEY_ROTATE_IMAGE_NAME"] + ":" + self.settings["KEY_ROTATE_IMAGE_TAG"]
+        cert_manager_image = self.settings["CERT_MANAGER_IMAGE_NAME"] + ":" + self.settings["CERT_MANAGER_IMAGE_TAG"]
         ldap_image = self.settings["LDAP_IMAGE_NAME"] + ":" + self.settings["LDAP_IMAGE_TAG"]
         oxauth_image = self.settings["OXAUTH_IMAGE_NAME"] + ":" + self.settings["OXAUTH_IMAGE_TAG"]
         fido2_image = self.settings["FIDO2_IMAGE_NAME"] + ":" + self.settings["FIDO2_IMAGE_TAG"]
@@ -1354,8 +1333,8 @@ class Kustomize(object):
                                                     image=casa_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_daemonset(name="cr-rotate",
                                                    image=cr_rotate_image, namespace=self.settings["GLUU_NAMESPACE"])
-        self.kubernetes.patch_namespaced_deployment(name="key-rotation",
-                                                    image=key_rotate_image, namespace=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.patch_namespaced_deployment(name="oxauth-key-rotation",
+                                                    image=cert_manager_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_statefulset(name="opendj",
                                                      image=ldap_image, namespace=self.settings["GLUU_NAMESPACE"])
         self.kubernetes.patch_namespaced_deployment(name="oxauth",
@@ -1477,9 +1456,9 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_cr_rotate()
 
-        if self.settings["ENABLE_KEY_ROTATE"] == "Y":
+        if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
             self.kubernetes = Kubernetes()
-            self.deploy_key_rotation()
+            self.deploy_oxauth_key_rotation()
             if restore:
                 self.mount_config()
 
@@ -1491,12 +1470,12 @@ class Kustomize(object):
             self.install_gluu_gateway_dbmode()
 
     def uninstall(self, restore=False):
-        gluu_service_names = ["casa", "cr-rotate", "key-rotation", "opendj", "oxauth", "oxpassport",
+        gluu_service_names = ["casa", "cr-rotate", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "oxd-server", "jackrabbit", "fido2", "scim"]
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=oxd-server",
-                                      "app=oxpassport", "app=radius", "app=key-rotation", "app=jackrabbit"]
+                                      "app=oxpassport", "app=radius", "app=oxauth-key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
@@ -1538,6 +1517,7 @@ class Kustomize(object):
                 self.uninstall_gluu_gateway_ui()
 
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
+        self.kubernetes.delete_cronjob(self.settings["GLUU_NAMESPACE"], "app=oxauth-key-rotation")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], deployment)
         if not restore:
@@ -1576,10 +1556,6 @@ class Kustomize(object):
             self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
             for extension in nginx_ingress_extensions_names:
                 self.kubernetes.delete_ingress(extension, self.settings["GLUU_NAMESPACE"])
-        with contextlib.suppress(FileNotFoundError):
-            os.remove("oxd-server.keystore")
-        with contextlib.suppress(FileNotFoundError):
-            os.remove("easyrsa_ca_password")
         if minkube_yamls_folder.exists() or microk8s_yamls_folder.exists():
             shutil.rmtree('/data', ignore_errors=True)
         else:
