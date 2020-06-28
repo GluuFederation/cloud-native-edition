@@ -1,0 +1,4 @@
+Currently supported versions are :
+{% for k, v in supported_versions %}
+  {{ forms.radio(v, 'gluu_version', 'gluu_version', k) }}
+{% endfor %}

@@ -1,0 +1,18 @@
+{{ forms.yes_no('Deploy Cr-Rotate?', 'enable_cache_refresh', 'N') }}
+{{ forms.yes_no('Deploy Key-Rotation?', 'enable_key_rotate', 'N') }}
+{{ forms.yes_no('Deploy Radius?', 'enable_radius', 'N') }}
+{{ forms.yes_no('Deploy Passport?', 'enable_oxpassport', 'N') }}
+{{ forms.yes_no('Deploy Shibboleth SAML IDP?', 'enable_shibboleth', 'N') }}
+{{ forms.yes_no('Deploy Casa?', 'enable_casa', 'N') }}
+{{ forms.yes_no('Deploy Fido2?', 'enable_fido2', 'N') }}
+{{ forms.yes_no('Deploy scim?', 'enable_scim', 'N') }}
+{{ forms.yes_no('Deploy oxd server?', 'enable_oxd', 'N') }}
+  <div id="oxdSetup" class="collapse hide">
+    {{ forms.text('oxd server application keystore name', 'oxd_application_keystore_cn', 'oxd-server') }}
+    {{ forms.text('oxd server admin keystore name', 'oxd_admin_keystore_cn', 'oxd-server') }}
+    {{ forms.text('oxd server admin keystore name', 'oxd_admin_keystore_cn', 'oxd-server') }}
+    {{ forms.password('OXD-server password', 'oxd_server_pw') }}
+    {{ forms.select('oxd server storage type', 'oxd_server_storage', [('h2', 'h2'), ('redis', 'redis')]) }}
+  </div>
+{{ forms.yes_no('Enable oxTrust Api', 'enable_oxtrust_api', 'N') }}
+  {{ forms.yes_no('Enable oxTrust Test Mode', 'enable_oxtrust_test_mode', 'N') }}

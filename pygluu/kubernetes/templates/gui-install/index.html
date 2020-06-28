@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% include '%s.html' % step %}
+          {{ forms.hidden('next_step', next_step) }}
+          <button type="submit" class="btn btn-primary float-right">Next</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block custom_script %}
+  <script>
+    $(document).ready(function () {
+
+      $('#enable-oxd-yes').on('change', function(){
+        $('#oxdSetup').collapse('show');
+      });
+
+      $('#enable-oxd-no').on('change', function(){
+        $('#oxdSetup').collapse('hide');
+      });
+    });
+  </script>
+{% endblock %}
