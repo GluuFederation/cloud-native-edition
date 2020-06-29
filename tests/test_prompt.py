@@ -126,3 +126,118 @@ def test_prompt_jackrabbit_disable_no_user(monkeypatch, prompter):
     prompter.prompt_jackrabbit()
     assert prompter.settings["INSTALL_JACKRABBIT"] == "N"
     assert prompter.settings["JACKRABBIT_USER"] == "admin"
+
+
+def test_prompt_confirm_params(monkeypatch, prompter):
+    monkeypatch.setattr("click.confirm", lambda x: True)
+
+    prompter.confirm_params()
+    assert prompter.settings["CONFIRM_PARAMS"] == "Y"
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "gluu"),  # default
+    ("random", "random"),
+])
+def test_prompt_helm_release_name(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["NGINX_INGRESS_RELEASE_NAME"] = "ningress"
+    prompter.settings["NGINX_INGRESS_NAMESPACE"] = "ingress-nginx"
+    prompter.settings["INSTALL_GLUU_GATEWAY"] = "N"
+
+    prompter.prompt_helm
+    assert prompter.settings["GLUU_HELM_RELEASE_NAME"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "ningress"),  # default
+    ("random", "random"),
+])
+def test_prompt_helm_ingress_release_name(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["GLUU_HELM_RELEASE_NAME"] = "gluu"
+    prompter.settings["NGINX_INGRESS_NAMESPACE"] = "ingress-nginx"
+    prompter.settings["INSTALL_GLUU_GATEWAY"] = "N"
+
+    prompter.prompt_helm
+    assert prompter.settings["NGINX_INGRESS_RELEASE_NAME"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "ingress-nginx"),  # default
+    ("random", "random"),
+])
+def test_prompt_helm_ingress_namespace(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["GLUU_HELM_RELEASE_NAME"] = "gluu"
+    prompter.settings["NGINX_INGRESS_RELEASE_NAME"] = "ningress"
+    prompter.settings["INSTALL_GLUU_GATEWAY"] = "N"
+
+    prompter.prompt_helm
+    assert prompter.settings["NGINX_INGRESS_NAMESPACE"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "gluu-gateway"),  # default
+    ("random", "random"),
+])
+def test_prompt_helm_gg_helm_release_name(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["GLUU_HELM_RELEASE_NAME"] = "gluu"
+    prompter.settings["NGINX_INGRESS_RELEASE_NAME"] = "ningress"
+    prompter.settings["NGINX_INGRESS_NAMESPACE"] = "ingress-nginx"
+    prompter.settings["INSTALL_GLUU_GATEWAY"] = "Y"
+    prompter.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = "gluu-gateway-ui"
+
+    prompter.prompt_helm
+    assert prompter.settings["KONG_HELM_RELEASE_NAME"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "gluu-gateway-ui"),  # default
+    ("random", "random"),
+])
+def test_prompt_helm_gg_ui_helm_release_name(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["GLUU_HELM_RELEASE_NAME"] = "gluu"
+    prompter.settings["NGINX_INGRESS_RELEASE_NAME"] = "ningress"
+    prompter.settings["NGINX_INGRESS_NAMESPACE"] = "ingress-nginx"
+    prompter.settings["INSTALL_GLUU_GATEWAY"] = "Y"
+    prompter.settings["KONG_HELM_RELEASE_NAME"] = "gluu-gateway"
+
+    prompter.prompt_helm
+    assert prompter.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "0"),
+    ("4.2.0_dev", "4.2.0_dev"),
+])
+def test_prompt_upgrade_version(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.prompt_upgrade
+    assert prompter.settings["GLUU_UPGRADE_TARGET_VERSION"] == expected
+
+
+@pytest.mark.parametrize("persistence", ["ldap", "hybrid"])
+def test_prompt_volumes_identifier(monkeypatch, prompter, persistence):
+    monkeypatch.setattr("click.prompt", lambda x: "vol-1234")
+
+    prompter.settings["PERSISTENCE_BACKEND"] = persistence
+    prompter.prompt_volumes_identifier()
+    assert prompter.settings["LDAP_STATIC_VOLUME_ID"] == "vol-1234"
+
+
+@pytest.mark.parametrize("persistence", ["ldap", "hybrid"])
+def test_prompt_disk_uris(monkeypatch, prompter, persistence):
+    monkeypatch.setattr("click.prompt", lambda x: "MC_aks")
+
+    prompter.settings["PERSISTENCE_BACKEND"] = persistence
+    prompter.prompt_disk_uris()
+    assert prompter.settings["LDAP_STATIC_DISK_URI"] == "MC_aks"
