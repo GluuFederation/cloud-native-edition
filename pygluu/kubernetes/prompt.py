@@ -541,31 +541,20 @@ class Prompt(object):
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
     def prompt_postgres(self):
-        """
-        Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
+        """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
         """
         if not self.settings["POSTGRES_NAMESPACE"]:
-            prompt = input("Please enter a namespace for postgres.[postgres]")
-            if not prompt:
-                prompt = "postgres"
-            self.settings["POSTGRES_NAMESPACE"] = prompt
+            self.settings["POSTGRES_NAMESPACE"] = click.prompt("Please enter a namespace for postgres", default="postgres")
 
         if not self.settings["POSTGRES_REPLICAS"]:
-            prompt = input("Please enter number of replicas for postgres.[3]")
-            if not prompt:
-                prompt = 3
-            prompt = int(prompt)
-            self.settings["POSTGRES_REPLICAS"] = prompt
+            self.settings["POSTGRES_REPLICAS"] = click.prompt("Please enter number of replicas for postgres", default=3)
 
         if not self.settings["POSTGRES_URL"]:
-            default_postgres_url_prompt = "postgres.{}.svc.cluster.local".format(self.settings["POSTGRES_NAMESPACE"])
-
-            prompt = input("Please enter  postgres (remote or local) URL base name. If postgres is to be installed"
-                           " automatically please press enter to accept the default correct value[{}]"
-                           .format(default_postgres_url_prompt))
-            if not prompt:
-                prompt = default_postgres_url_prompt
-            self.settings["POSTGRES_URL"] = prompt
+            self.settings["POSTGRES_URL"] = click.prompt(
+                "Please enter  postgres (remote or local) "
+                "URL base name. If postgres is to be installed",
+                default=f"postgres.{self.settings['POSTGRES_NAMESPACE']}.svc.cluster.local",
+            )
 
     def prompt_gluu_gateway(self):
         """Prompts for Gluu Gateway
@@ -1071,48 +1060,26 @@ class Prompt(object):
                 logger.warning("Cannot determine IP address {}".format(exc))
 
     def prompt_redis(self):
-        """
-        Prompts for Redis
+        """Prompts for Redis
         """
         if not self.settings["REDIS_TYPE"]:
             logger.info("STANDALONE, CLUSTER")
-            redis_type_prompt = input("Please enter redis type.[CLUSTER]")
-            if not redis_type_prompt:
-                redis_type_prompt = "CLUSTER"
-            self.settings["REDIS_TYPE"] = redis_type_prompt
+            self.settings["REDIS_TYPE"] = click.prompt("Please enter redis type", default="CLUSTER")
 
         if not self.settings["INSTALL_REDIS"]:
-            logger.info("For the following prompt  if placed [N] the Redis is assumed to be"
+            logger.info("For the following prompt if placed [N] the Redis is assumed to be"
                         " installed or remotely provisioned")
-            redis_install_prompt = input("Install Redis[Y/N]?[Y]")
-            if redis_install_prompt == "N" or redis_install_prompt == "n":
-                redis_install_prompt = "N"
-            else:
-                redis_install_prompt = "Y"
-            self.settings["INSTALL_REDIS"] = redis_install_prompt
+            self.settings["INSTALL_REDIS"] = confirm_yesno("Install Redis", default=True)
 
         if self.settings["INSTALL_REDIS"] == "Y":
-
             if not self.settings["REDIS_MASTER_NODES"]:
-                redis_master_prompt = input("The number of  master node. Minimum is 3.[3]")
-                if not redis_master_prompt:
-                    redis_master_prompt = 3
-                redis_master_prompt = int(redis_master_prompt)
-                self.settings["REDIS_MASTER_NODES"] = redis_master_prompt
+                self.settings["REDIS_MASTER_NODES"] = click.prompt("The number of master node. Minimum is 3", default=3)
 
             if not self.settings["REDIS_NODES_PER_MASTER"]:
-                redis_node_prompt = input("The number of nodes per master node.[2]")
-                if not redis_node_prompt:
-                    redis_node_prompt = 2
-                redis_node_prompt = int(redis_node_prompt)
-                self.settings["REDIS_NODES_PER_MASTER"] = redis_node_prompt
+                self.settings["REDIS_NODES_PER_MASTER"] = click.prompt("The number of nodes per master node", default=2)
 
             if not self.settings["REDIS_NAMESPACE"]:
-                redis_namespace = input("Please enter a namespace for Redis cluster.[gluu-redis-cluster]")
-                if not redis_namespace:
-                    redis_namespace = "gluu-redis-cluster"
-                self.settings["REDIS_NAMESPACE"] = redis_namespace
-
+                self.settings["REDIS_NAMESPACE"] = click.prompt("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
         else:
             # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
             if not self.settings["REDIS_PW"]:
@@ -1128,8 +1095,10 @@ class Prompt(object):
                 logger.info("Redis URL using AWS ElastiCach [Configuration Endpoint]: "
                             "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
                 logger.info("Redis URL using Google MemoryStore : <ip>:6379")
-                redis_url_prompt = input("Please enter redis URL. If you are deploying redis ."
-                                         "[redis-cluster.gluu-redis-cluster.svc.cluster.local:6379]")
+                redis_url_prompt = click.prompt(
+                    "Please enter redis URL. If you are deploying redis",
+                    default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
+                )
             self.settings["REDIS_URL"] = redis_url_prompt
 
     @property
