@@ -6,7 +6,6 @@
  https://www.apache.org/licenses/LICENSE-2.0
 A GUI for installing Gluu Cloud Native Edition.
 """
-import json
 from flask import Flask, render_template, request, redirect, url_for
 from .common import get_supported_versions
 
