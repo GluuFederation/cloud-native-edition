@@ -686,87 +686,37 @@ class Prompt(object):
                 self.settings["LDAP_BACKUP_SCHEDULE"] = prompt
 
     def prompt_replicas(self):
-        """
-        Prompt number of replicas for Gluu apps
+        """Prompt number of replicas for Gluu apps
         """
         if not self.settings["OXAUTH_REPLICAS"]:
-            prompt = input("Number of oxAuth replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["OXAUTH_REPLICAS"] = prompt
+            self.settings["OXAUTH_REPLICAS"] = click.prompt("Number of oxAuth replicas", default=1)
 
-        if self.settings["ENABLE_FIDO2"] == "Y":
-            if not self.settings["FIDO2_REPLICAS"]:
-                prompt = input("Number of fido2 replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["FIDO2_REPLICAS"] = prompt
+        if self.settings["ENABLE_FIDO2"] == "Y" and not self.settings["FIDO2_REPLICAS"]:
+            self.settings["FIDO2_REPLICAS"] = click.prompt("Number of fido2 replicas", default=1)
 
-        if self.settings["ENABLE_SCIM"] == "Y":
-            if not self.settings["SCIM_REPLICAS"]:
-                prompt = input("Number of scim replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["SCIM_REPLICAS"] = prompt
+        if self.settings["ENABLE_SCIM"] == "Y" and not self.settings["SCIM_REPLICAS"]:
+            self.settings["SCIM_REPLICAS"] = click.prompt("Number of scim replicas", default=1)
 
         if not self.settings["OXTRUST_REPLICAS"]:
-            prompt = input("Number of oxTrust replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["OXTRUST_REPLICAS"] = prompt
+            self.settings["OXTRUST_REPLICAS"] = click.prompt("Number of oxTrust replicas", default=1)
 
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_REPLICAS"]:
-                prompt = input("Number of LDAP replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["LDAP_REPLICAS"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_REPLICAS"]:
+            self.settings["LDAP_REPLICAS"] = click.prompt("Number of LDAP replicas", default=1)
 
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            if not self.settings["OXSHIBBOLETH_REPLICAS"]:
-                prompt = input("Number of oxShibboleth replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXSHIBBOLETH_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y" and not self.settings["OXSHIBBOLETH_REPLICAS"]:
+            self.settings["OXSHIBBOLETH_REPLICAS"] = click.prompt("Number of oxShibboleth replicas", default=1)
 
-        if self.settings["ENABLE_OXPASSPORT"] == "Y":
-            if not self.settings["OXPASSPORT_REPLICAS"]:
-                prompt = input("Number of oxPassport replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXPASSPORT_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXPASSPORT"] == "Y" and not self.settings["OXPASSPORT_REPLICAS"]:
+            self.settings["OXPASSPORT_REPLICAS"] = click.prompt("Number of oxPassport replicas", default=1)
 
-        if self.settings["ENABLE_OXD"] == "Y":
-            if not self.settings["OXD_SERVER_REPLICAS"]:
-                prompt = input("Number of oxd-server replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXD_SERVER_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXD"] == "Y" and not self.settings["OXD_SERVER_REPLICAS"]:
+            self.settings["OXD_SERVER_REPLICAS"] = click.prompt("Number of oxd-server replicas", default=1)
 
-        if self.settings["ENABLE_CASA"] == "Y":
-            if not self.settings["CASA_REPLICAS"]:
-                prompt = input("Number of Casa replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["CASA_REPLICAS"] = prompt
+        if self.settings["ENABLE_CASA"] == "Y" and not self.settings["CASA_REPLICAS"]:
+            self.settings["CASA_REPLICAS"] = click.prompt("Number of Casa replicas", default=1)
 
-        if self.settings["ENABLE_RADIUS"] == "Y":
-            if not self.settings["RADIUS_REPLICAS"]:
-                prompt = input("Number of Radius replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["RADIUS_REPLICAS"] = prompt
+        if self.settings["ENABLE_RADIUS"] == "Y" and not self.settings["RADIUS_REPLICAS"]:
+            self.settings["RADIUS_REPLICAS"] = click.prompt("Number of Radius replicas", default=1)
         update_settings_json_file(self.settings)
 
     @property
