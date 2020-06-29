@@ -275,8 +275,7 @@ class Prompt(object):
         self.settings.update(image_names_and_tags)
 
     def confirm_params(self):
-        """
-        Formats output of settings from prompts to the user. Passwords are not displayed.
+        """Formats output of settings from prompts to the user. Passwords are not displayed.
         """
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                            "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
@@ -286,8 +285,7 @@ class Prompt(object):
             if k not in hidden_settings:
                 print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', k, '|', v, '|'))
 
-        prompt = input("Please confirm the above settings [N][Y/N]:")
-        if prompt == "Y" or prompt == "y":
+        if click.confirm("Please confirm the above settings"):
             self.settings["CONFIRM_PARAMS"] = "Y"
         else:
             self.settings = self.default_settings
@@ -295,58 +293,41 @@ class Prompt(object):
 
     @property
     def prompt_helm(self):
-        """
-        Prompts for helm installation and returns updated settings.
+        """Prompts for helm installation and returns updated settings.
         :return:
         """
         if not self.settings["GLUU_HELM_RELEASE_NAME"]:
-            prompt = input("Please enter Gluu helm name[gluu]")
-            if not prompt:
-                prompt = "gluu"
-            self.settings["GLUU_HELM_RELEASE_NAME"] = prompt
+            self.settings["GLUU_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu helm name", default="gluu")
 
         if not self.settings["NGINX_INGRESS_RELEASE_NAME"]:
-            prompt = input("Please enter nginx-ingress helm name[ningress]")
-            if not prompt:
-                prompt = "ningress"
-            self.settings["NGINX_INGRESS_RELEASE_NAME"] = prompt
+            self.settings["NGINX_INGRESS_RELEASE_NAME"] = click.prompt("Please enter nginx-ingress helm name", default="ningress")
 
         if not self.settings["NGINX_INGRESS_NAMESPACE"]:
-            prompt = input("Please enter nginx-ingress helm namespace[ingress-nginx]")
-            if not prompt:
-                prompt = "ingress-nginx"
-            self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
+            self.settings["NGINX_INGRESS_NAMESPACE"] = click.prompt("Please enter nginx-ingress helm namespace", default="ingress-nginx")
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
             if not self.settings["KONG_HELM_RELEASE_NAME"]:
-                prompt = input("Please enter Gluu Gateway helm name[gluu-gateway]")
-                if not prompt:
-                    prompt = "gluu-gateway"
-                self.settings["KONG_HELM_RELEASE_NAME"] = prompt
+                self.settings["KONG_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway helm name", default="gluu-gateway")
 
             if not self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"]:
-                prompt = input("Please enter Gluu Gateway UI helm name[gluu-gateway-ui]")
-                if not prompt:
-                    prompt = "gluu-gateway-ui"
-                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = prompt
+                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui")
 
         update_settings_json_file(self.settings)
         return self.settings
 
     @property
     def prompt_upgrade(self):
-        """
-        Prompts for upgrade and returns updated settings.
+        """Prompts for upgrade and returns updated settings.
         :return:
         """
         versions, version_number = self.get_supported_versions
+
         if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
-            prompt = input("Please enter the version to upgrade Gluu to [{}]"
-                           .format(version_number))
-            if not prompt:
-                prompt = version_number
-            self.settings["GLUU_UPGRADE_TARGET_VERSION"] = prompt
-        image_names_and_tags = versions[self.settings["GLUU_UPGRADE_TARGET_VERSION"]]
+            self.settings["GLUU_UPGRADE_TARGET_VERSION"] = click.prompt(
+                "Please enter the version to upgrade Gluu to", default=version_number,
+            )
+
+        image_names_and_tags = versions.get(self.settings["GLUU_UPGRADE_TARGET_VERSION"], {})
         self.settings.update(image_names_and_tags)
         update_settings_json_file(self.settings)
         return self.settings
@@ -411,30 +392,22 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_volumes_identifier(self):
+        """Prompts for Static volume IDs.
         """
-        Prompts for Static volume IDs.
-        """
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_STATIC_VOLUME_ID"]:
-                logger.info("EBS Volume ID example: vol-049df61146c4d7901")
-                logger.info("Persistent Disk Name example: "
-                            "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
-                prompt = input("Please enter Persistent Disk Name or EBS Volume ID for LDAP:")
-                self.settings["LDAP_STATIC_VOLUME_ID"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_STATIC_VOLUME_ID"]:
+            logger.info("EBS Volume ID example: vol-049df61146c4d7901")
+            logger.info("Persistent Disk Name example: "
+                        "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
+            self.settings["LDAP_STATIC_VOLUME_ID"] = click.prompt("Please enter Persistent Disk Name or EBS Volume ID for LDAP")
         update_settings_json_file(self.settings)
 
     def prompt_disk_uris(self):
+        """Prompts for static volume Disk URIs (AKS)
         """
-        Prompts for static volume Disk URIs (AKS)
-        """
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_STATIC_DISK_URI"]:
-                logger.info("DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
-                            "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
-                prompt = input("Please enter the disk uri for LDAP:")
-                self.settings["LDAP_STATIC_DISK_URI"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_STATIC_DISK_URI"]:
+            logger.info("DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
+                        "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
+            self.settings["LDAP_STATIC_DISK_URI"] = click.prompt("Please enter the disk uri for LDAP")
         update_settings_json_file(self.settings)
 
     def prompt_gke(self):
