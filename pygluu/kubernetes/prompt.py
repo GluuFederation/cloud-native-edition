@@ -23,7 +23,12 @@ def confirm_yesno(text, *args, **kwargs):
     """Like ``click.confirm`` but returns ``Y`` or ``N`` character
     instead of boolean.
     """
-    confirmed = click.confirm(text, *args, **kwargs)
+    default = "[N]"
+    # Default is always N unless default is set in kwargs
+    if kwargs:
+        default = "[Y]"
+    confirmed = click.confirm(text + default, *args, **kwargs)
+
     return "Y" if confirmed else "N"
 
 
