@@ -14,7 +14,7 @@ import base64
 import click
 
 from .kubeapi import Kubernetes
-from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password
+from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password, get_supported_versions
 
 logger = get_logger("gluu-prompt        ")
 
@@ -23,11 +23,11 @@ def confirm_yesno(text, *args, **kwargs):
     """Like ``click.confirm`` but returns ``Y`` or ``N`` character
     instead of boolean.
     """
-    kwargs["prompt_suffix"] = "[N]: "
+    default = "[N]"
     # Default is always N unless default is set in kwargs
     if "default" in kwargs and kwargs["default"]:
-        kwargs["prompt_suffix"] = "[Y]: "
-    confirmed = click.confirm(text, *args, **kwargs)
+        default = "[Y]"
+    confirmed = click.confirm(text + default, *args, **kwargs)
 
     return "Y" if confirmed else "N"
 
@@ -235,35 +235,10 @@ class Prompt(object):
         except FileNotFoundError:
             pass
 
-    @property
-    def get_supported_versions(self):
-        """Get Gluu versions from gluu_versions.json
-        """
-        versions = {}
-        version_number = 0
-
-        filename = Path("./gluu_versions.json")
-        try:
-            with open(filename) as f:
-                versions = json.load(f)
-            logger.info("Currently supported versions are : ")
-            for k, v in versions.items():
-                logger.info(k)
-                if "_dev" in k:
-                    logger.info("DEV VERSION : {}".format(k))
-                else:
-                    if float(k) > version_number:
-                        version_number = float(k)
-        except FileNotFoundError:
-            pass
-        finally:
-            version_number = str(version_number)
-            return versions, version_number
-
     def prompt_version(self):
         """Prompts for Gluu versions
         """
-        versions, version_number = self.get_supported_versions
+        versions, version_number = get_supported_versions()
 
         if not self.settings["GLUU_VERSION"]:
             self.settings["GLUU_VERSION"] = click.prompt(
@@ -320,7 +295,7 @@ class Prompt(object):
         """Prompts for upgrade and returns updated settings.
         :return:
         """
-        versions, version_number = self.get_supported_versions
+        versions, version_number = get_supported_versions()
 
         if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
             self.settings["GLUU_UPGRADE_TARGET_VERSION"] = click.prompt(
