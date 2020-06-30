@@ -5,11 +5,11 @@
 ![kubeadm](https://github.com/GluuFederation/cloud-native-edition/workflows/kubeadm/badge.svg?branch=4.2)
 
 
-# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.0.4-green.svg?style=for-the-badge)
+# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.2.0beta-green.svg?style=for-the-badge)
 
 ## Kubernetes recipes
 
-- Install [Gluu](https://github.com/GluuFederation/cloud-native-edition/tree/4.1/pygluu/kubernetes/templates/)
+- Install [Gluu](https://github.com/GluuFederation/cloud-native-edition/tree/4.2/pygluu/kubernetes/templates/)
 
 ## Build `pygluu-kubernetes.pyz` manually
 
