@@ -241,3 +241,45 @@ def test_prompt_disk_uris(monkeypatch, prompter, persistence):
     prompter.settings["PERSISTENCE_BACKEND"] = persistence
     prompter.prompt_disk_uris()
     assert prompter.settings["LDAP_STATIC_DISK_URI"] == "MC_aks"
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "postgres"),  # default
+    ("random", "random"),
+])
+def test_prompt_postgres_namespace(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["POSTGRES_REPLICAS"] = 3
+    prompter.settings["POSTGRES_URL"] = "postgres.postgres.svc.cluster.local"
+
+    prompter.prompt_postgres()
+    assert prompter.settings["POSTGRES_NAMESPACE"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", 3),  # default
+    (2, 2),
+])
+def test_prompt_postgres_replicas(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["POSTGRES_NAMESPACE"] = "postgres"
+    prompter.settings["POSTGRES_URL"] = "postgres.postgres.svc.cluster.local"
+
+    prompter.prompt_postgres()
+    assert prompter.settings["POSTGRES_REPLICAS"] == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "postgres.postgres.svc.cluster.local"),  # default
+    ("random", "random"),
+])
+def test_prompt_postgres_url(monkeypatch, prompter, given, expected):
+    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
+
+    prompter.settings["POSTGRES_NAMESPACE"] = "postgres"
+    prompter.settings["POSTGRES_REPLICAS"] = 3
+
+    prompter.prompt_postgres()
+    assert prompter.settings["POSTGRES_URL"] == expected
