@@ -87,7 +87,7 @@ spec:
   http:
   - match: 
     - uri:
-        exact: /oxauth
+        prefix: /oxauth
     route:
     - destination:
         host: oxauth.{{.Release.Namespace}}.svc.cluster.local

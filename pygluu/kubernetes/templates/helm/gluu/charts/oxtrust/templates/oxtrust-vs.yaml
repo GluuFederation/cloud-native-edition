@@ -15,6 +15,7 @@ spec:
   - match:
     - uri:
         exact: /
+    rewrite: /identity
     route:
     - destination:
         host: oxtrust.{{.Release.Namespace}}.svc.cluster.local

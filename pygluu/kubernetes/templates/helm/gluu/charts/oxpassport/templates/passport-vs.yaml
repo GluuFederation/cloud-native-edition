@@ -15,8 +15,6 @@ spec:
   - match: 
     - uri:
         prefix: /passport
-    rewrite:
-      uri: identity
     route:
     - destination:
         host: oxpassport.{{.Release.Namespace}}.svc.cluster.local
