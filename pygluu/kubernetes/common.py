@@ -141,9 +141,35 @@ def check_microk8s_kube_config_file():
             logger.error("No Kubernetes config file found at ~/.kube/config")
 
 
+def get_supported_versions():
+    """Get Gluu versions from gluu_versions.json
+    return:
+    """
+    versions = {}
+    version_number = 0
+
+    filename = Path("./gluu_versions.json")
+    try:
+        with open(filename) as f:
+            versions = json.load(f)
+        logger.info("Currently supported versions are : ")
+        for k, v in versions.items():
+            logger.info(k)
+            if "_dev" in k:
+                logger.info("DEV VERSION : {}".format(k))
+            else:
+                if float(k) > version_number:
+                    version_number = float(k)
+    except FileNotFoundError:
+        pass
+    finally:
+        version_number = str(version_number)
+        return versions, version_number
+
+
 def prompt_password(password):
     """
-    Returns randomally generated password,
+    Returns randomly generated password,
     :param password: string for the prompt name
     :return:
     """

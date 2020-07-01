@@ -48,7 +48,7 @@ setup(
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
         "pyDes>=2.0.0",  # TODO: Remove the following as soon as the update secret is moved to backend
-        "requests",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "requests>=2.24.0",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "google-api-python-client>=1.8.0",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "requests_oauthlib>=1.3.0",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "certifi>=14.05.14",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
@@ -59,6 +59,7 @@ setup(
         "google-auth>=1.0.1",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "ipaddress>=1.0.17;python_version=='2.7'",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
+        "certifi>=2020.6.20",  # TODO: May be removed, required by requests package.
         "kubernetes==11.0.0",
         "Flask==1.1.2",
         "Click!=7.0,>=6.7",

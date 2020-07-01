@@ -14,7 +14,7 @@ import base64
 import click
 
 from .kubeapi import Kubernetes
-from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password
+from .common import update_settings_json_file, get_logger, exec_cmd, prompt_password, get_supported_versions
 
 logger = get_logger("gluu-prompt        ")
 
@@ -23,7 +23,12 @@ def confirm_yesno(text, *args, **kwargs):
     """Like ``click.confirm`` but returns ``Y`` or ``N`` character
     instead of boolean.
     """
-    confirmed = click.confirm(text, *args, **kwargs)
+    default = "[N]"
+    # Default is always N unless default is set in kwargs
+    if "default" in kwargs and kwargs["default"]:
+        default = "[Y]"
+    confirmed = click.confirm(text + default, *args, **kwargs)
+
     return "Y" if confirmed else "N"
 
 
@@ -230,35 +235,10 @@ class Prompt(object):
         except FileNotFoundError:
             pass
 
-    @property
-    def get_supported_versions(self):
-        """Get Gluu versions from gluu_versions.json
-        """
-        versions = {}
-        version_number = 0
-
-        filename = Path("./gluu_versions.json")
-        try:
-            with open(filename) as f:
-                versions = json.load(f)
-            logger.info("Currently supported versions are : ")
-            for k, v in versions.items():
-                logger.info(k)
-                if "_dev" in k:
-                    logger.info("DEV VERSION : {}".format(k))
-                else:
-                    if float(k) > version_number:
-                        version_number = float(k)
-        except FileNotFoundError:
-            pass
-        finally:
-            version_number = str(version_number)
-            return versions, version_number
-
     def prompt_version(self):
         """Prompts for Gluu versions
         """
-        versions, version_number = self.get_supported_versions
+        versions, version_number = get_supported_versions()
 
         if not self.settings["GLUU_VERSION"]:
             self.settings["GLUU_VERSION"] = click.prompt(
@@ -270,8 +250,7 @@ class Prompt(object):
         self.settings.update(image_names_and_tags)
 
     def confirm_params(self):
-        """
-        Formats output of settings from prompts to the user. Passwords are not displayed.
+        """Formats output of settings from prompts to the user. Passwords are not displayed.
         """
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                            "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
@@ -281,8 +260,7 @@ class Prompt(object):
             if k not in hidden_settings:
                 print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', k, '|', v, '|'))
 
-        prompt = input("Please confirm the above settings [N][Y/N]:")
-        if prompt == "Y" or prompt == "y":
+        if click.confirm("Please confirm the above settings"):
             self.settings["CONFIRM_PARAMS"] = "Y"
         else:
             self.settings = self.default_settings
@@ -290,58 +268,41 @@ class Prompt(object):
 
     @property
     def prompt_helm(self):
-        """
-        Prompts for helm installation and returns updated settings.
+        """Prompts for helm installation and returns updated settings.
         :return:
         """
         if not self.settings["GLUU_HELM_RELEASE_NAME"]:
-            prompt = input("Please enter Gluu helm name[gluu]")
-            if not prompt:
-                prompt = "gluu"
-            self.settings["GLUU_HELM_RELEASE_NAME"] = prompt
+            self.settings["GLUU_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu helm name", default="gluu")
 
         if not self.settings["NGINX_INGRESS_RELEASE_NAME"]:
-            prompt = input("Please enter nginx-ingress helm name[ningress]")
-            if not prompt:
-                prompt = "ningress"
-            self.settings["NGINX_INGRESS_RELEASE_NAME"] = prompt
+            self.settings["NGINX_INGRESS_RELEASE_NAME"] = click.prompt("Please enter nginx-ingress helm name", default="ningress")
 
         if not self.settings["NGINX_INGRESS_NAMESPACE"]:
-            prompt = input("Please enter nginx-ingress helm namespace[ingress-nginx]")
-            if not prompt:
-                prompt = "ingress-nginx"
-            self.settings["NGINX_INGRESS_NAMESPACE"] = prompt
+            self.settings["NGINX_INGRESS_NAMESPACE"] = click.prompt("Please enter nginx-ingress helm namespace", default="ingress-nginx")
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
             if not self.settings["KONG_HELM_RELEASE_NAME"]:
-                prompt = input("Please enter Gluu Gateway helm name[gluu-gateway]")
-                if not prompt:
-                    prompt = "gluu-gateway"
-                self.settings["KONG_HELM_RELEASE_NAME"] = prompt
+                self.settings["KONG_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway helm name", default="gluu-gateway")
 
             if not self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"]:
-                prompt = input("Please enter Gluu Gateway UI helm name[gluu-gateway-ui]")
-                if not prompt:
-                    prompt = "gluu-gateway-ui"
-                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = prompt
+                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui")
 
         update_settings_json_file(self.settings)
         return self.settings
 
     @property
     def prompt_upgrade(self):
-        """
-        Prompts for upgrade and returns updated settings.
+        """Prompts for upgrade and returns updated settings.
         :return:
         """
-        versions, version_number = self.get_supported_versions
+        versions, version_number = get_supported_versions()
+
         if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
-            prompt = input("Please enter the version to upgrade Gluu to [{}]"
-                           .format(version_number))
-            if not prompt:
-                prompt = version_number
-            self.settings["GLUU_UPGRADE_TARGET_VERSION"] = prompt
-        image_names_and_tags = versions[self.settings["GLUU_UPGRADE_TARGET_VERSION"]]
+            self.settings["GLUU_UPGRADE_TARGET_VERSION"] = click.prompt(
+                "Please enter the version to upgrade Gluu to", default=version_number,
+            )
+
+        image_names_and_tags = versions.get(self.settings["GLUU_UPGRADE_TARGET_VERSION"], {})
         self.settings.update(image_names_and_tags)
         update_settings_json_file(self.settings)
         return self.settings
@@ -406,30 +367,22 @@ class Prompt(object):
         update_settings_json_file(self.settings)
 
     def prompt_volumes_identifier(self):
+        """Prompts for Static volume IDs.
         """
-        Prompts for Static volume IDs.
-        """
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_STATIC_VOLUME_ID"]:
-                logger.info("EBS Volume ID example: vol-049df61146c4d7901")
-                logger.info("Persistent Disk Name example: "
-                            "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
-                prompt = input("Please enter Persistent Disk Name or EBS Volume ID for LDAP:")
-                self.settings["LDAP_STATIC_VOLUME_ID"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_STATIC_VOLUME_ID"]:
+            logger.info("EBS Volume ID example: vol-049df61146c4d7901")
+            logger.info("Persistent Disk Name example: "
+                        "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
+            self.settings["LDAP_STATIC_VOLUME_ID"] = click.prompt("Please enter Persistent Disk Name or EBS Volume ID for LDAP")
         update_settings_json_file(self.settings)
 
     def prompt_disk_uris(self):
+        """Prompts for static volume Disk URIs (AKS)
         """
-        Prompts for static volume Disk URIs (AKS)
-        """
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_STATIC_DISK_URI"]:
-                logger.info("DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
-                            "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
-                prompt = input("Please enter the disk uri for LDAP:")
-                self.settings["LDAP_STATIC_DISK_URI"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_STATIC_DISK_URI"]:
+            logger.info("DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
+                        "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
+            self.settings["LDAP_STATIC_DISK_URI"] = click.prompt("Please enter the disk uri for LDAP")
         update_settings_json_file(self.settings)
 
     def prompt_gke(self):
@@ -563,31 +516,20 @@ class Prompt(object):
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
     def prompt_postgres(self):
-        """
-        Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
+        """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
         """
         if not self.settings["POSTGRES_NAMESPACE"]:
-            prompt = input("Please enter a namespace for postgres.[postgres]")
-            if not prompt:
-                prompt = "postgres"
-            self.settings["POSTGRES_NAMESPACE"] = prompt
+            self.settings["POSTGRES_NAMESPACE"] = click.prompt("Please enter a namespace for postgres", default="postgres")
 
         if not self.settings["POSTGRES_REPLICAS"]:
-            prompt = input("Please enter number of replicas for postgres.[3]")
-            if not prompt:
-                prompt = 3
-            prompt = int(prompt)
-            self.settings["POSTGRES_REPLICAS"] = prompt
+            self.settings["POSTGRES_REPLICAS"] = click.prompt("Please enter number of replicas for postgres", default=3)
 
         if not self.settings["POSTGRES_URL"]:
-            default_postgres_url_prompt = "postgres.{}.svc.cluster.local".format(self.settings["POSTGRES_NAMESPACE"])
-
-            prompt = input("Please enter  postgres (remote or local) URL base name. If postgres is to be installed"
-                           " automatically please press enter to accept the default correct value[{}]"
-                           .format(default_postgres_url_prompt))
-            if not prompt:
-                prompt = default_postgres_url_prompt
-            self.settings["POSTGRES_URL"] = prompt
+            self.settings["POSTGRES_URL"] = click.prompt(
+                "Please enter  postgres (remote or local) "
+                "URL base name. If postgres is to be installed",
+                default=f"postgres.{self.settings['POSTGRES_NAMESPACE']}.svc.cluster.local",
+            )
 
     def prompt_gluu_gateway(self):
         """Prompts for Gluu Gateway
@@ -681,87 +623,37 @@ class Prompt(object):
                 self.settings["LDAP_BACKUP_SCHEDULE"] = prompt
 
     def prompt_replicas(self):
-        """
-        Prompt number of replicas for Gluu apps
+        """Prompt number of replicas for Gluu apps
         """
         if not self.settings["OXAUTH_REPLICAS"]:
-            prompt = input("Number of oxAuth replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["OXAUTH_REPLICAS"] = prompt
+            self.settings["OXAUTH_REPLICAS"] = click.prompt("Number of oxAuth replicas", default=1)
 
-        if self.settings["ENABLE_FIDO2"] == "Y":
-            if not self.settings["FIDO2_REPLICAS"]:
-                prompt = input("Number of fido2 replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["FIDO2_REPLICAS"] = prompt
+        if self.settings["ENABLE_FIDO2"] == "Y" and not self.settings["FIDO2_REPLICAS"]:
+            self.settings["FIDO2_REPLICAS"] = click.prompt("Number of fido2 replicas", default=1)
 
-        if self.settings["ENABLE_SCIM"] == "Y":
-            if not self.settings["SCIM_REPLICAS"]:
-                prompt = input("Number of scim replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["SCIM_REPLICAS"] = prompt
+        if self.settings["ENABLE_SCIM"] == "Y" and not self.settings["SCIM_REPLICAS"]:
+            self.settings["SCIM_REPLICAS"] = click.prompt("Number of scim replicas", default=1)
 
         if not self.settings["OXTRUST_REPLICAS"]:
-            prompt = input("Number of oxTrust replicas [1]:")
-            if not prompt:
-                prompt = 1
-            prompt = int(prompt)
-            self.settings["OXTRUST_REPLICAS"] = prompt
+            self.settings["OXTRUST_REPLICAS"] = click.prompt("Number of oxTrust replicas", default=1)
 
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
-                self.settings["PERSISTENCE_BACKEND"] == "ldap":
-            if not self.settings["LDAP_REPLICAS"]:
-                prompt = input("Number of LDAP replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["LDAP_REPLICAS"] = prompt
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_REPLICAS"]:
+            self.settings["LDAP_REPLICAS"] = click.prompt("Number of LDAP replicas", default=1)
 
-        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
-            if not self.settings["OXSHIBBOLETH_REPLICAS"]:
-                prompt = input("Number of oxShibboleth replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXSHIBBOLETH_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXSHIBBOLETH"] == "Y" and not self.settings["OXSHIBBOLETH_REPLICAS"]:
+            self.settings["OXSHIBBOLETH_REPLICAS"] = click.prompt("Number of oxShibboleth replicas", default=1)
 
-        if self.settings["ENABLE_OXPASSPORT"] == "Y":
-            if not self.settings["OXPASSPORT_REPLICAS"]:
-                prompt = input("Number of oxPassport replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXPASSPORT_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXPASSPORT"] == "Y" and not self.settings["OXPASSPORT_REPLICAS"]:
+            self.settings["OXPASSPORT_REPLICAS"] = click.prompt("Number of oxPassport replicas", default=1)
 
-        if self.settings["ENABLE_OXD"] == "Y":
-            if not self.settings["OXD_SERVER_REPLICAS"]:
-                prompt = input("Number of oxd-server replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["OXD_SERVER_REPLICAS"] = prompt
+        if self.settings["ENABLE_OXD"] == "Y" and not self.settings["OXD_SERVER_REPLICAS"]:
+            self.settings["OXD_SERVER_REPLICAS"] = click.prompt("Number of oxd-server replicas", default=1)
 
-        if self.settings["ENABLE_CASA"] == "Y":
-            if not self.settings["CASA_REPLICAS"]:
-                prompt = input("Number of Casa replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["CASA_REPLICAS"] = prompt
+        if self.settings["ENABLE_CASA"] == "Y" and not self.settings["CASA_REPLICAS"]:
+            self.settings["CASA_REPLICAS"] = click.prompt("Number of Casa replicas", default=1)
 
-        if self.settings["ENABLE_RADIUS"] == "Y":
-            if not self.settings["RADIUS_REPLICAS"]:
-                prompt = input("Number of Radius replicas [1]:")
-                if not prompt:
-                    prompt = 1
-                prompt = int(prompt)
-                self.settings["RADIUS_REPLICAS"] = prompt
+        if self.settings["ENABLE_RADIUS"] == "Y" and not self.settings["RADIUS_REPLICAS"]:
+            self.settings["RADIUS_REPLICAS"] = click.prompt("Number of Radius replicas", default=1)
         update_settings_json_file(self.settings)
 
     @property
@@ -807,10 +699,15 @@ class Prompt(object):
         if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
             try:
                 shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
+                shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))
+                shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
+                            Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
+
             except FileNotFoundError:
-                logger.error("An override option has been chosen but couchbase-cluster.yaml file "
-                             "could not be found at the current path. Please place the override file under the name"
-                             " couchbase-cluster.yaml in the same directory pygluu-kubernetes.pyz exists ")
+                logger.error("An override option has been chosen but there is a missing couchbase file that "
+                             "could not be found at the current path. Please place the override files under the name"
+                             " couchbase-cluster.yaml, couchbase-buckets.yaml, and couchbase-ephemeral-buckets.yaml"
+                             " in the same directory pygluu-kubernetes.pyz exists ")
                 raise SystemExit(1)
 
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
@@ -1138,48 +1035,26 @@ class Prompt(object):
                 logger.warning("Cannot determine IP address {}".format(exc))
 
     def prompt_redis(self):
-        """
-        Prompts for Redis
+        """Prompts for Redis
         """
         if not self.settings["REDIS_TYPE"]:
             logger.info("STANDALONE, CLUSTER")
-            redis_type_prompt = input("Please enter redis type.[CLUSTER]")
-            if not redis_type_prompt:
-                redis_type_prompt = "CLUSTER"
-            self.settings["REDIS_TYPE"] = redis_type_prompt
+            self.settings["REDIS_TYPE"] = click.prompt("Please enter redis type", default="CLUSTER")
 
         if not self.settings["INSTALL_REDIS"]:
-            logger.info("For the following prompt  if placed [N] the Redis is assumed to be"
+            logger.info("For the following prompt if placed [N] the Redis is assumed to be"
                         " installed or remotely provisioned")
-            redis_install_prompt = input("Install Redis[Y/N]?[Y]")
-            if redis_install_prompt == "N" or redis_install_prompt == "n":
-                redis_install_prompt = "N"
-            else:
-                redis_install_prompt = "Y"
-            self.settings["INSTALL_REDIS"] = redis_install_prompt
+            self.settings["INSTALL_REDIS"] = confirm_yesno("Install Redis", default=True)
 
         if self.settings["INSTALL_REDIS"] == "Y":
-
             if not self.settings["REDIS_MASTER_NODES"]:
-                redis_master_prompt = input("The number of  master node. Minimum is 3.[3]")
-                if not redis_master_prompt:
-                    redis_master_prompt = 3
-                redis_master_prompt = int(redis_master_prompt)
-                self.settings["REDIS_MASTER_NODES"] = redis_master_prompt
+                self.settings["REDIS_MASTER_NODES"] = click.prompt("The number of master node. Minimum is 3", default=3)
 
             if not self.settings["REDIS_NODES_PER_MASTER"]:
-                redis_node_prompt = input("The number of nodes per master node.[2]")
-                if not redis_node_prompt:
-                    redis_node_prompt = 2
-                redis_node_prompt = int(redis_node_prompt)
-                self.settings["REDIS_NODES_PER_MASTER"] = redis_node_prompt
+                self.settings["REDIS_NODES_PER_MASTER"] = click.prompt("The number of nodes per master node", default=2)
 
             if not self.settings["REDIS_NAMESPACE"]:
-                redis_namespace = input("Please enter a namespace for Redis cluster.[gluu-redis-cluster]")
-                if not redis_namespace:
-                    redis_namespace = "gluu-redis-cluster"
-                self.settings["REDIS_NAMESPACE"] = redis_namespace
-
+                self.settings["REDIS_NAMESPACE"] = click.prompt("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
         else:
             # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
             if not self.settings["REDIS_PW"]:
@@ -1195,8 +1070,10 @@ class Prompt(object):
                 logger.info("Redis URL using AWS ElastiCach [Configuration Endpoint]: "
                             "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
                 logger.info("Redis URL using Google MemoryStore : <ip>:6379")
-                redis_url_prompt = input("Please enter redis URL. If you are deploying redis ."
-                                         "[redis-cluster.gluu-redis-cluster.svc.cluster.local:6379]")
+                redis_url_prompt = click.prompt(
+                    "Please enter redis URL. If you are deploying redis",
+                    default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
+                )
             self.settings["REDIS_URL"] = redis_url_prompt
 
     @property
