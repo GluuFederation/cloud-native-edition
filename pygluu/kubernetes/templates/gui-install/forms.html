@@ -32,10 +32,8 @@
 
 {% macro password(title, name) %}
   <div class="form-group">
-    <label class="col-form-label col-sm-3" for="{{ name.replace('_', '-') }}">{{ title }}</label>
-    <div class="col-sm-5">
-      <input type="password" class="form-control" name="{{ name }}" id="name.replace('_', '-') }}"">
-    </div>
+    <label class="col-form-label" for="{{ name.replace('_', '-') }}">{{ title }}</label>
+    <input type="password" class="form-control col-sm-5" name="{{ name }}" id="name.replace('_', '-') }}">
   </div>
 {% endmacro %}
 
