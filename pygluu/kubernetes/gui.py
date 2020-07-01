@@ -316,7 +316,22 @@ def install_jackrabbit():
     """
     Install Jackrabbit
     """
+    if request.method == "POST":
+        next_step = request.form["next_step"]
+        default_settings["INSTALL_JACKRABBIT"] = request.form["install_jackrabbit"]
+        default_settings["JACKRABBIT_URL"] = request.form["jackrabbit_url"]
+        default_settings["JACKRABBIT_USER"] = request.form["jackrabbit_user"]
+
+        if request.form["install_jackrabbit"] == "Y":
+            default_settings["JACKRABBIT_STORAGE_SIZE"] = request.form["jackrabbit_storage_size"]
+
+        return redirect(url_for(next_step))
 
     return render_template("index.html",
                            step="install_jackrabbit",
-                           next_step="settings")
+                           next_step="setting")
+
+@app.route("/settings", methods=["GET", "POST"])
+def setting():
+    return render_template("index.html",
+                           step="settings")
