@@ -10,12 +10,12 @@ from flask import Flask, render_template, request, redirect, url_for
 from .common import get_supported_versions
 
 app = Flask(__name__, template_folder="templates/gui-install")
-wizard_steps = ['license',
-                'deployment_arch',
-                'set_namespace',
-                'optional_settings',
-                'install_jackrabbit',
-                'settings']
+wizard_steps = ["license",
+                "deployment_arch",
+                "set_namespace",
+                "optional_settings",
+                "install_jackrabbit",
+                "settings"]
 
 default_settings = dict(ACCEPT_GLUU_LICENSE="",
                         GLUU_VERSION="",
@@ -188,40 +188,40 @@ default_settings = dict(ACCEPT_GLUU_LICENSE="",
 
 @app.before_request
 def initialize():
-    if not default_settings['ACCEPT_GLUU_LICENSE'] and request.path != '/agreement':
-        return redirect(url_for('agreement'))
+    if not default_settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement":
+        return redirect(url_for("agreement"))
 
 
-@app.route('/agreement', methods=['GET', 'POST'])
+@app.route("/agreement", methods=["GET", "POST"])
 def agreement():
     """Input for Accepting license
     """
 
-    if request.method == 'POST':
-        next_step = request.form['next_step']
-        default_settings['ACCEPT_GLUU_LICENSE'] = request.form['accept_gluu_license']
+    if request.method == "POST":
+        next_step = request.form["next_step"]
+        default_settings["ACCEPT_GLUU_LICENSE"] = request.form["accept_gluu_license"]
         return redirect(url_for(next_step))
 
-    with open('./LICENSE', 'r') as f:
+    with open("./LICENSE", "r") as f:
         agreement_file = f.read()
 
-    return render_template('index.html',
+    return render_template("index.html",
                            license=agreement_file,
-                           step='license',
-                           next_step='gluu_version')
+                           step="license",
+                           next_step="gluu_version")
 
 
-@app.route('/gluu_version', methods=['GET', 'POST'])
+@app.route("/gluu_version", methods=["GET", "POST"])
 def gluu_version():
     """Input for Gluu versions
     """
 
     versions, version_number = get_supported_versions()
 
-    if request.method == 'POST':
-        next_step = request.form['next_step']
-        default_settings['GLUU_VERSION'] = request.form['gluu_version']
-        image_names_and_tags = versions.get(default_settings['GLUU_VERSION'], {})
+    if request.method == "POST":
+        next_step = request.form["next_step"]
+        default_settings["GLUU_VERSION"] = request.form["gluu_version"]
+        image_names_and_tags = versions.get(default_settings["GLUU_VERSION"], {})
         default_settings.update(image_names_and_tags)
 
         return redirect(url_for(next_step))
@@ -234,56 +234,89 @@ def gluu_version():
             if float(k) > version_number:
                 supported_versions.append((version_number, float(k)))
 
-    return render_template('index.html',
+    return render_template("index.html",
                            supported_versions=supported_versions,
-                           step='gluu_version',
-                           next_step='deployment_arch')
+                           step="gluu_version",
+                           next_step="deployment_arch")
 
 
-@app.route('/deployment-arch', methods=['GET', 'POST'])
+@app.route("/deployment-arch", methods=["GET", "POST"])
 def deployment_arch():
     """
     Input for the kubernetes infrastructure used.
     """
-    if request.method == 'POST':
-        next_step = request.form['next_step']
-        default_settings['DEPLOYMENT_ARCH'] = request.form['deployment_arch']
+    if request.method == "POST":
+        next_step = request.form["next_step"]
+        default_settings["DEPLOYMENT_ARCH"] = request.form["deployment_arch"]
         return redirect(url_for(next_step))
 
-    return render_template('index.html',
-                           step='deployment_arch',
-                           next_step='gluu_namespace')
+    return render_template("index.html",
+                           step="deployment_arch",
+                           next_step="gluu_namespace")
 
 
-@app.route('/gluu-namespace', methods=['GET', 'POST'])
+@app.route("/gluu-namespace", methods=["GET", "POST"])
 def gluu_namespace():
     """
     Input for gluu namespace.
     """
-    if request.method == 'POST':
-        next_step = request.form['next_step']
-        default_settings['GLUU_NAMESPACE'] = request.form['gluu_namespace']
+    if request.method == "POST":
+        next_step = request.form["next_step"]
+        default_settings["GLUU_NAMESPACE"] = request.form["gluu_namespace"]
         return redirect(url_for(next_step))
 
-    return render_template('index.html',
-                           step='gluu_namespace',
-                           next_step='optional_services')
+    return render_template("index.html",
+                           step="gluu_namespace",
+                           next_step="optional_services")
 
 
-@app.route('/optional-services', methods=['GET', 'POST'])
+@app.route("/optional-services", methods=["GET", "POST"])
 def optional_services():
     """
     Input for optional services.
     """
-    if request.method == 'POST':
+    if request.method == "POST":
         for i in request.form.keys():
-            if i == 'next_step':
+            if i == "next_step":
                 next_step = request.form[i]
                 continue
             default_settings[i.upper()] = request.form[i]
 
         return redirect(url_for(next_step))
 
-    return render_template('index.html',
-                           step='optional_services',
-                           next_step='gluu_gateway')
+    return render_template("index.html",
+                           step="optional_services",
+                           next_step="gluu_gateway")
+
+@app.route("/gluu-gateway", methods=["GET", "POST"])
+def gluu_gateway():
+    """
+    Input for Gluu Gateway
+    """
+    if request.method == "POST":
+        if request.form["install_gluu_gateway"] == "N":
+            default_settings["INSTALL_GLUU_GATEWAY"] = request.form["install_gluu_gateway"]
+            return redirect(url_for(next_step))
+
+        default_settings["ENABLE_OXD"] = "Y"
+        for i in request.form.keys():
+            if i == "next_step":
+                next_step = request.form[i]
+                continue
+            default_settings[i.upper()] = request.form[i]
+
+        return redirect(url_for(next_step))
+
+    return render_template("index.html",
+                           step="gluu_gateway",
+                           next_step="install_jackrabbit")
+
+@app.route("/install-jackrabbit", methods=["GET", "POST"])
+def install_jackrabbit():
+    """
+    Install Jackrabbit
+    """
+
+    return render_template("index.html",
+                           step="install_jackrabbit",
+                           next_step="settings")

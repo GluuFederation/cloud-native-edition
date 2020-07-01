@@ -1,0 +1,13 @@
+
+<div class="alert alert-warning" role="alert">
+  <p>Jackrabbit must be installed. If the following prompt is answered with No it is assumed the jackrabbit content repository is either installed locally or remotely</p>
+</div>
+{{ forms.yes_no('Install Jackrabbit content repository', 'install_jackrabbit', 'Y') }}
+  {# value N #}
+  <div id="jackrabbitNoInstall" class="collapse">
+    {{ forms.text('Please enter jackrabbit url', 'jackrabbit_url', 'http://jackrabbit:8080') }}
+    {{ forms.text('Please enter jackrabbit user', 'jackrabbit_user', 'admin') }}
+  </div>
+  <div id="jackrabbitYesInstall" class="collapse show">
+    {{ forms.text('Size of Jackrabbit content repository volume storage', 'jackrabbit_storage_size', '4Gi') }}
+  </div>

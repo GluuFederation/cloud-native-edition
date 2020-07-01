@@ -19,12 +19,30 @@
   <script>
     $(document).ready(function () {
 
-      $('#enable-oxd-yes').on('change', function(){
-        $('#oxdSetup').collapse('show');
+      $('.enable-oxd-opt').on('change', function(){
+        $('#oxdSetup').collapse('toggle');
       });
 
-      $('#enable-oxd-no').on('change', function(){
-        $('#oxdSetup').collapse('hide');
+      $('.install-gluu-gateway-opt').on('change', function(){
+        if($(this).val() == 'Y'){
+          $('#oxd-alert').collapse('show');
+          $('#postgresSetup').collapse('show');
+          $('#gluuGatewaySetup').collapse('show');
+        }else{
+          $('#oxd-alert').collapse('hide');
+          $('#postgresSetup').collapse('hide');
+          $('#gluuGatewaySetup').collapse('hide');
+        }
+      });
+
+      $('.install-jackrabbit-opt').on('change', function(){
+         if($(this).val() == 'Y'){
+          $('#jackrabbitNoInstall').collapse('hide');
+          $('#jackrabbitYesInstall').collapse('show');
+        }else{
+          $('#jackrabbitNoInstall').collapse('show');
+          $('#jackrabbitYesInstall').collapse('hide');
+        }
       });
     });
   </script>
