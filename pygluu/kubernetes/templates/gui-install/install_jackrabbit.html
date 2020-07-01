@@ -7,6 +7,9 @@
   <div id="jackrabbitNoInstall" class="collapse">
     {{ forms.text('Please enter jackrabbit url', 'jackrabbit_url', 'http://jackrabbit:8080') }}
     {{ forms.text('Please enter jackrabbit user', 'jackrabbit_user', 'admin') }}
+    <div class="alert alert-warning" role="alert">
+      <p>Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod</p>
+    </div>
   </div>
   <div id="jackrabbitYesInstall" class="collapse show">
     {{ forms.text('Size of Jackrabbit content repository volume storage', 'jackrabbit_storage_size', '4Gi') }}
