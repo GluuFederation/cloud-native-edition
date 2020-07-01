@@ -34,7 +34,7 @@ spec:
               {{- end }}
               envFrom:
                 - configMapRef:
-                    name: gluu-config-cm
+                    name: {{ .Release.Name }}-config-cm
               args: ["patch", "oxauth", "--opts", "interval:{{ .Values.keysLife }}"]
           restartPolicy: Never
 
