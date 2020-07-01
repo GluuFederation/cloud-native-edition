@@ -276,10 +276,11 @@ def optional_services():
     Input for optional services.
     """
     if request.method == "POST":
+        next_step = request.form["next_step"]
         for i in request.form.keys():
             if i == "next_step":
-                next_step = request.form[i]
                 continue
+                
             default_settings[i.upper()] = request.form[i]
 
         return redirect(url_for(next_step))
