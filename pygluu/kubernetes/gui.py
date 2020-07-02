@@ -9,6 +9,7 @@ A GUI for installing Gluu Cloud Native Edition.
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from .common import get_supported_versions
 from pathlib import Path
+
 app = Flask(__name__, template_folder="templates/gui-install")
 wizard_steps = ["license",
                 "deployment_arch",
@@ -285,7 +286,7 @@ def optional_services():
         for i in request.form.keys():
             if i == "next_step":
                 continue
-                
+
             default_settings[i.upper()] = request.form[i]
 
         return redirect(url_for(next_step))
@@ -294,12 +295,14 @@ def optional_services():
                            step="optional_services",
                            next_step="gluu_gateway")
 
+
 @app.route("/gluu-gateway", methods=["GET", "POST"])
 def gluu_gateway():
     """
     Input for Gluu Gateway
     """
     if request.method == "POST":
+        next_step = request.form["next_step"]
         if request.form["install_gluu_gateway"] == "N":
             default_settings["INSTALL_GLUU_GATEWAY"] = request.form["install_gluu_gateway"]
             return redirect(url_for(next_step))
@@ -316,6 +319,7 @@ def gluu_gateway():
     return render_template("index.html",
                            step="gluu_gateway",
                            next_step="install_jackrabbit")
+
 
 @app.route("/install-jackrabbit", methods=["GET", "POST"])
 def install_jackrabbit():
@@ -336,6 +340,7 @@ def install_jackrabbit():
     return render_template("index.html",
                            step="install_jackrabbit",
                            next_step="setting")
+
 
 @app.route("/settings", methods=["GET", "POST"])
 def setting():
