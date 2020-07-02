@@ -19,11 +19,8 @@ from .prompt import Prompt
 from .common import get_logger, copy_templates
 from .helm import Helm
 from .kustomize import Kustomize
-# TODO: Remove the following as soon as the update secret is moved to backend
-from .updatesecrets import modify_secret
 from .gui import app
 
-# End of section to be removed. TODO
 
 logger = get_logger("gluu-create        ")
 
@@ -64,9 +61,6 @@ def create_parser():
                                                     "This assumes nginx-ingress is installed")
     subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Enterprise Edition using helm. "
                                                       "This only uninstalls Gluu")
-    # TODO: Remove the following as soon as the update secret is moved to backend
-    subparsers.add_parser("update-secret", help="Update Gluu secret. Often used to update certificates and keys. ")
-    # End of section to be removed. TODO
     return parser
 
 
@@ -77,18 +71,12 @@ def main():
     if not args.subparser_name:
         parser.print_help()
         return
-    # TODO: Remove the following as soon as the update secret is moved to backend
-    if args.subparser_name == "update-secret":
-        modify_secret()
-        return
-    # End of section to be removed. TODO
     copy_templates()
 
     # Not sure if we intercept the gui installation from here
     if args.subparser_name == "gui-install":
         app.run(host='0.0.0.0', port=5000, debug=True)
         return
-
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
 

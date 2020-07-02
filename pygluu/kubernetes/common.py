@@ -210,28 +210,5 @@ def prompt_password(password):
             logger.info("Success! {} password was set.".format(password))
             return pw_prompt
 
-def get_supported_versions():
-    """Get Gluu versions from gluu_versions.json
-    """
-    versions = {}
-    version_number = 0
-
-    filename = Path("./gluu_versions.json")
-    try:
-        with open(filename) as f:
-            versions = json.load(f)
-        logger.info("Currently supported versions are : ")
-        for k, v in versions.items():
-            logger.info(k)
-            if "_dev" in k:
-                logger.info("DEV VERSION : {}".format(k))
-            else:
-                if float(k) > version_number:
-                    version_number = float(k)
-    except FileNotFoundError:
-        pass
-    finally:
-        version_number = str(version_number)
-        return versions, version_number
 
 logger = get_logger("gluu-common        ")
