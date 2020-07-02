@@ -6,9 +6,9 @@
  https://www.apache.org/licenses/LICENSE-2.0
 A GUI for installing Gluu Cloud Native Edition.
 """
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from .common import get_supported_versions
-
+from pathlib import Path
 app = Flask(__name__, template_folder="templates/gui-install")
 wizard_steps = ["license",
                 "deployment_arch",
@@ -190,6 +190,11 @@ default_settings = dict(ACCEPT_GLUU_LICENSE="",
 def initialize():
     if not default_settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement":
         return redirect(url_for("agreement"))
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(Path("templates/gui-install/static"), 'favicon.ico')
 
 
 @app.route("/agreement", methods=["GET", "POST"])
