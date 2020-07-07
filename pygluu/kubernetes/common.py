@@ -147,6 +147,7 @@ def get_supported_versions():
     """
     versions = {}
     version_number = 0
+    dev_version = ""
 
     filename = Path("./gluu_versions.json")
     try:
@@ -157,12 +158,16 @@ def get_supported_versions():
             logger.info(k)
             if "_dev" in k:
                 logger.info("DEV VERSION : {}".format(k))
+                dev_version = k
             else:
                 if float(k) > version_number:
                     version_number = float(k)
     except FileNotFoundError:
         pass
     finally:
+        if not version_number:
+            # No stable version exists
+            version_number = dev_version
         version_number = str(version_number)
         return versions, version_number
 
