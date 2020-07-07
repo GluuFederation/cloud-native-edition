@@ -179,7 +179,6 @@ def prompt_password(password):
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
-    keystore_chars = string.ascii_letters + string.digits
     chars = chars.replace('"', '')
     chars = chars.replace("'", "")
     chars = chars.replace("$", "")
