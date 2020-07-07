@@ -283,17 +283,21 @@ class Prompt:
             self.settings["GLUU_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu helm name", default="gluu")
 
         if not self.settings["NGINX_INGRESS_RELEASE_NAME"]:
-            self.settings["NGINX_INGRESS_RELEASE_NAME"] = click.prompt("Please enter nginx-ingress helm name", default="ningress")
+            self.settings["NGINX_INGRESS_RELEASE_NAME"] = click.prompt("Please enter nginx-ingress helm name",
+                                                                       default="ningress")
 
         if not self.settings["NGINX_INGRESS_NAMESPACE"]:
-            self.settings["NGINX_INGRESS_NAMESPACE"] = click.prompt("Please enter nginx-ingress helm namespace", default="ingress-nginx")
+            self.settings["NGINX_INGRESS_NAMESPACE"] = click.prompt("Please enter nginx-ingress helm namespace",
+                                                                    default="ingress-nginx")
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
             if not self.settings["KONG_HELM_RELEASE_NAME"]:
-                self.settings["KONG_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway helm name", default="gluu-gateway")
+                self.settings["KONG_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway helm name",
+                                                                       default="gluu-gateway")
 
             if not self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"]:
-                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = click.prompt("Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui")
+                self.settings["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = click.prompt(
+                    "Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui")
 
         update_settings_json_file(self.settings)
         return self.settings
@@ -325,7 +329,8 @@ class Prompt:
             self.settings[image_tag_key] = click.prompt(f"{service} image tag", default=self.settings[image_tag_key])
 
         if not self.settings["EDIT_IMAGE_NAMES_TAGS"]:
-            self.settings["EDIT_IMAGE_NAMES_TAGS"] = confirm_yesno("Would you like to manually edit the image source/name and tag")
+            self.settings["EDIT_IMAGE_NAMES_TAGS"] = confirm_yesno(
+                "Would you like to manually edit the image source/name and tag")
 
         if self.settings["EDIT_IMAGE_NAMES_TAGS"] == "Y":
             # CASA
@@ -373,7 +378,8 @@ class Prompt:
             logger.info("EBS Volume ID example: vol-049df61146c4d7901")
             logger.info("Persistent Disk Name example: "
                         "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
-            self.settings["LDAP_STATIC_VOLUME_ID"] = click.prompt("Please enter Persistent Disk Name or EBS Volume ID for LDAP")
+            self.settings["LDAP_STATIC_VOLUME_ID"] = click.prompt(
+                "Please enter Persistent Disk Name or EBS Volume ID for LDAP")
         update_settings_json_file(self.settings)
 
     def prompt_disk_uris(self):
@@ -413,7 +419,8 @@ class Prompt:
                 self.settings["GLUU_FQDN"] = click.prompt("Enter Hostname", default="demoexample.gluu.org")
 
             regex_bool = re.match(
-                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',  # noqa: W605
+                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
+                # noqa: W605
                 self.settings["GLUU_FQDN"])
 
             if regex_bool:
@@ -454,8 +461,12 @@ class Prompt:
 
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentest.pyz is at.")
+        self.generate_main_config()
+        update_settings_json_file(self.settings)
 
-        # Prepare generate.json and output it
+    def generate_main_config(self):
+        """Prepare generate.json and output it
+        """
         self.config_settings["hostname"] = self.settings["GLUU_FQDN"]
         self.config_settings["country_code"] = self.settings["COUNTRY_CODE"]
         self.config_settings["state"] = self.settings["STATE"]
@@ -471,7 +482,6 @@ class Prompt:
             logger.warning("Main configuration settings has been outputted to file: "
                            "./config/base/generate.json. Please store this file safely or delete it.")
             json.dump(self.config_settings, file)
-        update_settings_json_file(self.settings)
 
     def prompt_jackrabbit(self):
         """Prompts for Jackrabbit content repository
@@ -483,13 +493,15 @@ class Prompt:
 
         if self.settings["INSTALL_JACKRABBIT"] == "N":
             if not self.settings["JACKRABBIT_URL"]:
-                self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url", default="http://jackrabbit:8080")
+                self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url",
+                                                               default="http://jackrabbit:8080")
             if not self.settings["JACKRABBIT_USER"]:
                 self.settings["JACKRABBIT_USER"] = click.prompt("Please enter jackrabbit user", default="admin")
             logger.info("Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod")
         else:
             if not self.settings["JACKRABBIT_STORAGE_SIZE"]:
-                self.settings["JACKRABBIT_STORAGE_SIZE"] = click.prompt("Size of Jackrabbit content repository volume storage", default="4Gi")
+                self.settings["JACKRABBIT_STORAGE_SIZE"] = click.prompt(
+                    "Size of Jackrabbit content repository volume storage", default="4Gi")
             self.settings["JACKRABBIT_USER"] = "admin"
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
 
@@ -497,7 +509,8 @@ class Prompt:
         """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
         """
         if not self.settings["POSTGRES_NAMESPACE"]:
-            self.settings["POSTGRES_NAMESPACE"] = click.prompt("Please enter a namespace for postgres", default="postgres")
+            self.settings["POSTGRES_NAMESPACE"] = click.prompt("Please enter a namespace for postgres",
+                                                               default="postgres")
 
         if not self.settings["POSTGRES_REPLICAS"]:
             self.settings["POSTGRES_REPLICAS"] = click.prompt("Please enter number of replicas for postgres", default=3)
@@ -519,28 +532,34 @@ class Prompt:
             self.settings["ENABLE_OXD"] = "Y"
             self.prompt_postgres()
             if not self.settings["KONG_NAMESPACE"]:
-                self.settings["KONG_NAMESPACE"] = click.prompt("Please enter a namespace for Gluu Gateway", default="gluu-gateway")
+                self.settings["KONG_NAMESPACE"] = click.prompt("Please enter a namespace for Gluu Gateway",
+                                                               default="gluu-gateway")
 
             if not self.settings["GLUU_GATEWAY_UI_NAMESPACE"]:
-                self.settings["GLUU_GATEWAY_UI_NAMESPACE"] = click.prompt("Please enter a namespace for gluu gateway ui", default="gg-ui")
+                self.settings["GLUU_GATEWAY_UI_NAMESPACE"] = click.prompt(
+                    "Please enter a namespace for gluu gateway ui", default="gg-ui")
 
             if not self.settings["KONG_PG_USER"]:
-                self.settings["KONG_PG_USER"] = click.prompt("Please enter a user for gluu-gateway postgres database", default="kong")
+                self.settings["KONG_PG_USER"] = click.prompt("Please enter a user for gluu-gateway postgres database",
+                                                             default="kong")
 
             if not self.settings["KONG_PG_PASSWORD"]:
                 self.settings["KONG_PG_PASSWORD"] = prompt_password("gluu-gateway-postgres")
 
             if not self.settings["GLUU_GATEWAY_UI_PG_USER"]:
-                self.settings["GLUU_GATEWAY_UI_PG_USER"] = click.prompt("Please enter a user for gluu-gateway-ui postgres database", default="konga")
+                self.settings["GLUU_GATEWAY_UI_PG_USER"] = click.prompt(
+                    "Please enter a user for gluu-gateway-ui postgres database", default="konga")
 
             if not self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"]:
                 self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"] = prompt_password("gluu-gateway-ui-postgres")
 
             if not self.settings["KONG_DATABASE"]:
-                self.settings["KONG_DATABASE"] = click.prompt("Please enter gluu-gateway postgres database name", default="kong")
+                self.settings["KONG_DATABASE"] = click.prompt("Please enter gluu-gateway postgres database name",
+                                                              default="kong")
 
             if not self.settings["GLUU_GATEWAY_UI_DATABASE"]:
-                self.settings["GLUU_GATEWAY_UI_DATABASE"] = click.prompt("Please enter gluu-gateway-ui postgres database name", default="konga")
+                self.settings["GLUU_GATEWAY_UI_DATABASE"] = click.prompt(
+                    "Please enter gluu-gateway-ui postgres database name", default="konga")
 
     def prompt_storage(self):
         """Prompt for LDAP storage size
@@ -575,7 +594,8 @@ class Prompt:
                 )
 
             if not self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"]:
-                self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"] = click.prompt("Size of couchbase backup volume storage", default="20Gi")
+                self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"] = click.prompt("Size of couchbase backup volume storage",
+                                                                              default="20Gi")
 
         elif self.settings["PERSISTENCE_BACKEND"] == "ldap":
             if not self.settings["LDAP_BACKUP_SCHEDULE"]:
@@ -650,6 +670,44 @@ class Prompt:
         else:
             self.settings["COUCHBASE_CRT"] = ""
 
+        self.prompt_override_couchbase_files()
+
+        if self.settings["DEPLOYMENT_ARCH"] in ("microk8s", "minikube"):
+            self.settings["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
+
+        if not self.settings["COUCHBASE_USE_LOW_RESOURCES"]:
+            self.settings["COUCHBASE_USE_LOW_RESOURCES"] = confirm_yesno(
+                "Setup CB nodes using low resources for demo purposes")
+
+        if self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "N" and \
+                self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N" and \
+                self.settings["INSTALL_COUCHBASE"] == "Y":
+            self.prompt_couchbase_calculator()
+
+        if not self.settings["COUCHBASE_NAMESPACE"]:
+            self.settings["COUCHBASE_NAMESPACE"] = click.prompt("Please enter a namespace for CB objects.",
+                                                                default="cbns")
+
+        if not self.settings["COUCHBASE_CLUSTER_NAME"]:
+            self.settings["COUCHBASE_CLUSTER_NAME"] = click.prompt("Please enter a cluster name.", default="cbgluu")
+
+        if not self.settings["COUCHBASE_URL"]:
+            self.settings["COUCHBASE_URL"] = click.prompt(
+                "Please enter  couchbase (remote or local) URL base name",
+                default=f"{self.settings['COUCHBASE_CLUSTER_NAME']}.{self.settings['COUCHBASE_NAMESPACE']}.svc.cluster.local",
+            )
+
+        if not self.settings["COUCHBASE_USER"]:
+            self.settings["COUCHBASE_USER"] = click.prompt("Please enter couchbase username.", default="admin")
+
+        if not self.settings["COUCHBASE_PASSWORD"]:
+            self.settings["COUCHBASE_PASSWORD"] = prompt_password("Couchbase")
+
+        self.find_couchbase_certs_or_set_san_cn()
+        update_settings_json_file(self.settings)
+        return self.settings
+
+    def prompt_override_couchbase_files(self):
         if not self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"]:
             self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] = confirm_yesno(
                 "Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml",
@@ -668,104 +726,12 @@ class Prompt:
                              " couchbase-cluster.yaml, couchbase-buckets.yaml, and couchbase-ephemeral-buckets.yaml"
                              " in the same directory pygluu-kubernetes.pyz exists ")
                 raise SystemExit(1)
+        update_settings_json_file(self.settings)
 
-        if self.settings["DEPLOYMENT_ARCH"] in ("microk8s", "minikube"):
-            self.settings["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
-
-        if not self.settings["COUCHBASE_USE_LOW_RESOURCES"]:
-            self.settings["COUCHBASE_USE_LOW_RESOURCES"] = confirm_yesno("Setup CB nodes using low resources for demo purposes")
-
-        if self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "N" and \
-                self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N" and \
-                self.settings["INSTALL_COUCHBASE"] == "Y":
-            # Attempt to Calculate resources needed
-            if not self.settings["NUMBER_OF_EXPECTED_USERS"]:
-                self.settings["NUMBER_OF_EXPECTED_USERS"] = click.prompt("Please enter the number of expected users", default="1000000")
-
-            if not self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"]:
-                self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] = confirm_yesno(
-                    "Will you be using the resource owner password credential grant flow", default=True,
-                )
-
-            if not self.settings["USING_CODE_FLOW"]:
-                self.settings["USING_CODE_FLOW"] = confirm_yesno("Will you be using the code flow", default=True)
-
-            if not self.settings["USING_SCIM_FLOW"]:
-                self.settings["USING_SCIM_FLOW"] = confirm_yesno("Will you be using the SCIM flow", default=True)
-
-            if not self.settings["EXPECTED_TRANSACTIONS_PER_SEC"]:
-                self.settings["EXPECTED_TRANSACTIONS_PER_SEC"] = click.prompt("Expected transactions per second", default=2000)
-
-            # couchbase-cluster.yaml specs
-            if not self.settings["COUCHBASE_DATA_NODES"]:
-                self.settings["COUCHBASE_DATA_NODES"] = click.prompt(
-                    "Please enter the number of data nodes. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_INDEX_NODES"]:
-                self.settings["COUCHBASE_INDEX_NODES"] = click.prompt(
-                    "Please enter the number of index nodes. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_QUERY_NODES"]:
-                self.settings["COUCHBASE_QUERY_NODES"] = click.prompt(
-                    "Please enter the number of query nodes. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]:
-                self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"] = click.prompt(
-                    "Please enter the number of search, eventing and analytics nodes. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_GENERAL_STORAGE"]:
-                self.settings["COUCHBASE_GENERAL_STORAGE"] = click.prompt(
-                    "Please enter the general storage size used for couchbase. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_DATA_STORAGE"]:
-                self.settings["COUCHBASE_DATA_STORAGE"] = click.prompt(
-                    "Please enter the data node storage size used for couchbase. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_INDEX_STORAGE"]:
-                self.settings["COUCHBASE_INDEX_STORAGE"] = click.prompt(
-                    "Please enter the index node storage size used for couchbase. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_QUERY_STORAGE"]:
-                self.settings["COUCHBASE_QUERY_STORAGE"] = click.prompt(
-                    "Please enter the query node storage size used for couchbase. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_ANALYTICS_STORAGE"]:
-                self.settings["COUCHBASE_ANALYTICS_STORAGE"] = click.prompt(
-                    "Please enter the analytics node storage size used for couchbase. (auto-calculated)", default="",
-                )
-
-            if not self.settings["COUCHBASE_VOLUME_TYPE"]:
-                logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
-                logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
-                logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
-                self.settings["COUCHBASE_VOLUME_TYPE"] = click.prompt("Please enter the volume type.", default="io1")
-
-        if not self.settings["COUCHBASE_NAMESPACE"]:
-            self.settings["COUCHBASE_NAMESPACE"] = click.prompt("Please enter a namespace for CB objects.", default="cbns")
-
-        if not self.settings["COUCHBASE_CLUSTER_NAME"]:
-            self.settings["COUCHBASE_CLUSTER_NAME"] = click.prompt("Please enter a cluster name.", default="cbgluu")
-
-        if not self.settings["COUCHBASE_URL"]:
-            self.settings["COUCHBASE_URL"] = click.prompt(
-                "Please enter  couchbase (remote or local) URL base name",
-                default=f"{self.settings['COUCHBASE_CLUSTER_NAME']}.{self.settings['COUCHBASE_NAMESPACE']}.svc.cluster.local",
-            )
-
-        if not self.settings["COUCHBASE_USER"]:
-            self.settings["COUCHBASE_USER"] = click.prompt("Please enter couchbase username.", default="admin")
-
-        if not self.settings["COUCHBASE_PASSWORD"]:
-            self.settings["COUCHBASE_PASSWORD"] = prompt_password("Couchbase")
-
+    def find_couchbase_certs_or_set_san_cn(self):
+        """Finds couchbase certs inside couchbase_crts-keys folder and if not existent sets couchbase SAN and prompts
+        for couchbase common name.
+        """
         custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
         custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
         custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
@@ -783,9 +749,98 @@ class Prompt:
                     "localhost"
                 ]
             if not self.settings["COUCHBASE_CN"]:
-                self.settings["COUCHBASE_CN"] = click.prompt("Enter Couchbase certificate common name.", default="Couchbase CA")
+                self.settings["COUCHBASE_CN"] = click.prompt("Enter Couchbase certificate common name.",
+                                                             default="Couchbase CA")
         update_settings_json_file(self.settings)
-        return self.settings
+
+    def prompt_couchbase_calculator(self):
+        """Attempt to Calculate resources needed
+        """
+        if not self.settings["NUMBER_OF_EXPECTED_USERS"]:
+            self.settings["NUMBER_OF_EXPECTED_USERS"] = click.prompt("Please enter the number of expected users",
+                                                                     default="1000000")
+
+        if not self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"]:
+            self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] = confirm_yesno(
+                "Will you be using the resource owner password credential grant flow", default=True,
+            )
+
+        if not self.settings["USING_CODE_FLOW"]:
+            self.settings["USING_CODE_FLOW"] = confirm_yesno("Will you be using the code flow", default=True)
+
+        if not self.settings["USING_SCIM_FLOW"]:
+            self.settings["USING_SCIM_FLOW"] = confirm_yesno("Will you be using the SCIM flow", default=True)
+
+        if not self.settings["EXPECTED_TRANSACTIONS_PER_SEC"]:
+            self.settings["EXPECTED_TRANSACTIONS_PER_SEC"] = click.prompt("Expected transactions per second",
+                                                                          default=2000)
+
+        # couchbase-cluster.yaml specs
+        if not self.settings["COUCHBASE_DATA_NODES"]:
+            self.settings["COUCHBASE_DATA_NODES"] = click.prompt(
+                "Please enter the number of data nodes. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_INDEX_NODES"]:
+            self.settings["COUCHBASE_INDEX_NODES"] = click.prompt(
+                "Please enter the number of index nodes. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_QUERY_NODES"]:
+            self.settings["COUCHBASE_QUERY_NODES"] = click.prompt(
+                "Please enter the number of query nodes. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]:
+            self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"] = click.prompt(
+                "Please enter the number of search, eventing and analytics nodes. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_GENERAL_STORAGE"]:
+            self.settings["COUCHBASE_GENERAL_STORAGE"] = click.prompt(
+                "Please enter the general storage size used for couchbase. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_DATA_STORAGE"]:
+            self.settings["COUCHBASE_DATA_STORAGE"] = click.prompt(
+                "Please enter the data node storage size used for couchbase. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_INDEX_STORAGE"]:
+            self.settings["COUCHBASE_INDEX_STORAGE"] = click.prompt(
+                "Please enter the index node storage size used for couchbase. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_QUERY_STORAGE"]:
+            self.settings["COUCHBASE_QUERY_STORAGE"] = click.prompt(
+                "Please enter the query node storage size used for couchbase. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_ANALYTICS_STORAGE"]:
+            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = click.prompt(
+                "Please enter the analytics node storage size used for couchbase. (auto-calculated)", default="",
+            )
+
+        if not self.settings["COUCHBASE_VOLUME_TYPE"]:
+            logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
+            logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
+            logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
+            self.settings["COUCHBASE_VOLUME_TYPE"] = click.prompt("Please enter the volume type.", default="io1")
+        update_settings_json_file(self.settings)
+
+    def prompt_couchbase_multi_cluster(self):
+        """Prompts for couchbase multi cluster
+        """
+        print("|------------------------------------------------------------------|")
+        print("|         Is this a multi-cloud/region setup[N] ? [Y/N]            |")
+        print("|------------------------------------------------------------------|")
+        print("|                             Notes                                |")
+        print("|------------------------------------------------------------------|")
+        print("If you are planning for a multi-cloud/region setup and this is the first cluster answer N or"
+              " leave blank. You will answer Y for the second and more cluster setup   ")
+        print("|------------------------------------------------------------------|")
+        self.settings["DEPLOY_MULTI_CLUSTER"] = confirm_yesno("Is this a multi-cloud/region setup")
+        update_settings_json_file(self.settings)
 
     def prompt_arch(self):
         """Prompts for the kubernetes infrastructure used.
@@ -821,6 +876,7 @@ class Prompt:
             }
             choice = click.prompt("Deploy on", default=1)
             self.settings["DEPLOYMENT_ARCH"] = arch_map.get(choice, "microk8s")
+        update_settings_json_file(self.settings)
 
     def prompt_license(self):
         """Prompts user to accept Apache 2.0 license
@@ -884,9 +940,11 @@ class Prompt:
 
         if self.settings["ENABLE_OXD"] == "Y":
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:
-                self.settings["OXD_APPLICATION_KEYSTORE_CN"] = click.prompt("oxd server application keystore name", default="oxd-server")
+                self.settings["OXD_APPLICATION_KEYSTORE_CN"] = click.prompt("oxd server application keystore name",
+                                                                            default="oxd-server")
             if not self.settings["OXD_ADMIN_KEYSTORE_CN"]:
-                self.settings["OXD_ADMIN_KEYSTORE_CN"] = click.prompt("oxd server admin keystore name", default="oxd-server")
+                self.settings["OXD_ADMIN_KEYSTORE_CN"] = click.prompt("oxd server admin keystore name",
+                                                                      default="oxd-server")
 
         if not self.settings["ENABLE_OXTRUST_API"]:
             self.settings["ENABLE_OXTRUST_API"] = confirm_yesno("Enable oxTrust API")
@@ -897,10 +955,12 @@ class Prompt:
                 self.settings["ENABLE_OXTRUST_TEST_MODE"] = confirm_yesno("Enable oxTrust Test Mode")
         if self.settings["ENABLE_OXTRUST_TEST_MODE"] == "Y":
             self.settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
+        update_settings_json_file(self.settings)
 
     @property
     def gather_ip(self):
-        """Attempts to detect and return ip automatically. Also set node names, zones, and addresses in a cloud deployment.
+        """Attempts to detect and return ip automatically.
+        Also set node names, zones, and addresses in a cloud deployment.
 
         :return:
         """
@@ -979,7 +1039,8 @@ class Prompt:
                 self.settings["REDIS_NODES_PER_MASTER"] = click.prompt("The number of nodes per master node", default=2)
 
             if not self.settings["REDIS_NAMESPACE"]:
-                self.settings["REDIS_NAMESPACE"] = click.prompt("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
+                self.settings["REDIS_NAMESPACE"] = click.prompt("Please enter a namespace for Redis cluster",
+                                                                default="gluu-redis-cluster")
         else:
             # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
             if not self.settings["REDIS_PW"]:
@@ -1000,72 +1061,65 @@ class Prompt:
                     default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
                 )
             self.settings["REDIS_URL"] = redis_url_prompt
+        update_settings_json_file(self.settings)
 
-    @property
-    def check_settings_and_prompt(self):
-        """Main property: called to setup all prompts and returns prompts in settings file.
-
-        :return:
+    def prompt_test_environment(self):
+        """Prompts for test enviornment.
         """
-        self.prompt_arch()
-        self.prompt_gluu_namespace()
-        self.prompt_optional_services()
-        self.prompt_gluu_gateway()
-        self.prompt_jackrabbit()
+        logger.info("A test environment means that the installer will strip all resource requirements, "
+                    "and hence will use as much as needed only. The pods are subject to eviction. Please use "
+                    " at least 8GB Ram , 4 CPU, and 50 GB disk.")
+        self.settings["TEST_ENVIRONMENT"] = confirm_yesno("Is this a test environment.")
+        update_settings_json_file(self.settings)
 
-        if not self.settings["TEST_ENVIRONMENT"] and \
-            self.settings["DEPLOYMENT_ARCH"] == "microk8s" and \
-                self.settings["DEPLOYMENT_ARCH"] == "minikube":
-            logger.info("A test environment means that the installer will strip all resource requirements, "
-                        "and hence will use as much as needed only. The pods are subject to eviction. Please use "
-                        " at least 8GB Ram , 4 CPU, and 50 GB disk.")
-            self.settings["TEST_ENVIRONMENT"] = confirm_yesno("Is this a test environment.")
+    def prompt_ssh_key(self):
+        """Prompts for ssh key if
+        """
+        self.settings["NODE_SSH_KEY"] = click.prompt(
+            "Please enter the ssh key path if exists to login into the nodes created. This ssh key will only"
+            " be used to delete folders created on the nodes by the setup if the user uses local volumes",
+            default="~/.ssh/id_rsa",
+        )
+        update_settings_json_file(self.settings)
 
-        if self.settings["DEPLOYMENT_ARCH"] in ("eks", "gke", "do", "local", "aks"):
-            if not self.settings["NODE_SSH_KEY"]:
-                self.settings["NODE_SSH_KEY"] = click.prompt(
-                    "Please enter the ssh key path if exists to login into the nodes created",
-                    default="~/.ssh/id_rsa",
-                )
+    def prompt_aws(self):
+        """Prompts for AWS Load balancer information
+        """
+        lb_map = {
+            1: "clb",
+            2: "nlb",
+            3: "alb",
+        }
 
-        if not self.settings["HOST_EXT_IP"]:
-            ip = self.gather_ip
-            self.settings["HOST_EXT_IP"] = ip
+        if self.settings["AWS_LB_TYPE"] not in lb_map.values():
+            print("|-----------------------------------------------------------------|")
+            print("|                     AWS Loadbalancer type                       |")
+            print("|-----------------------------------------------------------------|")
+            print("| [1] Classic Load Balancer (CLB) [default]                       |")
+            print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
+            print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
+            print("|-----------------------------------------------------------------|")
 
-            if self.settings["DEPLOYMENT_ARCH"] == "eks":
-                lb_map = {
-                    1: "clb",
-                    2: "nlb",
-                    3: "alb",
-                }
+            choice = click.prompt("Loadbalancer type", default=1)
+            self.settings["AWS_LB_TYPE"] = lb_map.get(choice, "clb")
+            if self.settings["AWS_LB_TYPE"] == "alb":
+                logger.info("A prompt later during installation will appear to input the ALB DNS address")
 
-                if self.settings["AWS_LB_TYPE"] not in lb_map.values():
-                    print("|-----------------------------------------------------------------|")
-                    print("|                     AWS Loadbalancer type                       |")
-                    print("|-----------------------------------------------------------------|")
-                    print("| [1] Classic Load Balancer (CLB) [default]                       |")
-                    print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
-                    print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
-                    print("|-----------------------------------------------------------------|")
+        if not self.settings["USE_ARN"]:
+            self.settings["USE_ARN"] = confirm_yesno(
+                "Are you terminating SSL traffic at LB and using certificate from AWS")
 
-                    choice = click.prompt("Loadbalancer type", default=1)
-                    self.settings["AWS_LB_TYPE"] = lb_map.get(choice, "clb")
-                    if self.settings["AWS_LB_TYPE"] == "alb":
-                        logger.info("A prompt later during installation will appear to input the ALB DNS address")
+        if not self.settings["ARN_AWS_IAM"] and self.settings["USE_ARN"] == "Y":
+            # no default means it will try to prompt in loop until user inputs
+            self.settings["ARN_AWS_IAM"] = click.prompt(
+                "Enter aws-load-balancer-ssl-cert arn quoted ('arn:aws:acm:us-west-2:XXXXXXXX:"
+                "certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')"
+            )
+        update_settings_json_file(self.settings)
 
-                if not self.settings["USE_ARN"]:
-                    self.settings["USE_ARN"] = confirm_yesno("Are you terminating SSL traffic at LB and using certificate from AWS")
-
-                if not self.settings["ARN_AWS_IAM"] and self.settings["USE_ARN"] == "Y":
-                    # no default means it will try to prompt in loop until user inputs
-                    self.settings["ARN_AWS_IAM"] = click.prompt(
-                        "Enter aws-load-balancer-ssl-cert arn quoted ('arn:aws:acm:us-west-2:XXXXXXXX:"
-                        "certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')"
-                    )
-
-        if self.settings["DEPLOYMENT_ARCH"] == "gke":
-            self.prompt_gke()
-
+    def prompt_persistence_backend(self):
+        """Prompts for persistence backend layer
+        """
         persistence_map = {
             1: "ldap",
             2: "couchbase",
@@ -1083,104 +1137,109 @@ class Prompt:
 
             choice = click.prompt("Persistence layer", default=1)
             self.settings["PERSISTENCE_BACKEND"] = persistence_map.get(choice, "ldap")
+        update_settings_json_file(self.settings)
 
-        if self.settings["PERSISTENCE_BACKEND"] == "hybrid":
-            hybrid_ldap_map = {
-                1: "default",
-                2: "user",
-                3: "site",
-                4: "cache",
-                5: "token",
-            }
+    def prompt_hybrid_ldap_held_data(self):
+        """Prompts for data held in ldap when hybrid mode is chosen in persistence
+        """
+        hybrid_ldap_map = {
+            1: "default",
+            2: "user",
+            3: "site",
+            4: "cache",
+            5: "token",
+        }
 
-            if self.settings["HYBRID_LDAP_HELD_DATA"] not in hybrid_ldap_map.values():
-                print("|------------------------------------------------------------------|")
-                print("|                     Hybrid [WrendDS + Couchbase]                 |")
-                print("|------------------------------------------------------------------|")
-                print("| [1] Default                                                      |")
-                print("| [2] User                                                         |")
-                print("| [3] Site                                                         |")
-                print("| [4] Cache                                                        |")
-                print("| [5] Token                                                        |")
-                print("|------------------------------------------------------------------|")
-
-                choice = click.prompt("Cache layer", default=1)
-                self.settings["HYBRID_LDAP_HELD_DATA"] = hybrid_ldap_map.get(choice, "default")
-
-        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or self.settings["INSTALL_JACKRABBIT"] == "Y":
-            if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
-                self.settings["APP_VOLUME_TYPE"] = 1
-            elif self.settings["DEPLOYMENT_ARCH"] == "minikube":
-                self.settings["APP_VOLUME_TYPE"] = 2
-
-            if not self.settings["APP_VOLUME_TYPE"]:
-                vol_choice = 0
-                if self.settings["DEPLOYMENT_ARCH"] == "eks":
-                    print("|------------------------------------------------------------------|")
-                    print("|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |")
-                    print("|                    MultiAZ - Supported                           |")
-                    print("|------------------------------------------------------------------|")
-                    print("| [6]  volumes on host                                             |")
-                    print("| [7]  EBS volumes dynamically provisioned [default]               |")
-                    print("| [8]  EBS volumes statically provisioned                          |")
-                    vol_choice = click.prompt("What type of volume path", default=7)
-                elif self.settings["DEPLOYMENT_ARCH"] == "gke":
-                    print("|------------------------------------------------------------------|")
-                    print("|Google Cloud Engine - Google Kubernetes Engine                    |")
-                    print("|------------------------------------------------------------------|")
-                    print("| [11]  volumes on host                                            |")
-                    print("| [12]  Persistent Disk  dynamically provisioned [default]         |")
-                    print("| [13]  Persistent Disk  statically provisioned                    |")
-                    vol_choice = click.prompt("What type of volume path", default=12)
-                elif self.settings["DEPLOYMENT_ARCH"] == "aks":
-                    print("|------------------------------------------------------------------|")
-                    print("|Microsoft Azure                                                   |")
-                    print("|------------------------------------------------------------------|")
-                    print("| [16] volumes on host                                             |")
-                    print("| [17] Persistent Disk  dynamically provisioned                    |")
-                    print("| [18] Persistent Disk  statically provisioned                     |")
-                    vol_choice = click.prompt("What type of volume path", default=17)
-                elif self.settings["DEPLOYMENT_ARCH"] == "do":
-                    print("|------------------------------------------------------------------|")
-                    print("|Digital Ocean                                                     |")
-                    print("|------------------------------------------------------------------|")
-                    print("| [21] volumes on host                                             |")
-                    print("| [22] Persistent Disk  dynamically provisioned                    |")
-                    print("| [23] Persistent Disk  statically provisioned                     |")
-                    vol_choice = click.prompt("What type of volume path", default=22)
-                elif self.settings["DEPLOYMENT_ARCH"] == "local":
-                    print("|------------------------------------------------------------------|")
-                    print("|Local Deployment                                                  |")
-                    print("|------------------------------------------------------------------|")
-                    print("| [26] OpenEBS Local PV Hostpath                                   |")
-                    print("|------------------------------------------------------------------|")
-                    logger.info("OpenEBS must be installed before")
-                    vol_choice = click.prompt("What type of volume path", default=26)
-                self.settings["APP_VOLUME_TYPE"] = vol_choice
-
-            if self.settings["APP_VOLUME_TYPE"] in (8, 13):
-                self.prompt_volumes_identifier()
-
-            if self.settings["APP_VOLUME_TYPE"] == 18:
-                self.prompt_disk_uris()
-
-            if not self.settings["LDAP_VOLUME"] and self.settings["DEPLOYMENT_ARCH"] in ("aks", "eks", "gke"):
-                logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
-                logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
-                logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
-                self.settings["LDAP_VOLUME"] = click.prompt("Please enter the volume type.", default="io1")
-
-        if not self.settings["DEPLOY_MULTI_CLUSTER"] and self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
+        if self.settings["HYBRID_LDAP_HELD_DATA"] not in hybrid_ldap_map.values():
             print("|------------------------------------------------------------------|")
-            print("|         Is this a multi-cloud/region setup[N] ? [Y/N]            |")
+            print("|                     Hybrid [WrendDS + Couchbase]                 |")
             print("|------------------------------------------------------------------|")
-            print("|                             Notes                                |")
+            print("| [1] Default                                                      |")
+            print("| [2] User                                                         |")
+            print("| [3] Site                                                         |")
+            print("| [4] Cache                                                        |")
+            print("| [5] Token                                                        |")
             print("|------------------------------------------------------------------|")
-            print("If you are planning for a multi-cloud/region setup and this is the first cluster answer N or"
-                  " leave blank. You will answer Y for the second and more cluster setup   ")
-            print("|------------------------------------------------------------------|")
-            self.settings["DEPLOY_MULTI_CLUSTER"] = confirm_yesno("Is this a multi-cloud/region setup")
 
+            choice = click.prompt("Cache layer", default=1)
+            self.settings["HYBRID_LDAP_HELD_DATA"] = hybrid_ldap_map.get(choice, "default")
+        update_settings_json_file(self.settings)
+
+    def prompt_app_volume_type(self):
+        """Prompts for volume type
+        """
+        vol_choice = 0
+        if self.settings["DEPLOYMENT_ARCH"] == "eks":
+            print("|------------------------------------------------------------------|")
+            print("|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |")
+            print("|                    MultiAZ - Supported                           |")
+            print("|------------------------------------------------------------------|")
+            print("| [6]  volumes on host                                             |")
+            print("| [7]  EBS volumes dynamically provisioned [default]               |")
+            print("| [8]  EBS volumes statically provisioned                          |")
+            vol_choice = click.prompt("What type of volume path", default=7)
+        elif self.settings["DEPLOYMENT_ARCH"] == "gke":
+            print("|------------------------------------------------------------------|")
+            print("|Google Cloud Engine - Google Kubernetes Engine                    |")
+            print("|------------------------------------------------------------------|")
+            print("| [11]  volumes on host                                            |")
+            print("| [12]  Persistent Disk  dynamically provisioned [default]         |")
+            print("| [13]  Persistent Disk  statically provisioned                    |")
+            vol_choice = click.prompt("What type of volume path", default=12)
+        elif self.settings["DEPLOYMENT_ARCH"] == "aks":
+            print("|------------------------------------------------------------------|")
+            print("|Microsoft Azure                                                   |")
+            print("|------------------------------------------------------------------|")
+            print("| [16] volumes on host                                             |")
+            print("| [17] Persistent Disk  dynamically provisioned                    |")
+            print("| [18] Persistent Disk  statically provisioned                     |")
+            vol_choice = click.prompt("What type of volume path", default=17)
+        elif self.settings["DEPLOYMENT_ARCH"] == "do":
+            print("|------------------------------------------------------------------|")
+            print("|Digital Ocean                                                     |")
+            print("|------------------------------------------------------------------|")
+            print("| [21] volumes on host                                             |")
+            print("| [22] Persistent Disk  dynamically provisioned                    |")
+            print("| [23] Persistent Disk  statically provisioned                     |")
+            vol_choice = click.prompt("What type of volume path", default=22)
+        elif self.settings["DEPLOYMENT_ARCH"] == "local":
+            print("|------------------------------------------------------------------|")
+            print("|Local Deployment                                                  |")
+            print("|------------------------------------------------------------------|")
+            print("| [26] OpenEBS Local PV Hostpath                                   |")
+            print("|------------------------------------------------------------------|")
+            logger.info("OpenEBS must be installed before")
+            vol_choice = click.prompt("What type of volume path", default=26)
+        self.settings["APP_VOLUME_TYPE"] = vol_choice
+        update_settings_json_file(self.settings)
+
+    def prompt_volumes(self):
+        """Prompts for all info needed for volume creation on cloud or onpremise
+        """
+        if self.settings["DEPLOYMENT_ARCH"] == "microk8s":
+            self.settings["APP_VOLUME_TYPE"] = 1
+        elif self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            self.settings["APP_VOLUME_TYPE"] = 2
+
+        if not self.settings["APP_VOLUME_TYPE"]:
+            self.prompt_app_volume_type()
+
+        if self.settings["APP_VOLUME_TYPE"] in (8, 13):
+            self.prompt_volumes_identifier()
+
+        if self.settings["APP_VOLUME_TYPE"] == 18:
+            self.prompt_disk_uris()
+
+        if not self.settings["LDAP_VOLUME"] and self.settings["DEPLOYMENT_ARCH"] in ("aks", "eks", "gke"):
+            logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
+            logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
+            logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
+            self.settings["LDAP_VOLUME"] = click.prompt("Please enter the volume type.", default="io1")
+        update_settings_json_file(self.settings)
+
+    def prompt_cache_type(self):
+        """Prompt cache type
+        """
         gluu_cache_map = {
             1: "NATIVE_PERSISTENCE",
             2: "IN_MEMORY",
@@ -1196,10 +1255,54 @@ class Prompt:
             print("|------------------------------------------------------------------|")
             choice = click.prompt("Cache layer", default=1)
             self.settings["GLUU_CACHE_TYPE"] = gluu_cache_map.get(choice, "NATIVE_PERSISTENCE")
-
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
             self.prompt_redis()
+        update_settings_json_file(self.settings)
 
+    @property
+    def check_settings_and_prompt(self):
+        """Main property: called to setup all prompts and returns prompts in settings file.
+
+        :return:
+        """
+        self.prompt_arch()
+        self.prompt_gluu_namespace()
+        self.prompt_optional_services()
+        self.prompt_gluu_gateway()
+        self.prompt_jackrabbit()
+
+        if not self.settings["TEST_ENVIRONMENT"] and \
+                self.settings["DEPLOYMENT_ARCH"] == "microk8s" and \
+                self.settings["DEPLOYMENT_ARCH"] == "minikube":
+            self.prompt_test_environment()
+
+        if self.settings["DEPLOYMENT_ARCH"] in ("eks", "gke", "do", "local", "aks"):
+            if not self.settings["NODE_SSH_KEY"]:
+                self.prompt_ssh_key()
+
+        if not self.settings["HOST_EXT_IP"]:
+            ip = self.gather_ip
+            self.settings["HOST_EXT_IP"] = ip
+
+            if self.settings["DEPLOYMENT_ARCH"] == "eks":
+                self.prompt_aws()
+
+        if self.settings["DEPLOYMENT_ARCH"] == "gke":
+            self.prompt_gke()
+
+        self.prompt_persistence_backend()
+
+        if self.settings["PERSISTENCE_BACKEND"] == "hybrid":
+            self.prompt_hybrid_ldap_held_data()
+
+        if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or self.settings["INSTALL_JACKRABBIT"] == "Y":
+            self.prompt_volumes()
+
+        if not self.settings["DEPLOY_MULTI_CLUSTER"] and self.settings["PERSISTENCE_BACKEND"] in (
+                "hybrid", "couchbase"):
+            self.prompt_couchbase_multi_cluster()
+
+        self.prompt_cache_type()
         if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
             self.prompt_couchbase
 
