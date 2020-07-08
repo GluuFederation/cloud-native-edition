@@ -266,12 +266,16 @@ def deployment_arch():
     """
     Input for the kubernetes infrastructure used.
     """
+    form = DeploymentArchForm()
+
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        default_settings["DEPLOYMENT_ARCH"] = request.form["deployment_arch"]
-        return redirect(url_for(next_step))
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["DEPLOYMENT_ARCH"] = form.deployment_arch.data
+            return redirect(url_for(next_step))
 
     return render_template("index.html",
+                           form=form,
                            step="deployment_arch",
                            next_step="gluu_namespace")
 

@@ -1,18 +1,8 @@
+{# TODO: Find A way to styling up this form #}
 <fieldset class="form-group">
-  <h6 class="border-bottom border-gray pb-2 mt-2">Test Environment Deployments</h6>
-  {{ forms.radio('Microk8s', 'microk8s', 'deployment_arch', 'microk8s', True) }}
-  {{ forms.radio('Minikube', 'minikube', 'deployment_arch', 'minikube') }}
+  <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.deployment_arch.label }}</h6>
+  {% for choice in form.deployment_arch %}
+    {{ forms.single_radio(choice) }}
+  {% endfor %}
 </fieldset>
 
-<fieldset class="form-group">
-  <h6 class="border-bottom border-gray pb-2 mt-2">Cloud Deployments</h6>
-  {{ forms.radio('Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)', 'eks', 'deployment_arch', 'eks') }}
-  {{ forms.radio('Google Cloud Engine - Google Kubernetes Engine (GKE)', 'gke', 'deployment_arch', 'gke') }}
-  {{ forms.radio('Microsoft Azure (AKS)', 'aks', 'deployment_arch', 'aks') }}
-  {{ forms.radio('Digital Ocean [BETA]', 'do', 'deployment_arch', 'do') }}
-</fieldset>
-
-<fieldset class="form-group">
-  <h6 class="border-bottom border-gray pb-2 mt-2">Local Deployments</h6>
-  {{ forms.radio('Manually provisioned Kubernetes cluster', 'local', 'deployment_arch', 'local') }}
-</fieldset>
