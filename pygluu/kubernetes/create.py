@@ -74,7 +74,7 @@ def main():
 
     # Not sure if we intercept the gui installation from here
     if args.subparser_name == "gui-install":
-        app.run(host='0.0.0.0', port=5000, debug=True)
+        app.run(host='0.0.0.0', port=5000)
         return
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
