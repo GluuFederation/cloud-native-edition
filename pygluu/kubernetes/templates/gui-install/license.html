@@ -1,2 +1,2 @@
-<pre class="p-3 mb-2 bg-light text-dark">{{ license }} </pre>
-{{ forms.yes_no('Do you accept the Gluu license stated above?', 'accept_gluu_license','N') }}
+<pre class="p-3 mb-2 bg-light text-dark pre-scrollable">{{ license }} </pre>
+{{ forms.radio(form.license) }}

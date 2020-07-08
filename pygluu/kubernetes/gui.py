@@ -224,17 +224,19 @@ def favicon():
 def agreement():
     """Input for Accepting license
     """
-
+    form = LicenseForm()
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        default_settings["ACCEPT_GLUU_LICENSE"] = request.form["accept_gluu_license"]
-        return redirect(url_for(next_step))
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["ACCEPT_GLUU_LICENSE"] = form.license.data
+            return redirect(url_for(next_step))
 
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
 
     return render_template("index.html",
                            license=agreement_file,
+                           form=form,
                            step="license",
                            next_step="gluu_version")
 
