@@ -285,13 +285,16 @@ def gluu_namespace():
     """
     Input for gluu namespace.
     """
+    form = GluuNamespaceForm()
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        default_settings["GLUU_NAMESPACE"] = request.form["gluu_namespace"]
-        return redirect(url_for(next_step))
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["GLUU_NAMESPACE"] = form.gluu_namespace.data
+            return redirect(url_for(next_step))
 
     return render_template("index.html",
                            step="gluu_namespace",
+                           form=form,
                            next_step="optional_services")
 
 
@@ -300,17 +303,51 @@ def optional_services():
     """
     Input for optional services.
     """
+    form = OptionalServiceForm()
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        for i in request.form.keys():
-            if i == "next_step":
-                continue
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
+            default_settings["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
+            if form.enable_oxauth_key_rotate == "Y":
+                default_settings["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
 
-            default_settings[i.upper()] = request.form[i]
+            default_settings["ENABLE_RADIUS"] = form.enable_radius.data
+            if default_settings["ENABLE_RADIUS"] == "Y":
+                default_settings["ENABLE_RADIUS_BOOLEAN"] = "true"
 
-        return redirect(url_for(next_step))
+            default_settings["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
+            if default_settings["ENABLE_OXPASSPORT"] == "Y":
+                default_settings["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
+
+            default_settings["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
+            if default_settings["ENABLE_OXSHIBBOLETH"] == "Y":
+                default_settings["ENABLE_SAML_BOOLEAN"] = "true"
+
+            default_settings["ENABLE_CASA"] = form.enable_casa.data
+            if default_settings["ENABLE_CASA"] == "Y":
+                default_settings["ENABLE_CASA_BOOLEAN"] = "true"
+
+            default_settings["ENABLE_FIDO2"] = form.enable_fido2.data
+            default_settings["ENABLE_SCIM"] = form.enable_scim.data
+            default_settings["ENABLE_OXD"] = form.enable_oxd.data
+
+            if default_settings["ENABLE_OXD"] == "Y":
+                default_settings["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
+                default_settings["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
+
+            default_settings["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
+            if default_settings["ENABLE_OXTRUST_API"] == "Y":
+                default_settings["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
+                default_settings["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode
+
+            if default_settings["ENABLE_OXTRUST_TEST_MODE"] == "Y":
+                default_settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
+
+            return redirect(url_for(next_step))
 
     return render_template("index.html",
+                           form=form,
                            step="optional_services",
                            next_step="gluu_gateway")
 
@@ -320,23 +357,31 @@ def gluu_gateway():
     """
     Input for Gluu Gateway
     """
+    form = GluuGatewayForm()
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        if request.form["install_gluu_gateway"] == "N":
-            default_settings["INSTALL_GLUU_GATEWAY"] = request.form["install_gluu_gateway"]
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
+
+            if form.install_gluu_gateway == "Y":
+                default_settings["ENABLE_OXD"] = "Y"
+                default_settings["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
+                default_settings["POSTGRES_REPLICAS"] = form.postgres_replicas.data
+                default_settings["POSTGRES_URL"] = form.postgres_url.data
+                default_settings["KONG_NAMESPACE"] = form.kong_namespace.data
+                default_settings["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
+                default_settings["KONG_DATABASE"] = form.kong_database.data
+                default_settings["KONG_PG_USER"] = form.kong_pg_user.data
+                default_settings["KING_PG_PASSWORD"] = form.kong_pg_password.data
+                default_settings["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
+                default_settings["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
+                default_settings["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
+
             return redirect(url_for(next_step))
-
-        default_settings["ENABLE_OXD"] = "Y"
-        for i in request.form.keys():
-            if i == "next_step":
-                next_step = request.form[i]
-                continue
-            default_settings[i.upper()] = request.form[i]
-
-        return redirect(url_for(next_step))
 
     return render_template("index.html",
                            step="gluu_gateway",
+                           form=form,
                            next_step="install_jackrabbit")
 
 
