@@ -6,17 +6,39 @@
  https://www.apache.org/licenses/LICENSE-2.0
 A GUI for installing Gluu Cloud Native Edition.
 """
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-from .common import get_supported_versions
 from pathlib import Path
+from flask import Flask, jsonify, make_response, render_template, render_template, \
+    request, redirect, url_for, send_from_directory
+
+from flask_wtf.csrf import CSRFProtect
+from wtforms.validators import DataRequired, Optional
+from .common import get_supported_versions
+from .kubeapi import Kubernetes
+from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, GluuNamespaceForm, \
+    OptionalServiceForm, GluuGatewayForm, JackrabbitForm, SettingForm, app_volume_types, \
+    VolumeTypeForm
+
+import ipaddress
 
 app = Flask(__name__, template_folder="templates/gui-install")
+
+#TODO move config to a better place
+app.config['SECRET_KEY'] = "Your_secret_string"
+app.config['DEBUG'] = True
+
+csrf = CSRFProtect(app)
 wizard_steps = ["license",
                 "deployment_arch",
                 "set_namespace",
                 "optional_settings",
                 "install_jackrabbit",
                 "settings"]
+
+kubernetes = Kubernetes()
+
+test_arch = ("microk8s", "minikube")
+cloud_arch = ("eks", "gke", "aks", "do")
+local_arch = ("local")
 
 default_settings = dict(ACCEPT_GLUU_LICENSE="",
                         GLUU_VERSION="",
