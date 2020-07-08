@@ -5,9 +5,12 @@
       <div class="card-header">
       </div>
       <div class="card-body">
-        <form method="post">
+        <form method="post" class="needs-validation">
+          {{ form.csrf_token }}
           {% include '%s.html' % step %}
-          {{ forms.hidden('next_step', next_step) }}
+          {% if(next_step) %}
+            {{ forms.hidden('next_step', next_step) }}
+          {% endif %}
           <button type="submit" class="btn btn-primary float-right">Next</button>
         </form>
       </div>
@@ -17,33 +20,112 @@
 
 {% block custom_script %}
   <script>
+
+    showHideOption = function(target, value){
+      if(value == 'Y'){
+        target.collapse('show');
+       }else{
+        target.collapse('hide');
+       }
+    }
+
     $(document).ready(function () {
+      {% if step == 'optional_services' %}
+        $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
+        showHideOption($('#oxauthKeyLife'), $(this).val());
+        });
 
-      $('.enable-oxd-opt').on('change', function(){
-        $('#oxdSetup').collapse('toggle');
-      });
+        $('input[name="enable_oxd"]').on('change', function(){
+          showHideOption($('#oxdSetup'), $(this).val());
 
-      $('.install-gluu-gateway-opt').on('change', function(){
-        if($(this).val() == 'Y'){
-          $('#oxd-alert').collapse('show');
-          $('#postgresSetup').collapse('show');
-          $('#gluuGatewaySetup').collapse('show');
-        }else{
-          $('#oxd-alert').collapse('hide');
-          $('#postgresSetup').collapse('hide');
-          $('#gluuGatewaySetup').collapse('hide');
+        });
+
+        $('input[name="enable_oxtrust_api"]').on('change', function(){
+          showHideOption($('#oxtrustTestMode'), $(this).val());
+
+        });
+      {% endif %}
+
+      {% if step == "gluu_gateway" %}
+        $('input[name="install_gluu_gateway').on('change', function(){
+          showHideOption($('#oxd-alert'), $(this).val());
+          showHideOption($('#postgresSetup'), $(this).val());
+          showHideOption($('#gluuGatewaySetup'), $(this).val());
+        });
+      {% endif %}
+
+      {% if step == "install_jackrabbit" %}
+        $('input[name="install_jackrabbit"').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#jackrabbitYesInstall').collapse('show');
+             $('#jackrabbitNoInstall').collapse('hide');
+           }else{
+            $('#jackrabbitNoInstall').collapse('show');
+            $('#jackrabbitYesInstall').collapse('hide');
+           }
+        });
+      {% endif %}
+
+      {% if step == "settings" %}
+        IpAddress = function(){
+          return Promise.resolve($.get('/determine_ip'));
         }
-      });
 
-      $('.install-jackrabbit-opt').on('change', function(){
-         if($(this).val() == 'Y'){
-          $('#jackrabbitNoInstall').collapse('hide');
-          $('#jackrabbitYesInstall').collapse('show');
-        }else{
-          $('#jackrabbitNoInstall').collapse('show');
-          $('#jackrabbitYesInstall').collapse('hide');
+        ValidateIP = function(ip_address){
+          return Promise.resolve($.get('/validate_ip/' + ip_address));
         }
-      });
+
+        IpAddress().then(function(data){
+          $('#host_ext_ip').val(data.ip_address);
+
+          if(data.status){
+            $('#host_ext_ip').addClass('is-valid');
+            $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('valid-feedback').html(data.message);
+          }else{
+            $('#host_ext_ip').addClass('is-invalid');
+            $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('invalid-feedback').html(data.message);
+          }
+
+          $('#validate-ip').collapse('show');
+
+        });
+
+        $('#validate-ip').on('click', function(){
+          ValidateIP($('#host_ext_ip').val()).then(function(data){
+
+           if(data.status){
+              $('#host_ext_ip').removeClass('is-invalid');
+              $('#host_ext_ip').addClass('is-valid');
+              $('#host_ext_ip').closest('.form-group').find('.feedback').removeClass('invalid-feedback');
+              $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('valid-feedback').html(data.message);
+              $("#validate-ip").collapse("hide");
+            }else{
+              $('#host_ext_ip').removeClass('is-valid');
+              $('#host_ext_ip').closest('.form-group').find('.feedback').removeClass('valid-feedback');
+              $('#host_ext_ip').addClass('is-invalid');
+              $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('invalid-feedback').html(data.message);
+            }
+            console.log(data);
+          });
+        });
+
+        $('input[name="persistence_backend"]').on('change', function(){
+          if($(this).val() == 'hybrid'){
+            $('#hybridLdapHeldData').collapse('show');
+          }else{
+            $('#hybridLdapHeldData').collapse('hide');
+          }
+        });
+
+        $('input[name="use_arn"]').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#arn_aws_iam').prop('disabled', false);
+          }else{
+            $('#arn_aws_iam').prop('disabled', true);
+          }
+        });
+
+      {% endif %}
     });
   </script>
 {% endblock %}

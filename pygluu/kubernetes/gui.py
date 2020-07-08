@@ -390,23 +390,168 @@ def install_jackrabbit():
     """
     Install Jackrabbit
     """
+    form = JackrabbitForm()
     if request.method == "POST":
-        next_step = request.form["next_step"]
-        default_settings["INSTALL_JACKRABBIT"] = request.form["install_jackrabbit"]
-        default_settings["JACKRABBIT_URL"] = request.form["jackrabbit_url"]
-        default_settings["JACKRABBIT_USER"] = request.form["jackrabbit_user"]
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            default_settings["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
+            default_settings["JACKRABBIT_URL"] = form.jackrabbit_url.data
+            default_settings["JACKRABBIT_USER"] = form.jackrabbit_user.data
 
-        if request.form["install_jackrabbit"] == "Y":
-            default_settings["JACKRABBIT_STORAGE_SIZE"] = request.form["jackrabbit_storage_size"]
+        if form.install_jackrabbit == "Y":
+            default_settings["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
         return redirect(url_for(next_step))
 
     return render_template("index.html",
                            step="install_jackrabbit",
+                           form=form,
                            next_step="setting")
 
 
 @app.route("/settings", methods=["GET", "POST"])
 def setting():
+    """
+    Setup Backend setting
+    """
+    form = SettingForm()
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            if not default_settings["TEST_ENVIRONMENT"] and \
+               default_settings["DEPLOYMENT_ARCH"] in test_arch:
+                default_settings["TEST_ENVIRONMENT"] = form.test_environment.data
+
+            if default_settings["DEPLOYMENT_ARCH"] in cloud_arch or \
+               default_settings["DEPLOYMENT_ARCH"] in local_arch:
+                default_settings["NODE_SSH_KEY"] = form.node_ssh_key.data
+
+            default_settings["HOST_EXT_IP"] = form.host_ext_ip.data
+
+            if default_settings["DEPLOYMENT_ARCH"] == "eks":
+                default_settings["AWS_LB_TYPE"] = form.aws_lb_type.data
+                default_settings["USE_ARN"] = form.use_arn.data
+                default_settings["ARN_AWS_IAM"] = form.arn_aws_iam.data
+
+            if default_settings["DEPLOYMENT_ARCH"] == "gke":
+                default_settings["GMAIL_ACCOUNT"] = form.gmail_account.data
+
+            if default_settings["APP_VOLUME_TYPE"] == 11:
+                for node_name in default_settings["NODES_NAMES"]:
+                    for zone in default_settings["NODES_ZONES"]:
+                        response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
+                                                            "--command='echo $HOME'".format(node_name, zone))
+                        default_settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                        if default_settings["GOOGLE_NODE_HOME_DIR"]:
+                            break
+                    if default_settings["GOOGLE_NODE_HOME_DIR"]:
+                        break
+
+            default_settings["PERSISTENCE_BACKEND"] = form.persistence_backend.data
+            if default_settings["PERSISTENCE_BACKEND"] == "hybrid":
+                default_settings["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
+
+            if default_settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or \
+                default_settings["INSTALL_JACKRABBIT"] == "Y":
+                if default_settings["DEPLOYMENT_ARCH"] == "microk8s":
+                    default_settings["APP_VOLUME_TYPE"] = 1
+                elif default_settings["DEPLOYMENT_ARCH"] == "minikube":
+                    default_settings["APP_VOLUME_TYPE"] = 2
+
+            next_step = request.form['next_step']
+            return redirect(url_for(next_step))
+
+    # TODO: find a way to apply dynamic validation
+    if default_settings["DEPLOYMENT_ARCH"] == "gke":
+        form.gmail_account.validators.append(DataRequired())
+    else:
+        form.gmail_account.validators.append(Optional())
+
     return render_template("index.html",
-                           step="settings")
+                           default_settings=default_settings,
+                           form=form,
+                           step="settings",
+                           next_step="app_volume_type")
+
+@app.route("/app-volume-type", methods=["GET", "POST"])
+def app_volume_type():
+    """
+    App Volume type Setting
+    """
+    form = VolumeTypeForm()
+    import pdb; pdb.set_trace()
+    if default_settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or \
+       default_settings["INSTALL_JACKRABBIT"] == "Y":
+
+        if not default_settings["APP_VOLUME_TYPE"]:
+            volume_type = app_volume_types[default_settings["DEPLOYMENT_ARCH"]]
+            form.app_volume_type.label = volume_type["label"]
+            form.app_volume_type.choices = volume_type["choices"]
+            form.app_volume_type.default = volume_type["default"]
+
+    return render_template("index.html",
+                           default_settings=default_settings,
+                           form=form,
+                           step="app_volume_type",
+                           next_step="app_volume_type")
+
+@app.route("/determine_ip", methods=["GET"])
+def determine_ip():
+    """
+    Attempts to detect and return ip automatically. Also set node names, zones, and addresses in a cloud deployment.
+    :return:
+    """
+
+    ip = ""
+
+    try:
+        node_ip_list = []
+        node_zone_list = []
+        node_name_list = []
+        node_list = kubernetes.list_nodes().items
+
+        for node in node_list:
+            node_name = node.metadata.name
+            node_addresses = kubernetes.read_node(name=node_name).status.addresses
+            if default_settings["DEPLOYMENT_ARCH"] in ("microk8s", "minikube"):
+                for add in node_addresses:
+                    if add.type == "InternalIP":
+                        ip = add.address
+                        node_ip_list.append(ip)
+            else:
+                for add in node_addresses:
+                    if add.type == "ExternalIP":
+                        ip = add.address
+                        node_ip_list.append(ip)
+
+                # Digital Ocean does not provide zone support yet
+                if self.settings["DEPLOYMENT_ARCH"] != "do" or self.settings["DEPLOYMENT_ARCH"] != "local":
+                    node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
+                    node_zone_list.append(node_zone)
+                node_name_list.append(node_name)
+
+        default_settings["NODES_NAME"] = node_name_list
+        default_settings["NODES_ZONES"] = node_zone_list
+        default_settings["NODES_IPS"] = node_ip_list
+
+        if default_settings["DEPLOYMENT_ARCH"] in ["eks", "gke", "do", "local", "aks"]:
+            #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
+            ip = "22.22.22.22"
+        data = {"status": True, 'ip_address': ip, "message": "Is this the correct external IP address?"}
+    except Exception as e:
+        app.logger.error(e)
+        # prompt for user-inputted IP address
+        app.logger.warning("Cannot determine IP address")
+        data = { "status": False, 'message': "Cannot determine IP address" }
+
+    return make_response(jsonify(data), 200)
+
+@app.route("/validate_ip/<ip_address>", methods=["GET"])
+def validate_ip(ip_address):
+    try:
+        ipaddress.ip_address(ip_address)
+        return make_response({ "status": True, "message": "IP Address is valid"}, 200)
+    except ValueError as exc:
+        # raised if IP is invalid
+        return make_response({ "status": False, "message": "Cannot determine IP address {}".format(exc)}, 400)
+

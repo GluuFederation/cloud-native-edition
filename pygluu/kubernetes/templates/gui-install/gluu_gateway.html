@@ -1,25 +1,28 @@
-{{ forms.yes_no('Install Gluu Gateway Database mode', 'install_gluu_gateway', 'N') }}
-  <div id="oxd-alert" class="alert alert-info collapse" role="alert">
-    Info : Oxd Server will be enable.
-  </div>
+{{ forms.radio(form.install_gluu_gateway) }}
 
-  <div id="postgresSetup" class="collapse border mb-3 px-3">
-    <h3 class="pt-2 pb-0">Postgres Setup</h3>
-    <hr>
-    {{ forms.text("Please enter a namespace for postgres", "postgres_namespace", "postgres") }}
-    {{ forms.text("Please enter number of replicas for postgres", "postgres_replicas", 3) }}
-    {{ forms.text("Please enter postgres (remote or local) URL base name. if postgres is to be installed", "postgres_url", "postgres.postgres.scv.cluster.local") }}
-  </div>
+<div id="oxd-alert" class="alert alert-info collapse" role="alert">
+  Info : Oxd Server will be enable.
+</div>
 
-  <div id="gluuGatewaySetup" class="collapse border mb-3 px-3">
-    <h3 class="pt-2 pb-0">Gluu Gateway Setup</h3>
-    <hr>
-    {{ forms.text('Please enter a namespace for Gluu Gateway', 'kong_namespace', 'gluu-gateway') }}
-    {{ forms.text('Please enter a namespace for Gluu Gateway UI', 'gluu_gateway_ui_namespace', 'gg-ui') }}
-    {{ forms.text('Please enter a user for gluu-gateway postgres database', 'kong_pg_user', 'kong') }}
-    {{ forms.password('gluu-gateway-postgres password', 'kong_pg_password') }}
-    {{ forms.text('Please enter a user for gluu-gateway-ui postgres database', 'gluu_gateway_ui_pg_user', 'konga') }}
-    {{ forms.password('gluu-gateway-ui postgres password', 'gluu_gateway_ui_pg_password') }}
-    {{ forms.text('Please enter  gluu-gateway postgres database name', 'kong_database', 'kong') }}
-    {{ forms.text('Please enter  gluu-gateway-ui postgres database name', 'gluu_gateway_ui_database', 'konga') }}
-  </div>
+<div id="postgresSetup" class="collapse border mb-3 px-3">
+  <h3 class="pt-2 pb-0">Postgres Setup</h3>
+  <hr>
+  {{ forms.text(form.postgres_namespace) }}
+  {{ forms.text(form.postgres_replicas) }}
+  {{ forms.text(form.postgres_url) }}
+</div>
+
+<div id="gluuGatewaySetup" class="collapse border mb-3 px-3">
+  <h3 class="pt-2 pb-0">Gluu Gateway Setup</h3>
+  <hr>
+  {{ forms.text(form.kong_namespace) }}
+  {{ forms.text(form.gluu_gateway_ui_namespace) }}
+  {{ forms.text(form.kong_database) }}
+  {{ forms.text(form.kong_pg_user) }}
+  {{ forms.password(form.kong_pg_password) }}
+  {{ forms.password(form.kong_pg_password_confirm) }}
+  {{ forms.text(form.gluu_gateway_ui_database) }}
+  {{ forms.text(form.gluu_gateway_ui_pg_user) }}
+  {{ forms.password(form.gluu_gateway_ui_pg_password) }}
+  {{ forms.password(form.gluu_gateway_ui_pg_password_confirm) }}
+</div>

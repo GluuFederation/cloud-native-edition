@@ -1,48 +1,62 @@
-{% macro text(title, name, value) %}
+{% macro text(field) %}
   <div class="form-group">
-    <label class="col-form-label" for="{{ name.replace('_', '-') }}">{{ title }}</label>
-    <input type="text" class="form-control col-sm-5" name="{{ name }}" id="name.replace('_', '-') }}" value="{{ value }}">
+    {{ field.label(class_="col-form-label") }}
+    {{ field(class_="form-control col-sm-5") }}
+    <div class="feedback"></div>
   </div>
 {% endmacro %}
 
+{# not used #}
 {% macro yes_no(title, name, value) %}
-<div class="form-group">
-        <label class="col-form-label">{{ title }}</label>
-        <div class="col-sm-9">
-          <div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" id="{{ name.replace('_', '-') }}-yes" name="{{ name }}" value="Y" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'Y' else '' }}>
-            <label class="custom-control-label" for="{{ name.replace('_', '-') }}-yes">Yes</label>
-          </div>
-          <div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" id="{{ name.replace('_', '-') }}-no" name="{{ name }}" value="N" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'N' else '' }}>
-            <label class="custom-control-label" for="{{ name.replace('_', '-') }}-no">No</label>
-          </div>
-        </div>
+  <div class="form-group">
+    <label class="col-form-label">{{ title }}</label>
+    <div class="col-sm-9">
+      <div class="custom-control custom-radio custom-control-inline">
+        <input type="radio" id="{{ name.replace('_', '-') }}-yes" name="{{ name }}" value="Y" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'Y' else '' }}>
+        <label class="custom-control-label" for="{{ name.replace('_', '-') }}-yes">Yes</label>
       </div>
-{% endmacro %}
-
-{% macro radio(label, id, name, value, checked=False) %}
-  <div class="form-check">
-    <input class="form-check-input" type="radio" name="{{ name }}" id="{{ id }}" value="{{ value }}" {{ 'checked' if checked else '' }} >
-    <label class="form-check-label" for="{{ id }}">
-      {{ label }}
-    </label>
-  </div>
-{% endmacro %}
-
-{% macro password(title, name) %}
-  <div class="form-group">
-    <label class="col-form-label" for="{{ name.replace('_', '-') }}">{{ title }}</label>
-    <input type="password" class="form-control col-sm-5" name="{{ name }}" id="name.replace('_', '-') }}">
-  </div>
-{% endmacro %}
-
-{% macro email(title, name) %}
-  <div class="form-group">
-    <label class="col-form-label col-sm-3" for="{{ name.replace('_', '-') }}">{{ title }}</label>
-    <div class="col-sm-5">
-      <input type="email" class="form-control" name="{{ name }}" id="name.replace('_', '-') }}"">
+      <div class="custom-control custom-radio custom-control-inline">
+        <input type="radio" id="{{ name.replace('_', '-') }}-no" name="{{ name }}" value="N" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'N' else '' }}>
+        <label class="custom-control-label" for="{{ name.replace('_', '-') }}-no">No</label>
+      </div>
     </div>
+  </div>
+{% endmacro %}
+
+{% macro radio(field) %}
+  <div class="form-group">
+    <label class="col-form-label">{{ field.label }}</label>
+    <div class="col-sm-9">
+      {% for choice in field %}
+      <div class="custom-control custom-radio custom-control-inline">
+        {{ choice(class_="custom-control-input") }}
+        {{ choice.label(class_="custom-control-label") }}
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro single_radio(field) %}
+<div class="form-check">
+    {{ field(class_="form-check-input") }}
+    {{ field.label(class_="form-check-label") }}
+
+  </div>
+{% endmacro %}
+
+{% macro password(field) %}
+  <div class="form-group">
+    {{ field.label(class_="col-form-label") }}
+    {{ field(class_="form-control col-sm-5") }}
+  </div>
+{% endmacro %}
+
+{% macro email(field) %}
+  <div class="form-group">
+    {{ field.label(class_="col-form-label") }}
+    {{ field(class_="form-control col-sm-5") }}
   </div>
 {% endmacro %}
 
