@@ -111,7 +111,7 @@ config:
     gluuOxtrustBackend: oxtrust:8080
     gluuOxauthBackend: oxauth:8080
     gluuOxdServerUrl: oxd-server:8443
-    gluuOxdBindIpAddresses: *
+    gluuOxdBindIpAddresses: "*"
     gluuLdapUrl: opendj:1636
     # Jackrabbit content repository
     gluuJcaSyncInterval: 300
@@ -162,7 +162,7 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.1.1_01
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
@@ -183,7 +183,7 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.1.1_02
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
@@ -198,7 +198,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.1.1_03
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources: {}
@@ -215,7 +215,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.1.1_06
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
@@ -232,16 +232,16 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.1.1_03
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
 
 fido2:
   service:
@@ -283,7 +283,7 @@ oxd-server:
   replicas: 1
   image:
     repository: gluufederation/oxd-server
-    tag: 4.1.1_01
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
@@ -318,7 +318,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.1.1_01
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources: 
@@ -335,7 +335,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.1.1_03
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources: 
@@ -352,7 +352,7 @@ radius:
   replicas: 1
   image:
     repository: gluufederation/radius
-    tag: 4.1.1_01
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources: 
@@ -368,7 +368,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.1.1_02
+    tag: 4.2.0_01
     pullPolicy: Always
   resources:
     limits:
@@ -383,7 +383,7 @@ oxauth-key-rotation:
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.1.1_03
+    tag: 4.2.0_01
     pullPolicy: Always
   # default resource limits
   resources:
