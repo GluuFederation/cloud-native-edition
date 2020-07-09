@@ -12,7 +12,7 @@ from flask import Flask, jsonify, make_response, render_template, render_templat
 
 from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import DataRequired, Optional
-from .common import get_supported_versions
+from .common import get_supported_versions, exec_cmd
 from .kubeapi import Kubernetes
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, GluuNamespaceForm, \
     OptionalServiceForm, GluuGatewayForm, JackrabbitForm, SettingForm, app_volume_types, \
@@ -525,7 +525,7 @@ def determine_ip():
                         node_ip_list.append(ip)
 
                 # Digital Ocean does not provide zone support yet
-                if self.settings["DEPLOYMENT_ARCH"] != "do" or self.settings["DEPLOYMENT_ARCH"] != "local":
+                if default_settings["DEPLOYMENT_ARCH"] != "do" or default_settings["DEPLOYMENT_ARCH"] != "local":
                     node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
