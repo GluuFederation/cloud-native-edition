@@ -5,7 +5,7 @@ replicas: 1
 
 image:
   repository: gluufederation/oxshibboleth
-  tag: 4.1.0_01
+  tag: 4.2.0_01
   pullPolicy: Always
 
 nameOverride: ""
@@ -21,9 +21,9 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-   memory: 128Mi # "1000Mi"
+   memory: 1000Mi # "1000Mi"
   requests:
-   memory: 128Mi # "1536Mi"
+   memory: 1000Mi # "1536Mi"
 
 nodeSelector: {}
 

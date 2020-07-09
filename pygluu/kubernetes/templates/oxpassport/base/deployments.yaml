@@ -15,14 +15,14 @@ spec:
       containers:
       - name: oxpassport
         imagePullPolicy: Always
-        image: gluufederation/oxpassport:4.1.0_01
+        image: gluufederation/oxpassport:4.2.0_01
         resources:
           requests:
-            memory: "700Mi"
-            cpu: "500m"
+            memory: "900Mi"
+            cpu: "700m"
           limits:
-            memory: "700Mi"
-            cpu: "500m"
+            memory: "900Mi"
+            cpu: "700m"
         command:
           - /bin/sh
           - -c

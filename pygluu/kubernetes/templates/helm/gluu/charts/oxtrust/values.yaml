@@ -5,7 +5,7 @@ replicas: 1
 
 image:
   repository: gluufederation/oxtrust
-  tag: 4.1.0_01
+  tag: 4.2.0_01
   pullPolicy: Always
 
 service:
@@ -16,9 +16,9 @@ service:
 
 #resources: 
 limits:
-  memory: 128Mi
+  memory: 1000Mi
 requests:
-  memory: 300Mi
+  memory: 1000Mi
 
 #containerPort to connect the container with
 containerPort: 8080

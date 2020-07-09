@@ -21,7 +21,7 @@ spec:
       containers:
       - name: oxtrust
         imagePullPolicy: Always
-        image: gluufederation/oxtrust:4.1.0_01
+        image: gluufederation/oxtrust:4.2.0_01
         command:
           - /bin/sh
           - -c
@@ -30,11 +30,11 @@ spec:
               /app/scripts/entrypoint.sh
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "500m"
+            memory: "1000Mi"
+            cpu: "1000m"
           limits:
-            memory: "500Mi"
-            cpu: "500m"
+            memory: "1000Mi"
+            cpu: "1000m"
         ports:
         - containerPort: 8080
         envFrom:

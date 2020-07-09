@@ -111,7 +111,7 @@ config:
     gluuOxtrustBackend: oxtrust:8080
     gluuOxauthBackend: oxauth:8080
     gluuOxdServerUrl: oxd-server:8443
-    gluuOxdBindIpAddresses: casa,oxauth
+    gluuOxdBindIpAddresses: *
     gluuLdapUrl: opendj:1636
     # Jackrabbit content repository
     gluuJcaSyncInterval: 300
@@ -270,11 +270,11 @@ scim:
   # default resource limits
   resources:
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
 
 oxd-server:
   service:
@@ -323,11 +323,11 @@ oxpassport:
   # default resource limits
   resources: 
     limits:
-      cpu: 500m
-      memory: 700Mi
+      cpu: 700m
+      memory: 900Mi
     requests:
-      cpu: 500m
-      memory: 700Mi
+      cpu: 700m
+      memory: 900Mi
 
 oxshibboleth:
   service:
@@ -340,11 +340,11 @@ oxshibboleth:
   # default resource limits
   resources: 
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
 
 radius:
   service:
