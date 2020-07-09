@@ -137,7 +137,7 @@ class Prompt:
                                 USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW="",
                                 DEPLOY_MULTI_CLUSTER="",
                                 HYBRID_LDAP_HELD_DATA="",
-                                LDAP_VOLUME="",
+                                LDAP_JACKRABBIT_VOLUME="",
                                 APP_VOLUME_TYPE="",
                                 LDAP_STATIC_VOLUME_ID="",
                                 LDAP_STATIC_DISK_URI="",
@@ -1230,11 +1230,11 @@ class Prompt:
         if self.settings["APP_VOLUME_TYPE"] == 18:
             self.prompt_disk_uris()
 
-        if not self.settings["LDAP_VOLUME"] and self.settings["DEPLOYMENT_ARCH"] in ("aks", "eks", "gke"):
+        if not self.settings["LDAP_JACKRABBIT_VOLUME"] and self.settings["DEPLOYMENT_ARCH"] in ("aks", "eks", "gke"):
             logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
             logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
             logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
-            self.settings["LDAP_VOLUME"] = click.prompt("Please enter the volume type.", default="io1")
+            self.settings["LDAP_JACKRABBIT_VOLUME"] = click.prompt("Please enter the volume type.", default="io1")
         update_settings_json_file(self.settings)
 
     def prompt_cache_type(self):
