@@ -3,7 +3,7 @@ gluuReleaseName: cv # CHANGE
 
 image:
   repository: gluufederation/upgrade
-  tag: 4.1.0_01
+  tag: 4.2.0_01
 
 resources: {}
   # requests:

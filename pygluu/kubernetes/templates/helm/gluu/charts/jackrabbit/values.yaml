@@ -11,7 +11,7 @@ replicas: 1
 
 image:
   repository: gluufederation/jackrabbit
-  tag: 4.1.0_01
+  tag: 4.2.0_01
   pullPolicy: Always
   
 storage:
