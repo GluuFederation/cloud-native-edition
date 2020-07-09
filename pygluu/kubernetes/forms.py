@@ -5,10 +5,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SelectField, RadioField, BooleanField, \
     PasswordField, SubmitField, validators, HiddenField, FormField
 
-from wtforms.validators import DataRequired, ValidationError, IPAddress, \
+from wtforms.validators import DataRequired, InputRequired, EqualTo, URL, ValidationError, IPAddress, \
     Email, Optional
 
-from .common import get_supported_versions, prompt_password
+from .common import get_supported_versions
 
 app_volume_types = {
     "eks": {
@@ -50,7 +50,8 @@ app_volume_types = {
 
 class LicenseForm(FlaskForm):
     license = RadioField("Do you accept the Gluu license stated above?",
-                         choices=[("Y", "Yes"), ("N", "No")], default="N")
+                         choices=[("Y", "Yes"), (" ", "No")], default=" ",
+                         validators=[DataRequired(message="License has not been accepted")])
 
 
 class GluuVersionForm(FlaskForm):
@@ -65,31 +66,31 @@ class GluuVersionForm(FlaskForm):
                 supported_versions.append((version_number, float(k)))
 
     gluu_version = RadioField("Currently supported versions are :",
-                         choices=supported_versions, validators=[DataRequired()])
+                              choices=supported_versions, validators=[DataRequired()])
 
 
 class DeploymentArchForm(FlaskForm):
     deployment_arch = RadioField("Deployment Arch",
-                         choices=[("microk8s", "Microk8s"),
-                                  ("minikube", "MiniKube"),
-                                  ("eks", "Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)"),
-                                  ("gke", "Google Cloud Engine - Google Kubernetes Engine (GKE)"),
-                                  ("aks", "Microsoft Azure (AKS)"),
-                                  ("do", "Digital Ocean [BETA]"),
-                                  ("local", "Manually provisioned Kubernetes cluster")], default="microk8s",
-                                  validators=[DataRequired()])
+                                 choices=[("microk8s", "Microk8s"),
+                                          ("minikube", "MiniKube"),
+                                          ("eks", "Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)"),
+                                          ("gke", "Google Cloud Engine - Google Kubernetes Engine (GKE)"),
+                                          ("aks", "Microsoft Azure (AKS)"),
+                                          ("do", "Digital Ocean [BETA]"),
+                                          ("local", "Manually provisioned Kubernetes cluster")], default="microk8s",
+                                 validators=[DataRequired()])
 
 
 class GluuNamespaceForm(FlaskForm):
-    gluu_namespace = StringField("Gluu Namespace", default="gluu", validators=[DataRequired()] )
+    gluu_namespace = StringField("Gluu Namespace", default="gluu", validators=[InputRequired()])
 
 
 class OptionalServiceForm(FlaskForm):
     enable_cache_refresh = RadioField("Deploy Cr-Rotate", choices=[("Y", "Yes"), ("N", "No")],
                                       default="N", validators=[DataRequired()])
     enable_oxauth_key_rotate = RadioField("Deploy Key-Rotation", choices=[("Y", "Yes"), ("N", "No")],
-                                   default="N", validators=[DataRequired()])
-    oxauth_key_life = IntegerField("oxAuth keys life in hours", default=48, validators=[DataRequired()])
+                                          default="N", validators=[DataRequired()])
+    oxauth_key_life = IntegerField("oxAuth keys life in hours", default=48, validators=[InputRequired()])
     enable_radius = RadioField("Deploy Radius?", choices=[("Y", "Yes"), ("N", "No")],
                                default="N", validators=[DataRequired()])
     enable_oxpassport = RadioField("Deploy Passport", choices=[("Y", "Yes"), ("N", "No")],
@@ -106,9 +107,9 @@ class OptionalServiceForm(FlaskForm):
                             default="N", validators=[DataRequired()])
     # required if oxd enable
     oxd_application_keystore_cn = StringField("oxd server application keystore name",
-                                              default="oxd-server", validators=[DataRequired()])
+                                              default="oxd-server", validators=[InputRequired()])
     oxd_admin_keystore_cn = StringField("oxd server admin keystore name", default="oxd-server",
-                                        validators=[DataRequired()])
+                                        validators=[InputRequired()])
 
     enable_oxtrust_api = RadioField("Enable oxTrust API", choices=[("Y", "Yes"), ("N", "No")],
                                     default="N", validators=[DataRequired()])
@@ -116,51 +117,56 @@ class OptionalServiceForm(FlaskForm):
     enable_oxtrust_test_mode = RadioField("Enable oxTrust Test Mode", choices=[("Y", "Yes"), ("N", "No")],
                                           default="N", validators=[DataRequired()])
 
-class GluuGatewayForm(FlaskForm):
 
+class GluuGatewayForm(FlaskForm):
     install_gluu_gateway = RadioField("Install Gluu Gateway Database mode", choices=[("Y", "Yes"), ("N", "No")],
                                       default="N", validators=[DataRequired()])
     postgres_namespace = StringField("Please enter number of replicas for postgres", default="postgres",
-                                     validators=[DataRequired()])
+                                     validators=[InputRequired()])
     postgres_replicas = IntegerField("Please enter a namespace for postgres", default=3,
-                                     validators=[DataRequired()])
+                                     validators=[InputRequired()])
     postgres_url = StringField("Please enter  postgres (remote or local) URL base name. If postgres is to be installed",
                                default="postgres.postgres.svc.cluster.local",
-                               validators=[DataRequired()])
+                               validators=[InputRequired()])
     kong_namespace = StringField("Please enter a namespace for Gluu Gateway", default="gluu-gateway",
-                                 validators=[DataRequired()])
+                                 validators=[InputRequired()])
     gluu_gateway_ui_namespace = StringField("Please enter a namespace for gluu gateway ui", default="gg-ui",
-                                            validators=[DataRequired()])
+                                            validators=[InputRequired()])
     kong_database = StringField("Please enter gluu-gateway postgres database name", default="kong",
-                                validators=[DataRequired()])
+                                validators=[InputRequired()])
     kong_pg_user = StringField("Please enter a user for gluu-gateway postgres database", default="konga",
-                               validators=[DataRequired()])
-    kong_pg_password = PasswordField("Kong Postgress Password", validators=[DataRequired()])
-    kong_pg_password_confirm = PasswordField("Kong Postgress Password Confirmation", validators=[DataRequired()])
+                               validators=[InputRequired()])
+    kong_pg_password = PasswordField("Kong Postgress Password", validators=[InputRequired(),
+                                                                            EqualTo('kong_pg_password_confirm',
+                                                                                    message='Passwords do not match')])
+    kong_pg_password_confirm = PasswordField("Kong Postgress Password Confirmation", validators=[InputRequired()])
     gluu_gateway_ui_database = StringField("Please enter gluu-gateway-ui postgres database name", default="kong",
-                                           validators=[DataRequired()])
+                                           validators=[InputRequired()])
     gluu_gateway_ui_pg_user = StringField("Please enter a user for gluu-gateway-ui postgres database", default="konga",
-                                          validators=[DataRequired()])
-    gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password", validators=[DataRequired()])
+                                          validators=[InputRequired()])
+    gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password", validators=[InputRequired(),
+                                                EqualTo('gluu_gateway_ui_pg_password_confirm',
+                                                message='Passwords do not match')])
     gluu_gateway_ui_pg_password_confirm = PasswordField("Gluu Gateway UI postgres password confirmation",
-                                                        validators=[DataRequired()])
+                                                        validators=[InputRequired()])
+
 
 class JackrabbitForm(FlaskForm):
     install_jackrabbit = RadioField("Install Jackrabbit", choices=[("Y", "Yes"), ("N", "No")],
-                                      default="Y", validators=[DataRequired()])
+                                    default="Y", validators=[DataRequired()])
     jackrabbit_url = StringField("Please enter jackrabbit url", default="http://jackrabbit:8080",
-                                 validators=[DataRequired()])
+                                 validators=[URL(require_tld=False, message="Url format is wrong")])
     jackrabbit_user = StringField("Please enter jackrabbit user", default="admin", validators=[DataRequired()])
     jackrabbit_storage_size = StringField("Size of Jackrabbit content repository volume storage", default="4Gi")
 
 
 class SettingForm(FlaskForm):
     test_environment = RadioField("Is this test a test environment?", choices=[("Y", "Yes"), ("N", "No")],
-                                      default="N", validators=[DataRequired()])
+                                  default="N", validators=[DataRequired()])
     node_ssh_key = StringField("Please enter the ssh key path if exists to login into the nodes created[~/.ssh/id_rsa]",
                                default="~/.ssh/id_rsa")
     host_ext_ip = StringField("Please input the host's external IP address", default="127.0.0.1",
-                              validators=[DataRequired(), IPAddress()])
+                              validators=[InputRequired(), IPAddress()])
     aws_lb_type = RadioField("AWS Loadbalancer type",
                              choices=[("clb", "Classic Load Balancer (CLB)"),
                                       ("nlb", "Network Load Balancer (NLB - Alpha) -- Static IP"),
@@ -169,9 +175,12 @@ class SettingForm(FlaskForm):
     use_arn = RadioField("Are you terminating SSL traffic at LB and using certificate from AWS",
                          choices=[("Y", "Yes"), ("N", "No")],
                          default="N")
-    arn_aws_iam = StringField("Enter aws-load-balancer-ssl-cert arn quoted ('arn:aws:acm:us-west-2:XXXXXXXX: certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')",
-                              render_kw={"disabled": "disabled"})
-    gmail_account = StringField("Please enter valid email for Google Cloud account", validators=[Email()])
+    arn_aws_iam = StringField(
+        "Enter aws-load-balancer-ssl-cert arn quoted "
+        "('arn:aws:acm:us-west-2:XXXXXXXX: certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')",
+        render_kw={"disabled": "disabled"})
+    gmail_account = StringField("Please enter valid email for Google Cloud account", validators=[InputRequired(),
+                                                                                                 Email()])
     persistence_backend = RadioField("Persistence layer",
                                      choices=[("ldap", "WrenDS"),
                                               ("couchbase", "Couchbase [Testing Phase]"),
@@ -182,11 +191,11 @@ class SettingForm(FlaskForm):
                                                 ("site", "Site"), ("cache", "Cache"), ("token", "Token")],
                                        default="default")
 
+
 class VolumeTypeForm(FlaskForm):
     app_volume_type = RadioField("Local Deployment", choices=[], default="")
     ldap_static_volume_id = StringField("Please enter Persistent Disk Name or EBS Volume ID for LDAP",
                                         description="EBS Volume ID example: vol-049df61146c4d7901")
     ldap_static_disk_uri = StringField("Please enter the disk uri for LDAP",
                                        description="DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
-                                        "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
-
+                                                   "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")

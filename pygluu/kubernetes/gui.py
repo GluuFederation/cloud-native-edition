@@ -22,7 +22,7 @@ import ipaddress
 
 app = Flask(__name__, template_folder="templates/gui-install")
 
-#TODO move config to a better place
+# TODO move config to a better place
 app.config['SECRET_KEY'] = "Your_secret_string"
 app.config['DEBUG'] = True
 
@@ -120,7 +120,7 @@ default_settings = dict(ACCEPT_GLUU_LICENSE="",
                         USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW="",
                         DEPLOY_MULTI_CLUSTER="",
                         HYBRID_LDAP_HELD_DATA="",
-                        LDAP_VOLUME="",
+                        LDAP_JACKRABBIT_VOLUME="",
                         APP_VOLUME_TYPE="",
                         LDAP_STATIC_VOLUME_ID="",
                         LDAP_STATIC_DISK_URI="",
