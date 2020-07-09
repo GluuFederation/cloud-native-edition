@@ -167,7 +167,7 @@ jobs:
           "USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW": "",
           "DEPLOY_MULTI_CLUSTER": "N",
           "HYBRID_LDAP_HELD_DATA": "",
-          "LDAP_VOLUME": "io1",
+          "LDAP_JACKRABBIT_VOLUME": "io1",
           "APP_VOLUME_TYPE": 7,
           "LDAP_STATIC_VOLUME_ID": "",
           "LDAP_STATIC_DISK_URI": "",

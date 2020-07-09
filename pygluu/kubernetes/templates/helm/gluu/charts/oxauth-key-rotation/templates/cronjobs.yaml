@@ -30,11 +30,8 @@ spec:
               resources: {}
               {{- else }}
               resources:
-    {{- toYaml .Values.resources | nindent 12 }}
+{{- toYaml .Values.resources | nindent 16 }}
               {{- end }}
-              envFrom:
-                - configMapRef:
-                    name: {{ .Release.Name }}-config-cm
               args: ["patch", "oxauth", "--opts", "interval:{{ .Values.keysLife }}"]
           restartPolicy: Never
 

@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: gluu-upgrade-job
-          image: gluufederation/upgrade:4.1.0_01
+          image: gluufederation/upgrade:4.2.0_01
           envFrom:
           - configMapRef:
               name: upgrade-cm

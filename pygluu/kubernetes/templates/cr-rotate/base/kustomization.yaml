@@ -10,4 +10,4 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/cr-rotate
-    newTag: 4.1.0_01
+    newTag: 4.2.0_01

@@ -12,13 +12,13 @@ Please calculate the minimum required resources as per services deployed. The fo
 |oxAuth            | 2.5        |    2.5GB    |   N/A            |  64 Bit        | Yes                                |
 |LDAP              | 1.5        |    2GB      |   10GB           |  64 Bit        | Only if couchbase is not installed |
 |fido2             | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
-|scim              | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
+|scim              | 1.0        |    1.0GB    |   N/A            |  64 Bit        | No                                 |
 |config - job      | 0.5        |    0.5GB    |   N/A            |  64 Bit        | Yes on fresh installs              |
 |jackrabbit        | 1.5        |    1GB      |   10GB           |  64 Bit        | Yes                                |
 |persistence - job | 0.5        |    0.5GB    |   N/A            |  64 Bit        | Yes on fresh installs              |
 |oxTrust           | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
-|oxShibboleth      | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
-|oxPassport        | 0.5        |    0.7GB    |   N/A            |  64 Bit        | No                                 |
+|oxShibboleth      | 1.0        |    1.0GB    |   N/A            |  64 Bit        | No                                 |
+|oxPassport        | 0.7        |    0.9GB    |   N/A            |  64 Bit        | No                                 |
 |oxd-server        | 1          |    0.4GB    |   N/A            |  64 Bit        | No                                 |
 |nginx             | 1          |    1GB      |   N/A            |  64 Bit        | Yes if not ALB                     |
 |key-rotation      | 0.3        |    0.3GB    |   N/A            |  64 Bit        | No                                 |
@@ -822,7 +822,7 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW` | If using password flow [couchbase-resource-calc-alpha]                           | `""`, `"Y"` or `"N"`                                                                        |
 | `DEPLOY_MULTI_CLUSTER`                          | Deploying a Multi-cluster [alpha]                                                | `"Y"` or `"N"`                                                                              |
 | `HYBRID_LDAP_HELD_DATA`                         | Type of data to be held in LDAP with a hybrid installation of couchbase and LDAP | `""`, `"default"`, `"user"`, `"site"`, `"cache"` or `"token"`                               |
-| `LDAP_VOLUME`                                   | LDAP  Volume type                                                                | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
+| `LDAP_JACKRABBIT_VOLUME`                        | LDAP/Jackrabbit Volume type                                                                | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
 | `APP_VOLUME_TYPE`                               | Volume type for LDAP persistence                                                 | [options](#app_volume_type-options)                                                         |
 | `INSTALL_JACKRABBIT`                            | Install Jackrabbit                                                               | `"Y"` or `"N"`                                                                              |
 | `JACKRABBIT_STORAGE_SIZE`                       | Jackrabbit volume storage size                                                   | `""` i.e `"4Gi"`                                                                            |

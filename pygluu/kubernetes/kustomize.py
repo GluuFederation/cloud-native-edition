@@ -163,7 +163,7 @@ class Kustomize(object):
         if self.settings["DEPLOYMENT_ARCH"] == "eks":
             parser["provisioner"] = "kubernetes.io/aws-ebs"
             parser["parameters"]["encrypted"] = "true"
-            parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+            parser["parameters"]["type"] = self.settings["LDAP_JACKRABBIT_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
             parser.dump_it()
@@ -173,7 +173,7 @@ class Kustomize(object):
                 del parser["parameters"]["encrypted"]
             except KeyError:
                 logger.info("Key not deleted as it does not exist inside yaml.")
-            parser["parameters"]["type"] = self.settings["LDAP_VOLUME"]
+            parser["parameters"]["type"] = self.settings["LDAP_JACKRABBIT_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
             parser.dump_it()
@@ -184,7 +184,7 @@ class Kustomize(object):
                 del parser["parameters"]["type"]
             except KeyError:
                 logger.info("Key not deleted as it does not exist inside yaml.")
-            parser["parameters"]["storageaccounttype"] = self.settings["LDAP_VOLUME"]
+            parser["parameters"]["storageaccounttype"] = self.settings["LDAP_JACKRABBIT_VOLUME"]
             unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
             parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
             parser.dump_it()
