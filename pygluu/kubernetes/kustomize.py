@@ -861,7 +861,7 @@ class Kustomize(object):
                         if ip_static:
                             break
                 elif self.settings["DEPLOYMENT_ARCH"] == "local":
-                    self.settings["LB_ADD"] = "ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+                    self.settings["LB_ADD"] = "ingress-nginx.ingress-nginx.svc.cluster.local"
                     break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
@@ -915,7 +915,7 @@ class Kustomize(object):
             self.wait_for_nginx_add()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
-                or self.settings["DEPLOYMENT_ARCH"] == "do":
+                or self.settings["DEPLOYMENT_ARCH"] == "do" or self.settings["DEPLOYMENT_ARCH"] == "local":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             self.wait_for_nginx_add()
 
