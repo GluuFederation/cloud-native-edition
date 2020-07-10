@@ -49,6 +49,7 @@ class Kubernetes(object):
         self.cronjobs_cli = client.BatchV1beta1Api()
         self.rbac_cli = client.RbacAuthorizationV1Api()
         self.network_cli = client.NetworkingV1beta1Api()
+        self.network_policy_cli = client.NetworkingV1Api()
         self.extenstion_cli = client.ExtensionsV1beta1Api()
         self.crd_cli = client.ApiextensionsV1beta1Api()
         self.storage_cli = client.StorageV1Api()
@@ -158,6 +159,19 @@ class Kubernetes(object):
             else:
                 response = self.check_error_and_response(starting_time, resp)
         logger.info("service/{} from namespace/{} has been removed or does not exist".format(name, namespace))
+
+    def delete_network_policy(self, name, namespace="default"):
+        """Delete service with name in namespace"""
+        starting_time = time.time()
+        response = True
+        while response:
+            try:
+                resp = self.network_policy_cli.delete_namespaced_network_policy(name=name, namespace=namespace)
+            except client.rest.ApiException as e:
+                response = self.check_error_and_response(starting_time, e)
+            else:
+                response = self.check_error_and_response(starting_time, resp)
+        logger.info("NetworkPolicy/{} from namespace/{} has been removed or does not exist".format(name, namespace))
 
     def delete_deployment_using_label(self, namespace="default", app_label=None):
         """Delete deployment using app label in namespace"""
@@ -468,11 +482,12 @@ class Kubernetes(object):
                 else:
                     response = self.check_error_and_response(starting_time, resp)
 
-    def create_namespace(self, name):
+    def create_namespace(self, name, labels={}):
         """Create namespace using name"""
         body = client.V1Secret()
         metadata = client.V1ObjectMeta()
         metadata.name = name
+        metadata.labels = labels
         body.metadata = metadata
         try:
             self.core_cli.create_namespace(body=body, pretty="pretty")
