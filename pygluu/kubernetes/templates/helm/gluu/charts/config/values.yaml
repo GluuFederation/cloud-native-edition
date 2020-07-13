@@ -52,7 +52,7 @@ configmap:
   gluuOxtrustBackend: oxtrust:8080
   gluuOxauthBackend: oxauth:8080
   gluuOxdServerUrl: oxd-server:8443
-  gluuOxdBindIpAddresses: casa,oxauth
+  gluuOxdBindIpAddresses: "*"
   gluuLdapUrl: opendj:1636
   # Jackrabbit content repository
   gluuJcaSyncInterval: 300

@@ -118,7 +118,7 @@ class Helm(object):
             self.kubernetes.delete_custom_resource("virtualserverroutes.k8s.nginx.org")
             self.kubernetes.delete_cluster_role("ingress-nginx-nginx-ingress")
             self.kubernetes.delete_cluster_role_binding("ingress-nginx-nginx-ingress")
-            self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"])
+            self.kubernetes.create_namespace(name=self.settings["NGINX_INGRESS_NAMESPACE"], labels={"app": "ingress-nginx"})
             self.kubernetes.delete_cluster_role(
                 self.settings['NGINX_INGRESS_RELEASE_NAME'] + "-nginx-ingress-controller")
             self.kubernetes.delete_cluster_role_binding(
@@ -322,7 +322,7 @@ class Helm(object):
         Helm install Gluu
         :param install_ingress:
         """
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels={"app": "gluu"})
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
             couchbase_app.uninstall()
@@ -350,7 +350,8 @@ class Helm(object):
 
     def install_gluu_gateway_ui(self):
         self.uninstall_gluu_gateway_ui()
-        self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
+                                         labels={"APP_NAME": "gluu-gateway-ui"})
         try:
             # Try to get gluu cert + key
             ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
@@ -407,7 +408,8 @@ class Helm(object):
 
     def install_gluu_gateway_dbmode(self):
         self.uninstall_gluu_gateway_dbmode()
-        self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"],
+                                         labels={"app": "ingress-kong"})
         encoded_kong_pass_bytes = base64.b64encode(self.settings["KONG_PG_PASSWORD"].encode("utf-8"))
         encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
@@ -436,7 +438,7 @@ class Helm(object):
 
     def install_kubedb(self):
         self.uninstall_kubedb()
-        self.kubernetes.create_namespace(name="gluu-kubedb")
+        self.kubernetes.create_namespace(name="gluu-kubedb", labels={"app": "kubedb"})
         try:
             exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
             exec_cmd("helm repo update")

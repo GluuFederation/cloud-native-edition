@@ -861,7 +861,7 @@ class Kustomize(object):
                         if ip_static:
                             break
                 elif self.settings["DEPLOYMENT_ARCH"] == "local":
-                    self.settings["LB_ADD"] = "ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+                    self.settings["LB_ADD"] = "ingress-nginx.ingress-nginx.svc.cluster.local"
                     break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
@@ -915,7 +915,7 @@ class Kustomize(object):
             self.wait_for_nginx_add()
 
         if self.settings["DEPLOYMENT_ARCH"] == "gke" or self.settings["DEPLOYMENT_ARCH"] == "aks" \
-                or self.settings["DEPLOYMENT_ARCH"] == "do":
+                or self.settings["DEPLOYMENT_ARCH"] == "do" or self.settings["DEPLOYMENT_ARCH"] == "local":
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             self.wait_for_nginx_add()
 
@@ -941,7 +941,7 @@ class Kustomize(object):
 
     def deploy_postgres(self):
         self.uninstall_postgres()
-        self.kubernetes.create_namespace(name=self.settings["POSTGRES_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["POSTGRES_NAMESPACE"], labels={"app": "postgres"})
         postgres_init_sql = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE USER {};\n" \
                             "ALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
                             "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\nCREATE DATABASE {};\n" \
@@ -992,7 +992,7 @@ class Kustomize(object):
             self.kubernetes.check_pods_statuses(self.settings["POSTGRES_NAMESPACE"], "app=postgres", self.timeout)
 
     def deploy_kong_init(self):
-        self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["KONG_NAMESPACE"], labels={"app": "ingress-kong"})
         encoded_kong_pass_bytes = base64.b64encode(self.settings["KONG_PG_PASSWORD"].encode("utf-8"))
         encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
@@ -1076,7 +1076,9 @@ class Kustomize(object):
             self.kubernetes.check_pods_statuses(self.settings["KONG_NAMESPACE"], "app=ingress-kong", self.timeout)
 
     def deploy_gluu_gateway_ui(self):
-        self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["GLUU_GATEWAY_UI_NAMESPACE"],
+                                         labels={"APP_NAME": "gluu-gateway-ui"})
+
         self.setup_tls(namespace=self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
         encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"].encode("utf-8"))
@@ -1106,7 +1108,7 @@ class Kustomize(object):
 
     def deploy_redis(self):
         self.uninstall_redis()
-        self.kubernetes.create_namespace(name=self.settings["REDIS_NAMESPACE"])
+        self.kubernetes.create_namespace(name=self.settings["REDIS_NAMESPACE"], labels={"app": "redis"})
         redis_storage_class = Path("./redis/storageclasses.yaml")
         self.analyze_storage_class(redis_storage_class)
         self.kubernetes.create_objects_from_dict(redis_storage_class)
@@ -1195,6 +1197,8 @@ class Kustomize(object):
 
     def deploy_oxd(self):
         self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
+        self.kubernetes.create_objects_from_dict(Path("./oxd-server/base/networkpolicy.yaml"),
+                                                 self.settings["GLUU_NAMESPACE"])
         if not self.settings["AWS_LB_TYPE"] == "alb":
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=oxd-server", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="oxd-server",
@@ -1357,7 +1361,7 @@ class Kustomize(object):
 
     def install(self, install_couchbase=True, restore=False):
         if not restore:
-            self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
+            self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels={"app": "gluu"})
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
         if install_couchbase:
@@ -1496,6 +1500,7 @@ class Kustomize(object):
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                                           "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
                                           "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
+        network_policies = ["oxd-server-policy"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
         eks_yamls_folder = Path("./gluueksyamls")
@@ -1508,6 +1513,8 @@ class Kustomize(object):
 
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings["GLUU_NAMESPACE"])
+        for network_policy in network_policies:
+            self.kubernetes.delete_network_policy(network_policy, self.settings["GLUU_NAMESPACE"])
         if not restore:
             if self.settings["INSTALL_REDIS"] == "Y":
                 self.uninstall_redis()
