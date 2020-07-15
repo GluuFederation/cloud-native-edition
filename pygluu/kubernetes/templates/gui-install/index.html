@@ -125,6 +125,23 @@
           }
         });
 
+      {% endif %}
+
+      {% if step == "app_volume_type" %}
+          $('input[name="app_volume_type"]').on('change', function(){
+            if($(this).val() == 8 || $(this).val() == 13){
+              $('#ldap_static_volume_id').prop("disabled", false);
+              $('#ldap_static_disk_uri').prop("disabled", true);
+            }else if($(this).val() == 18){
+              $('#ldap_static_volume_id').prop("disabled", true);
+              $('#ldap_static_disk_uri').prop("disabled", false);
+            }else{
+              $('#ldap_static_volume_id').prop("disabled", true);
+              $('#ldap_static_disk_uri').prop("disabled", true);
+            }
+          });
+      {% endif %}
+
       {% if step == "cache_type" %}
         $('input[name="gluu_cache_type"]').on('change', function(){
           if($(this).val() == 3){
