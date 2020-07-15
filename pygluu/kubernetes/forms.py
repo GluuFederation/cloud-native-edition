@@ -201,8 +201,7 @@ class SettingForm(FlaskForm):
         "Enter aws-load-balancer-ssl-cert arn quoted "
         "('arn:aws:acm:us-west-2:XXXXXXXX: certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')",
         render_kw={"disabled": "disabled"})
-    gmail_account = StringField("Please enter valid email for Google Cloud account", validators=[InputRequired(),
-                                                                                                 Email()])
+    gmail_account = StringField("Please enter valid email for Google Cloud account", validators=[Email()])
     persistence_backend = RadioField("Persistence layer",
                                      choices=[("ldap", "WrenDS"),
                                               ("couchbase", "Couchbase [Testing Phase]"),
