@@ -2,28 +2,13 @@
   <div class="form-group">
     {{ field.label(class_="col-form-label") }}
     {{ field(class_="form-control col-sm-5") }}
+    <small class="form-text text-muted">{{ field.description }}</small>
     <div class="feedback"></div>
   </div>
 {% endmacro %}
 
-{# not used #}
-{% macro yes_no(title, name, value) %}
-  <div class="form-group">
-    <label class="col-form-label">{{ title }}</label>
-    <div class="col-sm-9">
-      <div class="custom-control custom-radio custom-control-inline">
-        <input type="radio" id="{{ name.replace('_', '-') }}-yes" name="{{ name }}" value="Y" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'Y' else '' }}>
-        <label class="custom-control-label" for="{{ name.replace('_', '-') }}-yes">Yes</label>
-      </div>
-      <div class="custom-control custom-radio custom-control-inline">
-        <input type="radio" id="{{ name.replace('_', '-') }}-no" name="{{ name }}" value="N" class="custom-control-input {{ name.replace('_', '-') }}-opt" {{ 'checked' if value == 'N' else '' }}>
-        <label class="custom-control-label" for="{{ name.replace('_', '-') }}-no">No</label>
-      </div>
-    </div>
-  </div>
-{% endmacro %}
-
 {% macro radio(field) %}
+
   <div class="form-group">
     <label class="col-form-label">{{ field.label }}</label>
     <div class="col-sm-9">
@@ -33,7 +18,12 @@
         {{ choice.label(class_="custom-control-label") }}
       </div>
       {% endfor %}
-
+    </div>
+    <small class="form-text text-muted">{{ field.description }}</small>
+    <div class="feedback">
+      {% for error in field.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
     </div>
   </div>
 {% endmacro %}
