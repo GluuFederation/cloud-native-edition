@@ -70,6 +70,7 @@ ldap_volumes = {
     }
 }
 
+
 class LicenseForm(FlaskForm):
     license = RadioField("Do you accept the Gluu license stated above?",
                          choices=[("Y", "Yes"), (" ", "No")], default=" ",
@@ -166,9 +167,11 @@ class GluuGatewayForm(FlaskForm):
                                            validators=[InputRequired()])
     gluu_gateway_ui_pg_user = StringField("Please enter a user for gluu-gateway-ui postgres database", default="konga",
                                           validators=[InputRequired()])
-    gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password", validators=[InputRequired(),
-                                                EqualTo('gluu_gateway_ui_pg_password_confirm',
-                                                message='Passwords do not match')])
+    gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password",
+                                                validators=[InputRequired(),
+                                                            EqualTo(
+                                                                'gluu_gateway_ui_pg_password_confirm',
+                                                                message='Passwords do not match')])
     gluu_gateway_ui_pg_password_confirm = PasswordField("Gluu Gateway UI postgres password confirmation",
                                                         validators=[InputRequired()])
 
@@ -224,14 +227,17 @@ class VolumeTypeForm(FlaskForm):
                                        render_kw={"disabled": "disabled"})
     ldap_jackrabbit_volume = RadioField()
 
+
 class CouchbaseMultiClusterForm(FlaskForm):
     deploy_multi_cluster = RadioField("Is this a multi-cloud/region setup?", choices=[("Y", "Yes"), ("N", "No")],
                                       description="If you are planning for a multi-cloud/region setup and this is the first cluster answer N"
                                                   "You will answer Y for the second and more cluster setup")
 
+
 class CacheTypeForm(FlaskForm):
     gluu_cache_type = RadioField("Cache Layer", choices=[(1, 'NATIVE_PERSISTENCE'), (2, 'IN_MEMORY'), (3, 'REDIS')],
                                  default=1)
+
 
 class RedisForm(FlaskForm):
     redis_type = RadioField("Please select redis Type", choices=[("STANDALONE", "STANDALONE"), ("CLUSTER", "CLUSTER")],
@@ -252,6 +258,7 @@ class RedisForm(FlaskForm):
                                         "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379",
                             render_kw={"disabled": "disabled"})
 
+
 class CouchbaseForm(FlaskForm):
     install_couchbase = RadioField("Install Couchbase", choices=[("Y", "Yes"), ("N", "No")],
                                    description="For the following prompt  if placed [N] the couchbase is assumed to be"
@@ -269,41 +276,51 @@ class CouchbaseForm(FlaskForm):
     couchbase_password_confirmation = PasswordField("Couchbase password confirm")
     couchbase_cn = StringField("Enter Couchbase certificate common name", default="Couchbase CA")
 
+
 class CouchbaseCalculatorForm(FlaskForm):
     number_of_expected_users = IntegerField("Please enter the number of expected users", default=1000000)
-    using_resource_owner_password_cred_grant_flow = RadioField("Will you be using the resource owner password credential grant flow",
-                                                               choices=[("Y", "Yes"), ("N", "No")], default="Y")
+    using_resource_owner_password_cred_grant_flow = RadioField(
+        "Will you be using the resource owner password credential grant flow",
+        choices=[("Y", "Yes"), ("N", "No")], default="Y")
     using_code_flow = RadioField("Will you be using the code flow", choices=[("Y", "Yes"), ("N", "No")], default="Y")
     using_scim_flow = RadioField("Will you be using the SCIM flow", choices=[("Y", "Yes"), ("N", "No")], default="Y")
     expected_transaction_per_sec = IntegerField("Expected transactions per second", default=2000)
     couchbase_data_nodes = IntegerField("Please enter the number of data nodes. (auto-calculated)", default="")
     couchbase_index_nodes = IntegerField("Please enter the number of index nodes. (auto-calculated)", default="")
     couchbase_query_nodes = IntegerField("Please enter the number of query nodes. (auto-calculated)", default="")
-    couchbase_search_eventing_analytics_nodes = IntegerField("Please enter the number of search,eventing and analytics nodes. (auto-calculated)",
-                                                             default="")
-    chouchbase_general_storage = IntegerField("Please enter the general storage size used for couchbase. (auto-calculated)",
-                                              default="")
+    couchbase_search_eventing_analytics_nodes = IntegerField(
+        "Please enter the number of search,eventing and analytics nodes. (auto-calculated)",
+        default="")
+    chouchbase_general_storage = IntegerField(
+        "Please enter the general storage size used for couchbase. (auto-calculated)",
+        default="")
     couchbase_data_storage = IntegerField("Please enter the data storage size used for couchbase. (auto-calculated)",
                                           default="")
-    couchbase_index_storage = IntegerField("Please enter the index node storage size used for couchbase. (auto-calculated)",
-                                          default="")
+    couchbase_index_storage = IntegerField(
+        "Please enter the index node storage size used for couchbase. (auto-calculated)",
+        default="")
     couchbase_query_storage = IntegerField("Please enter the data storage size used for couchbase. (auto-calculated)",
-                                          default="")
-    couchbase_analytics_storage = IntegerField("Please enter the analytics node storage size used for couchbase. (auto-calculated)",
-                                          default="")
+                                           default="")
+    couchbase_analytics_storage = IntegerField(
+        "Please enter the analytics node storage size used for couchbase. (auto-calculated)",
+        default="")
     couchbase_volume_type = RadioField()
 
+
 class CouchbaseBackupForm(FlaskForm):
-    couchbase_incr_backup_schedule = StringField("Please input couchbase backup cron job schedule for incremental backups. "
-                                                 "This will run backup job every 30 mins by default.", defalt="*/30 * * * *")
+    couchbase_incr_backup_schedule = StringField(
+        "Please input couchbase backup cron job schedule for incremental backups. "
+        "This will run backup job every 30 mins by default.", defalt="*/30 * * * *")
     couchbase_full_backup_schedule = StringField("Please input couchbase backup cron job schedule for full backups. ")
     couchbase_backup_retention_time = StringField("Please enter the time period in which to retain existing backups. "
                                                   "Older backups outside this time frame are deleted", default="168h")
     couchbase_backup_storate_size = StringField("Size of couchbase backup volume storage", default="20Gi")
 
+
 class LdapBackupForm(FlaskForm):
     ldap_backup_schedule = StringField("Please input ldap backup cron job schedule. "
                                        "This will run backup job every 30 mins by default.", default="*/30 * * * *")
+
 
 class ConfigForm(FlaskForm):
     gluu_form = StringField("Hostname", default="demoexample.gluu.org")
@@ -329,7 +346,7 @@ class ImageNameTagSet(FlaskForm):
 
 class ImageNameTagForm(FlaskForm):
     edit_image_names_tags = RadioField("Would you like to manually edit the image source/name and tag",
-                                         choices=[("Y", "Yes"), ("N", "No")])
+                                       choices=[("Y", "Yes"), ("N", "No")])
     image_name_tags = FieldList(FormField(ImageNameTagSet))
 
 

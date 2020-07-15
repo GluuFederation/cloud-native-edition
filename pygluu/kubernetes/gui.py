@@ -12,7 +12,7 @@ import json
 import os
 
 from pathlib import Path
-from flask import Flask, jsonify, make_response, render_template, render_template, \
+from flask import Flask, jsonify, make_response, render_template, \
     request, redirect, url_for, send_from_directory
 
 from flask_wtf.csrf import CSRFProtect
@@ -48,7 +48,7 @@ kubernetes = Kubernetes()
 
 test_arch = ("microk8s", "minikube")
 cloud_arch = ("eks", "gke", "aks", "do")
-local_arch = ("local")
+local_arch = "local"
 
 gluu_cache_map = {
     1: "NATIVE_PERSISTENCE",
@@ -226,9 +226,9 @@ default_settings = dict(ACCEPT_GLUU_LICENSE="",
 
 settings = default_settings
 
+
 @app.before_request
 def initialize():
-
     if not settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement":
         return redirect(url_for("agreement"))
 
@@ -364,11 +364,10 @@ def optional_services():
             settings["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
             if settings["ENABLE_OXTRUST_API"] == "Y":
                 settings["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
-                settings["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode
+                settings["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode.data
 
             if settings["ENABLE_OXTRUST_TEST_MODE"] == "Y":
                 settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
-
             update_settings_json_file(settings)
             return redirect(url_for(next_step))
 
@@ -507,6 +506,7 @@ def setting():
                            step="settings",
                            next_step="app_volume_type")
 
+
 @app.route("/app-volume-type", methods=["GET", "POST"])
 def app_volume_type():
     """
@@ -524,7 +524,7 @@ def app_volume_type():
                 settings["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
 
             if settings["DEPLOYMENT_ARCH"] in cloud_arch:
-               settings["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
+                settings["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
 
             if settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
                 next_step = "multi-cluster"
@@ -550,6 +550,7 @@ def app_volume_type():
                            step="app_volume_type",
                            next_step="cache_type")
 
+
 @app.route("/couchbase-multi-cluster", methods=["GET", "POST"])
 def couchbase_multi_cluster():
     """
@@ -569,6 +570,7 @@ def couchbase_multi_cluster():
                            form=form,
                            step="couchbase_multi_cluster",
                            next_step="cache_type")
+
 
 @app.route("/cache-type", methods=["GET", "POST"])
 def cache_type():
@@ -590,7 +592,8 @@ def cache_type():
                     settings["REDIS_MASTER_NODES"] = form_redis.redis_master_nodes.data
                     settings["REDIS_NODES_PER_MASTER"] = form_redis.redis_nodes_per_master.data
                     settings["REDIS_NAMESPACE"] = form_redis.redis_namespace.data
-                    settings["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(settings["REDIS_NAMESPACE"])
+                    settings["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
+                        settings["REDIS_NAMESPACE"])
                 else:
                     settings["REDIS_URL"] = form_redis.redis_url.data
                     settings["REDIS_PW"] = form_redis.redis_pw.data
@@ -611,6 +614,7 @@ def cache_type():
                            form_redis=form_redis,
                            step="cache_type",
                            next_step="couchbase")
+
 
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
@@ -659,16 +663,16 @@ def determine_ip():
         app.logger.error(e)
         # prompt for user-inputted IP address
         app.logger.warning("Cannot determine IP address")
-        data = { "status": False, 'message': "Cannot determine IP address" }
+        data = {"status": False, 'message': "Cannot determine IP address"}
 
     return make_response(jsonify(data), 200)
+
 
 @app.route("/validate_ip/<ip_address>", methods=["GET"])
 def validate_ip(ip_address):
     try:
         ipaddress.ip_address(ip_address)
-        return make_response({ "status": True, "message": "IP Address is valid"}, 200)
+        return make_response({"status": True, "message": "IP Address is valid"}, 200)
     except ValueError as exc:
         # raised if IP is invalid
-        return make_response({ "status": False, "message": "Cannot determine IP address {}".format(exc)}, 400)
-
+        return make_response({"status": False, "message": "Cannot determine IP address {}".format(exc)}, 400)
