@@ -125,6 +125,42 @@
           }
         });
 
+      {% if step == "cache_type" %}
+        $('input[name="gluu_cache_type"]').on('change', function(){
+          if($(this).val() == 3){
+            $('#redisSetup').collapse('show');
+          }
+        });
+
+        $('input[name="install_redis"]').on('change', function(){
+          if($(this).val() == "N"){
+            $('#redisPassword').collapse('show');
+            var inputs = $('#redisPassword').find('input'),
+                redisNodes = $('#redisNodes').find('input');
+
+            inputs.each(function(k, el){
+              $(el).prop("disabled", false);
+            });
+
+            redisNodes.each(function(k, el){
+              $(el).prop("disabled", true);
+            });
+            $('#redisNodes').collapse('hide');
+          }else{
+            $('#redisPassword').collapse('hide');
+            var inputs = $('#redisPassword').find('input'),
+                redisNodes = $('#redisNodes').find('input');
+
+            inputs.each(function(k, el){
+              $(el).prop("disabled", true);
+            });
+
+            redisNodes.each(function(k, el){
+              $(el).prop("disabled", false);
+            });
+            $('#redisNodes').collapse('show');
+          }
+        });
       {% endif %}
     });
   </script>
