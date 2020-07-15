@@ -544,6 +544,26 @@ def app_volume_type():
                            step="app_volume_type",
                            next_step="cache_type")
 
+@app.route("/couchbase-multi-cluster", methods=["GET", "POST"])
+def couchbase_multi_cluster():
+    """
+    Deploy multi-cluster settings
+    """
+    form = CouchbaseMultiClusterForm()
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            settings["DEPLOY_MULTI_CLUSTER"] = form.deploy_multi_cluster.data
+            update_settings_json_file(settings)
+
+            return redirect(url_for(request.form['next_step']))
+
+    return render_template("index.html",
+                           settings=settings,
+                           form=form,
+                           step="couchbase_multi_cluster",
+                           next_step="cache_type")
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
