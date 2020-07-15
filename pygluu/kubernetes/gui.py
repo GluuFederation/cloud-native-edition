@@ -6,6 +6,11 @@
  https://www.apache.org/licenses/LICENSE-2.0
 A GUI for installing Gluu Cloud Native Edition.
 """
+import ipaddress
+import shutil
+import json
+import os
+
 from pathlib import Path
 from flask import Flask, jsonify, make_response, render_template, render_template, \
     request, redirect, url_for, send_from_directory
@@ -20,15 +25,16 @@ from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, GluuNamespa
     CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, LdapBackupForm, ConfigForm, \
     ImageNameTagForm, ReplicasForm, StorageForm
 
-import ipaddress
-import shutil
-import json
-
 app = Flask(__name__, template_folder="templates/gui-install")
 
-# TODO move config to a better place
-app.config['SECRET_KEY'] = "Your_secret_string"
-app.config['DEBUG'] = True
+cfg = "pygluu.kubernetes.gui_config.DevelopmentConfig"
+app_mode = os.environ.get("FLASK_ENV")
+if app_mode == "production":
+    cfg = "pygluu.kubernetes.gui_config.ProductionConfig"
+elif app_mode == "testing":
+    cfg = "pygluu.kubernetes.gui_config.TestingConfig"
+
+app.config.from_object(cfg)
 
 csrf = CSRFProtect(app)
 wizard_steps = ["license",
