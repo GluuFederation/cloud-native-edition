@@ -56,7 +56,11 @@ gluu_cache_map = {
     3: "REDIS",
 }
 
-static_files = ["/favicon.ico", "/styles.css", "/blue-logo.svg"]
+static_files = ["/favicon.ico",
+                "/styles.css",
+                "/blue-logo.svg",
+                "/bootstrap.min.css",
+                "/bootstrap.min.css.map"]
 
 default_settings = dict(ACCEPT_GLUU_LICENSE="",
                         GLUU_VERSION="",
@@ -248,6 +252,16 @@ def styles():
 @app.route('/blue-logo.svg')
 def logo():
     return send_from_directory(Path("templates/gui-install/static"), 'blue-logo.svg')
+
+
+@app.route('/bootstrap.min.css')
+def bootstrap():
+    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"), 'bootstrap.min.css')
+
+
+@app.route('/bootstrap.min.css.map')
+def bootstrap_min_map():
+    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"), 'bootstrap.min.css.map')
 
 
 @app.route("/agreement", methods=["GET", "POST"])
