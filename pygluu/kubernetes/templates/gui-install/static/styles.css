@@ -1,7 +1,29 @@
 @import (less) "/bootstrap.min.css";
+
 body {
-    background-color: #0a384e;
+    background-color: #093d56;
 }
 .card-body {
-      background-color: #c3cbc7;
+      background-color: white;
+}
+.btn {
+    background-color: #03a96d;
+}
+
+.custom-radio .custom-control-label::before {
+    background-color: #0000;
+}
+.custom-radio .custom-control-input:checked~.custom-control-label::before,
+.custom-radio .custom-control-input:checked~.custom-control-label::after {
+    background-color: #03a96d;
+}
+.custom-radio .custom-control-input:active ~ .custom-control-label::before {
+    color: #fff;
+    background-color: #03a96d; /* red */
+}
+.custom-radio .custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 1px #09384e, 0 0 0 0.2rem rgba(255, 123, 255, 0.25); /* pink, 25% opacity */
+}
+.mx-auto{
+    width:30%;
 }
