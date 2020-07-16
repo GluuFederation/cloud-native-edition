@@ -8,31 +8,31 @@ h3 {
 }
 
 h6 {
-    border-bottom;
-    border-gray;
-    mt-2;
-    font-weight-bolder;
+    .border-bottom;
+    .border-gray;
+    .mt-2;
+    .font-weight-bolder;
 }
 
 fieldset {
-    form-group;
+    .form-group;
 }
 
 button {
-    btn;
-    btn-primary;
-    btn-sm;
+    .btn;
+    .btn-primary;
+    .btn-sm;
 }
 
 p {
 }
 
 pre {
-    p-3;
-    mb-2;
-    bg-light;
-    text-dark;
-    pre-scrollable;
+    .p-3;
+    .mb-2;
+    .bg-light;
+    .text-dark;
+    .pre-scrollable;
 }
 .card-body {
       background-color: #c3cbc7;
