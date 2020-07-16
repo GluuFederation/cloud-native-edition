@@ -3,6 +3,10 @@
   <div class="container">
     <div class="card">
       <div class="card-header">
+        <h3>Gluu Cloud Native Edition</h3>
+        <div>
+          <img class="mx-auto d-block" src="/blue-logo.svg" alt="Gluu dark blue logo">
+        </div>
       </div>
       <div class="card-body">
         <form method="post" class="needs-validation">
@@ -11,7 +15,7 @@
           {% if(next_step) %}
             {{ forms.hidden('next_step', next_step) }}
           {% endif %}
-          <button type="submit" class="btn btn-primary float-right">Next</button>
+          <button type="submit" class="float-right">Next</button>
         </form>
       </div>
     </div>

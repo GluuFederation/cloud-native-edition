@@ -10,11 +10,11 @@
 {% endif %}
 
 {{ forms.text(form.host_ext_ip) }}
-<button type="button" id="validate-ip" class="btn btn-primary btn-sm collapse">validate IP</button>
+<button type="button" id="validate-ip" class="collapse">validate IP</button>
 
 {% if settings["DEPLOYMENT_ARCH"] == "eks" %}
-  <fieldset class="form-group">
-    <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.aws_lb_type.label }}</h6>
+  <fieldset>
+    <h6>{{ form.aws_lb_type.label }}</h6>
     {% for choice in form.aws_lb_type %}
       {{ forms.single_radio(choice) }}
     {% endfor %}
@@ -29,15 +29,15 @@
   {{ forms.email(form.gmail_account) }}
 {% endif %}
 
-<fieldset class="form-group">
-  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.persistence_backend.label }}</h6>
+<fieldset>
+  <h6>{{ form.persistence_backend.label }}</h6>
   {% for choice in form.persistence_backend %}
     {{ forms.single_radio(choice) }}
   {% endfor %}
 </fieldset>
 
-<fieldset id="hybridLdapHeldData" class="form-group collapse">
-  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.hybrid_ldap_held_data.label }}</h6>
+<fieldset id="hybridLdapHeldData">
+  <h6>{{ form.hybrid_ldap_held_data.label }}</h6>
   {% for choice in form.hybrid_ldap_held_data %}
     {{ forms.single_radio(choice) }}
   {% endfor %}

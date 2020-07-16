@@ -1,13 +1,13 @@
 <fieldset class="form-group">
-  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.gluu_cache_type.label }}</h6>
+  <h6>{{ form.gluu_cache_type.label }}</h6>
   {% for choice in form.gluu_cache_type %}
     {{ forms.single_radio(choice) }}
   {% endfor %}
 </fieldset>
 
 <div id="redisSetup" class="collapse">
-  <fieldset class="form-group">
-    <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form_redis.redis_type.label }}</h6>
+  <fieldset>
+    <h6>{{ form_redis.redis_type.label }}</h6>
     {% for choice in form_redis.redis_type %}
       {{ forms.single_radio(choice) }}
     {% endfor %}

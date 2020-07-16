@@ -56,6 +56,8 @@ gluu_cache_map = {
     3: "REDIS",
 }
 
+static_files = ["/favicon.ico", "/styles.css", "/blue-logo.svg"]
+
 default_settings = dict(ACCEPT_GLUU_LICENSE="",
                         GLUU_VERSION="",
                         TEST_ENVIRONMENT="",
@@ -229,13 +231,23 @@ settings = default_settings
 
 @app.before_request
 def initialize():
-    if not settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement":
+    if not settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("agreement"))
 
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(Path("templates/gui-install/static"), 'favicon.ico')
+
+
+@app.route('/styles.css')
+def styles():
+    return send_from_directory(Path("templates/gui-install/static"), 'styles.css')
+
+
+@app.route('/blue-logo.svg')
+def logo():
+    return send_from_directory(Path("templates/gui-install/static"), 'blue-logo.svg')
 
 
 @app.route("/agreement", methods=["GET", "POST"])

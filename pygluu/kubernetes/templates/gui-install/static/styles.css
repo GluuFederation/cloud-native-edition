@@ -1,0 +1,39 @@
+body {
+    background-color: #0a384e;
+}
+h3 {
+    color: #0a384e;
+    .pt-2;
+    .pb-0;
+}
+
+h6 {
+    border-bottom;
+    border-gray;
+    mt-2;
+    font-weight-bolder;
+}
+
+fieldset {
+    form-group;
+}
+
+button {
+    btn;
+    btn-primary;
+    btn-sm;
+}
+
+p {
+}
+
+pre {
+    p-3;
+    mb-2;
+    bg-light;
+    text-dark;
+    pre-scrollable;
+}
+.card-body {
+      background-color: #c3cbc7;
+}
