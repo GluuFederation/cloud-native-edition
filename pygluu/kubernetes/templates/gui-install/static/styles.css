@@ -1,29 +1,67 @@
 @import (less) "/bootstrap.min.css";
 
 body {
-    background-color: #093d56;
+      background: -moz-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
+      background: -webkit-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
+      background: linear-gradient(90deg, rgba(3,169,109,1) 0%, rgba(9,61,86,1) 0%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#03a96d",endColorstr="#093d56",GradientType=1);
+}
+.card-header{
+    background: -moz-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
+    background: -webkit-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
+    background: linear-gradient(90deg, rgba(3,169,109,1) 0%, rgba(9,61,86,1) 0%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#03a96d",endColorstr="#093d56",GradientType=1);
+    border-width: 0px;
+
 }
 .card-body {
       background-color: white;
 }
-.btn {
+/*This is modifying the btn-primary colors but you could create your own .btn-something class as well*/
+.btn-primary {
+    color: #fff;
     background-color: #03a96d;
+    border-color: #0a384e; /*set the color you want here*/
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #0a384e;
+    border-color: #03a96d; /*set the color you want here*/
 }
 
+
+/* This is the default state */
 .custom-radio .custom-control-label::before {
-    background-color: #0000;
+    background-color: #0000;  /* orange */
 }
+
+/* This is the checked state */
 .custom-radio .custom-control-input:checked~.custom-control-label::before,
 .custom-radio .custom-control-input:checked~.custom-control-label::after {
-    background-color: #03a96d;
+    background-color: #03a96d;  /* green */
+    /* this bg image SVG is just a white circle, you can replace it with any valid SVG code */
+    background-image: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E);
+    border-radius: 50%;
 }
+
+/* active state i.e. displayed while the mouse is being pressed down */
 .custom-radio .custom-control-input:active ~ .custom-control-label::before {
-    color: #fff;
-    background-color: #03a96d; /* red */
+    color: #0000;
+    background-color: #0a384e;
 }
+
+/* the shadow; displayed while the element is in focus */
 .custom-radio .custom-control-input:focus ~ .custom-control-label::before {
-    box-shadow: 0 0 0 1px #09384e, 0 0 0 0.2rem rgba(255, 123, 255, 0.25); /* pink, 25% opacity */
+    box-shadow: 0 0 0 1px #0000, 0 0 0 0.2rem rgba(9,61,86,1) 25%);
 }
 .mx-auto{
     width:30%;
+}
+h3 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-family: Source Sans Pro;
+}
+img {
+    padding-bottom: 40px;
 }

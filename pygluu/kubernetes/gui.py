@@ -58,7 +58,7 @@ gluu_cache_map = {
 
 static_files = ["/favicon.ico",
                 "/styles.css",
-                "/blue-logo.svg",
+                "/green-logo.svg",
                 "/bootstrap.min.css",
                 "/bootstrap.min.css.map"]
 
@@ -249,9 +249,9 @@ def styles():
     return send_from_directory(Path("templates/gui-install/static"), 'styles.css')
 
 
-@app.route('/blue-logo.svg')
+@app.route('/green-logo.svg')
 def logo():
-    return send_from_directory(Path("templates/gui-install/static"), 'blue-logo.svg')
+    return send_from_directory(Path("templates/gui-install/static"), 'green-logo.svg')
 
 
 @app.route('/bootstrap.min.css')
