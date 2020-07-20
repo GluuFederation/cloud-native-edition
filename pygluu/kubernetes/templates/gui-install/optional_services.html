@@ -11,7 +11,7 @@
 {{ forms.radio(form.enable_fido2) }}
 {{ forms.radio(form.enable_scim) }}
 {{ forms.radio(form.enable_oxd) }}
-<div id="oxdSetup" class="collapse">
+<div id="oxdSetup" class="collapse {{ "show" if form.enable_oxd.data == "Y" else "" }}">
   {{ forms.text(form.oxd_application_keystore_cn) }}
   {{ forms.text(form.oxd_admin_keystore_cn) }}
 </div>
