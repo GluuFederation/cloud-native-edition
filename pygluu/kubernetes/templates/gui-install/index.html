@@ -9,7 +9,8 @@
       </div>
       <div class="card-body">
         <h3 class="text-center">Gluu Cloud Native Edition</h3>
-        <form method="post" class="needs-validation">
+        <form id="formInstaller" method="post" novalidate>
+
           {{ form.csrf_token }}
           {% include '%s.html' % step %}
           {% if(next_step) %}
