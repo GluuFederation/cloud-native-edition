@@ -289,18 +289,18 @@ def agreement():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["ACCEPT_GLUU_LICENSE"] = form.license.data
+            settings["ACCEPT_GLUU_LICENSE"] = "Y" if form.license.data else "N"
             update_settings_json_file(settings)
 
             return redirect(url_for(next_step))
-
+        
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
 
     return render_template("index.html",
                            license=agreement_file,
                            form=form,
-                           step="license",
+                           step="agreement",
                            next_step="gluu_version")
 
 

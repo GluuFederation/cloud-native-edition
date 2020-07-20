@@ -72,9 +72,8 @@ ldap_volumes = {
 
 
 class LicenseForm(FlaskForm):
-    license = RadioField("Do you accept the Gluu license stated above?",
-                         choices=[("Y", "Yes"), (" ", "No")], default=" ",
-                         validators=[DataRequired(message="License has not been accepted")])
+    license = BooleanField("I accept the Gluu license stated above",
+                           validators=[DataRequired(message="License has not been accepted")])
 
 
 class GluuVersionForm(FlaskForm):
