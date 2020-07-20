@@ -623,25 +623,24 @@ def cache_type():
     Cache Layer setting
     """
     form = CacheTypeForm()
-    form_redis = RedisForm()
 
     if request.method == "POST":
         if form.validate_on_submit():
-            settings["GLUU_CACHE_TYPE"] = gluu_cache_map.get(form.gluu_cache_type.data, "NATIVE_PERSISTENCE")
+            settings["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
 
             if settings["GLUU_CACHE_TYPE"] == "REDIS":
-                settings["REDIS_TYPE"] = form_redis.redis_type.data
-                settings["INSTALL_REDIS"] = form_redis.install_redis.data
+                settings["REDIS_TYPE"] = form.redis.redis_type.data
+                settings["INSTALL_REDIS"] = form.redis.install_redis.data
 
                 if settings["INSTALL_REDIS"] == "Y":
-                    settings["REDIS_MASTER_NODES"] = form_redis.redis_master_nodes.data
-                    settings["REDIS_NODES_PER_MASTER"] = form_redis.redis_nodes_per_master.data
-                    settings["REDIS_NAMESPACE"] = form_redis.redis_namespace.data
+                    settings["REDIS_MASTER_NODES"] = form.redis.master_nodes.data
+                    settings["REDIS_NODES_PER_MASTER"] = form.redis.nodes_per_master.data
+                    settings["REDIS_NAMESPACE"] = form.redis.namespace.data
                     settings["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
                         settings["REDIS_NAMESPACE"])
                 else:
-                    settings["REDIS_URL"] = form_redis.redis_url.data
-                    settings["REDIS_PW"] = form_redis.redis_pw.data
+                    settings["REDIS_URL"] = form.redis.url.data
+                    settings["REDIS_PW"] = form.redis.password.data
 
             update_settings_json_file(settings)
 
@@ -656,7 +655,6 @@ def cache_type():
     return render_template("index.html",
                            settings=settings,
                            form=form,
-                           form_redis=form_redis,
                            step="cache_type",
                            next_step="couchbase")
 

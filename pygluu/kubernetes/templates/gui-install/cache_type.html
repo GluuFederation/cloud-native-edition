@@ -5,25 +5,25 @@
   {% endfor %}
 </fieldset>
 
-<div id="redisSetup" class="collapse">
+<div id="redisSetup" class="collapse {{ 'show' if form.gluu_cache_type.data == 'REDIS' else '' }}">
   <fieldset class="form-group">
-    <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form_redis.redis_type.label }}</h6>
-    {% for choice in form_redis.redis_type %}
+    <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.redis.redis_type.label }}</h6>
+    {% for choice in form.redis.redis_type %}
       {{ forms.single_radio(choice) }}
     {% endfor %}
   </fieldset>
 
 
-  {{ forms.radio(form_redis.install_redis) }}
-  <div id="redisNodes" class="collapse show">
-    {{ forms.text(form_redis.redis_master_nodes) }}
-    {{ forms.text(form_redis.redis_nodes_per_master) }}
-    {{ forms.text(form_redis.redis_namespace) }}
+  {{ forms.radio(form.redis.install_redis) }}
+  <div id="redisNodes" class="collapse {{ 'show' if form.redis.install_redis.data == 'Y' else '' }}">
+    {{ forms.text(form.redis.master_nodes) }}
+    {{ forms.text(form.redis.nodes_per_master) }}
+    {{ forms.text(form.redis.namespace) }}
   </div>
-  <div id="redisPassword" class="collapse">
-    {{ forms.text(form_redis.redis_url) }}
-    {{ forms.password(form_redis.redis_pw) }}
-    {{ forms.password(form_redis.redis_pw_confirm) }}
+  <div id="redisPassword" class="collapse {{ 'show' if form.redis.install_redis.data == 'N' else '' }}">
+    {{ forms.text(form.redis.url) }}
+    {{ forms.password(form.redis.password) }}
+    {{ forms.password(form.redis.password_confirm) }}
   </div>
 
 </div>
