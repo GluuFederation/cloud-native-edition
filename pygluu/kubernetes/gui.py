@@ -468,6 +468,8 @@ def install_jackrabbit():
             settings["JACKRABBIT_USER"] = form.jackrabbit_user.data
 
             if settings["INSTALL_JACKRABBIT"] == "Y":
+                settings["JACKRABBIT_URL"] = form.jackrabbit_url.default
+                settings["JACKRABBIT_USER"] = form.jackrabbit_user.default
                 settings["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
             update_settings_json_file(settings)

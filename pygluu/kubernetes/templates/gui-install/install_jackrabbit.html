@@ -2,13 +2,13 @@
   <p>Jackrabbit must be installed. If the following prompt is answered with No it is assumed the jackrabbit content repository is either installed locally or remotely</p>
 </div>
 {{ forms.radio(form.install_jackrabbit) }}
-  <div id="jackrabbitNoInstall" class="collapse">
+<div id="jackrabbitNoInstall" class="collapse {{ 'show' if form.install_jackrabbit.data == 'N' else ''}}">
     {{ forms.text(form.jackrabbit_url) }}
     {{ forms.text(form.jackrabbit_user) }}
     <div class="alert alert-warning" role="alert">
       <p>Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod</p>
     </div>
   </div>
-  <div id="jackrabbitYesInstall" class="collapse show">
+  <div id="jackrabbitYesInstall" class="collapse {{ 'show' if form.install_jackrabbit.data == 'Y' else ''}}">
     {{ forms.text(form.jackrabbit_storage_size) }}
   </div>
