@@ -108,7 +108,8 @@ class GluuVersionForm(FlaskForm):
                 supported_versions.append((version_number, float(k)))
 
     gluu_version = RadioField("Currently supported versions are :",
-                              choices=supported_versions, validators=[DataRequired()])
+                              choices=supported_versions, 
+                              validators=[DataRequired(message="Please select version")])
 
 
 class DeploymentArchForm(FlaskForm):
@@ -231,16 +232,19 @@ class SettingForm(FlaskForm):
         "Enter aws-load-balancer-ssl-cert arn quoted "
         "('arn:aws:acm:us-west-2:XXXXXXXX: certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')",
         render_kw={"disabled": "disabled"})
-    gmail_account = StringField("Please enter valid email for Google Cloud account", validators=[Email()])
+    gmail_account = StringField("Please enter valid email for Google Cloud account",
+                                validators=[Email()])
     persistence_backend = RadioField("Persistence layer",
                                      choices=[("ldap", "WrenDS"),
                                               ("couchbase", "Couchbase [Testing Phase]"),
                                               ("hybrid", "Hybrid(WrenDS + Couchbase)[Testing Phase]")],
-                                     default="ldap")
+                                     default="ldap",
+                                     validators=[DataRequired()])
     hybrid_ldap_held_data = RadioField("Hybrid [WrendDS + Couchbase]",
                                        choices=[("default", "Default"), ("user", "User"),
                                                 ("site", "Site"), ("cache", "Cache"), ("token", "Token")],
-                                       default="default")
+                                       default="default",
+                                       render_kw={"disabled": "disabled"})
 
 
 class VolumeTypeForm(FlaskForm):
@@ -352,17 +356,17 @@ class CouchbaseCalculatorForm(FlaskForm):
 
 
 class CouchbaseBackupForm(FlaskForm):
-    couchbase_incr_backup_schedule = StringField(
+    incr_backup_schedule = StringField(
         "Please input couchbase backup cron job schedule for incremental backups. "
         "This will run backup job every 30 mins by default.", defalt="*/30 * * * *")
-    couchbase_full_backup_schedule = StringField("Please input couchbase backup cron job schedule for full backups. ")
-    couchbase_backup_retention_time = StringField("Please enter the time period in which to retain existing backups. "
-                                                  "Older backups outside this time frame are deleted", default="168h")
-    couchbase_backup_storate_size = StringField("Size of couchbase backup volume storage", default="20Gi")
+    full_backup_schedule = StringField("Please input couchbase backup cron job schedule for full backups. ")
+    backup_retention_time = StringField("Please enter the time period in which to retain existing backups. "
+                                        "Older backups outside this time frame are deleted", default="168h")
+    backup_storage_size = StringField("Size of couchbase backup volume storage", default="20Gi")
 
 
 class LdapBackupForm(FlaskForm):
-    ldap_backup_schedule = StringField("Please input ldap backup cron job schedule. "
+    backup_schedule = StringField("Please input ldap backup cron job schedule. "
                                        "This will run backup job every 30 mins by default.", default="*/30 * * * *")
 
 

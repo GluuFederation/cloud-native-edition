@@ -19,10 +19,11 @@ from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional
 from .common import get_supported_versions, exec_cmd, update_settings_json_file
 from .kubeapi import Kubernetes
-from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, GluuNamespaceForm, \
-    OptionalServiceForm, GluuGatewayForm, JackrabbitForm, SettingForm, app_volume_types, \
-    VolumeTypeForm, ldap_volumes, CacheTypeForm, RedisForm, CouchbaseMultiClusterForm, \
-    CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, LdapBackupForm, ConfigForm, \
+from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
+    GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
+    SettingForm, app_volume_types, VolumeTypeForm, ldap_volumes, \
+    CacheTypeForm, RedisForm, CouchbaseMultiClusterForm, CouchbaseForm, \
+    CouchbaseBackupForm, CouchbaseCalculatorForm, LdapBackupForm, ConfigForm, \
     ImageNameTagForm, ReplicasForm, StorageForm
 
 app = Flask(__name__, template_folder="templates/gui-install")
@@ -37,6 +38,8 @@ elif app_mode == "testing":
 app.config.from_object(cfg)
 
 csrf = CSRFProtect(app)
+csrf.init_app(app)
+
 wizard_steps = ["license",
                 "deployment_arch",
                 "set_namespace",
@@ -258,7 +261,8 @@ def initialize():
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(Path("templates/gui-install/static"), 'favicon.ico')
+    return send_from_directory(Path("templates/gui-install/static"),
+                               'favicon.ico')
 
 
 @app.route('/styles.css')
@@ -350,7 +354,7 @@ def deployment_arch():
 @app.route("/gluu-namespace", methods=["GET", "POST"])
 def gluu_namespace():
     """
-    Input for gluu namespace.   
+    Input for gluu namespace.
     """
     form = GluuNamespaceForm()
     if request.method == "POST":
@@ -495,7 +499,8 @@ def setting():
             if not settings["TEST_ENVIRONMENT"] and settings["DEPLOYMENT_ARCH"] in test_arch:
                 settings["TEST_ENVIRONMENT"] = form.test_environment.data
 
-            if settings["DEPLOYMENT_ARCH"] in cloud_arch or settings["DEPLOYMENT_ARCH"] in local_arch:
+            if settings["DEPLOYMENT_ARCH"] in cloud_arch or \
+                    settings["DEPLOYMENT_ARCH"] in local_arch:
                 settings["NODE_SSH_KEY"] = form.node_ssh_key.data
 
             settings["HOST_EXT_IP"] = form.host_ext_ip.data
