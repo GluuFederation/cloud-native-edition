@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SelectField, RadioField, BooleanField, \
-    PasswordField, SubmitField, validators, HiddenField, FormField, FileField, FieldList, \
-    MultipleFileField
+from wtforms import StringField, IntegerField, RadioField, BooleanField, \
+    PasswordField, FormField, FileField, FieldList, MultipleFileField
 
-from wtforms.validators import DataRequired, InputRequired, EqualTo, URL, ValidationError, IPAddress, \
-    Email, Optional, Regexp
+from wtforms.validators import DataRequired, InputRequired, \
+    EqualTo, URL, IPAddress, Email, Required, ValidationError
 
 from .common import get_supported_versions
 
@@ -71,6 +70,27 @@ ldap_volumes = {
 }
 
 
+class RequiredIfFieldEqualTo(Required):
+    """
+    a validator which makes a field optional if
+    another field has a desired value
+
+    """     
+
+    def __init__(self, other_field_name, value, *args, **kwargs):
+        self.other_field_name = other_field_name
+        self.value = value
+        super(RequiredIfFieldEqualTo, self).__init__(*args, **kwargs)
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.other_field_name)
+        if other_field is None:
+            raise Exception('no field named "%s" in form' % self.other_field_name)
+
+        if other_field.data == self.value:
+            super(RequiredIfFieldEqualTo, self).__call__(form, field)
+
+
 class LicenseForm(FlaskForm):
     license = BooleanField("I accept the Gluu license stated above",
                            validators=[DataRequired(message="License has not been accepted")])
@@ -112,7 +132,8 @@ class OptionalServiceForm(FlaskForm):
                                       default="N", validators=[DataRequired()])
     enable_oxauth_key_rotate = RadioField("Deploy Key-Rotation", choices=[("Y", "Yes"), ("N", "No")],
                                           default="N", validators=[DataRequired()])
-    oxauth_key_life = IntegerField("oxAuth keys life in hours", default=48, validators=[InputRequired()])
+    oxauth_key_life = IntegerField("oxAuth keys life in hours", default=48, 
+                                   validators=[RequiredIfFieldEqualTo("enable_oxauth_key_rotate", "Y")])
     enable_radius = RadioField("Deploy Radius?", choices=[("Y", "Yes"), ("N", "No")],
                                default="N", validators=[DataRequired()])
     enable_oxpassport = RadioField("Deploy Passport", choices=[("Y", "Yes"), ("N", "No")],
@@ -127,11 +148,11 @@ class OptionalServiceForm(FlaskForm):
                              default="N", validators=[DataRequired()])
     enable_oxd = RadioField("Deploy oxd server", choices=[("Y", "Yes"), ("N", "No")],
                             default="N", validators=[DataRequired()])
-    # required if oxd enable
     oxd_application_keystore_cn = StringField("oxd server application keystore name",
-                                              default="oxd-server", validators=[InputRequired()])
+                                              default="oxd-server",
+                                              validators=[RequiredIfFieldEqualTo("enable_oxd", "Y")])
     oxd_admin_keystore_cn = StringField("oxd server admin keystore name", default="oxd-server",
-                                        validators=[InputRequired()])
+                                        validators=[RequiredIfFieldEqualTo("enable_oxd", "Y")])
 
     enable_oxtrust_api = RadioField("Enable oxTrust API", choices=[("Y", "Yes"), ("N", "No")],
                                     default="N", validators=[DataRequired()])
@@ -141,47 +162,54 @@ class OptionalServiceForm(FlaskForm):
 
 
 class GluuGatewayForm(FlaskForm):
-    install_gluu_gateway = RadioField("Install Gluu Gateway Database mode", choices=[("Y", "Yes"), ("N", "No")],
-                                      default="N", validators=[DataRequired()])
-    postgres_namespace = StringField("Please enter number of replicas for postgres", default="postgres",
-                                     validators=[InputRequired()])
+    install_gluu_gateway = RadioField("Install Gluu Gateway Database mode",
+                                      choices=[("Y", "Yes"), ("N", "No")],
+                                      default="N",
+                                      validators=[DataRequired()])
+    postgres_namespace = StringField("Please enter number of replicas for postgres", 
+                                     default="postgres",
+                                     validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     postgres_replicas = IntegerField("Please enter a namespace for postgres", default=3,
-                                     validators=[InputRequired()])
+                                     validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     postgres_url = StringField("Please enter  postgres (remote or local) URL base name. If postgres is to be installed",
                                default="postgres.postgres.svc.cluster.local",
-                               validators=[InputRequired()])
+                               validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_namespace = StringField("Please enter a namespace for Gluu Gateway", default="gluu-gateway",
-                                 validators=[InputRequired()])
+                                 validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_namespace = StringField("Please enter a namespace for gluu gateway ui", default="gg-ui",
-                                            validators=[InputRequired()])
+                                            validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_database = StringField("Please enter gluu-gateway postgres database name", default="kong",
-                                validators=[InputRequired()])
+                                validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_pg_user = StringField("Please enter a user for gluu-gateway postgres database", default="konga",
-                               validators=[InputRequired()])
-    kong_pg_password = PasswordField("Kong Postgress Password", validators=[InputRequired(),
-                                                                            EqualTo('kong_pg_password_confirm',
-                                                                                    message='Passwords do not match')])
-    kong_pg_password_confirm = PasswordField("Kong Postgress Password Confirmation", validators=[InputRequired()])
+                               validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+    kong_pg_password = PasswordField("Kong Postgress Password",
+                                     validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
+                                                 EqualTo('kong_pg_password_confirm', message='Passwords do not match')])
+    kong_pg_password_confirm = PasswordField("Kong Postgress Password Confirmation",
+                                             validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_database = StringField("Please enter gluu-gateway-ui postgres database name", default="kong",
-                                           validators=[InputRequired()])
+                                           validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_pg_user = StringField("Please enter a user for gluu-gateway-ui postgres database", default="konga",
-                                          validators=[InputRequired()])
+                                          validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password",
-                                                validators=[InputRequired(),
+                                                validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
                                                             EqualTo(
                                                                 'gluu_gateway_ui_pg_password_confirm',
                                                                 message='Passwords do not match')])
     gluu_gateway_ui_pg_password_confirm = PasswordField("Gluu Gateway UI postgres password confirmation",
-                                                        validators=[InputRequired()])
+                                                        validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
 
 
 class JackrabbitForm(FlaskForm):
     install_jackrabbit = RadioField("Install Jackrabbit", choices=[("Y", "Yes"), ("N", "No")],
                                     default="Y", validators=[DataRequired()])
     jackrabbit_url = StringField("Please enter jackrabbit url", default="http://jackrabbit:8080",
-                                 validators=[URL(require_tld=False, message="Url format is wrong")])
-    jackrabbit_user = StringField("Please enter jackrabbit user", default="admin", validators=[DataRequired()])
-    jackrabbit_storage_size = StringField("Size of Jackrabbit content repository volume storage", default="4Gi")
+                                 validators=[RequiredIfFieldEqualTo("install_jackrabbit", "N"),
+                                             URL(require_tld=False, message="Url format is wrong")])
+    jackrabbit_user = StringField("Please enter jackrabbit user", default="admin",
+                                  validators=[RequiredIfFieldEqualTo("install_jackrabbit", "N")])
+    jackrabbit_storage_size = StringField("Size of Jackrabbit content repository volume storage", default="4Gi",
+                                          validators=[RequiredIfFieldEqualTo("install_jackrabbit", "Y")])
 
 
 class SettingForm(FlaskForm):
@@ -233,29 +261,46 @@ class CouchbaseMultiClusterForm(FlaskForm):
                                                   "You will answer Y for the second and more cluster setup")
 
 
-class CacheTypeForm(FlaskForm):
-    gluu_cache_type = RadioField("Cache Layer", choices=[(1, 'NATIVE_PERSISTENCE'), (2, 'IN_MEMORY'), (3, 'REDIS')],
-                                 default=1)
-
-
 class RedisForm(FlaskForm):
     redis_type = RadioField("Please select redis Type", choices=[("STANDALONE", "STANDALONE"), ("CLUSTER", "CLUSTER")],
                             default="CLUSTER")
     install_redis = RadioField("Install Redis", choices=[("Y", "Yes"), ("N", "No")], default="Y",
                                description="For the following prompt if placed [N] the Redis is assumed to be"
-                                           " installed or remotely provisioned")
-    redis_master_nodes = IntegerField("The number of master node. Minimum is 3", default=3,
+                                           " installed or remotely provisioned",
+                               validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
+    master_nodes = IntegerField("The number of master node. Minimum is 3", default=3,
+                                      validators=[RequiredIfFieldEqualTo("install_redis", "Y")],
                                       render_kw={"min": 3})
-    redis_nodes_per_master = IntegerField("The number of nodes per master node", default=2)
-    redis_namespace = StringField("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
-    redis_pw = PasswordField("Redis Password", render_kw={"disabled": "disabled"})
-    redis_pw_confirm = PasswordField("Redis Password Confirmation", render_kw={"disabled": "disabled"})
-    redis_url = StringField("Please enter redis URL. If you are deploying redis",
+    nodes_per_master = IntegerField("The number of nodes per master node", default=2,
+                                    validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
+    namespace = StringField("Please enter a namespace for Redis cluster",
+                            default="gluu-redis-cluster",
+                            validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
+    password = PasswordField("Redis Password",
+                             validators=[RequiredIfFieldEqualTo("install_redis", "N")])
+    password_confirm = PasswordField("Redis Password Confirmation",
+                                     validators=[RequiredIfFieldEqualTo("install_redis", "N"),
+                                                 EqualTo('password', message='Passwords do not match')])
+    url = StringField("Please enter redis URL. If you are deploying redis",
                             default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
                             description="Redis URL can be : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379 in a redis deployment"
                                         "Redis URL using AWS ElastiCach [Configuration Endpoint]: "
-                                        "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379",
-                            render_kw={"disabled": "disabled"})
+                                        "clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
+
+    def validate_master_nodes(form, field):
+        if field.data < 3:
+            raise ValidationError("minimum number of master node is 3")
+
+
+class CacheTypeForm(FlaskForm):
+    gluu_cache_type = RadioField("Cache Layer",
+                                 choices=[("NATIVE_PERSISTENCE", "NATIVE_PERSISTENCE"),
+                                          ("IN_MEMORY", "IN_MEMORY"),
+                                          ("REDIS", "REDIS")],
+                                 default="NATIVE_PERSISTENCE", validators=[DataRequired()])
+    redis = FormField(RedisForm)
+
+
 
 
 class CouchbaseForm(FlaskForm):
