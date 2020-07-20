@@ -8,7 +8,7 @@ import pytest
 def prompter():
     from pygluu.kubernetes.prompt import Prompt
 
-    prompt = Prompt(accept_license=True, version="4.2.0_dev")
+    prompt = Prompt(accept_license=True, version="4.2.0_01")
 
     yield prompt
 
@@ -36,12 +36,12 @@ def test_prompt_license_no_prompt(prompter):
 
 def test_prompt_version_no_prompt(prompter):
     prompter.prompt_version()
-    assert prompter.settings["GLUU_VERSION"] == "4.2.0_dev"
+    assert prompter.settings["GLUU_VERSION"] == "4.2.0_01"
 
 
 @pytest.mark.parametrize("given, expected", [
     ("", "0"),
-    ("4.2.0_dev", "4.2.0_dev"),
+    ("4.2.0_01", "4.2.0_01"),
 ])
 def test_prompt_version(monkeypatch, prompter, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -216,7 +216,7 @@ def test_prompt_helm_gg_ui_helm_release_name(monkeypatch, prompter, given, expec
 
 @pytest.mark.parametrize("given, expected", [
     ("", "0"),
-    ("4.2.0_dev", "4.2.0_dev"),
+    ("4.2.0_01", "4.2.0_01"),
 ])
 def test_prompt_upgrade_version(monkeypatch, prompter, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)

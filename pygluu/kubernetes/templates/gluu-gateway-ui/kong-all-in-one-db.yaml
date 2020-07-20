@@ -666,7 +666,7 @@ spec:
           value: /dev/stderr
         - name: KONG_PROXY_ERROR_LOG
           value: /dev/stderr
-        image: gluufederation/gluu-gateway:4.2.0_dev
+        image: gluufederation/gluu-gateway:4.2.0_01
         lifecycle:
           preStop:
             exec:

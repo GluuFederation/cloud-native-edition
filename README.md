@@ -4,7 +4,7 @@
 ![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.2)
 
 
-# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.2.0beta-green.svg?style=for-the-badge)
+# pygluu-kubernetes![CDNJS](https://img.shields.io/badge/Release-v1.2.0-green.svg?style=for-the-badge)
 
 ## Kubernetes recipes
 

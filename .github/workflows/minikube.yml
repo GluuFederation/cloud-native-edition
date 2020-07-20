@@ -9,7 +9,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7]
-        gluu-version: ['"4.2.0_dev"']
+        gluu-version: ['"4.2.0_01"']
         persistence-backends: ['"ldap"']
     steps:
     - name: Checkout code
