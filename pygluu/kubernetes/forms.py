@@ -371,7 +371,7 @@ class ConfigForm(FlaskForm):
     country_code = StringField("Country Code", default="US")
     state = StringField("State", default="TX")
     city = StringField("Austin")
-    enail = StringField("Email", default="support@gluu.org", validators=[Email()])
+    email = StringField("Email", default="support@gluu.org", validators=[Email()])
     org_name = StringField("Organization", default="Gluu")
     admin_pw = PasswordField("oxTrust Password")
     admin_pw_confirm = PasswordField("oxTrust Password Confirm")
