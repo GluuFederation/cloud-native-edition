@@ -235,6 +235,23 @@ settings = default_settings
 
 @app.before_request
 def initialize():
+    """Get merged settings (default and custom settings from json file).
+    """
+    # Check if running in container and settings.json mounted
+    try:
+        shutil.copy(Path("./installer-settings.json"), "./settings.json")
+    except FileNotFoundError:
+        app.logger.info("No installation settings mounted as /installer-settings.json. "
+                        "Checking settings.json...")
+
+    filename = Path("./settings.json")
+    try:
+        with open(filename) as f:
+            custom_settings = json.load(f)
+        settings.update(custom_settings)
+    except FileNotFoundError:
+        pass
+
     if not settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("agreement"))
 
