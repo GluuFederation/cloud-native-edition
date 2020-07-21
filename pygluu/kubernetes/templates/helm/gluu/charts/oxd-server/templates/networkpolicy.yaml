@@ -1,7 +1,7 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  namespace: gluu
+  namespace: {{ .Release.Namespace }}
   name: oxd-server-policy
 spec:
   policyTypes:
