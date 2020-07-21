@@ -374,9 +374,9 @@ class Helm(object):
             self.settings["OXD_APPLICATION_KEYSTORE_CN"], self.settings["GLUU_NAMESPACE"])
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
-        values_file_parser["global"]["isDomainRegistered"] = "false"
+        values_file_parser["cloud"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
-            values_file_parser["global"]["isDomainRegistered"] = "true"
+            values_file_parser["cloud"]["isDomainRegistered"] = "true"
         if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube":
             values_file_parser["cloud"]["enabled"] = False
         values_file_parser["cloud"]["provider"] = self.settings["DEPLOYMENT_ARCH"]
@@ -386,6 +386,8 @@ class Helm(object):
         values_file_parser["dbHost"] = self.settings["POSTGRES_URL"]
         values_file_parser["dbDatabase"] = self.settings["GLUU_GATEWAY_UI_DATABASE"]
         values_file_parser["oxdServerUrl"] = oxd_server_url
+        values_file_parser["image"]["repository"] = self.settings["GLUU_GATEWAY_UI_IMAGE_NAME"]
+        values_file_parser["image"]["tag"] = self.settings["GLUU_GATEWAY_UI_IMAGE_TAG"]
         # Register new client if one was not provided
         if not values_file_parser["oxdId"] or \
                 not values_file_parser["clientId"] or \

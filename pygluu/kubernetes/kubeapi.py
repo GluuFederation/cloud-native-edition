@@ -482,6 +482,22 @@ class Kubernetes(object):
                 else:
                     response = self.check_error_and_response(starting_time, resp)
 
+    def delete_namespaced_custom_object_by_name(self, group, version, plural, name, namespace="default"):
+        """Delete custom object using name in namespace"""
+        try:
+            resp = self.custom_def_cli.delete_namespaced_custom_object(group=group,
+                                                                       version=version,
+                                                                       namespace=namespace,
+                                                                       plural=plural,
+                                                                       name=name,
+                                                                       body=self.delete_options)
+            logger.info('Deleted {} in namespace  {}'.format(name, namespace))
+        except client.rest.ApiException as e:
+            if e.status == 404:
+                logger.info('{} in namespace  {} not found.'.format(name, namespace))
+            else:
+                logger.error(e)
+
     def create_namespace(self, name, labels={}):
         """Create namespace using name"""
         body = client.V1Secret()

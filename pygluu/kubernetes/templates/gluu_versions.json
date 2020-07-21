@@ -37,7 +37,7 @@
   "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
   "UPGRADE_IMAGE_TAG": "4.2.0_dev"
 },
-  "4.2.0_01": {
+  "4.2": {
   "CASA_IMAGE_NAME": "gluufederation/casa",
   "CASA_IMAGE_TAG": "4.2.0_01",
   "FIDO2_IMAGE_NAME": "gluufederation/fido2",
