@@ -7,7 +7,7 @@ from wtforms import StringField, IntegerField, RadioField, BooleanField, \
 
 from wtforms.validators import DataRequired, InputRequired, \
     EqualTo, URL, IPAddress, Email, Required, ValidationError
-
+from wtforms.widgets import PasswordInput
 from .common import get_supported_versions
 
 app_volume_types = {
@@ -183,22 +183,26 @@ class GluuGatewayForm(FlaskForm):
                                 validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_pg_user = StringField("Please enter a user for gluu-gateway postgres database", default="konga",
                                validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
-    kong_pg_password = PasswordField("Kong Postgress Password",
-                                     validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                                                 EqualTo('kong_pg_password_confirm', message='Passwords do not match')])
-    kong_pg_password_confirm = PasswordField("Kong Postgress Password Confirmation",
-                                             validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+    kong_pg_password = StringField("Kong Postgress Password",
+                                   widget=PasswordInput(hide_value=False),
+                                   validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
+                                               EqualTo('kong_pg_password_confirm', message='Passwords do not match')])
+    kong_pg_password_confirm = StringField("Kong Postgress Password Confirmation",
+                                           widget=PasswordInput(hide_value=False),
+                                           validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_database = StringField("Please enter gluu-gateway-ui postgres database name", default="kong",
                                            validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_pg_user = StringField("Please enter a user for gluu-gateway-ui postgres database", default="konga",
                                           validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
-    gluu_gateway_ui_pg_password = PasswordField("Gluu Gateway UI postgres password",
-                                                validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                                                            EqualTo(
-                                                                'gluu_gateway_ui_pg_password_confirm',
-                                                                message='Passwords do not match')])
-    gluu_gateway_ui_pg_password_confirm = PasswordField("Gluu Gateway UI postgres password confirmation",
-                                                        validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+    gluu_gateway_ui_pg_password = StringField("Gluu Gateway UI postgres password",
+                                              widget=PasswordInput(hide_value=False),
+                                              validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
+                                                          EqualTo(
+                                                              'gluu_gateway_ui_pg_password_confirm',
+                                                              message='Passwords do not match')])
+    gluu_gateway_ui_pg_password_confirm = StringField("Gluu Gateway UI postgres password confirmation",
+                                                      widget=PasswordInput(hide_value=False),
+                                                      validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
 
 
 class JackrabbitForm(FlaskForm):
@@ -280,11 +284,13 @@ class RedisForm(FlaskForm):
     redis_namespace = StringField("Please enter a namespace for Redis cluster",
                                   default="gluu-redis-cluster",
                                   validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
-    password = PasswordField("Redis Password",
-                             validators=[RequiredIfFieldEqualTo("install_redis", "N")])
-    password_confirm = PasswordField("Redis Password Confirmation",
-                                     validators=[RequiredIfFieldEqualTo("install_redis", "N"),
-                                                 EqualTo('password', message='Passwords do not match')])
+    redis_pw = StringField("Redis Password",
+                           widget=PasswordInput(hide_value=False),
+                           validators=[RequiredIfFieldEqualTo("install_redis", "N")])
+    redis_pw_confirm = StringField("Redis Password Confirmation",
+                                   widget=PasswordInput(hide_value=False),
+                                   validators=[RequiredIfFieldEqualTo("install_redis", "N"),
+                                               EqualTo('redis_pw', message='Passwords do not match')])
     redis_url = StringField("Please enter redis URL. If you are deploying redis",
                             default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
                             description="Redis URL can be : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379 in a redis deployment"
