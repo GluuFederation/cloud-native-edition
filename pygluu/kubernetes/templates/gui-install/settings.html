@@ -1,4 +1,4 @@
-{% if not settings["TEST_ENVIRONMENT"] and settings["DEPLOYMENT_ARCH"] in ["microk8s", "minikube"] %}
+{% if settings["DEPLOYMENT_ARCH"] in ["microk8s", "minikube"] %}
   <div class="alert alert-warning" role="alert">
     <p>A test environment means that the installer will strip all resource requirments, and hence will use as much as needed only. The pods are subject to eviction. Please use at least 8GB Ram , 4 CPU, and 50 GB disk.</p>
   </div>
@@ -35,7 +35,7 @@
   {% endfor %}
 </fieldset>
 
-<fieldset id="hybridLdapHeldData" class="form-group collapse">
+<fieldset id="hybridLdapHeldData" class="form-group collapse {{ 'show' if form.persistence_backend.data == 'hybrid' else '' }}">
   <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.hybrid_ldap_held_data.label }}</h6>
   {% for choice in form.hybrid_ldap_held_data %}
     {{ forms.single_radio(choice) }}

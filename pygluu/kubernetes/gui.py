@@ -16,15 +16,17 @@ from flask import Flask, jsonify, make_response, render_template, \
     request, redirect, url_for, send_from_directory
 
 from flask_wtf.csrf import CSRFProtect
-from wtforms.validators import InputRequired, Optional
+from wtforms.validators import InputRequired, Optional, DataRequired
 from .common import get_supported_versions, exec_cmd, update_settings_json_file
 from .kubeapi import Kubernetes
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
     SettingForm, app_volume_types, VolumeTypeForm, ldap_volumes, \
-    CacheTypeForm, RedisForm, CouchbaseMultiClusterForm, CouchbaseForm, \
+    CacheTypeForm, CouchbaseMultiClusterForm, CouchbaseForm, \
     CouchbaseBackupForm, CouchbaseCalculatorForm, LdapBackupForm, ConfigForm, \
     ImageNameTagForm, ReplicasForm, StorageForm
+
+from .settingdb import SettingDB
 
 app = Flask(__name__, template_folder="templates/gui-install")
 
@@ -37,7 +39,7 @@ elif app_mode == "testing":
 
 app.config.from_object(cfg)
 
-csrf = CSRFProtect(app)
+csrf = CSRFProtect()
 csrf.init_app(app)
 
 wizard_steps = ["license",
@@ -65,197 +67,16 @@ static_files = ["/favicon.ico",
                 "/bootstrap.min.css",
                 "/bootstrap.min.css.map"]
 
-default_settings = dict(ACCEPT_GLUU_LICENSE="",
-                        GLUU_VERSION="",
-                        TEST_ENVIRONMENT="",
-                        GLUU_UPGRADE_TARGET_VERSION="",
-                        GLUU_HELM_RELEASE_NAME="",
-                        NGINX_INGRESS_RELEASE_NAME="",
-                        NGINX_INGRESS_NAMESPACE="",
-                        INSTALL_GLUU_GATEWAY="",
-                        POSTGRES_NAMESPACE="",
-                        KONG_NAMESPACE="",
-                        GLUU_GATEWAY_UI_NAMESPACE="",
-                        KONG_PG_USER="",
-                        KONG_PG_PASSWORD="",
-                        GLUU_GATEWAY_UI_PG_USER="",
-                        GLUU_GATEWAY_UI_PG_PASSWORD="",
-                        KONG_DATABASE="",
-                        GLUU_GATEWAY_UI_DATABASE="",
-                        POSTGRES_REPLICAS="",
-                        POSTGRES_URL="",
-                        KONG_HELM_RELEASE_NAME="",
-                        GLUU_GATEWAY_UI_HELM_RELEASE_NAME="",
-                        NODES_IPS=[],
-                        NODES_ZONES=[],
-                        NODES_NAMES=[],
-                        NODE_SSH_KEY="",
-                        HOST_EXT_IP="",
-                        VERIFY_EXT_IP="",
-                        AWS_LB_TYPE="",
-                        USE_ARN="",
-                        ARN_AWS_IAM="",
-                        LB_ADD="",
-                        REDIS_URL="",
-                        REDIS_TYPE="",
-                        REDIS_PW="",
-                        REDIS_USE_SSL="false",
-                        REDIS_SSL_TRUSTSTORE="",
-                        REDIS_SENTINEL_GROUP="",
-                        REDIS_MASTER_NODES="",
-                        REDIS_NODES_PER_MASTER="",
-                        REDIS_NAMESPACE="",
-                        INSTALL_REDIS="",
-                        INSTALL_JACKRABBIT="",
-                        JACKRABBIT_STORAGE_SIZE="",
-                        JACKRABBIT_URL="",
-                        JACKRABBIT_USER="",
-                        DEPLOYMENT_ARCH="",
-                        PERSISTENCE_BACKEND="",
-                        INSTALL_COUCHBASE="",
-                        COUCHBASE_NAMESPACE="",
-                        COUCHBASE_VOLUME_TYPE="",
-                        COUCHBASE_CLUSTER_NAME="",
-                        COUCHBASE_URL="",
-                        COUCHBASE_USER="",
-                        COUCHBASE_PASSWORD="",
-                        COUCHBASE_CRT="",
-                        COUCHBASE_CN="",
-                        COUCHBASE_SUBJECT_ALT_NAME="",
-                        COUCHBASE_CLUSTER_FILE_OVERRIDE="",
-                        COUCHBASE_USE_LOW_RESOURCES="",
-                        COUCHBASE_DATA_NODES="",
-                        COUCHBASE_QUERY_NODES="",
-                        COUCHBASE_INDEX_NODES="",
-                        COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES="",
-                        COUCHBASE_GENERAL_STORAGE="",
-                        COUCHBASE_DATA_STORAGE="",
-                        COUCHBASE_INDEX_STORAGE="",
-                        COUCHBASE_QUERY_STORAGE="",
-                        COUCHBASE_ANALYTICS_STORAGE="",
-                        COUCHBASE_INCR_BACKUP_SCHEDULE="",
-                        COUCHBASE_FULL_BACKUP_SCHEDULE="",
-                        COUCHBASE_BACKUP_RETENTION_TIME="",
-                        COUCHBASE_BACKUP_STORAGE_SIZE="",
-                        LDAP_BACKUP_SCHEDULE="",
-                        NUMBER_OF_EXPECTED_USERS="",
-                        EXPECTED_TRANSACTIONS_PER_SEC="",
-                        USING_CODE_FLOW="",
-                        USING_SCIM_FLOW="",
-                        USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW="",
-                        DEPLOY_MULTI_CLUSTER="",
-                        HYBRID_LDAP_HELD_DATA="",
-                        LDAP_JACKRABBIT_VOLUME="",
-                        APP_VOLUME_TYPE="",
-                        LDAP_STATIC_VOLUME_ID="",
-                        LDAP_STATIC_DISK_URI="",
-                        GLUU_CACHE_TYPE="",
-                        GLUU_NAMESPACE="",
-                        GLUU_FQDN="",
-                        COUNTRY_CODE="",
-                        STATE="",
-                        EMAIL="",
-                        CITY="",
-                        ORG_NAME="",
-                        GMAIL_ACCOUNT="",
-                        GOOGLE_NODE_HOME_DIR="",
-                        IS_GLUU_FQDN_REGISTERED="",
-                        LDAP_PW="",
-                        ADMIN_PW="",
-                        OXD_APPLICATION_KEYSTORE_CN="",
-                        OXD_ADMIN_KEYSTORE_CN="",
-                        LDAP_STORAGE_SIZE="",
-                        OXAUTH_REPLICAS="",
-                        OXTRUST_REPLICAS="",
-                        LDAP_REPLICAS="",
-                        OXSHIBBOLETH_REPLICAS="",
-                        OXPASSPORT_REPLICAS="",
-                        OXD_SERVER_REPLICAS="",
-                        CASA_REPLICAS="",
-                        RADIUS_REPLICAS="",
-                        FIDO2_REPLICAS="",
-                        SCIM_REPLICAS="",
-                        ENABLE_OXTRUST_API="",
-                        ENABLE_OXTRUST_TEST_MODE="",
-                        ENABLE_CACHE_REFRESH="",
-                        ENABLE_OXD="",
-                        ENABLE_FIDO2="",
-                        ENABLE_SCIM="",
-                        ENABLE_RADIUS="",
-                        ENABLE_OXPASSPORT="",
-                        ENABLE_OXSHIBBOLETH="",
-                        ENABLE_CASA="",
-                        ENABLE_OXAUTH_KEY_ROTATE="",
-                        ENABLE_OXTRUST_API_BOOLEAN="false",
-                        ENABLE_OXTRUST_TEST_MODE_BOOLEAN="false",
-                        ENABLE_RADIUS_BOOLEAN="false",
-                        ENABLE_OXPASSPORT_BOOLEAN="false",
-                        ENABLE_CASA_BOOLEAN="false",
-                        ENABLE_SAML_BOOLEAN="false",
-                        OXAUTH_KEYS_LIFE="",
-                        EDIT_IMAGE_NAMES_TAGS="",
-                        CASA_IMAGE_NAME="",
-                        CASA_IMAGE_TAG="",
-                        CONFIG_IMAGE_NAME="",
-                        CONFIG_IMAGE_TAG="",
-                        CACHE_REFRESH_ROTATE_IMAGE_NAME="",
-                        CACHE_REFRESH_ROTATE_IMAGE_TAG="",
-                        CERT_MANAGER_IMAGE_NAME="",
-                        CERT_MANAGER_IMAGE_TAG="",
-                        LDAP_IMAGE_NAME="",
-                        LDAP_IMAGE_TAG="",
-                        JACKRABBIT_IMAGE_NAME="",
-                        JACKRABBIT_IMAGE_TAG="",
-                        OXAUTH_IMAGE_NAME="",
-                        OXAUTH_IMAGE_TAG="",
-                        FIDO2_IMAGE_NAME="",
-                        FIDO2_IMAGE_TAG="",
-                        SCIM_IMAGE_NAME="",
-                        SCIM_IMAGE_TAG="",
-                        OXD_IMAGE_NAME="",
-                        OXD_IMAGE_TAG="",
-                        OXPASSPORT_IMAGE_NAME="",
-                        OXPASSPORT_IMAGE_TAG="",
-                        OXSHIBBOLETH_IMAGE_NAME="",
-                        OXSHIBBOLETH_IMAGE_TAG="",
-                        OXTRUST_IMAGE_NAME="",
-                        OXTRUST_IMAGE_TAG="",
-                        PERSISTENCE_IMAGE_NAME="",
-                        PERSISTENCE_IMAGE_TAG="",
-                        RADIUS_IMAGE_NAME="",
-                        RADIUS_IMAGE_TAG="",
-                        GLUU_GATEWAY_IMAGE_NAME="",
-                        GLUU_GATEWAY_IMAGE_TAG="",
-                        GLUU_GATEWAY_UI_IMAGE_NAME="",
-                        GLUU_GATEWAY_UI_IMAGE_TAG="",
-                        UPGRADE_IMAGE_NAME="",
-                        UPGRADE_IMAGE_TAG="",
-                        CONFIRM_PARAMS="N",
-                        )
 
-settings = default_settings
 
+settings = SettingDB()
 
 @app.before_request
 def initialize():
-    """Get merged settings (default and custom settings from json file).
     """
-    # Check if running in container and settings.json mounted
-    try:
-        shutil.copy(Path("./installer-settings.json"), "./settings.json")
-    except FileNotFoundError:
-        app.logger.info("No installation settings mounted as /installer-settings.json. "
-                        "Checking settings.json...")
-
-    filename = Path("./settings.json")
-    try:
-        with open(filename) as f:
-            custom_settings = json.load(f)
-        settings.update(custom_settings)
-    except FileNotFoundError:
-        pass
-
-    if not settings["ACCEPT_GLUU_LICENSE"] and request.path != "/agreement" and request.path not in static_files:
+    check accepting license
+    """
+    if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("agreement"))
 
 
@@ -293,13 +114,15 @@ def agreement():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["ACCEPT_GLUU_LICENSE"] = "Y" if form.license.data else "N"
-            update_settings_json_file(settings)
-
+            settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
             return redirect(url_for(next_step))
         
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
+
+    if request.method == "GET":
+        # populate form
+        form.accept_gluu_license.data = settings.get("ACCEPT_GLUU_LICENSE")
 
     return render_template("index.html",
                            license=agreement_file,
@@ -317,13 +140,14 @@ def gluu_version():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["GLUU_VERSION"] = form.gluu_version.data
-            image_names_and_tags = versions.get(settings["GLUU_VERSION"], {})
-
+            settings.set("GLUU_VERSION", form.gluu_version.data)
+            image_names_and_tags = versions.get(settings.get("GLUU_VERSION"), {})
             settings.update(image_names_and_tags)
-            update_settings_json_file(settings)
-
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        # populate form
+        form.gluu_version.data = settings.get("GLUU_VERSION")
 
     return render_template("index.html",
                            form=form,
@@ -341,9 +165,13 @@ def deployment_arch():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["DEPLOYMENT_ARCH"] = form.deployment_arch.data
-            update_settings_json_file(settings)
+            settings.set("DEPLOYMENT_ARCH", form.deployment_arch.data)
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        # populate form
+        if settings.get("DEPLOYMENT_ARCH"):
+            form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
 
     return render_template("index.html",
                            form=form,
@@ -360,9 +188,13 @@ def gluu_namespace():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["GLUU_NAMESPACE"] = form.gluu_namespace.data
-            update_settings_json_file(settings)
+            settings.set("GLUU_NAMESPACE", form.gluu_namespace.data)
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        # populate form
+        if settings.get("GLUU_NAMESPACE"):
+            form.gluu_namespace.data = settings.get("GLUU_NAMESPACE")
 
     return render_template("index.html",
                            step="gluu_namespace",
@@ -377,46 +209,70 @@ def optional_services():
     """
     form = OptionalServiceForm()
     if request.method == "POST":
+
         if form.validate_on_submit():
+            data = {}
             next_step = request.form["next_step"]
-            settings["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
-            settings["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
-            if form.enable_oxauth_key_rotate == "Y":
-                settings["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
+            data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
+            data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
+            if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+                data["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
+            else:
+                data["OXAUTH_KEYS_LIFE"] = ""
 
-            default_settings["ENABLE_RADIUS"] = form.enable_radius.data
-            if settings["ENABLE_RADIUS"] == "Y":
-                settings["ENABLE_RADIUS_BOOLEAN"] = "true"
+            data["ENABLE_RADIUS"] = form.enable_radius.data
+            if data["ENABLE_RADIUS"] == "Y":
+                data["ENABLE_RADIUS_BOOLEAN"] = "true"
+            else:
+                data["ENABLE_RADIUS_BOOLEAN"] = ""
 
-            settings["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
-            if settings["ENABLE_OXPASSPORT"] == "Y":
-                settings["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
+            data["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
+            if data["ENABLE_OXPASSPORT"] == "Y":
+                data["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
+            else:
+                data["ENABLE_OXPASSPORT_BOOLEAN"] = ""
 
-            settings["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
-            if settings["ENABLE_OXSHIBBOLETH"] == "Y":
-                settings["ENABLE_SAML_BOOLEAN"] = "true"
+            data["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
+            if data["ENABLE_OXSHIBBOLETH"] == "Y":
+                data["ENABLE_SAML_BOOLEAN"] = "true"
+            else:
+                data["ENABLE_SAML_BOOLEAN"] = ""
 
-            settings["ENABLE_CASA"] = form.enable_casa.data
-            if settings["ENABLE_CASA"] == "Y":
-                settings["ENABLE_CASA_BOOLEAN"] = "true"
+            data["ENABLE_CASA"] = form.enable_casa.data
+            if data["ENABLE_CASA"] == "Y":
+                data["ENABLE_CASA_BOOLEAN"] = "true"
+            else:
+                data["ENABLE_CASA_BOOLEAN"] = ""
 
-            settings["ENABLE_FIDO2"] = form.enable_fido2.data
-            settings["ENABLE_SCIM"] = form.enable_scim.data
-            settings["ENABLE_OXD"] = form.enable_oxd.data
+            data["ENABLE_FIDO2"] = form.enable_fido2.data
+            data["ENABLE_SCIM"] = form.enable_scim.data
+            data["ENABLE_OXD"] = form.enable_oxd.data
 
-            if settings["ENABLE_OXD"] == "Y":
-                settings["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
-                settings["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
+            if data["ENABLE_OXD"] == "Y":
+                data["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
+                data["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
+            else:
+                data["OXD_APPLICATION_KEYSTORE_CN"] = ""
+                data["OXD_ADMIN_KEYSTORE_CN"] = ""
 
-            settings["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
-            if settings["ENABLE_OXTRUST_API"] == "Y":
-                settings["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
-                settings["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode.data
+            data["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
+            if data["ENABLE_OXTRUST_API"] == "Y":
+                data["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
+                data["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode.data
+            else:
+                data["ENABLE_OXTRUST_API_BOOLEAN"] = ""
+                data["ENABLE_OXTRUST_TEST_MODE"] = ""
 
-            if settings["ENABLE_OXTRUST_TEST_MODE"] == "Y":
-                settings["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
-            update_settings_json_file(settings)
+            if data["ENABLE_OXTRUST_TEST_MODE"] == "Y":
+                data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
+            else:
+                data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = ""
+
+            settings.update(data)
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
 
     return render_template("index.html",
                            form=form,
@@ -433,24 +289,42 @@ def gluu_gateway():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
+            data = {}
+            data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
 
-            if form.install_gluu_gateway == "Y":
-                settings["ENABLE_OXD"] = "Y"
-                settings["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
-                settings["POSTGRES_REPLICAS"] = form.postgres_replicas.data
-                settings["POSTGRES_URL"] = form.postgres_url.data
-                settings["KONG_NAMESPACE"] = form.kong_namespace.data
-                settings["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
-                settings["KONG_DATABASE"] = form.kong_database.data
-                settings["KONG_PG_USER"] = form.kong_pg_user.data
-                settings["KING_PG_PASSWORD"] = form.kong_pg_password.data
-                settings["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
-                settings["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
-                settings["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
-
-            update_settings_json_file(settings)
+            if data["INSTALL_GLUU_GATEWAY"] == "Y":
+                data["ENABLE_OXD"] = "Y"
+                data["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
+                data["POSTGRES_REPLICAS"] = form.postgres_replicas.data
+                data["POSTGRES_URL"] = form.postgres_url.data
+                data["KONG_NAMESPACE"] = form.kong_namespace.data
+                data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
+                data["KONG_DATABASE"] = form.kong_database.data
+                data["KONG_PG_USER"] = form.kong_pg_user.data
+                data["KONG_PG_PASSWORD"] = form.kong_pg_password.data
+                data["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
+                data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
+                data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
+            else:
+                data["ENABLE_OXD"] = "N"
+                data["POSTGRES_NAMESPACE"] = ""
+                data["POSTGRES_REPLICAS"] = ""
+                data["POSTGRES_URL"] = ""
+                data["KONG_NAMESPACE"] = ""
+                data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
+                data["KONG_DATABASE"] = ""
+                data["KONG_PG_USER"] = ""
+                data["KONG_PG_PASSWORD"] = ""
+                data["GLUU_GATEWAY_UI_DATABASE"] = ""
+                data["GLUU_GATEWAY_UI_PG_USER"] = ""
+                data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
+            settings.update(data)
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.kong_pg_password_confirm.data = settings.get("KONG_PG_PASSWORD")
+        form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
     return render_template("index.html",
                            step="gluu_gateway",
@@ -467,17 +341,21 @@ def install_jackrabbit():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form["next_step"]
-            settings["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
-            settings["JACKRABBIT_URL"] = form.jackrabbit_url.data
-            settings["JACKRABBIT_USER"] = form.jackrabbit_user.data
+            data = {}
+            data["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
+            data["JACKRABBIT_URL"] = form.jackrabbit_url.data
+            data["JACKRABBIT_USER"] = form.jackrabbit_user.data
 
-            if settings["INSTALL_JACKRABBIT"] == "Y":
-                settings["JACKRABBIT_URL"] = form.jackrabbit_url.default
-                settings["JACKRABBIT_USER"] = form.jackrabbit_user.default
-                settings["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
+            if data["INSTALL_JACKRABBIT"] == "Y":
+                data["JACKRABBIT_URL"] = form.jackrabbit_url.default
+                data["JACKRABBIT_USER"] = form.jackrabbit_user.default
+                data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
-            update_settings_json_file(settings)
+            settings.update(data)
             return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
 
     return render_template("index.html",
                            step="install_jackrabbit",
@@ -495,63 +373,66 @@ def setting():
     if request.method == "POST":
         if form.validate_on_submit():
             next_step = request.form['next_step']
+            data = {}
+            if not settings.get("TEST_ENVIRONMENT") and settings.get("DEPLOYMENT_ARCH") in test_arch:
+                data["TEST_ENVIRONMENT"] = form.test_environment.data
 
-            if not settings["TEST_ENVIRONMENT"] and settings["DEPLOYMENT_ARCH"] in test_arch:
-                settings["TEST_ENVIRONMENT"] = form.test_environment.data
+            if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
+                    settings.get("DEPLOYMENT_ARCH") in local_arch:
+                data["NODE_SSH_KEY"] = form.node_ssh_key.data
 
-            if settings["DEPLOYMENT_ARCH"] in cloud_arch or \
-                    settings["DEPLOYMENT_ARCH"] in local_arch:
-                settings["NODE_SSH_KEY"] = form.node_ssh_key.data
+            data["HOST_EXT_IP"] = form.host_ext_ip.data
 
-            settings["HOST_EXT_IP"] = form.host_ext_ip.data
+            if settings.get("DEPLOYMENT_ARCH") == "eks":
+                data["AWS_LB_TYPE"] = form.aws_lb_type.data
+                data["USE_ARN"] = form.use_arn.data
+                data["ARN_AWS_IAM"] = form.arn_aws_iam.data
 
-            if settings["DEPLOYMENT_ARCH"] == "eks":
-                settings["AWS_LB_TYPE"] = form.aws_lb_type.data
-                settings["USE_ARN"] = form.use_arn.data
-                settings["ARN_AWS_IAM"] = form.arn_aws_iam.data
+            if settings.get("DEPLOYMENT_ARCH") == "gke":
+                data["GMAIL_ACCOUNT"] = form.gmail_account.data
 
-            if settings["DEPLOYMENT_ARCH"] == "gke":
-                settings["GMAIL_ACCOUNT"] = form.gmail_account.data
-
-            if settings["APP_VOLUME_TYPE"] == 11:
-                for node_name in settings["NODES_NAMES"]:
-                    for zone in settings["NODES_ZONES"]:
+            if settings.get("APP_VOLUME_TYPE") == 11:
+                for node_name in settings.get("NODES_NAMES"):
+                    for zone in settings.get("NODES_ZONES"):
                         response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
                                                             "--command='echo $HOME'".format(node_name, zone))
-                        settings["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
-                        if settings["GOOGLE_NODE_HOME_DIR"]:
+                        data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                        if data["GOOGLE_NODE_HOME_DIR"]:
                             break
-                    if settings["GOOGLE_NODE_HOME_DIR"]:
+                    if data["GOOGLE_NODE_HOME_DIR"]:
                         break
 
-            settings["PERSISTENCE_BACKEND"] = form.persistence_backend.data
-            if settings["PERSISTENCE_BACKEND"] == "hybrid":
-                settings["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
+            data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
+            if data["PERSISTENCE_BACKEND"] == "hybrid":
+                data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
-            if settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or settings["INSTALL_JACKRABBIT"] == "Y":
-                if settings["DEPLOYMENT_ARCH"] == "microk8s":
-                    settings["APP_VOLUME_TYPE"] = 1
-                elif settings["DEPLOYMENT_ARCH"] == "minikube":
-                    settings["APP_VOLUME_TYPE"] = 2
+            if data["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
+                if settings.get("DEPLOYMENT_ARCH") == "microk8s":
+                    data["APP_VOLUME_TYPE"] = 1
+                elif settings.get("DEPLOYMENT_ARCH") == "minikube":
+                    data["APP_VOLUME_TYPE"] = 2
 
-                if settings["APP_VOLUME_TYPE"] in (1, 2):
+                if data["APP_VOLUME_TYPE"] in (1, 2):
                     next_step = 'cache_type'
 
-            if settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
+            if data["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
                 next_step = "couchbase_multi_cluster"
 
-            update_settings_json_file(settings)
+            settings.update(data)
 
             return redirect(url_for(next_step))
 
     # TODO: find a way to apply dynamic validation
-    if settings["DEPLOYMENT_ARCH"] == "gke":
+    if settings.get("DEPLOYMENT_ARCH") == "gke":
         form.gmail_account.validators.append(InputRequired())
     else:
         form.gmail_account.validators.append(Optional())
 
+    if request.method == "GET":
+        form = populate_form_data(form)
+
     return render_template("index.html",
-                           settings=settings,
+                           settings=settings.db,
                            form=form,
                            step="settings",
                            next_step="app_volume_type")
@@ -610,13 +491,13 @@ def couchbase_multi_cluster():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            settings["DEPLOY_MULTI_CLUSTER"] = form.deploy_multi_cluster.data
-            update_settings_json_file(settings)
-
+            settings.set("DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
             return redirect(url_for(request.form['next_step']))
 
+    if request.method == "GET":
+        form = populate_form_data(form)
+
     return render_template("index.html",
-                           settings=settings,
                            form=form,
                            step="couchbase_multi_cluster",
                            next_step="cache_type")
@@ -631,31 +512,41 @@ def cache_type():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            settings["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
+            data = {}
+            data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
 
-            if settings["GLUU_CACHE_TYPE"] == "REDIS":
-                settings["REDIS_TYPE"] = form.redis.redis_type.data
-                settings["INSTALL_REDIS"] = form.redis.install_redis.data
+            if data["GLUU_CACHE_TYPE"] == "REDIS":
+                data["REDIS_TYPE"] = form.redis.redis_type.data
+                data["INSTALL_REDIS"] = form.redis.install_redis.data
 
-                if settings["INSTALL_REDIS"] == "Y":
-                    settings["REDIS_MASTER_NODES"] = form.redis.master_nodes.data
-                    settings["REDIS_NODES_PER_MASTER"] = form.redis.nodes_per_master.data
-                    settings["REDIS_NAMESPACE"] = form.redis.namespace.data
-                    settings["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
-                        settings["REDIS_NAMESPACE"])
+                if data["INSTALL_REDIS"] == "Y":
+                    data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
+                    data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
+                    data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
+                    data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
+                        data["REDIS_NAMESPACE"])
+                    data["REDIS_PW"] = ""
                 else:
-                    settings["REDIS_URL"] = form.redis.url.data
-                    settings["REDIS_PW"] = form.redis.password.data
+                    data["REDIS_MASTER_NODES"] = ""
+                    data["REDIS_NODES_PER_MASTER"] = ""
+                    data["REDIS_NAMESPACE"] = ""
+                    data["REDIS_URL"] = form.redis.redis_url.data
+                    data["REDIS_PW"] = form.redis.redis_pw.data
 
-            update_settings_json_file(settings)
+            settings.update(data)
 
-            if settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
                 return redirect(url_for(request.form['next_step']))
 
-            if settings["DEPLOYMENT_ARCH"] not in ("microk8s", "minikube"):
+            if settings.get("DEPLOYMENT_ARCH") not in test_arch:
                 return redirect(url_for('backup'))
 
             return redirect(url_for('config'))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.redis = populate_form_data(form.redis)
+        form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
 
     return render_template("index.html",
                            settings=settings,
@@ -682,7 +573,7 @@ def determine_ip():
         for node in node_list:
             node_name = node.metadata.name
             node_addresses = kubernetes.read_node(name=node_name).status.addresses
-            if settings["DEPLOYMENT_ARCH"] in ("microk8s", "minikube"):
+            if settings.get("DEPLOYMENT_ARCH") in test_arch:
                 for add in node_addresses:
                     if add.type == "InternalIP":
                         ip = add.address
@@ -694,16 +585,16 @@ def determine_ip():
                         node_ip_list.append(ip)
 
                 # Digital Ocean does not provide zone support yet
-                if settings["DEPLOYMENT_ARCH"] != "do" or settings["DEPLOYMENT_ARCH"] != "local":
+                if settings.get("DEPLOYMENT_ARCH") != "do" or settings.get("DEPLOYMENT_ARCH") != "local":
                     node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
 
-        settings["NODES_NAME"] = node_name_list
-        settings["NODES_ZONES"] = node_zone_list
-        settings["NODES_IPS"] = node_ip_list
+        settings.set("NODES_NAME", node_name_list)
+        settings.set("NODES_ZONES", node_zone_list)
+        settings.set("NODES_IPS", node_ip_list)
 
-        if settings["DEPLOYMENT_ARCH"] in ["eks", "gke", "do", "local", "aks"]:
+        if settings.get("DEPLOYMENT_ARCH") in ["eks", "gke", "do", "local", "aks"]:
             #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
             ip = "22.22.22.22"
         data = {"status": True, 'ip_address': ip, "message": "Is this the correct external IP address?"}
@@ -724,3 +615,13 @@ def validate_ip(ip_address):
     except ValueError as exc:
         # raised if IP is invalid
         return make_response({"status": False, "message": "Cannot determine IP address {}".format(exc)}, 400)
+
+
+def populate_form_data(form):
+    # populate form data
+    for k, v in form.data.items():
+        value = settings.get(k.upper())
+        if value:
+            form[k].data = value
+    return form
+

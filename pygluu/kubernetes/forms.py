@@ -92,7 +92,7 @@ class RequiredIfFieldEqualTo(Required):
 
 
 class LicenseForm(FlaskForm):
-    license = BooleanField("I accept the Gluu license stated above",
+    accept_gluu_license = BooleanField("I accept the Gluu license stated above",
                            validators=[DataRequired(message="License has not been accepted")])
 
 
@@ -272,20 +272,20 @@ class RedisForm(FlaskForm):
                                description="For the following prompt if placed [N] the Redis is assumed to be"
                                            " installed or remotely provisioned",
                                validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
-    master_nodes = IntegerField("The number of master node. Minimum is 3", default=3,
+    redis_master_nodes = IntegerField("The number of master node. Minimum is 3", default=3,
                                       validators=[RequiredIfFieldEqualTo("install_redis", "Y")],
                                       render_kw={"min": 3})
-    nodes_per_master = IntegerField("The number of nodes per master node", default=2,
+    redis_nodes_per_master = IntegerField("The number of nodes per master node", default=2,
                                     validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
-    namespace = StringField("Please enter a namespace for Redis cluster",
-                            default="gluu-redis-cluster",
-                            validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
+    redis_namespace = StringField("Please enter a namespace for Redis cluster",
+                                  default="gluu-redis-cluster",
+                                  validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
     password = PasswordField("Redis Password",
                              validators=[RequiredIfFieldEqualTo("install_redis", "N")])
     password_confirm = PasswordField("Redis Password Confirmation",
                                      validators=[RequiredIfFieldEqualTo("install_redis", "N"),
                                                  EqualTo('password', message='Passwords do not match')])
-    url = StringField("Please enter redis URL. If you are deploying redis",
+    redis_url = StringField("Please enter redis URL. If you are deploying redis",
                             default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
                             description="Redis URL can be : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379 in a redis deployment"
                                         "Redis URL using AWS ElastiCach [Configuration Endpoint]: "
