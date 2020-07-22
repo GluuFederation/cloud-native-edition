@@ -50,8 +50,15 @@
 {% macro password(field) %}
   {% set validation = "is-invalid" if field.errors else "" %}
   <div class="form-group">
-    {{ field.label(class_="col-form-label " + validation) }}
-    {{ field(class_="form-control col-sm-5") }}
+    {{ field.label(class_="col-form-label") }}
+    <div class="input-group {{ validation }}" id="show_hide_password">
+      {{ field(class_="form-control col-sm-5") }}
+      <div class="input-group-append">
+        <span class="input-group-text"><a href="#" style="text-decoration: none; color:unset;">Show</a></span>
+      </div>
+
+    </div>
+
     <div class="feedback invalid-feedback">
       {% for error in field.errors %}
         <p>{{ error }}</p>
