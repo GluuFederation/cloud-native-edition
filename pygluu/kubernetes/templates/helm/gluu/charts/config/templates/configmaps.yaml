@@ -81,14 +81,9 @@ data:
                 body = client.V1Secret(api_version, data , kind, metadata, 
                     type='kubernetes.io/tls')
                 api_response = v1.create_namespaced_secret(namespace, body )
-                pprint(api_response)
             else:
                 logging.exception(e)
             return False
-        else:
-            print('tls-certificate already exists as /{}'. format(
-                secret
-            ))
             
     def main():
         cert, key = get_certs()
