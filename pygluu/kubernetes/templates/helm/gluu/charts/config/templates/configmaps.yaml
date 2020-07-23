@@ -143,10 +143,6 @@ data:
             else:
                 logging.exception(e)
             return False
-        else:
-            print('tls-certificate already exists as /{}'. format(
-                secret
-            ))
             
     def main():
         cert, key = get_certs()
