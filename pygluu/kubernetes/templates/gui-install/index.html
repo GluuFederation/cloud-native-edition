@@ -9,7 +9,7 @@
       </div>
       <div class="card-body">
         <h3 class="text-center">Gluu Cloud Native Edition</h3>
-        <form id="formInstaller" method="post" novalidate>
+        <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
 
           {{ form.csrf_token }}
           {% include '%s.html' % step %}
@@ -35,6 +35,21 @@
     }
 
     $(document).ready(function () {
+      $("#show_hide_password a").on('click', function(event) {
+        event.preventDefault();
+        var input = $(this).parents('#show_hide_password').find('input'),
+            btn = $(this).parents('#show_hide_password').find('a')
+
+        if(input.attr("type") == "text"){
+          input.attr('type', 'password');
+          btn.html( "Show" );
+
+        }else if(input.attr("type") == "password"){
+          input.attr('type', 'text');
+          btn.html( "Hide" );
+        }
+      });
+
       {% if step == 'optional_services' %}
         $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
         showHideOption($('#oxauthKeyLife'), $(this).val());
@@ -184,21 +199,26 @@
           }
         });
       {% endif %}
+
+      {% if step == "couchbase" %}
+         $('input[name="install_couchbase"]').on('change', function(){
+            if($(this).val() == "N"){
+              $('#couchbase_crt').parents('.form-group').collapse('show');
+            }else{
+              $('#couchbase_crt').parents('.form-group').collapse('hide');
+            }
+         });
+
+         $('input[name="couchbase_cluster_file_override"]').on('change', function(){
+            if($(this).val() == "Y"){
+              $('#couchbase_cluster_files').parents('.form-group').collapse('show');
+            }else{
+              $('#couchbase_cluster_files').parents('.form-group').collapse('hide');
+            }
+         });
+      {% endif %}
     });
 
-    $("#show_hide_password a").on('click', function(event) {
-        event.preventDefault();
-        var input = $(this).parents('#show_hide_password').find('input'),
-            btn = $(this).parents('#show_hide_password').find('a')
 
-        if(input.attr("type") == "text"){
-          input.attr('type', 'password');
-          btn.html( "Show" );
-
-        }else if(input.attr("type") == "password"){
-          input.attr('type', 'text');
-          btn.html( "Hide" );
-        }
-    });
   </script>
 {% endblock %}
