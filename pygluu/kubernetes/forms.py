@@ -316,20 +316,37 @@ class CacheTypeForm(FlaskForm):
 class CouchbaseForm(FlaskForm):
     install_couchbase = RadioField("Install Couchbase", choices=[("Y", "Yes"), ("N", "No")],
                                    description="For the following prompt  if placed [N] the couchbase is assumed to be"
-                                               " installed or remotely provisioned")
-    couchbase_crt = FileField("Couchbase certificate")
-    couchbase_cluster_file_override = MultipleFileField("Couchbase override files")
+                                               " installed or remotely provisioned",
+                                   validators=[DataRequired()])
+    couchbase_crt = FileField("Couchbase certificate",
+                              description="Place the Couchbase certificate authority certificate in a file called couchbase.crt "
+                                          "This can also be found in your couchbase UI Security > Root Certificate",
+                              validators=[RequiredIfFieldEqualTo("install_couchbase", "N")])
+    couchbase_cluster_file_override = RadioField("Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml",
+                                                 choices=[("Y", "Yes"), ("N", "No")],
+                                                 validators=[DataRequired()])
+    couchbase_cluster_files = MultipleFileField("Couchbase override files",
+                                                description="Please upload the override files under the name "
+                                                            "couchbase-cluster.yaml, couchbase-buckets.yaml, "
+                                                            "and couchbase-ephemeral-buckets.yaml",
+                                                validators=[RequiredIfFieldEqualTo("couchbase_cluster_file_override", "Y")])
     couchbase_use_low_resources = RadioField("Setup CB nodes using low resources for demo purposes",
                                              choices=[("Y", "Yes"), ("N", "No")])
-    couchbase_namespace = StringField("Please enter a namespace for CB objects", default="cbns")
-    couchbase_cluster_name = StringField("Please enter a cluster name", default="cbgluu")
+    couchbase_namespace = StringField("Please enter a namespace for CB objects", default="cbns",
+                                      validators=[InputRequired()])
+    couchbase_cluster_name = StringField("Please enter a cluster name", default="cbgluu",
+                                         validators=[InputRequired()])
     couchbase_url = StringField("Please enter  couchbase (remote or local) URL base name",
-                                default="cbgluu.cbns.svc.cluster.local")
-    couchbase_user = StringField("Please enter couchbase username", default="admin")
-    couchbase_password = PasswordField("Couchbase password")
-    couchbase_password_confirmation = PasswordField("Couchbase password confirm")
-    couchbase_cn = StringField("Enter Couchbase certificate common name", default="Couchbase CA")
-
+                                default="cbgluu.cbns.svc.cluster.local",
+                                validators=[InputRequired()])
+    couchbase_user = StringField("Please enter couchbase username", default="admin",
+                                 validators=[InputRequired()])
+    couchbase_password = StringField("Couchbase password", widget=PasswordInput(hide_value=False),
+                                     validators=[InputRequired()])
+    couchbase_password_confirmation = PasswordField("Couchbase password confirm",
+                                                    widget=PasswordInput(hide_value=False),
+                                                    validators=[InputRequired(), EqualTo("couchbase_password")])
+    couchbase_cn = StringField("Enter Couchbase certificate common name.", default="Couchbase CA")
 
 class CouchbaseCalculatorForm(FlaskForm):
     number_of_expected_users = IntegerField("Please enter the number of expected users", default=1000000)

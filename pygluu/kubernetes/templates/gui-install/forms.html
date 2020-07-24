@@ -105,3 +105,13 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro fileinput(field, hidden=False) %}
+<div class="form-group {{ 'collapse' if hidden else '' }}">
+  <div class="custom-file col-sm-5">
+    {{ field(class_="custom-file-input") }}
+    {{ field.label(class_="custom-file-label") }}
+    <small class="form-text text-muted">{{ field.description }}</small>
+  </div>
+</div>
+{% endmacro %}

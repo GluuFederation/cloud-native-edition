@@ -1,0 +1,12 @@
+{{ forms.radio(form.install_couchbase) }}
+{{ forms.fileinput(form.couchbase_crt, hidden=True) }}
+{{ forms.radio(form.couchbase_cluster_file_override) }}
+{{ forms.fileinput(form.couchbase_cluster_files, hidden=True) }}
+{{ forms.radio(form.couchbase_use_low_resources) }}
+{{ forms.text(form.couchbase_namespace) }}
+{{ forms.text(form.couchbase_cluster_name) }}
+{{ forms.text(form.couchbase_url) }}
+{{ forms.text(form.couchbase_user) }}
+{{ forms.password(form.couchbase_password) }}
+{{ forms.password(form.couchbase_password_confirmation) }}
+{{ forms.text(form.couchbase_cn) }}

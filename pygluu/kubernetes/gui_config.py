@@ -2,6 +2,8 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SECRET_KEY = "supersecret"
+    UPLOAD_FOLDER = "/"
+    ALLOWED_EXTENSIONS = {"crt", "yaml"}
 
 
 class DevelopmentConfig(Config):

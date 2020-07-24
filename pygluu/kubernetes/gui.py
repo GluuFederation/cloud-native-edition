@@ -555,6 +555,106 @@ def cache_type():
                            next_step="couchbase")
 
 
+@app.route("/couchbase", methods=["GET", "POST"])
+def couchbase():
+    form = CouchbaseForm()
+
+    custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
+    custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
+    custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            next_step = request.form["next_step"]
+            data = {}
+            data["INSTALL_COUCHBASE"] = form.install_couchbase.data
+            if data["INSTALL_COUCHBASE"] == "N":
+                filename = secure_filename(form.couchbase_crt.data.filename)
+                form.couchbase_crt.data.save('./' + filename)
+                with open(Path('./' + filename)) as content_file:
+                    ca_crt = content_file.read()
+                    encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
+                    encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
+                    data["COUCHBASE_CRT"] = encoded_ca_crt_string
+            else:
+                data["COUCHBASE_CRT"] = ""
+
+            data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] =  form.couchbase_cluster_file_override.data
+            if data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
+
+                for file in form.couchbase_cluster_files.data:
+                    filename = secure_filename(file.filename)
+                    file.save('./' + filename)
+
+                try:
+                    shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
+                    shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))
+                    shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
+                                Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
+                except FileNotFoundError:
+                    app.logger.error("An override option has been chosen but there is a missing couchbase file that "
+                                     "could not be found at the current path.")
+
+            if settings.get("DEPLOYMENT_ARCH") in test_arch:
+                data["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
+            else:
+                data["COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
+
+            data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
+            data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
+            data["COUCHBASE_URL"] = form.couchbase_url.data
+            data["COUCHBASE_USER"] = form.couchbase_user.data
+            data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
+
+            if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+                data['COUCHBASE_SUBJECT_ALT_NAME'] = [
+                    "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
+                    "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
+                    "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
+                    "{}-srv".format(data["COUCHBASE_CLUSTER_NAME"]),
+                    "{}-srv.{}".format(data["COUCHBASE_CLUSTER_NAME"],
+                                       data["COUCHBASE_NAMESPACE"]),
+                    "{}-srv.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
+                                           data["COUCHBASE_NAMESPACE"]),
+                    "localhost"
+                ]
+                data["COUCHBASE_CN"] = form.couchbase_cn.data
+
+            settings.update(data)
+
+            if settings.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
+                    settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
+                    settings.get("INSTALL_COUCHBASE") == "Y":
+                next_step = "coucbase_calculator"
+
+            if settings.get("DEPLOYMENT_ARCH")  not in test_arch:
+                next_step = "backup"
+
+            return redirect(url_for(next_step))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.couchbase_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
+
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        form.couchbase_use_low_resources.validators = [Optional()]
+        form.couchbase_use_low_resources.data = "Y"
+    else:
+        form.couchbase_use_low_resources.validators = [DataRequired()]
+
+    if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+        form.couchbase_cn.validators = [InputRequired()]
+    else:
+        form.couchbase_cn.validators = [Optional()]
+        form.couchbase_cn.render_kw = {"disabled": "disabled"}
+
+    return render_template("index.html",
+                           settings=settings,
+                           form=form,
+                           step="couchbase",
+                           next_step="config")
+
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
