@@ -17,6 +17,8 @@ from flask import Flask, jsonify, make_response, render_template, \
 
 from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional, DataRequired
+from werkzeug.utils import secure_filename
+
 from .common import get_supported_versions, exec_cmd, update_settings_json_file
 from .kubeapi import Kubernetes
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
