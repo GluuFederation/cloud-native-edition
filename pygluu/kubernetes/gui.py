@@ -408,19 +408,21 @@ def setting():
             if data["PERSISTENCE_BACKEND"] == "hybrid":
                 data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
-            if data["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
-                if settings.get("DEPLOYMENT_ARCH") == "microk8s":
-                    data["APP_VOLUME_TYPE"] = 1
-                elif settings.get("DEPLOYMENT_ARCH") == "minikube":
-                    data["APP_VOLUME_TYPE"] = 2
-
-                if data["APP_VOLUME_TYPE"] in (1, 2):
-                    next_step = 'cache_type'
-
-            if data["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
-                next_step = "couchbase_multi_cluster"
-
             settings.update(data)
+
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
+                if settings.get("DEPLOYMENT_ARCH") == "microk8s":
+                    settings.set("APP_VOLUME_TYPE", 1)
+                elif settings.get("DEPLOYMENT_ARCH") == "minikube":
+                    settings.set("APP_VOLUME_TYPE", 2)
+
+                if not settings.get("APP_VOLUME"):
+                    return redirect(url_for(next_step))
+
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+                return redirect(url_for(couchbase_multi_cluster))
+
+
 
             return redirect(url_for(next_step))
 
