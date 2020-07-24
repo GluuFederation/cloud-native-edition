@@ -6,9 +6,12 @@ from wtforms import StringField, IntegerField, RadioField, BooleanField, \
     PasswordField, FormField, FileField, FieldList, MultipleFileField
 
 from wtforms.validators import DataRequired, InputRequired, \
-    EqualTo, URL, IPAddress, Email, Required, ValidationError
+    EqualTo, URL, IPAddress, Email, Required, ValidationError, \
+    Optional
 from wtforms.widgets import PasswordInput
 from .common import get_supported_versions
+from .settingdb import SettingDB
+settings = SettingDB()
 
 app_volume_types = {
     "eks": {
@@ -252,7 +255,27 @@ class SettingForm(FlaskForm):
 
 
 class VolumeTypeForm(FlaskForm):
-    app_volume_type = RadioField("Local Deployment", choices=[])
+
+    volume_type = app_volume_types[settings.get("DEPLOYMENT_ARCH")]
+    volume_type_validators = [DataRequired()]
+
+    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        ldap_volume = ldap_volumes[settings.get("DEPLOYMENT_ARCH")]
+        ldap_jackrabbit_volume_label = ldap_volume["label"]
+        ldap_jackrabbit_volume_choices = ldap_volume["choices"]
+        ldap_jackrabbit_volume_validators = [DataRequired()]
+        ldap_jackrabbit_volume_render_kw = {}
+    else:
+        ldap_jackrabbit_volume_label = ""
+        ldap_jackrabbit_volume_choices = []
+        ldap_jackrabbit_volume_render_kw = {"disabled": "disabled"}
+        ldap_jackrabbit_volume_validators = [Optional()]
+
+    app_volume_type = RadioField(volume_type["label"],
+                                 choices=volume_type["choices"],
+                                 default=volume_type["default"],
+                                 validators=volume_type_validators,
+                                 coerce=int)
     ldap_static_volume_id = StringField("Please enter Persistent Disk Name or EBS Volume ID for LDAP",
                                         description="EBS Volume ID example: vol-049df61146c4d7901",
                                         render_kw={"disabled": "disabled"})
@@ -260,7 +283,10 @@ class VolumeTypeForm(FlaskForm):
                                        description="DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
                                                    "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk",
                                        render_kw={"disabled": "disabled"})
-    ldap_jackrabbit_volume = RadioField()
+    ldap_jackrabbit_volume = RadioField(ldap_jackrabbit_volume_label,
+                                 choices=ldap_jackrabbit_volume_choices,
+                                 render_kw=ldap_jackrabbit_volume_render_kw,
+                                 validators = ldap_jackrabbit_volume_validators)
 
 
 class CouchbaseMultiClusterForm(FlaskForm):

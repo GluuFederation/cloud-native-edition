@@ -446,37 +446,29 @@ def app_volume_type():
     form = VolumeTypeForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            settings["APP_VOLUME_TYPE"] = form.app_volume_type.data
+            data = {}
+            data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
-            if settings["APP_VOLUME_TYPE"] in (8, 13):
+            if data["APP_VOLUME_TYPE"] in (8, 13):
                 settings["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
 
-            if settings["APP_VOLUME_TYPE"] == 18:
+            if data["APP_VOLUME_TYPE"] == 18:
                 settings["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
 
-            if settings["DEPLOYMENT_ARCH"] in cloud_arch:
+            if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
                 settings["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
 
-            if settings["PERSISTENCE_BACKEND"] in ("hybrid", "couchbase"):
-                next_step = "multi-cluster"
+            settings.update(settings)
+
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+                next_step = "couchbase_multi_cluster"
             else:
                 next_step = request.form['next_step']
-            update_settings_json_file(settings)
 
             return redirect(url_for(next_step))
 
-    if not settings["APP_VOLUME_TYPE"]:
-        volume_type = app_volume_types[settings["DEPLOYMENT_ARCH"]]
-        form.app_volume_type.label = volume_type["label"]
-        form.app_volume_type.choices = volume_type["choices"]
-        form.app_volume_type.default = volume_type["default"]
-
-    ldap_volume = ldap_volumes[settings["DEPLOYMENT_ARCH"]]
-    form.ldap_jackrabbit_volume.label = ldap_volume["label"]
-    form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
-
     return render_template("index.html",
-                           settings=settings,
+                           settings=settings.db,
                            form=form,
                            step="app_volume_type",
                            next_step="cache_type")
