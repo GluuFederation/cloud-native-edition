@@ -682,7 +682,7 @@ def config():
 
             settings.update(data)
             generate_main_config()
-            
+
             return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
@@ -705,9 +705,6 @@ def config():
                            form=form,
                            step="config",
                            next_step="image_name_tag")
-
-    return render_template("index.html",
-
 
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
