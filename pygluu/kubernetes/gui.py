@@ -393,16 +393,16 @@ def setting():
             if settings.get("DEPLOYMENT_ARCH") == "gke":
                 data["GMAIL_ACCOUNT"] = form.gmail_account.data
 
-            if settings.get("APP_VOLUME_TYPE") == 11:
-                for node_name in settings.get("NODES_NAMES"):
-                    for zone in settings.get("NODES_ZONES"):
-                        response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
-                                                            "--command='echo $HOME'".format(node_name, zone))
-                        data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                if settings.get("APP_VOLUME_TYPE") == 11:
+                    for node_name in settings.get("NODES_NAMES"):
+                        for zone in settings.get("NODES_ZONES"):
+                            response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
+                                                                "--command='echo $HOME'".format(node_name, zone))
+                            data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                            if data["GOOGLE_NODE_HOME_DIR"]:
+                                break
                         if data["GOOGLE_NODE_HOME_DIR"]:
                             break
-                    if data["GOOGLE_NODE_HOME_DIR"]:
-                        break
 
             data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
             if data["PERSISTENCE_BACKEND"] == "hybrid":
