@@ -716,9 +716,6 @@ def config():
 
             return redirect(url_for(request.form["next_step"]))
 
-    if request.method == "GET":
-        form = populate_form_data(form)
-
     # TODO: find a way to apply dynamic validation
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         form.ldap_pw.validators = [InputRequired()]
@@ -730,6 +727,11 @@ def config():
         form.is_gluu_fqdn_registered.data = "N"
     else:
         form.is_gluu_fqdn_registered.validators = [DataRequired()]
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.admin_pw_confirm.data = settings.get("ADMIN_PW")
+        form.ldap_pw_confirm.data = settings.get("LDAP_PW")
 
     return render_template("index.html",
                            settings=settings.db,

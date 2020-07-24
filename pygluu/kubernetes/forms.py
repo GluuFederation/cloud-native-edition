@@ -430,10 +430,16 @@ class ConfigForm(FlaskForm):
     city = StringField("City", default="Austin", validators=[InputRequired()])
     email = StringField("Email", default="support@gluu.org", validators=[Email()])
     org_name = StringField("Organization", default="Gluu", validators=[InputRequired()])
-    admin_pw = PasswordField("oxTrust Password", validators=[InputRequired()])
-    admin_pw_confirm = PasswordField("oxTrust Password Confirm", validators=[EqualTo("admin_pw")])
-    ldap_pw = PasswordField("LDAP Password")
-    ldap_pw_confirm = PasswordField("LDAP Password Confirm", validators=[EqualTo("ldap_pw")])
+    admin_pw = StringField("oxTrust Password",
+                           widget=PasswordInput(hide_value=False),
+                           validators=[InputRequired()])
+    admin_pw_confirm = StringField("oxTrust Password Confirm",
+                                     widget=PasswordInput(hide_value=False),
+                                     validators=[EqualTo("admin_pw")])
+    ldap_pw = StringField("LDAP Password", widget=PasswordInput(hide_value=False))
+    ldap_pw_confirm = StringField("LDAP Password Confirm",
+                                    widget=PasswordInput(hide_value=False),
+                                    validators=[EqualTo("ldap_pw")])
     is_gluu_fqdn_registered = RadioField("Are you using a globally resolvable FQDN",
                                          choices=[("Y", "Yes"), ("N", "No")],
                                          description="You can mount your FQDN certification and key by placing them inside "
