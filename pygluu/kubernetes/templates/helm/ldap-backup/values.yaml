@@ -32,7 +32,7 @@ fullnameOverride: ""
 restartPolicy: Never
 image:
   repository: gluufederation/wrends
-  tag: 4.2.0_dev
+  tag: 4.2.0_01
   pullPolicy: Always
 
 serviceAccount:

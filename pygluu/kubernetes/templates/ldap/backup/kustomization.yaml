@@ -8,7 +8,7 @@ resources:
   - cronjobs.yaml
 images:
   - name: gluufederation/wrends
-    newTag: 4.2.0_dev
+    newTag: 4.2.0_01
 configMapGenerator:
   - name: opendj-backup-cm
     literals:

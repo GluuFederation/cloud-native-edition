@@ -40,6 +40,7 @@ def create_parser():
                                                   "be waiting for hierarchy "
                                                   "pods to be running")
     subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
+    subparsers.add_parser("install-kubedb", help="Install KubeDB for redis or postgres")
     subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database")
     subparsers.add_parser("uninstall-gg-dbmode", help="Unnstall Gluu Gateway with Postgres database")
     subparsers.add_parser("restore", help="Install Gluu Enterprise Edition with a "
@@ -136,6 +137,10 @@ def main():
             prompts.prompt_gluu_gateway()
             kustomize.install_gluu_gateway_dbmode()
 
+        elif args.subparser_name == "install-kubedb":
+            helm = Helm(settings)
+            helm.install_kubedb()
+
         elif args.subparser_name == "uninstall-gg-dbmode":
             kustomize = Kustomize(settings, timeout)
             kustomize.uninstall_postgres()
@@ -149,7 +154,6 @@ def main():
             settings = prompts.prompt_helm
             helm = Helm(settings)
             if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                helm.uninstall_kubedb()
                 helm.install_kubedb()
             if settings["INSTALL_REDIS"] == "Y":
                 kustomize = Kustomize(settings, timeout)

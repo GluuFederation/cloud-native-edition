@@ -155,11 +155,11 @@ def get_supported_versions():
             versions = json.load(f)
         logger.info("Currently supported versions are : ")
         for k, v in versions.items():
-            logger.info(k)
             if "_dev" in k:
-                logger.info("DEV VERSION : {}".format(k))
+                logger.info("Development version : {}".format(k))
                 dev_version = k
             else:
+                logger.info("Stable version : {}".format(k))
                 if float(k) > version_number:
                     version_number = float(k)
     except FileNotFoundError:

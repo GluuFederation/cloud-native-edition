@@ -1009,6 +1009,8 @@ class Kustomize(object):
                                                                         "key": "KONG_PG_PASSWORD"}}}
         ]
         kong_init_job_parser["metadata"]["namespace"] = self.settings["KONG_NAMESPACE"]
+        kong_init_job_parser["spec"]["template"]["spec"]["containers"][0]["image"] = \
+            self.settings["GLUU_GATEWAY_IMAGE_NAME"] + ":" + self.settings["GLUU_GATEWAY_IMAGE_TAG"]
         kong_init_job_parser.dump_it()
         self.kubernetes.create_objects_from_dict(kong_init_job)
 
@@ -1095,7 +1097,9 @@ class Kustomize(object):
                                                 "app=gg-kong-ui", self.timeout)
 
     def uninstall_gluu_gateway_ui(self):
-        self.kubernetes.delete_deployment_using_label(self.settings["GLUU_NAMESPACE"], "app=gg-ui")
+        self.kubernetes.delete_deployment_using_label(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui")
+        self.kubernetes.delete_config_map_using_label(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui")
+        self.kubernetes.delete_job(self.settings["GLUU_GATEWAY_UI_NAMESPACE"], "app=gg-kong-ui")
         self.kubernetes.delete_service("gg-kong-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
@@ -1624,6 +1628,7 @@ class Kustomize(object):
 
     def uninstall_kong(self):
         logger.info("Removing gluu gateway kong...")
+        self.kubernetes.delete_job(self.settings["KONG_NAMESPACE"], "app=kong-migration-job")
         self.kubernetes.delete_custom_resource("kongconsumers.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongcredentials.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongingresses.configuration.konghq.com")
@@ -1641,12 +1646,18 @@ class Kustomize(object):
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
-        postgres_yaml = Path("./postgres/postgres.yaml")
-        self.kubernetes.delete_namespaced_custom_object(filepath=postgres_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="postgreses",
-                                                        namespace=self.settings["POSTGRES_NAMESPACE"])
+        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
+                                                                version="v1alpha1",
+                                                                plural="postgreses",
+                                                                name="postgres",
+                                                                namespace=self.settings["POSTGRES_NAMESPACE"])
+        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
+                                                                version="v1alpha1",
+                                                                plural="postgresversions",
+                                                                name="postgres",
+                                                                namespace=self.settings["POSTGRES_NAMESPACE"])
         self.kubernetes.delete_storage_class("postgres-sc")
         self.kubernetes.delete_service("kubedb", self.settings["POSTGRES_NAMESPACE"])
-
+        self.kubernetes.delete_service("postgres", self.settings["POSTGRES_NAMESPACE"])
+        self.kubernetes.delete_service("postgres-replicas", self.settings["POSTGRES_NAMESPACE"])
+        self.kubernetes.delete_service("postgres-stats", self.settings["POSTGRES_NAMESPACE"])

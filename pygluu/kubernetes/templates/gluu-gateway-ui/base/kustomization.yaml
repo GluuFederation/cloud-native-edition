@@ -11,7 +11,7 @@ resources:
   - ingress.yaml
 images:
   - name: gluufederation/gluu-gateway-ui
-    newTag: 4.2.0_dev
+    newTag: 4.2.0_01
 configMapGenerator:
   - name: gg-ui-cm
     literals:
@@ -21,7 +21,7 @@ configMapGenerator:
       - DB_HOST="postgres.postgres.svc.cluster.local"
       - DB_SSL="false"
       - DB_PORT="5432"
-      - POSTGRES_VERSION="9.6"
+      - POSTGRES_VERSION="11.1"
       - SSL_KEY_PATH="/etc/certs/tls.key"
       - SSL_CERT_PATH="/etc/certs/tls.crt"
       - DB_DATABASE="konga"

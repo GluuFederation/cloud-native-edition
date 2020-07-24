@@ -14,7 +14,7 @@ spec:
           envFrom:
           - configMapRef:
               name: upgrade-cm
-          args: ["--source", "4.0", "--target", "4.1"]
+          args: ["--source", "4.1", "--target", "4.2"]
           volumeMounts:
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"

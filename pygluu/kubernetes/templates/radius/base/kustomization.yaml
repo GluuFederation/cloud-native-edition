@@ -9,4 +9,4 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/radius
-    newTag: 4.2.0_dev
+    newTag: 4.2.0_01
