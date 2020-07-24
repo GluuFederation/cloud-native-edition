@@ -648,12 +648,43 @@ def couchbase():
         form.couchbase_cn.render_kw = {"disabled": "disabled"}
 
     return render_template("index.html",
-                           settings=settings,
                            form=form,
                            step="couchbase",
                            next_step="config")
 
 
+@app.route("/backup", methods=["GET", "POST"])
+def backup():
+    if not settings.get("PERSISTENCE_BACKEND"):
+        return redirect(url_for('setting'))
+
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+        form = CouchbaseBackupForm()
+    elif settings.get("PERSISTENCE_BACKEND") == "ldap":
+        form = LdapBackupForm()
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            data = {}
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+                data["COUCHBASE_INCR_BACKUP_SCHEDULE"] = form.couchbase_incr_backup_schedule.data
+                data["COUCHBASE_FULL_BACKUP_SCHEDULE"] = form.couchbase_full_backup_schedule.data
+                data["COUCHBASE_BACKUP_RETENTION_TIME"] = form.couchbase_backup_retention_time.data
+                data["COUCHBASE_BACKUP_STORAGE_SIZE"] = form.couchbase_backup_storage_size.data
+            elif settings.get("PERSISTENCE_BACKEND") == "ldap":
+                data["LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
+
+            settings.update(data)
+            return redirect(url_for(request.form["next_step"]))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("index.html",
+                           persistence_backend=settings.get("PERSISTENCE_BACKEND"),
+                           form=form,
+                           step="backup",
+                           next_step="config")
 
 
 @app.route("/config", methods=["GET", "POST"])

@@ -407,18 +407,20 @@ class CouchbaseCalculatorForm(FlaskForm):
 
 
 class CouchbaseBackupForm(FlaskForm):
-    incr_backup_schedule = StringField(
+    couchbase_incr_backup_schedule = StringField(
         "Please input couchbase backup cron job schedule for incremental backups. "
-        "This will run backup job every 30 mins by default.", defalt="*/30 * * * *")
-    full_backup_schedule = StringField("Please input couchbase backup cron job schedule for full backups. ")
-    backup_retention_time = StringField("Please enter the time period in which to retain existing backups. "
+        "This will run backup job every 30 mins by default.", default="*/30 * * * *")
+    couchbase_full_backup_schedule = StringField("Please input couchbase backup cron job schedule for full backups. ",
+                                       default="0 2 * * 6")
+    couchbase_backup_retention_time = StringField("Please enter the time period in which to retain existing backups. "
                                         "Older backups outside this time frame are deleted", default="168h")
-    backup_storage_size = StringField("Size of couchbase backup volume storage", default="20Gi")
+    couchbase_backup_storage_size = StringField("Size of couchbase backup volume storage", default="20Gi")
 
 
 class LdapBackupForm(FlaskForm):
-    backup_schedule = StringField("Please input ldap backup cron job schedule. "
-                                       "This will run backup job every 30 mins by default.", default="*/30 * * * *")
+    ldap_backup_schedule = StringField("Please input ldap backup cron job schedule. "
+                                  "This will run backup job every 30 mins by default.",
+                                  default="*/30 * * * *")
 
 
 class ConfigForm(FlaskForm):

@@ -50,6 +50,45 @@
         }
       });
 
+      $('.cron-input').on('click', function(){
+        var $input = $(this).parents(".input-group").find('input');
+        $input.val($(this).data('input'));
+        $input.trigger('change');
+      });
+
+      $('#incr_backup_schedule').on("change keydown paste input", function(){
+        var $formText = $(this).parents(".form-group").find(".form-text"),
+            cronDescriptor = "";
+         try{
+            cronDescriptor = cronstrue.toString($(this).val());
+         }catch(err){
+            cronDescriptor = err
+         }
+        $formText.html(cronDescriptor)
+      });
+
+      $('#full_backup_schedule').on("change keydown paste input", function(){
+        var $formText = $(this).parents(".form-group").find(".form-text"),
+            cronDescriptor = "";
+        try{
+            cronDescriptor = cronstrue.toString($(this).val());
+         }catch(err){
+            cronDescriptor = err
+         }
+        $formText.html(cronDescriptor)
+      });
+
+      $('#ldap_backup_schedule').on("change keydown paste input", function(){
+        var $formText = $(this).parents(".form-group").find(".form-text"),
+            cronDescriptor = "";
+        try{
+            cronDescriptor = cronstrue.toString($(this).val());
+         }catch(err){
+            cronDescriptor = err
+         }
+        $formText.html(cronDescriptor)
+      });
+
       {% if step == 'optional_services' %}
         $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
         showHideOption($('#oxauthKeyLife'), $(this).val());
