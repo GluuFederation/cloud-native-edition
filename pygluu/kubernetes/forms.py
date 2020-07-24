@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, RadioField, BooleanField, \
     PasswordField, FormField, FileField, FieldList, MultipleFileField
@@ -420,20 +422,30 @@ class LdapBackupForm(FlaskForm):
 
 
 class ConfigForm(FlaskForm):
-    gluu_form = StringField("Hostname", default="demoexample.gluu.org")
-    country_code = StringField("Country Code", default="US")
-    state = StringField("State", default="TX")
-    city = StringField("Austin")
+    gluu_fqdn = StringField("Hostname", default="demoexample.gluu.org", validators=[InputRequired()])
+    country_code = StringField("Country Code", default="US", validators=[InputRequired()])
+    state = StringField("State", default="TX", validators=[InputRequired()])
+    city = StringField("City", default="Austin", validators=[InputRequired()])
     email = StringField("Email", default="support@gluu.org", validators=[Email()])
-    org_name = StringField("Organization", default="Gluu")
-    admin_pw = PasswordField("oxTrust Password")
-    admin_pw_confirm = PasswordField("oxTrust Password Confirm")
+    org_name = StringField("Organization", default="Gluu", validators=[InputRequired()])
+    admin_pw = PasswordField("oxTrust Password", validators=[InputRequired()])
+    admin_pw_confirm = PasswordField("oxTrust Password Confirm", validators=[EqualTo("admin_pw")])
     ldap_pw = PasswordField("LDAP Password")
-    ldap_pw_confirm = PasswordField("LDAP Password Confirm")
+    ldap_pw_confirm = PasswordField("LDAP Password Confirm", validators=[EqualTo("ldap_pw")])
     is_gluu_fqdn_registered = RadioField("Are you using a globally resolvable FQDN",
                                          choices=[("Y", "Yes"), ("N", "No")],
                                          description="You can mount your FQDN certification and key by placing them inside "
-                                                     "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentest.pyz is at.")
+                                                     "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentest.pyz is at.",
+                                         render_kw={"disabled": "disabled"})
+
+    def validate_gluu_fqdn(form, field):
+        regex_bool = re.match(
+            '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
+            # noqa: W605
+            form.gluu_fqdn.data)
+
+        if not regex_bool:
+            raise ValidationError("Input not FQDN structred. Please enter a FQDN with the format demoexample.gluu.org")
 
 
 class ImageNameTagSet(FlaskForm):

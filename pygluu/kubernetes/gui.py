@@ -63,6 +63,9 @@ gluu_cache_map = {
     3: "REDIS",
 }
 
+config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
+                                "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
+
 static_files = ["/favicon.ico",
                 "/styles.css",
                 "/green-logo.svg",
@@ -651,6 +654,61 @@ def couchbase():
                            next_step="config")
 
 
+
+
+@app.route("/config", methods=["GET", "POST"])
+def config():
+    form = ConfigForm()
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            data = {}
+            data["GLUU_FQDN"] = form.gluu_fqdn.data
+            data["COUNTRY_CODE"] = form.country_code.data
+            data["STATE"] = form.state.data
+            data["CITY"] = form.city.data
+            data["EMAIL"] = form.email.data
+            data["ORG_NAME"] = form.org_name.data
+            data["ADMIN_PW"] = form.admin_pw.data
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+                data["LDAP_PW"] = form.ldap_pw.data
+            else:
+                data["LDAP_PW"] = settings["COUCHBASE_PASSWORD"]
+
+            if settings.get("DEPLOYMENT_ARCH") in test_arch:
+                data["IS_GLUU_FQDN_REGISTERED"] = "N"
+            else:
+                data["IS_GLUU_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
+
+            settings.update(data)
+            generate_main_config()
+            
+            return redirect(url_for(request.form["next_step"]))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    # TODO: find a way to apply dynamic validation
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        form.ldap_pw.validators = [InputRequired()]
+    else:
+        form.ldap_pw.validators = [Optional()]
+
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        form.is_gluu_fqdn_registered.validators = [Optional()]
+        form.is_gluu_fqdn_registered.data = "N"
+    else:
+        form.is_gluu_fqdn_registered.validators = [DataRequired()]
+
+    return render_template("index.html",
+                           settings=settings.db,
+                           form=form,
+                           step="config",
+                           next_step="image_name_tag")
+
+    return render_template("index.html",
+
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
@@ -720,4 +778,25 @@ def populate_form_data(form):
         if value:
             form[k].data = value
     return form
+
+
+def generate_main_config():
+    """Prepare generate.json and output it
+    """
+    config_settings["hostname"] = settings.get("GLUU_FQDN")
+    config_settings["country_code"] = settings.get("COUNTRY_CODE")
+    config_settings["state"] = settings.get("STATE")
+    config_settings["city"] = settings.get("CITY")
+    config_settings["admin_pw"] = settings.get("ADMIN_PW")
+    config_settings["ldap_pw"] = settings.get("LDAP_PW")
+    config_settings["redis_pw"] = settings.get("REDIS_PW")
+    if settings.get("PERSISTENCE_BACKEND") == "couchbase":
+        config_settings["ldap_pw"] = settings.get("COUCHBASE_PASSWORD")
+    config_settings["email"] = settings.get("EMAIL")
+    config_settings["org_name"] = settings.get("ORG_NAME")
+
+    with open(Path('./config/base/generate.json'), 'w+') as file:
+        app.logger.warning("Main configuration settings has been outputted to file: "
+                       "./config/base/generate.json. Please store this file safely or delete it.")
+        json.dump(config_settings, file)
 
