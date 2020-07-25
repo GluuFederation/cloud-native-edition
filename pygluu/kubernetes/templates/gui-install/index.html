@@ -256,6 +256,16 @@
             }
          });
       {% endif %}
+
+      {% if step == "image_name_tag" %}
+        $('input[name="edit_image_names_tags"]').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#nameTags').collapse('show');
+          }else{
+            $('#nameTags').collapse('hide');
+          }
+        });
+      {% endif %}
     });
 
 

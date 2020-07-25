@@ -1,0 +1,8 @@
+{{ forms.radio(form.edit_image_names_tags) }}
+<div id="nameTags" class="collapse {{ 'show' if form.edit_image_names_tags.data == 'Y' else '' }}">
+  {% for field in form %}
+    {% if field.type == "StringField" %}
+      {{ forms.text(field) }}
+    {% endif %}
+  {% endfor %}
+</div>

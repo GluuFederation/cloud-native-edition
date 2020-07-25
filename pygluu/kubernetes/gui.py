@@ -739,6 +739,32 @@ def config():
                            step="config",
                            next_step="image_name_tag")
 
+
+@app.route("/image-name-tag", methods=["POST", "GET"])
+def image_name_tag():
+    form = ImageNameTagForm()
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            data = {}
+            for field in form:
+                if field.name == "csrf_token":
+                    continue
+                data[field.name.upper()] = field.data
+            data["EDIT_IMAGE_NAMES_TAGS"] = "N"
+            settings.update(data)
+
+            return redirect(url_for(request.form["next_step"]))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("index.html",
+                           form=form,
+                           step="image_name_tag",
+                           next_step="replicas")
+
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
@@ -804,6 +830,9 @@ def validate_ip(ip_address):
 def populate_form_data(form):
     # populate form data
     for k, v in form.data.items():
+        if k == "csrf_token":
+            continue
+
         value = settings.get(k.upper())
         if value:
             form[k].data = value
