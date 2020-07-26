@@ -763,6 +763,34 @@ def image_name_tag():
                            next_step="replicas")
 
 
+@app.route("/replicas", methods=["POST", "GET"])
+def replicas():
+    form = ReplicasForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            data = {}
+            for field in form:
+                if field.name == "csrf_token":
+                    continue
+                data[field.name.upper()] = field.data
+
+            settings.update(data)
+
+            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
+                not settings.get("LDAP_STORAGE_SIZE"):
+                return redirect(url_for(request.form["next_step"]))
+
+            return redirect(url_for("setting_summary"))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("index.html",
+                           form=form,
+                           step="replicas",
+                           next_step="storage")
+
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
