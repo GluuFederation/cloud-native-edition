@@ -551,7 +551,7 @@ class ImageNameTagForm(FlaskForm):
                                              default=settings.get("OXSHIBBOLETH_IMAGE_TAG"),
                                              validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
 
-    oxstrust_image_name = StringField("oxTrust image name",
+    oxtrust_image_name = StringField("oxTrust image name",
                                       default=settings.get("OXTRUST_IMAGE_NAME"),
                                       validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxtrust_image_tag = StringField("oxTrust image tag",

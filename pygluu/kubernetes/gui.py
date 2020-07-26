@@ -455,15 +455,15 @@ def app_volume_type():
             data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
             if data["APP_VOLUME_TYPE"] in (8, 13):
-                settings["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
+                data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
 
             if data["APP_VOLUME_TYPE"] == 18:
-                settings["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
+                data["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
 
             if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
-                settings["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
+                data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
 
-            settings.update(settings)
+            settings.update(data)
 
             if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
                 next_step = "couchbase_multi_cluster"
@@ -702,7 +702,7 @@ def config():
             if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
                 data["LDAP_PW"] = form.ldap_pw.data
             else:
-                data["LDAP_PW"] = settings["COUCHBASE_PASSWORD"]
+                data["LDAP_PW"] = settings.get("COUCHBASE_PASSWORD")
 
             if settings.get("DEPLOYMENT_ARCH") in test_arch:
                 data["IS_GLUU_FQDN_REGISTERED"] = "N"
@@ -798,7 +798,7 @@ def determine_ip():
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
 
-        settings.set("NODES_NAME", node_name_list)
+        settings.set("NODES_NAMES", node_name_list)
         settings.set("NODES_ZONES", node_zone_list)
         settings.set("NODES_IPS", node_ip_list)
 
