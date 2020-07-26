@@ -19,14 +19,13 @@ from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
-from .common import get_supported_versions, exec_cmd, update_settings_json_file
+from .common import get_supported_versions, exec_cmd
 from .kubeapi import Kubernetes
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
-    SettingForm, app_volume_types, VolumeTypeForm, ldap_volumes, \
-    CacheTypeForm, CouchbaseMultiClusterForm, CouchbaseForm, \
-    CouchbaseBackupForm, CouchbaseCalculatorForm, LdapBackupForm, ConfigForm, \
-    ImageNameTagForm, ReplicasForm, StorageForm
+    SettingForm, VolumeTypeForm, CacheTypeForm, CouchbaseMultiClusterForm, \
+    CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, \
+    LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm
 
 from .settingdb import SettingDB
 
@@ -116,11 +115,10 @@ def agreement():
     """Input for Accepting license
     """
     form = LicenseForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
-            return redirect(url_for(next_step))
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
+        return redirect(url_for(next_step))
         
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
@@ -142,13 +140,12 @@ def gluu_version():
     """
     form = GluuVersionForm()
     versions, version_number = get_supported_versions()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            settings.set("GLUU_VERSION", form.gluu_version.data)
-            image_names_and_tags = versions.get(settings.get("GLUU_VERSION"), {})
-            settings.update(image_names_and_tags)
-            return redirect(url_for(next_step))
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        settings.set("GLUU_VERSION", form.gluu_version.data)
+        image_names_and_tags = versions.get(settings.get("GLUU_VERSION"), {})
+        settings.update(image_names_and_tags)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         # populate form
@@ -167,11 +164,10 @@ def deployment_arch():
     """
     form = DeploymentArchForm()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            settings.set("DEPLOYMENT_ARCH", form.deployment_arch.data)
-            return redirect(url_for(next_step))
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        settings.set("DEPLOYMENT_ARCH", form.deployment_arch.data)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         # populate form
@@ -190,11 +186,10 @@ def gluu_namespace():
     Input for gluu namespace.
     """
     form = GluuNamespaceForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            settings.set("GLUU_NAMESPACE", form.gluu_namespace.data)
-            return redirect(url_for(next_step))
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        settings.set("GLUU_NAMESPACE", form.gluu_namespace.data)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         # populate form
@@ -213,68 +208,66 @@ def optional_services():
     Input for optional services.
     """
     form = OptionalServiceForm()
-    if request.method == "POST":
+    if form.validate_on_submit():
+        data = {}
+        next_step = request.form["next_step"]
+        data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
+        data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
+        if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+            data["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
+        else:
+            data["OXAUTH_KEYS_LIFE"] = ""
 
-        if form.validate_on_submit():
-            data = {}
-            next_step = request.form["next_step"]
-            data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
-            data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
-            if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
-                data["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
-            else:
-                data["OXAUTH_KEYS_LIFE"] = ""
+        data["ENABLE_RADIUS"] = form.enable_radius.data
+        if data["ENABLE_RADIUS"] == "Y":
+            data["ENABLE_RADIUS_BOOLEAN"] = "true"
+        else:
+            data["ENABLE_RADIUS_BOOLEAN"] = ""
 
-            data["ENABLE_RADIUS"] = form.enable_radius.data
-            if data["ENABLE_RADIUS"] == "Y":
-                data["ENABLE_RADIUS_BOOLEAN"] = "true"
-            else:
-                data["ENABLE_RADIUS_BOOLEAN"] = ""
+        data["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
+        if data["ENABLE_OXPASSPORT"] == "Y":
+            data["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
+        else:
+            data["ENABLE_OXPASSPORT_BOOLEAN"] = ""
 
-            data["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
-            if data["ENABLE_OXPASSPORT"] == "Y":
-                data["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
-            else:
-                data["ENABLE_OXPASSPORT_BOOLEAN"] = ""
+        data["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
+        if data["ENABLE_OXSHIBBOLETH"] == "Y":
+            data["ENABLE_SAML_BOOLEAN"] = "true"
+        else:
+            data["ENABLE_SAML_BOOLEAN"] = ""
 
-            data["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
-            if data["ENABLE_OXSHIBBOLETH"] == "Y":
-                data["ENABLE_SAML_BOOLEAN"] = "true"
-            else:
-                data["ENABLE_SAML_BOOLEAN"] = ""
+        data["ENABLE_CASA"] = form.enable_casa.data
+        if data["ENABLE_CASA"] == "Y":
+            data["ENABLE_CASA_BOOLEAN"] = "true"
+        else:
+            data["ENABLE_CASA_BOOLEAN"] = ""
 
-            data["ENABLE_CASA"] = form.enable_casa.data
-            if data["ENABLE_CASA"] == "Y":
-                data["ENABLE_CASA_BOOLEAN"] = "true"
-            else:
-                data["ENABLE_CASA_BOOLEAN"] = ""
+        data["ENABLE_FIDO2"] = form.enable_fido2.data
+        data["ENABLE_SCIM"] = form.enable_scim.data
+        data["ENABLE_OXD"] = form.enable_oxd.data
 
-            data["ENABLE_FIDO2"] = form.enable_fido2.data
-            data["ENABLE_SCIM"] = form.enable_scim.data
-            data["ENABLE_OXD"] = form.enable_oxd.data
+        if data["ENABLE_OXD"] == "Y":
+            data["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
+            data["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
+        else:
+            data["OXD_APPLICATION_KEYSTORE_CN"] = ""
+            data["OXD_ADMIN_KEYSTORE_CN"] = ""
 
-            if data["ENABLE_OXD"] == "Y":
-                data["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
-                data["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
-            else:
-                data["OXD_APPLICATION_KEYSTORE_CN"] = ""
-                data["OXD_ADMIN_KEYSTORE_CN"] = ""
+        data["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
+        if data["ENABLE_OXTRUST_API"] == "Y":
+            data["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
+            data["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode.data
+        else:
+            data["ENABLE_OXTRUST_API_BOOLEAN"] = ""
+            data["ENABLE_OXTRUST_TEST_MODE"] = ""
 
-            data["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
-            if data["ENABLE_OXTRUST_API"] == "Y":
-                data["ENABLE_OXTRUST_API_BOOLEAN"] = "true"
-                data["ENABLE_OXTRUST_TEST_MODE"] = form.enable_oxtrust_test_mode.data
-            else:
-                data["ENABLE_OXTRUST_API_BOOLEAN"] = ""
-                data["ENABLE_OXTRUST_TEST_MODE"] = ""
+        if data["ENABLE_OXTRUST_TEST_MODE"] == "Y":
+            data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
+        else:
+            data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = ""
 
-            if data["ENABLE_OXTRUST_TEST_MODE"] == "Y":
-                data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
-            else:
-                data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = ""
-
-            settings.update(data)
-            return redirect(url_for(next_step))
+        settings.update(data)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -282,6 +275,7 @@ def optional_services():
     return render_template("index.html",
                            form=form,
                            step="optional_services",
+                           prev_step="gluu_namespace",
                            next_step="gluu_gateway")
 
 
@@ -291,40 +285,39 @@ def gluu_gateway():
     Input for Gluu Gateway
     """
     form = GluuGatewayForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            data = {}
-            data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        data = {}
+        data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
 
-            if data["INSTALL_GLUU_GATEWAY"] == "Y":
-                data["ENABLE_OXD"] = "Y"
-                data["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
-                data["POSTGRES_REPLICAS"] = form.postgres_replicas.data
-                data["POSTGRES_URL"] = form.postgres_url.data
-                data["KONG_NAMESPACE"] = form.kong_namespace.data
-                data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
-                data["KONG_DATABASE"] = form.kong_database.data
-                data["KONG_PG_USER"] = form.kong_pg_user.data
-                data["KONG_PG_PASSWORD"] = form.kong_pg_password.data
-                data["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
-                data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
-                data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
-            else:
-                data["ENABLE_OXD"] = "N"
-                data["POSTGRES_NAMESPACE"] = ""
-                data["POSTGRES_REPLICAS"] = ""
-                data["POSTGRES_URL"] = ""
-                data["KONG_NAMESPACE"] = ""
-                data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
-                data["KONG_DATABASE"] = ""
-                data["KONG_PG_USER"] = ""
-                data["KONG_PG_PASSWORD"] = ""
-                data["GLUU_GATEWAY_UI_DATABASE"] = ""
-                data["GLUU_GATEWAY_UI_PG_USER"] = ""
-                data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
-            settings.update(data)
-            return redirect(url_for(next_step))
+        if data["INSTALL_GLUU_GATEWAY"] == "Y":
+            data["ENABLE_OXD"] = "Y"
+            data["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
+            data["POSTGRES_REPLICAS"] = form.postgres_replicas.data
+            data["POSTGRES_URL"] = form.postgres_url.data
+            data["KONG_NAMESPACE"] = form.kong_namespace.data
+            data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
+            data["KONG_DATABASE"] = form.kong_database.data
+            data["KONG_PG_USER"] = form.kong_pg_user.data
+            data["KONG_PG_PASSWORD"] = form.kong_pg_password.data
+            data["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
+            data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
+            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
+        else:
+            data["ENABLE_OXD"] = "N"
+            data["POSTGRES_NAMESPACE"] = ""
+            data["POSTGRES_REPLICAS"] = ""
+            data["POSTGRES_URL"] = ""
+            data["KONG_NAMESPACE"] = ""
+            data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
+            data["KONG_DATABASE"] = ""
+            data["KONG_PG_USER"] = ""
+            data["KONG_PG_PASSWORD"] = ""
+            data["GLUU_GATEWAY_UI_DATABASE"] = ""
+            data["GLUU_GATEWAY_UI_PG_USER"] = ""
+            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
+        settings.update(data)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -343,21 +336,20 @@ def install_jackrabbit():
     Install Jackrabbit
     """
     form = JackrabbitForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            data = {}
-            data["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
-            data["JACKRABBIT_URL"] = form.jackrabbit_url.data
-            data["JACKRABBIT_USER"] = form.jackrabbit_user.data
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        data = {}
+        data["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
+        data["JACKRABBIT_URL"] = form.jackrabbit_url.data
+        data["JACKRABBIT_USER"] = form.jackrabbit_user.data
 
-            if data["INSTALL_JACKRABBIT"] == "Y":
-                data["JACKRABBIT_URL"] = form.jackrabbit_url.default
-                data["JACKRABBIT_USER"] = form.jackrabbit_user.default
-                data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
+        if data["INSTALL_JACKRABBIT"] == "Y":
+            data["JACKRABBIT_URL"] = form.jackrabbit_url.default
+            data["JACKRABBIT_USER"] = form.jackrabbit_user.default
+            data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
-            settings.update(data)
-            return redirect(url_for(next_step))
+        settings.update(data)
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -365,6 +357,7 @@ def install_jackrabbit():
     return render_template("index.html",
                            step="install_jackrabbit",
                            form=form,
+                           prev_step="gluu_gateway",
                            next_step="setting")
 
 
@@ -374,58 +367,58 @@ def setting():
     Setup Backend setting
     """
     form = SettingForm()
+    if form.validate_on_submit():
+        next_step = request.form['next_step']
+        data = {}
+        if not settings.get("TEST_ENVIRONMENT") and settings.get("DEPLOYMENT_ARCH") in test_arch:
+            data["TEST_ENVIRONMENT"] = form.test_environment.data
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form['next_step']
-            data = {}
-            if not settings.get("TEST_ENVIRONMENT") and settings.get("DEPLOYMENT_ARCH") in test_arch:
-                data["TEST_ENVIRONMENT"] = form.test_environment.data
+        if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
+                settings.get("DEPLOYMENT_ARCH") in local_arch:
+            data["NODE_SSH_KEY"] = form.node_ssh_key.data
 
-            if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
-                    settings.get("DEPLOYMENT_ARCH") in local_arch:
-                data["NODE_SSH_KEY"] = form.node_ssh_key.data
+        data["HOST_EXT_IP"] = form.host_ext_ip.data
 
-            data["HOST_EXT_IP"] = form.host_ext_ip.data
+        # prompt AWS
+        if settings.get("DEPLOYMENT_ARCH") == "eks":
+            data["AWS_LB_TYPE"] = form.aws_lb_type.data
+            data["USE_ARN"] = form.use_arn.data
+            data["ARN_AWS_IAM"] = form.arn_aws_iam.data
 
-            if settings.get("DEPLOYMENT_ARCH") == "eks":
-                data["AWS_LB_TYPE"] = form.aws_lb_type.data
-                data["USE_ARN"] = form.use_arn.data
-                data["ARN_AWS_IAM"] = form.arn_aws_iam.data
+        #prompt GKE
+        if settings.get("DEPLOYMENT_ARCH") == "gke":
+            data["GMAIL_ACCOUNT"] = form.gmail_account.data
 
-            if settings.get("DEPLOYMENT_ARCH") == "gke":
-                data["GMAIL_ACCOUNT"] = form.gmail_account.data
-
-                if settings.get("APP_VOLUME_TYPE") == 11:
-                    for node_name in settings.get("NODES_NAMES"):
-                        for zone in settings.get("NODES_ZONES"):
-                            response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
-                                                                "--command='echo $HOME'".format(node_name, zone))
-                            data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
-                            if data["GOOGLE_NODE_HOME_DIR"]:
-                                break
+            if settings.get("APP_VOLUME_TYPE") == 11:
+                for node_name in settings.get("NODES_NAMES"):
+                    for zone in settings.get("NODES_ZONES"):
+                        response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
+                                                            "--command='echo $HOME'".format(node_name, zone))
+                        data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
                         if data["GOOGLE_NODE_HOME_DIR"]:
                             break
+                    if data["GOOGLE_NODE_HOME_DIR"]:
+                        break
 
-            data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
-            if data["PERSISTENCE_BACKEND"] == "hybrid":
-                data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
+        data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
+        if data["PERSISTENCE_BACKEND"] == "hybrid":
+            data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
-            settings.update(data)
+        settings.update(data)
 
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
-                if settings.get("DEPLOYMENT_ARCH") == "microk8s":
-                    settings.set("APP_VOLUME_TYPE", 1)
-                elif settings.get("DEPLOYMENT_ARCH") == "minikube":
-                    settings.set("APP_VOLUME_TYPE", 2)
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
+            if settings.get("DEPLOYMENT_ARCH") == "microk8s":
+                settings.set("APP_VOLUME_TYPE", 1)
+            elif settings.get("DEPLOYMENT_ARCH") == "minikube":
+                settings.set("APP_VOLUME_TYPE", 2)
 
-                if not settings.get("APP_VOLUME_TYPE"):
-                    return redirect(url_for(next_step))
+            if not settings.get("APP_VOLUME_TYPE"):
+                return redirect(url_for(next_step))
 
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-                return redirect(url_for('couchbase_multi_cluster'))
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            return redirect(url_for('couchbase_multi_cluster'))
 
-            return redirect(url_for(next_step))
+        return redirect(url_for(next_step))
 
     # TODO: find a way to apply dynamic validation
     if settings.get("DEPLOYMENT_ARCH") == "gke":
@@ -449,28 +442,27 @@ def app_volume_type():
     App Volume type Setting
     """
     form = VolumeTypeForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            data["APP_VOLUME_TYPE"] = form.app_volume_type.data
+    if form.validate_on_submit():
+        data = {}
+        data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
-            if data["APP_VOLUME_TYPE"] in (8, 13):
-                data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
+        if data["APP_VOLUME_TYPE"] in (8, 13):
+            data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
 
-            if data["APP_VOLUME_TYPE"] == 18:
-                data["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
+        if data["APP_VOLUME_TYPE"] == 18:
+            data["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
 
-            if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
-                data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
+        if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+            data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
 
-            settings.update(data)
+        settings.update(data)
 
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-                next_step = "couchbase_multi_cluster"
-            else:
-                next_step = request.form['next_step']
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            next_step = "couchbase_multi_cluster"
+        else:
+            next_step = request.form['next_step']
 
-            return redirect(url_for(next_step))
+        return redirect(url_for(next_step))
 
     return render_template("index.html",
                            settings=settings.db,
@@ -485,17 +477,16 @@ def couchbase_multi_cluster():
     Deploy multi-cluster settings
     """
     form = CouchbaseMultiClusterForm()
-
-    if request.method == "POST":
-        if form.validate_on_submit():
-            settings.set("DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
-            return redirect(url_for(request.form['next_step']))
+    if form.validate_on_submit():
+        settings.set("DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
+        return redirect(url_for(request.form['next_step']))
 
     if request.method == "GET":
         form = populate_form_data(form)
 
     return render_template("index.html",
                            form=form,
+                           prev_step="setting",
                            step="couchbase_multi_cluster",
                            next_step="cache_type")
 
@@ -506,39 +497,37 @@ def cache_type():
     Cache Layer setting
     """
     form = CacheTypeForm()
+    if form.validate_on_submit():
+        data = {}
+        data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
+        if data["GLUU_CACHE_TYPE"] == "REDIS":
+            data["REDIS_TYPE"] = form.redis.redis_type.data
+            data["INSTALL_REDIS"] = form.redis.install_redis.data
 
-            if data["GLUU_CACHE_TYPE"] == "REDIS":
-                data["REDIS_TYPE"] = form.redis.redis_type.data
-                data["INSTALL_REDIS"] = form.redis.install_redis.data
+            if data["INSTALL_REDIS"] == "Y":
+                data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
+                data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
+                data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
+                data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
+                    data["REDIS_NAMESPACE"])
+                data["REDIS_PW"] = ""
+            else:
+                data["REDIS_MASTER_NODES"] = ""
+                data["REDIS_NODES_PER_MASTER"] = ""
+                data["REDIS_NAMESPACE"] = ""
+                data["REDIS_URL"] = form.redis.redis_url.data
+                data["REDIS_PW"] = form.redis.redis_pw.data
 
-                if data["INSTALL_REDIS"] == "Y":
-                    data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
-                    data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
-                    data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
-                    data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
-                        data["REDIS_NAMESPACE"])
-                    data["REDIS_PW"] = ""
-                else:
-                    data["REDIS_MASTER_NODES"] = ""
-                    data["REDIS_NODES_PER_MASTER"] = ""
-                    data["REDIS_NAMESPACE"] = ""
-                    data["REDIS_URL"] = form.redis.redis_url.data
-                    data["REDIS_PW"] = form.redis.redis_pw.data
+        settings.update(data)
 
-            settings.update(data)
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            return redirect(url_for(request.form['next_step']))
 
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-                return redirect(url_for(request.form['next_step']))
+        if settings.get("DEPLOYMENT_ARCH") not in test_arch:
+            return redirect(url_for('backup'))
 
-            if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-                return redirect(url_for('backup'))
-
-            return redirect(url_for('config'))
+        return redirect(url_for('config'))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -555,79 +544,77 @@ def cache_type():
 @app.route("/couchbase", methods=["GET", "POST"])
 def couchbase():
     form = CouchbaseForm()
-
     custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
     custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
     custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            next_step = request.form["next_step"]
-            data = {}
-            data["INSTALL_COUCHBASE"] = form.install_couchbase.data
-            if data["INSTALL_COUCHBASE"] == "N":
-                filename = secure_filename(form.couchbase_crt.data.filename)
-                form.couchbase_crt.data.save('./' + filename)
-                with open(Path('./' + filename)) as content_file:
-                    ca_crt = content_file.read()
-                    encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
-                    encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
-                    data["COUCHBASE_CRT"] = encoded_ca_crt_string
-            else:
-                data["COUCHBASE_CRT"] = ""
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        data = {}
+        data["INSTALL_COUCHBASE"] = form.install_couchbase.data
+        if data["INSTALL_COUCHBASE"] == "N":
+            filename = secure_filename(form.couchbase_crt.data.filename)
+            form.couchbase_crt.data.save('./' + filename)
+            with open(Path('./' + filename)) as content_file:
+                ca_crt = content_file.read()
+                encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
+                encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
+                data["COUCHBASE_CRT"] = encoded_ca_crt_string
+        else:
+            data["COUCHBASE_CRT"] = ""
 
-            data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] =  form.couchbase_cluster_file_override.data
-            if data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
+        data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] =  form.couchbase_cluster_file_override.data
+        if data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
 
-                for file in form.couchbase_cluster_files.data:
-                    filename = secure_filename(file.filename)
-                    file.save('./' + filename)
+            for file in form.couchbase_cluster_files.data:
+                filename = secure_filename(file.filename)
+                file.save('./' + filename)
 
-                try:
-                    shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
-                    shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))
-                    shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
-                                Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
-                except FileNotFoundError:
-                    app.logger.error("An override option has been chosen but there is a missing couchbase file that "
-                                     "could not be found at the current path.")
+            try:
+                shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
+                shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))
+                shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
+                            Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
+            except FileNotFoundError:
+                app.logger.error("An override option has been chosen but there is a missing couchbase file that "
+                                 "could not be found at the current path.")
 
-            if settings.get("DEPLOYMENT_ARCH") in test_arch:
-                data["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
-            else:
-                data["COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            data["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
+        else:
+            data["COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
 
-            data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
-            data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
-            data["COUCHBASE_URL"] = form.couchbase_url.data
-            data["COUCHBASE_USER"] = form.couchbase_user.data
-            data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
+        data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
+        data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
+        data["COUCHBASE_URL"] = form.couchbase_url.data
+        data["COUCHBASE_USER"] = form.couchbase_user.data
+        data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
 
-            if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
-                data['COUCHBASE_SUBJECT_ALT_NAME'] = [
-                    "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
-                    "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
-                    "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
-                    "{}-srv".format(data["COUCHBASE_CLUSTER_NAME"]),
-                    "{}-srv.{}".format(data["COUCHBASE_CLUSTER_NAME"],
+        if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+            data['COUCHBASE_SUBJECT_ALT_NAME'] = [
+                "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
+                "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
+                "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
+                "{}-srv".format(data["COUCHBASE_CLUSTER_NAME"]),
+                "{}-srv.{}".format(data["COUCHBASE_CLUSTER_NAME"],
+                                   data["COUCHBASE_NAMESPACE"]),
+                "{}-srv.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
                                        data["COUCHBASE_NAMESPACE"]),
-                    "{}-srv.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
-                                           data["COUCHBASE_NAMESPACE"]),
-                    "localhost"
-                ]
-                data["COUCHBASE_CN"] = form.couchbase_cn.data
+                "localhost"
+            ]
+            data["COUCHBASE_CN"] = form.couchbase_cn.data
 
-            settings.update(data)
+        settings.update(data)
 
-            if settings.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
-                    settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
-                    settings.get("INSTALL_COUCHBASE") == "Y":
-                next_step = "coucbase_calculator"
+        if settings.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
+                settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
+                settings.get("INSTALL_COUCHBASE") == "Y":
+            next_step = "coucbase_calculator"
 
-            if settings.get("DEPLOYMENT_ARCH")  not in test_arch:
-                next_step = "backup"
+        if settings.get("DEPLOYMENT_ARCH")  not in test_arch:
+            next_step = "backup"
 
-            return redirect(url_for(next_step))
+        return redirect(url_for(next_step))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -661,19 +648,18 @@ def backup():
     elif settings.get("PERSISTENCE_BACKEND") == "ldap":
         form = LdapBackupForm()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-                data["COUCHBASE_INCR_BACKUP_SCHEDULE"] = form.couchbase_incr_backup_schedule.data
-                data["COUCHBASE_FULL_BACKUP_SCHEDULE"] = form.couchbase_full_backup_schedule.data
-                data["COUCHBASE_BACKUP_RETENTION_TIME"] = form.couchbase_backup_retention_time.data
-                data["COUCHBASE_BACKUP_STORAGE_SIZE"] = form.couchbase_backup_storage_size.data
-            elif settings.get("PERSISTENCE_BACKEND") == "ldap":
-                data["LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
+    if form.validate_on_submit():
+        data = {}
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            data["COUCHBASE_INCR_BACKUP_SCHEDULE"] = form.couchbase_incr_backup_schedule.data
+            data["COUCHBASE_FULL_BACKUP_SCHEDULE"] = form.couchbase_full_backup_schedule.data
+            data["COUCHBASE_BACKUP_RETENTION_TIME"] = form.couchbase_backup_retention_time.data
+            data["COUCHBASE_BACKUP_STORAGE_SIZE"] = form.couchbase_backup_storage_size.data
+        elif settings.get("PERSISTENCE_BACKEND") == "ldap":
+            data["LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
 
-            settings.update(data)
-            return redirect(url_for(request.form["next_step"]))
+        settings.update(data)
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -688,30 +674,29 @@ def backup():
 @app.route("/config", methods=["GET", "POST"])
 def config():
     form = ConfigForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            data["GLUU_FQDN"] = form.gluu_fqdn.data
-            data["COUNTRY_CODE"] = form.country_code.data
-            data["STATE"] = form.state.data
-            data["CITY"] = form.city.data
-            data["EMAIL"] = form.email.data
-            data["ORG_NAME"] = form.org_name.data
-            data["ADMIN_PW"] = form.admin_pw.data
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-                data["LDAP_PW"] = form.ldap_pw.data
-            else:
-                data["LDAP_PW"] = settings.get("COUCHBASE_PASSWORD")
+    if form.validate_on_submit():
+        data = {}
+        data["GLUU_FQDN"] = form.gluu_fqdn.data
+        data["COUNTRY_CODE"] = form.country_code.data
+        data["STATE"] = form.state.data
+        data["CITY"] = form.city.data
+        data["EMAIL"] = form.email.data
+        data["ORG_NAME"] = form.org_name.data
+        data["ADMIN_PW"] = form.admin_pw.data
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            data["LDAP_PW"] = form.ldap_pw.data
+        else:
+            data["LDAP_PW"] = settings.get("COUCHBASE_PASSWORD")
 
-            if settings.get("DEPLOYMENT_ARCH") in test_arch:
-                data["IS_GLUU_FQDN_REGISTERED"] = "N"
-            else:
-                data["IS_GLUU_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            data["IS_GLUU_FQDN_REGISTERED"] = "N"
+        else:
+            data["IS_GLUU_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
 
-            settings.update(data)
-            generate_main_config()
+        settings.update(data)
+        generate_main_config()
 
-            return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(request.form["next_step"]))
 
     if settings.get("DEPLOYMENT_ARCH") in test_arch:
         form.is_gluu_fqdn_registered.validators = [Optional()]
@@ -722,7 +707,6 @@ def config():
     if request.method == "GET":
         form = populate_form_data(form)
         form.admin_pw_confirm.data = settings.get("ADMIN_PW")
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         form.ldap_pw_confirm.data = settings.get("LDAP_PW")
 
     return render_template("index.html",
@@ -735,18 +719,16 @@ def config():
 @app.route("/image-name-tag", methods=["POST", "GET"])
 def image_name_tag():
     form = ImageNameTagForm()
+    if form.validate_on_submit():
+        data = {}
+        for field in form:
+            if field.name == "csrf_token":
+                continue
+            data[field.name.upper()] = field.data
+        data["EDIT_IMAGE_NAMES_TAGS"] = "N"
+        settings.update(data)
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            for field in form:
-                if field.name == "csrf_token":
-                    continue
-                data[field.name.upper()] = field.data
-            data["EDIT_IMAGE_NAMES_TAGS"] = "N"
-            settings.update(data)
-
-            return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -760,21 +742,20 @@ def image_name_tag():
 @app.route("/replicas", methods=["POST", "GET"])
 def replicas():
     form = ReplicasForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            data = {}
-            for field in form:
-                if field.name == "csrf_token":
-                    continue
-                data[field.name.upper()] = field.data
+    if form.validate_on_submit():
+        data = {}
+        for field in form:
+            if field.name == "csrf_token":
+                continue
+            data[field.name.upper()] = field.data
 
-            settings.update(data)
+        settings.update(data)
 
-            if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
-                not settings.get("LDAP_STORAGE_SIZE"):
-                return redirect(url_for(request.form["next_step"]))
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
+            not settings.get("LDAP_STORAGE_SIZE"):
+            return redirect(url_for(request.form["next_step"]))
 
-            return redirect(url_for("setting_summary"))
+        return redirect(url_for("setting_summary"))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -788,10 +769,9 @@ def replicas():
 @app.route("/storage", methods=["POST", "GET"])
 def storage():
     form = StorageForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            settings.set("LDAP_STORAGE_SIZE", form.ldap_storage_size.data)
-            return redirect(url_for("setting_summary"))
+    if form.validate_on_submit():
+        settings.set("LDAP_STORAGE_SIZE", form.ldap_storage_size.data)
+        return redirect(url_for("setting_summary"))
 
     if request.method == "GET":
         if settings.get("LDAP_STORAGE_SIZE"):
@@ -836,9 +816,7 @@ def determine_ip():
     Attempts to detect and return ip automatically. Also set node names, zones, and addresses in a cloud deployment.
     :return:
     """
-
     ip = ""
-
     try:
         node_ip_list = []
         node_zone_list = []
