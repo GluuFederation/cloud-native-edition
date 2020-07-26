@@ -74,12 +74,18 @@ ldap_volumes = {
     }
 }
 
+def password_requirement_check(form, field):
+    regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', field.data)
+    if not regex_bool:
+            raise ValidationError("Password does not meet requirements. "
+                                  "The password must container one digit, one uppercase"
+                                  " letter, one lower case letter and one symbol")
+
 
 class RequiredIfFieldEqualTo(Required):
     """
     a validator which makes a field optional if
     another field has a desired value
-
     """     
 
     def __init__(self, other_field_name, value, *args, **kwargs):
@@ -192,10 +198,11 @@ class GluuGatewayForm(FlaskForm):
     kong_pg_password = StringField("Kong Postgress Password",
                                    widget=PasswordInput(hide_value=False),
                                    validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                                               EqualTo('kong_pg_password_confirm', message='Passwords do not match')])
+                                               password_requirement_check])
     kong_pg_password_confirm = StringField("Kong Postgress Password Confirmation",
                                            widget=PasswordInput(hide_value=False),
-                                           validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+                                           validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
+                                                       EqualTo('kong_pg_password_confirm', message='Passwords do not match')])
     gluu_gateway_ui_database = StringField("Please enter gluu-gateway-ui postgres database name", default="kong",
                                            validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_pg_user = StringField("Please enter a user for gluu-gateway-ui postgres database", default="konga",
@@ -203,12 +210,14 @@ class GluuGatewayForm(FlaskForm):
     gluu_gateway_ui_pg_password = StringField("Gluu Gateway UI postgres password",
                                               widget=PasswordInput(hide_value=False),
                                               validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                                                          EqualTo(
-                                                              'gluu_gateway_ui_pg_password_confirm',
-                                                              message='Passwords do not match')])
+                                                          password_requirement_check])
     gluu_gateway_ui_pg_password_confirm = StringField("Gluu Gateway UI postgres password confirmation",
                                                       widget=PasswordInput(hide_value=False),
-                                                      validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+                                                      validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
+                                                                  EqualTo(
+                                                                      'gluu_gateway_ui_pg_password',
+                                                                      message='Passwords do not match')
+                                                                  ])
 
 
 class JackrabbitForm(FlaskForm):
@@ -371,7 +380,7 @@ class CouchbaseForm(FlaskForm):
     couchbase_user = StringField("Please enter couchbase username", default="admin",
                                  validators=[InputRequired()])
     couchbase_password = StringField("Couchbase password", widget=PasswordInput(hide_value=False),
-                                     validators=[InputRequired()])
+                                     validators=[InputRequired(), password_requirement_check])
     couchbase_password_confirmation = PasswordField("Couchbase password confirm",
                                                     widget=PasswordInput(hide_value=False),
                                                     validators=[InputRequired(), EqualTo("couchbase_password")])
@@ -433,14 +442,18 @@ class ConfigForm(FlaskForm):
     org_name = StringField("Organization", default="Gluu", validators=[InputRequired()])
     admin_pw = StringField("oxTrust Password",
                            widget=PasswordInput(hide_value=False),
-                           validators=[InputRequired()])
+                           validators=[InputRequired(), password_requirement_check])
     admin_pw_confirm = StringField("oxTrust Password Confirm",
                                      widget=PasswordInput(hide_value=False),
                                      validators=[EqualTo("admin_pw")])
-    ldap_pw = StringField("LDAP Password", widget=PasswordInput(hide_value=False))
-    ldap_pw_confirm = StringField("LDAP Password Confirm",
-                                    widget=PasswordInput(hide_value=False),
-                                    validators=[EqualTo("ldap_pw")])
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        ldap_pw = StringField("LDAP Password",
+                              widget=PasswordInput(hide_value=False),
+                              validators=[InputRequired(), password_requirement_check])
+        ldap_pw_confirm = StringField("LDAP Password Confirm",
+                                        widget=PasswordInput(hide_value=False),
+                                        validators=[EqualTo("ldap_pw")])
+
     is_gluu_fqdn_registered = RadioField("Are you using a globally resolvable FQDN",
                                          choices=[("Y", "Yes"), ("N", "No")],
                                          description="You can mount your FQDN certification and key by placing them inside "
