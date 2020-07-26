@@ -791,6 +791,23 @@ def replicas():
                            next_step="storage")
 
 
+@app.route("/storage", methods=["POST", "GET"])
+def storage():
+    form = StorageForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            settings.set("LDAP_STORAGE_SIZE", form.ldap_storage_size.data)
+            return redirect(url_for("setting_summary"))
+
+    if request.method == "GET":
+        if settings.get("LDAP_STORAGE_SIZE"):
+            form.ldap_storage_size.data = settings.get("LDAP_STORAGE_SIZE")
+
+    return render_template("index.html",
+                           form=form,
+                           step="storage",
+                           next_step="setting_summary")
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
