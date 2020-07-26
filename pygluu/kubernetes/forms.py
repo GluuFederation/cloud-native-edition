@@ -449,19 +449,22 @@ class ConfigForm(FlaskForm):
     admin_pw_confirm = StringField("oxTrust Password Confirm",
                                      widget=PasswordInput(hide_value=False),
                                      validators=[EqualTo("admin_pw")])
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        ldap_pw = StringField("LDAP Password",
-                              widget=PasswordInput(hide_value=False),
-                              validators=[InputRequired(), password_requirement_check])
-        ldap_pw_confirm = StringField("LDAP Password Confirm",
-                                        widget=PasswordInput(hide_value=False),
-                                        validators=[EqualTo("ldap_pw")])
-
+    ldap_pw = StringField("LDAP Password", widget=PasswordInput(hide_value=False))
+    ldap_pw_confirm = StringField("LDAP Password Confirm",
+                                    widget=PasswordInput(hide_value=False),
+                                    validators=[EqualTo("ldap_pw")])
     is_gluu_fqdn_registered = RadioField("Are you using a globally resolvable FQDN",
                                          choices=[("Y", "Yes"), ("N", "No")],
                                          description="You can mount your FQDN certification and key by placing them inside "
                                                      "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentest.pyz is at.",
                                          render_kw={"disabled": "disabled"})
+
+    # override ldap_pw validators
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        ldap_pw.validators = [InputRequired(), password_requirement_check]
+    else:
+        ldap_pw.validators = [Optional()]
+        ldap_pw.render_kw = {"disabled": "disabled"}
 
     def validate_gluu_fqdn(form, field):
         regex_bool = re.match(

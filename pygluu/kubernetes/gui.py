@@ -688,7 +688,6 @@ def backup():
 @app.route("/config", methods=["GET", "POST"])
 def config():
     form = ConfigForm()
-
     if request.method == "POST":
         if form.validate_on_submit():
             data = {}
@@ -713,12 +712,6 @@ def config():
             generate_main_config()
 
             return redirect(url_for(request.form["next_step"]))
-
-    # TODO: find a way to apply dynamic validation
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        form.ldap_pw.validators = [InputRequired()]
-    else:
-        form.ldap_pw.validators = [Optional()]
 
     if settings.get("DEPLOYMENT_ARCH") in test_arch:
         form.is_gluu_fqdn_registered.validators = [Optional()]
