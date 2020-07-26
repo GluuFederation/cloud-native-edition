@@ -419,13 +419,11 @@ def setting():
                 elif settings.get("DEPLOYMENT_ARCH") == "minikube":
                     settings.set("APP_VOLUME_TYPE", 2)
 
-                if not settings.get("APP_VOLUME"):
+                if not settings.get("APP_VOLUME_TYPE"):
                     return redirect(url_for(next_step))
 
             if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-                return redirect(url_for(couchbase_multi_cluster))
-
-
+                return redirect(url_for('couchbase_multi_cluster'))
 
             return redirect(url_for(next_step))
 
