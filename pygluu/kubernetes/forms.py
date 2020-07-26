@@ -268,9 +268,6 @@ class SettingForm(FlaskForm):
 
 class VolumeTypeForm(FlaskForm):
 
-    volume_type = app_volume_types[settings.get("DEPLOYMENT_ARCH")]
-    volume_type_validators = [DataRequired()]
-
     if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
         ldap_volume = ldap_volumes[settings.get("DEPLOYMENT_ARCH")]
         ldap_jackrabbit_volume_label = ldap_volume["label"]
@@ -283,10 +280,16 @@ class VolumeTypeForm(FlaskForm):
         ldap_jackrabbit_volume_render_kw = {"disabled": "disabled"}
         ldap_jackrabbit_volume_validators = [Optional()]
 
+    if settings.get("DEPLOYMENT_ARCH") and \
+            settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        volume_type = app_volume_types[settings.get("DEPLOYMENT_ARCH")]
+    else:
+        volume_type = app_volume_types["local"]
+
     app_volume_type = RadioField(volume_type["label"],
                                  choices=volume_type["choices"],
                                  default=volume_type["default"],
-                                 validators=volume_type_validators,
+                                 validators=[DataRequired()],
                                  coerce=int)
     ldap_static_volume_id = StringField("Please enter Persistent Disk Name or EBS Volume ID for LDAP",
                                         description="EBS Volume ID example: vol-049df61146c4d7901",
