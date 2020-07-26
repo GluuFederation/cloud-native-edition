@@ -94,6 +94,7 @@ class RequiredIfFieldEqualTo(Required):
 
         if other_field.data == self.value:
             super(RequiredIfFieldEqualTo, self).__call__(form, field)
+        Optional()(form, field)
 
 
 class LicenseForm(FlaskForm):
