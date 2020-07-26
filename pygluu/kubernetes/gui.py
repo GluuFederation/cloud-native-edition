@@ -729,6 +729,7 @@ def config():
     if request.method == "GET":
         form = populate_form_data(form)
         form.admin_pw_confirm.data = settings.get("ADMIN_PW")
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         form.ldap_pw_confirm.data = settings.get("LDAP_PW")
 
     return render_template("index.html",
@@ -807,6 +808,34 @@ def storage():
                            form=form,
                            step="storage",
                            next_step="setting_summary")
+
+
+@app.route("/setting-summary", methods=["POST", "GET"])
+def setting_summary():
+    """Formats output of settings from prompts to the user. Passwords are not displayed.
+            """
+    hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
+                       "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
+                       "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GLUU_GATEWAY_UI_PG_PASSWORD"]
+
+    return render_template("setting_summary.html",
+                           hidden_settings=hidden_settings,
+                           settings=settings.db)
+
+
+@app.route("/confirm-params", methods=["POST"])
+def confirm_params():
+    settings.set("CONFIRM_PARAMS", request.form["confirm_params"])
+    if settings.get("CONFIRM_PARAMS") == "Y":
+        return redirect(url_for('finished'))
+    else:
+        # reset to default settings
+        settings.reset_data()
+        return redirect(url_for('agreement'))
+
+@app.route("/finish")
+def finished():
+    return render_template("finish.html")
 
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
