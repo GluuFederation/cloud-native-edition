@@ -208,7 +208,7 @@ def prompt_password(password):
         if confirm_pw_prompt != pw_prompt:
             logger.error("Passwords do not match")
         elif not regex_bool:
-            logger.error("Password does not meet requirements. The password must container one digit, one uppercase"
+            logger.error("Password does not meet requirements. The password must contain one digit, one uppercase"
                          " letter, one lower case letter and one symbol")
         else:
             logger.info("Success! {} password was set.".format(password))
