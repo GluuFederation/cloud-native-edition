@@ -183,7 +183,7 @@ opendj:
 
   image:
     repository: gluufederation/wrends
-    tag: 4.2.0_01
+    tag: 4.2.0_02
     pullPolicy: Always
   # default resource limits
   resources:

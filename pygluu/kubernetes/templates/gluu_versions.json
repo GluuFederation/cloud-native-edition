@@ -51,7 +51,7 @@
   "CERT_MANAGER_IMAGE_NAME": "gluufederation/certmanager",
   "CERT_MANAGER_IMAGE_TAG": "4.2.0_01",
   "LDAP_IMAGE_NAME": "gluufederation/wrends",
-  "LDAP_IMAGE_TAG": "4.2.0_01",
+  "LDAP_IMAGE_TAG": "4.2.0_02",
   "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
   "JACKRABBIT_IMAGE_TAG": "4.2.0_01",
   "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
