@@ -10,6 +10,7 @@ import ipaddress
 import shutil
 import json
 import os
+import base64
 
 from pathlib import Path
 from flask import Flask, jsonify, make_response, render_template, \
@@ -62,8 +63,9 @@ gluu_cache_map = {
     3: "REDIS",
 }
 
-config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
-                                "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
+config_settings = {"hostname": "", "country_code": "", "state": "", "city": "",
+                   "admin_pw": "", "ldap_pw": "", "email": "", "org_name": "",
+                   "redis_pw": ""}
 
 static_files = ["/favicon.ico",
                 "/styles.css",
@@ -71,16 +73,16 @@ static_files = ["/favicon.ico",
                 "/bootstrap.min.css",
                 "/bootstrap.min.css.map"]
 
-
-
 settings = SettingDB()
+
 
 @app.before_request
 def initialize():
     """
     check accepting license
     """
-    if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/agreement" and request.path not in static_files:
+    if not settings.get("ACCEPT_GLUU_LICENSE") and \
+            request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("agreement"))
 
 
@@ -92,22 +94,26 @@ def favicon():
 
 @app.route('/styles.css')
 def styles():
-    return send_from_directory(Path("templates/gui-install/static"), 'styles.css')
+    return send_from_directory(Path("templates/gui-install/static"),
+                               'styles.css')
 
 
 @app.route('/green-logo.svg')
 def logo():
-    return send_from_directory(Path("templates/gui-install/static"), 'green-logo.svg')
+    return send_from_directory(Path("templates/gui-install/static"),
+                               'green-logo.svg')
 
 
 @app.route('/bootstrap.min.css')
 def bootstrap():
-    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"), 'bootstrap.min.css')
+    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
+                               'bootstrap.min.css')
 
 
 @app.route('/bootstrap.min.css.map')
 def bootstrap_min_map():
-    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"), 'bootstrap.min.css.map')
+    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
+                               'bootstrap.min.css.map')
 
 
 @app.route("/agreement", methods=["GET", "POST"])
@@ -119,7 +125,7 @@ def agreement():
         next_step = request.form["next_step"]
         settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
         return redirect(url_for(next_step))
-        
+
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
 
@@ -370,7 +376,8 @@ def setting():
     if form.validate_on_submit():
         next_step = request.form['next_step']
         data = {}
-        if not settings.get("TEST_ENVIRONMENT") and settings.get("DEPLOYMENT_ARCH") in test_arch:
+        if not settings.get("TEST_ENVIRONMENT") and \
+                settings.get("DEPLOYMENT_ARCH") in test_arch:
             data["TEST_ENVIRONMENT"] = form.test_environment.data
 
         if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
@@ -385,7 +392,7 @@ def setting():
             data["USE_ARN"] = form.use_arn.data
             data["ARN_AWS_IAM"] = form.arn_aws_iam.data
 
-        #prompt GKE
+        # prompt GKE
         if settings.get("DEPLOYMENT_ARCH") == "gke":
             data["GMAIL_ACCOUNT"] = form.gmail_account.data
 
@@ -406,7 +413,8 @@ def setting():
 
         settings.update(data)
 
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or settings.get("INSTALL_JACKRABBIT") == "Y":
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or \
+                settings.get("INSTALL_JACKRABBIT") == "Y":
             if settings.get("DEPLOYMENT_ARCH") == "microk8s":
                 settings.set("APP_VOLUME_TYPE", 1)
             elif settings.get("DEPLOYMENT_ARCH") == "minikube":
@@ -571,12 +579,15 @@ def couchbase():
                 file.save('./' + filename)
 
             try:
-                shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
-                shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))
+                shutil.copy(Path("./couchbase-cluster.yaml"),
+                            Path("./couchbase/couchbase-cluster.yaml"))
+                shutil.copy(Path("./couchbase-buckets.yaml"),
+                            Path("./couchbase/couchbase-buckets.yaml"))
                 shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
                             Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
             except FileNotFoundError:
-                app.logger.error("An override option has been chosen but there is a missing couchbase file that "
+                app.logger.error("An override option has been chosen but "
+                                 "there is a missing couchbase file that "
                                  "could not be found at the current path.")
 
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
@@ -590,11 +601,14 @@ def couchbase():
         data["COUCHBASE_USER"] = form.couchbase_user.data
         data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
 
-        if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+        if not custom_cb_ca_crt.exists() or\
+                not custom_cb_crt.exists() and not custom_cb_key.exists():
             data['COUCHBASE_SUBJECT_ALT_NAME'] = [
                 "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
-                "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
-                "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"], data["COUCHBASE_NAMESPACE"]),
+                "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"],
+                                 data["COUCHBASE_NAMESPACE"]),
+                "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
+                                     data["COUCHBASE_NAMESPACE"]),
                 "{}-srv".format(data["COUCHBASE_CLUSTER_NAME"]),
                 "{}-srv.{}".format(data["COUCHBASE_CLUSTER_NAME"],
                                    data["COUCHBASE_NAMESPACE"]),
@@ -611,7 +625,7 @@ def couchbase():
                 settings.get("INSTALL_COUCHBASE") == "Y":
             next_step = "coucbase_calculator"
 
-        if settings.get("DEPLOYMENT_ARCH")  not in test_arch:
+        if settings.get("DEPLOYMENT_ARCH") not in test_arch:
             next_step = "backup"
 
         return redirect(url_for(next_step))
@@ -626,7 +640,8 @@ def couchbase():
     else:
         form.couchbase_use_low_resources.validators = [DataRequired()]
 
-    if not custom_cb_ca_crt.exists() or not custom_cb_crt.exists() and not custom_cb_key.exists():
+    if not custom_cb_ca_crt.exists() or \
+            not custom_cb_crt.exists() and not custom_cb_key.exists():
         form.couchbase_cn.validators = [InputRequired()]
     else:
         form.couchbase_cn.validators = [Optional()]
@@ -683,6 +698,7 @@ def config():
         data["EMAIL"] = form.email.data
         data["ORG_NAME"] = form.org_name.data
         data["ADMIN_PW"] = form.admin_pw.data
+
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             data["LDAP_PW"] = form.ldap_pw.data
         else:
@@ -752,7 +768,7 @@ def replicas():
         settings.update(data)
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
-            not settings.get("LDAP_STORAGE_SIZE"):
+                not settings.get("LDAP_STORAGE_SIZE"):
             return redirect(url_for(request.form["next_step"]))
 
         return redirect(url_for("setting_summary"))
@@ -785,11 +801,14 @@ def storage():
 
 @app.route("/setting-summary", methods=["POST", "GET"])
 def setting_summary():
-    """Formats output of settings from prompts to the user. Passwords are not displayed.
-            """
+    """
+    Formats output of settings from prompts to the user.
+    Passwords are not displayed.
+    """
     hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                        "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
-                       "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD", "GLUU_GATEWAY_UI_PG_PASSWORD"]
+                       "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD",
+                       "GLUU_GATEWAY_UI_PG_PASSWORD"]
 
     return render_template("setting_summary.html",
                            hidden_settings=hidden_settings,
@@ -806,14 +825,17 @@ def confirm_params():
         settings.reset_data()
         return redirect(url_for('agreement'))
 
+
 @app.route("/finish")
 def finished():
     return render_template("finish.html")
 
+
 @app.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
-    Attempts to detect and return ip automatically. Also set node names, zones, and addresses in a cloud deployment.
+    Attempts to detect and return ip automatically.
+    Also set node names, zones, and addresses in a cloud deployment.
     :return:
     """
     ip = ""
@@ -838,7 +860,8 @@ def determine_ip():
                         node_ip_list.append(ip)
 
                 # Digital Ocean does not provide zone support yet
-                if settings.get("DEPLOYMENT_ARCH") != "do" or settings.get("DEPLOYMENT_ARCH") != "local":
+                if settings.get("DEPLOYMENT_ARCH") != "do" or \
+                        settings.get("DEPLOYMENT_ARCH") != "local":
                     node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
@@ -850,7 +873,9 @@ def determine_ip():
         if settings.get("DEPLOYMENT_ARCH") in ["eks", "gke", "do", "local", "aks"]:
             #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
             ip = "22.22.22.22"
-        data = {"status": True, 'ip_address': ip, "message": "Is this the correct external IP address?"}
+        data = {"status": True,
+                'ip_address': ip,
+                "message": "Is this the correct external IP address?"}
     except Exception as e:
         app.logger.error(e)
         # prompt for user-inputted IP address
@@ -864,14 +889,18 @@ def determine_ip():
 def validate_ip(ip_address):
     try:
         ipaddress.ip_address(ip_address)
-        return make_response({"status": True, "message": "IP Address is valid"}, 200)
+        return make_response({"status": True,
+                              "message": "IP Address is valid"}, 200)
     except ValueError as exc:
         # raised if IP is invalid
-        return make_response({"status": False, "message": "Cannot determine IP address {}".format(exc)}, 400)
+        return make_response({"status": False,
+                              "message": "Cannot determine IP address {}".format(exc)}, 400)
 
 
 def populate_form_data(form):
-    # populate form data
+    """
+    populate form data from settings
+    """
     for k, v in form.data.items():
         if k == "csrf_token":
             continue
@@ -883,7 +912,8 @@ def populate_form_data(form):
 
 
 def generate_main_config():
-    """Prepare generate.json and output it
+    """
+    Prepare generate.json and output it
     """
     config_settings["hostname"] = settings.get("GLUU_FQDN")
     config_settings["country_code"] = settings.get("COUNTRY_CODE")
@@ -898,7 +928,7 @@ def generate_main_config():
     config_settings["org_name"] = settings.get("ORG_NAME")
 
     with open(Path('./config/base/generate.json'), 'w+') as file:
-        app.logger.warning("Main configuration settings has been outputted to file: "
-                       "./config/base/generate.json. Please store this file safely or delete it.")
+        app.logger.warning("Main configuration settings has been "
+                           "outputted to file: ./config/base/generate.json. "
+                           "Please store this file safely or delete it.")
         json.dump(config_settings, file)
-

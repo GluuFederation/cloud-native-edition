@@ -1,5 +1,4 @@
 {% macro text(field) %}
-
   {% set validation = "is-invalid" if field.errors else "" %}
   <div class="form-group">
     {{ field.label(class_="col-form-label") }}
