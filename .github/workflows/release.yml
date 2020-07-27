@@ -59,7 +59,7 @@ jobs:
       run: |
         cd /home/runner/work/test/
         sudo gem install github_changelog_generator
-        github_changelog_generator --user GluuFederation --project community-edition-containers --date-format "%m/%d/%Y" --header-label "# Release Notes" --output release_notes.md --token ${{ secrets.token }} --since-tag ${{ steps.get_version.outputs.pversion }}
+        github_changelog_generator --user GluuFederation --project community-edition-containers --date-format "%m/%d/%Y" --header-label "# Release Notes" --output release_notes.md --token ${{ secrets.token }} --since-tag v${{ steps.get_version.outputs.pversion }}
         sed -i '$ d' release_notes.md
         github_changelog_generator --user GluuFederation --project community-edition-containers --date-format "%m/%d/%Y" --token ${{ secrets.token }}
         sed -i '$ d' CHANGELOG.md
