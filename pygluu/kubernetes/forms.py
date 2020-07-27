@@ -81,7 +81,7 @@ def password_requirement_check(form, field):
     if not regex_bool:
         raise ValidationError(
             "Password does not meet requirements. "
-            "The password must container one digit, one uppercase "
+            "The password must contain one digit, one uppercase "
             "letter, one lower case letter and one symbol")
 
 
