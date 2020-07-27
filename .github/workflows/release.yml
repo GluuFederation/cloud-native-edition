@@ -44,7 +44,7 @@ jobs:
         sudo apt-get install build-essential
         pip3 install shiv
         mkdir /home/runner/work/test
-        cp -r ./pygluu/* /home/runner/work/test/
+        cp -r . /home/runner/work/test/
         cd /home/runner/work/test/
         make zipapp
 
