@@ -117,11 +117,7 @@ class GluuVersionForm(FlaskForm):
     supported_versions = []
 
     for k, v in versions.items():
-        if "_dev" in k:
-            supported_versions.append((version_number, k))
-        else:
-            if float(k) > version_number:
-                supported_versions.append((version_number, float(k)))
+        supported_versions.append((version_number, k))
 
     gluu_version = RadioField(
         "Currently supported versions",
