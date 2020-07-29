@@ -9,15 +9,29 @@
       </div>
       <div class="card-body">
         <h3 class="text-center">Gluu Cloud Native Edition</h3>
-        <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
+          <ul class="wizard wizard-steps-18">
+            {% for wizard_step in wizard_steps %}
+              {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
+              <li>
+                <div class="step {{ step_status }}">
+                  <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step }}">{{ loop.index }}</span>
+                  <i>{{ wizard_step }}</i>
+                </div>
+              </li>
+            {% endfor %}
+
+          </ul>
+        <br><br>
+          <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
 
           {{ form.csrf_token }}
-          {% include '%s.html' % step %}
+          {% include '%s.html' % template %}
           {% if(next_step) %}
             {{ forms.hidden('next_step', next_step) }}
           {% endif %}
           <button type="submit" class="btn btn-primary float-right">Next</button>
         </form>
+        </div>
       </div>
     </div>
   </div>
@@ -35,6 +49,8 @@
     }
 
     $(document).ready(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+
       $("#show_hide_password a").on('click', function(event) {
         event.preventDefault();
         var input = $(this).parents('#show_hide_password').find('input'),
@@ -89,7 +105,7 @@
         $formText.html(cronDescriptor)
       });
 
-      {% if step == 'optional_services' %}
+      {% if template == 'optional_services' %}
         $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
         showHideOption($('#oxauthKeyLife'), $(this).val());
         });
@@ -105,7 +121,7 @@
         });
       {% endif %}
 
-      {% if step == "gluu_gateway" %}
+      {% if template == "gluu_gateway" %}
         $('input[name="install_gluu_gateway').on('change', function(){
           showHideOption($('#oxd-alert'), $(this).val());
           showHideOption($('#postgresSetup'), $(this).val());
@@ -113,7 +129,7 @@
         });
       {% endif %}
 
-      {% if step == "install_jackrabbit" %}
+      {% if template == "install_jackrabbit" %}
         $('input[name="install_jackrabbit"').on('change', function(){
           if($(this).val() == 'Y'){
             $('#jackrabbitYesInstall').collapse('show');
@@ -125,7 +141,7 @@
         });
       {% endif %}
 
-      {% if step == "settings" %}
+      {% if template == "settings" %}
         IpAddress = function(){
           return Promise.resolve($.get('/determine_ip'));
         }
@@ -164,7 +180,6 @@
               $('#host_ext_ip').addClass('is-invalid');
               $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('invalid-feedback').html(data.message);
             }
-            console.log(data);
           });
         });
 
@@ -186,7 +201,7 @@
 
       {% endif %}
 
-      {% if step == "app_volume_type" %}
+      {% if template == "app_volume_type" %}
           $('input[name="app_volume_type"]').on('change', function(){
             if($(this).val() == 8 || $(this).val() == 13){
               $('#ldap_static_volume_id').prop("disabled", false);
@@ -201,8 +216,9 @@
           });
       {% endif %}
 
-      {% if step == "cache_type" %}
+      {% if template == "cache_type" %}
         $('input[name="gluu_cache_type"]').on('change', function(){
+          console.log($(this).val())
           if($(this).val() == "REDIS"){
             $('#redisSetup').collapse('show');
           }else{
@@ -241,7 +257,7 @@
         });
       {% endif %}
 
-      {% if step == "couchbase" %}
+      {% if template == "couchbase" %}
          $('input[name="install_couchbase"]').on('change', function(){
             if($(this).val() == "N"){
               $('#couchbase_crt').parents('.form-group').collapse('show');
@@ -259,7 +275,7 @@
          });
       {% endif %}
 
-      {% if step == "image_name_tag" %}
+      {% if template == "image_name_tag" %}
         $('input[name="edit_image_names_tags"]').on('change', function(){
           if($(this).val() == 'Y'){
             $('#nameTags').collapse('show');

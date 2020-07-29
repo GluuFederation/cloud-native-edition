@@ -44,12 +44,24 @@ app.config.from_object(cfg)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-wizard_steps = ["license",
-                "deployment_arch",
-                "set_namespace",
-                "optional_settings",
-                "install_jackrabbit",
-                "settings"]
+wizard_steps = ["License",
+                "Gluu version",
+                "Deployment architecture",
+                "Gluu namespace",
+                "Optional settings",
+                "Gluu gateway",
+                "Install jackrabbit",
+                "Persistence backend",
+                "App volume type",
+                "Couchbase multi cluster",
+                "Cache type",
+                "Couchbase",
+                "Couchbase calculator",
+                "Backup",
+                "Config",
+                "Image name tag",
+                "Replicas",
+                "Storage"]
 
 kubernetes = Kubernetes()
 
@@ -84,6 +96,10 @@ def initialize():
     if not settings.get("ACCEPT_GLUU_LICENSE") and \
             request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("agreement"))
+
+@app.context_processor
+def inject_wizard_steps():
+    return dict(wizard_steps=wizard_steps)
 
 
 @app.route('/favicon.ico')
@@ -136,7 +152,8 @@ def agreement():
     return render_template("index.html",
                            license=agreement_file,
                            form=form,
-                           step="agreement",
+                           current_step=1,
+                           template="agreement",
                            next_step="gluu_version")
 
 
@@ -159,7 +176,8 @@ def gluu_version():
 
     return render_template("index.html",
                            form=form,
-                           step="gluu_version",
+                           current_step=2,
+                           template="gluu_version",
                            next_step="deployment_arch")
 
 
@@ -182,7 +200,8 @@ def deployment_arch():
 
     return render_template("index.html",
                            form=form,
-                           step="deployment_arch",
+                           current_step=3,
+                           template="deployment_arch",
                            next_step="gluu_namespace")
 
 
@@ -203,8 +222,9 @@ def gluu_namespace():
             form.gluu_namespace.data = settings.get("GLUU_NAMESPACE")
 
     return render_template("index.html",
-                           step="gluu_namespace",
                            form=form,
+                           current_step=4,
+                           template="gluu_namespace",
                            next_step="optional_services")
 
 
@@ -280,7 +300,8 @@ def optional_services():
 
     return render_template("index.html",
                            form=form,
-                           step="optional_services",
+                           current_step=5,
+                           template="optional_services",
                            prev_step="gluu_namespace",
                            next_step="gluu_gateway")
 
@@ -331,8 +352,9 @@ def gluu_gateway():
         form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
     return render_template("index.html",
-                           step="gluu_gateway",
                            form=form,
+                           current_step=6,
+                           template="gluu_gateway",
                            next_step="install_jackrabbit")
 
 
@@ -361,8 +383,9 @@ def install_jackrabbit():
         form = populate_form_data(form)
 
     return render_template("index.html",
-                           step="install_jackrabbit",
                            form=form,
+                           current_step=7,
+                           template="install_jackrabbit",
                            prev_step="gluu_gateway",
                            next_step="setting")
 
@@ -440,8 +463,9 @@ def setting():
     return render_template("index.html",
                            settings=settings.db,
                            form=form,
-                           step="settings",
-                           next_step="app_volume_type")
+                           current_step=8,
+                           template="settings",
+                           next_step="cache_type")
 
 
 @app.route("/app-volume-type", methods=["GET", "POST"])
@@ -475,7 +499,8 @@ def app_volume_type():
     return render_template("index.html",
                            settings=settings.db,
                            form=form,
-                           step="app_volume_type",
+                           current_step=9,
+                           template="app_volume_type",
                            next_step="cache_type")
 
 
@@ -494,8 +519,9 @@ def couchbase_multi_cluster():
 
     return render_template("index.html",
                            form=form,
+                           current_step=10,
+                           template="couchbase_multi_cluster",
                            prev_step="setting",
-                           step="couchbase_multi_cluster",
                            next_step="cache_type")
 
 
@@ -543,9 +569,9 @@ def cache_type():
         form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
 
     return render_template("index.html",
-                           settings=settings,
                            form=form,
-                           step="cache_type",
+                           current_step=11,
+                           template="cache_type",
                            next_step="couchbase")
 
 
@@ -649,7 +675,8 @@ def couchbase():
 
     return render_template("index.html",
                            form=form,
-                           step="couchbase",
+                           current_step=12,
+                           template="couchbase",
                            next_step="config")
 
 
@@ -682,7 +709,8 @@ def backup():
     return render_template("index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           step="backup",
+                           current_step=14,
+                           template="backup",
                            next_step="config")
 
 
@@ -728,7 +756,8 @@ def config():
     return render_template("index.html",
                            settings=settings.db,
                            form=form,
-                           step="config",
+                           current_step=15,
+                           template="config",
                            next_step="image_name_tag")
 
 
@@ -751,7 +780,8 @@ def image_name_tag():
 
     return render_template("index.html",
                            form=form,
-                           step="image_name_tag",
+                           current_step=16,
+                           template="image_name_tag",
                            next_step="replicas")
 
 
@@ -778,7 +808,8 @@ def replicas():
 
     return render_template("index.html",
                            form=form,
-                           step="replicas",
+                           current_step=17,
+                           template="replicas",
                            next_step="storage")
 
 
@@ -795,7 +826,8 @@ def storage():
 
     return render_template("index.html",
                            form=form,
-                           step="storage",
+                           current_step=18,
+                           template="storage",
                            next_step="setting_summary")
 
 
