@@ -215,7 +215,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.0_01
+    tag: 4.2.0_02
     pullPolicy: Always
   # default resource limits
   resources:
@@ -232,7 +232,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.0_01
+    tag: 4.2.0_02
     pullPolicy: Always
   # default resource limits
   resources:
@@ -265,7 +265,7 @@ scim:
     scimServiceName: scim
   image:
     repository: gluufederation/scim
-    tag: 4.2.0_01
+    tag: 4.2.0_02
     pullPolicy: Always
   # default resource limits
   resources:
@@ -335,7 +335,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.0_01
+    tag: 4.2.0_02
     pullPolicy: Always
   # default resource limits
   resources: 
