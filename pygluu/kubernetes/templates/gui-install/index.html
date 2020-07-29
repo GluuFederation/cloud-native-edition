@@ -21,9 +21,6 @@
             {% endfor %}
 
           </ul>
-          <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style=""></div>
-          </div>
           <br>
           <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
             {{ form.csrf_token }}
@@ -41,10 +38,6 @@
 
 {% block custom_script %}
   <script>
-    var progress = 100 / 18 * {{current_step - 1}}
-    $('.progress-bar').css('width', progress + '%')
-    $('.progress-bar').html(progress.toFixed() + '%')
-    
     showHideOption = function(target, value){
       if(value == 'Y'){
         target.collapse('show');
