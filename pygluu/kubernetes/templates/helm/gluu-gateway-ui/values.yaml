@@ -1,5 +1,3 @@
-# License terms and conditions for Gluu Cloud Native Edition:
-# https://www.apache.org/licenses/LICENSE-2.0
 replicaCount: 1
 image:
   repository: gluufederation/gluu-gateway-ui
@@ -9,7 +7,6 @@ cloud:
   enabled: true
   isDomainRegistered: "false"
   provider: "aws"
-
 resources:
   requests:
     memory: 500Mi
@@ -34,7 +31,6 @@ dbDatabase: "konga"
 nodeEnv: "production"
 oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
 opServerUrl: "demoexample.gluu.org"
-# Custom client created info
 oxdId:
 clientId:
 clientSecret:
@@ -45,19 +41,15 @@ explicitHost: "0.0.0.0"
 ggVersion: "4.2"
 nameOverride: ""
 fullnameOverride: ""
-
 service:
   type: ClusterIP
   port: 8080
-
 nginxIngress:
   enabled: true
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   hosts:
-    - demoexample.gluu.org
+  - demoexample.gluu.org
   tls:
-   - secretName: tls-certificate
-     hosts:
-       - demoexample.gluu.org
+  - secretName: tls-certificate
+    hosts:
+    - demoexample.gluu.org
