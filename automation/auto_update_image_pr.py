@@ -129,9 +129,11 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             gluu_gateway_values_file_parser.dump_it()
         elif rep != "gluu-gateway" and rep != "upgrade":
             if helm_name:
-                rep = helm_name
-            gluu_values_file_parser[rep]["image"]["repository"] = "gluufederation/" + rep
-            gluu_values_file_parser[rep]["image"]["tag"] = final_tag
+                gluu_values_file_parser[helm_name]["image"]["repository"] = "gluufederation/" + rep
+                gluu_values_file_parser[helm_name]["image"]["tag"] = final_tag
+            else:
+                gluu_values_file_parser[rep]["image"]["repository"] = "gluufederation/" + rep
+                gluu_values_file_parser[rep]["image"]["tag"] = final_tag
 
     for repo, tag_list in filtered_all_repos_tags.items():
         official_version, dev_version = determine_final_official_and_dev_version(tag_list)
