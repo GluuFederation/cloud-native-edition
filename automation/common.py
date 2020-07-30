@@ -7,13 +7,7 @@ import shlex
 import logging
 import json
 import errno
-import socket
 import shutil
-import os
-import string
-import random
-import re
-from getpass import getpass
 from pathlib import Path
 
 
@@ -66,31 +60,6 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
-    """Execute ssh command and remove directory.
-    :param key:
-    :param user:
-    :param node_ip:
-    :param folder_to_be_removed:
-    """
-    exec_cmd("ssh -oStrictHostKeyChecking=no -i {} {}@{} sudo rm -rf {}"
-             .format(key, user, node_ip, folder_to_be_removed))
-
-
-def check_port(host, port):
-    """Check if ports are open
-    :param host:
-    :param port:
-    :return:
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        conn = sock.connect_ex((host, port))
-        if conn == 0:
-            # port is not available
-            return False
-        return True
-
-
 def copy(src, dest):
     """
     Copy from source to destination
@@ -105,113 +74,6 @@ def copy(src, dest):
             shutil.copy(src, dest)
         else:
             logger.error('Directory not copied. Error: {}'.format(e))
-
-
-def copy_templates():
-    """
-    Copy templates folder. /pygluu/kubernetes/templates to working dir.
-    """
-    entries = Path(
-        os.path.join(os.path.dirname(__file__), "templates")
-    )
-    curdir = os.getcwd()
-    for entry in entries.iterdir():
-        dst = os.path.join(curdir, entry.name)
-        if os.path.exists(dst):
-            continue
-        copy(entry, dst)
-
-
-def check_microk8s_kube_config_file():
-    """
-    Copy microk8s kuber config to ~/.kube/config
-    """
-    kube_config_file_location = Path(os.path.expanduser("~/.kube/config"))
-
-    if not kube_config_file_location.exists():
-        kube_dir = os.path.dirname(kube_config_file_location)
-
-        if not os.path.exists(kube_dir):
-            os.makedirs(kube_dir)
-
-        try:
-            shutil.copy(Path("/var/snap/microk8s/current/credentials/client.config"), kube_config_file_location)
-        except FileNotFoundError:
-            logger.error("No Kubernetes config file found at ~/.kube/config")
-
-
-def get_supported_versions():
-    """Get Gluu versions from gluu_versions.json
-    return:
-    """
-    versions = {}
-    version_number = 0
-    dev_version = ""
-
-    filename = Path("./gluu_versions.json")
-    try:
-        with open(filename) as f:
-            versions = json.load(f)
-        logger.info("Currently supported versions are : ")
-        for k, v in versions.items():
-            if "_dev" in k:
-                logger.info("Development version : {}".format(k))
-                dev_version = k
-            else:
-                logger.info("Stable version : {}".format(k))
-                if float(k) > version_number:
-                    version_number = float(k)
-    except FileNotFoundError:
-        pass
-    finally:
-        if not version_number:
-            # No stable version exists
-            version_number = dev_version
-        version_number = str(version_number)
-        return versions, version_number
-
-
-def prompt_password(password):
-    """
-    Returns randomly generated password,
-    :param password: string for the prompt name
-    :return:
-    """
-    chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
-    chars = chars.replace('"', '')
-    chars = chars.replace("'", "")
-    chars = chars.replace("$", "")
-    chars = chars.replace("/", "")
-    chars = chars.replace("!", "")
-    while True:
-        while True:
-            random_password = ''.join(random.choice(chars) for _ in range(6))
-            regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
-            if regex_bool:
-                break
-
-        if password == "Redis":
-            random_password = ''
-
-        string_random_password = random_password[:1] + "***" + random_password[4:]
-        pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
-        if not pw_prompt:
-            pw_prompt = random_password
-            confirm_pw_prompt = random_password
-        else:
-            confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
-            regex_bool = True
-            if password != "Redis":
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
-
-        if confirm_pw_prompt != pw_prompt:
-            logger.error("Passwords do not match")
-        elif not regex_bool:
-            logger.error("Password does not meet requirements. The password must contain one digit, one uppercase"
-                         " letter, one lower case letter and one symbol")
-        else:
-            logger.info("Success! {} password was set.".format(password))
-            return pw_prompt
 
 
 logger = get_logger("gluu-common        ")
