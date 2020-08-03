@@ -28,6 +28,9 @@
             {% if(next_step) %}
               {{ forms.hidden('next_step', next_step) }}
             {% endif %}
+            {% if(prev_step) %}
+              <a href="{{ url_for(prev_step) }}" class="btn btn-info">Prev</a>
+            {% endif %}
             <button type="submit" class="btn btn-primary float-right">Next</button>
           </form>
         </div>

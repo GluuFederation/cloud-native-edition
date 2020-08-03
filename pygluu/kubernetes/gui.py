@@ -140,6 +140,7 @@ def agreement():
     form = LicenseForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
+        previous_step = "agreement"
         settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
         return redirect(url_for(next_step))
 
@@ -179,6 +180,7 @@ def gluu_version():
                            form=form,
                            current_step=2,
                            template="gluu_version",
+                           prev_step="agreement",
                            next_step="deployment_arch")
 
 
@@ -203,6 +205,7 @@ def deployment_arch():
                            form=form,
                            current_step=3,
                            template="deployment_arch",
+                           prev_step="gluu_version",
                            next_step="gluu_namespace")
 
 
@@ -226,6 +229,7 @@ def gluu_namespace():
                            form=form,
                            current_step=4,
                            template="gluu_namespace",
+                           prev_step="deployment_arch",
                            next_step="optional_services")
 
 
@@ -356,6 +360,7 @@ def gluu_gateway():
                            form=form,
                            current_step=6,
                            template="gluu_gateway",
+                           prev_step="optional_services",
                            next_step="install_jackrabbit")
 
 
@@ -466,6 +471,7 @@ def setting():
                            form=form,
                            current_step=8,
                            template="settings",
+                           prev_step="install_jackrabbit",
                            next_step="cache_type")
 
 
@@ -502,6 +508,7 @@ def app_volume_type():
                            form=form,
                            current_step=9,
                            template="app_volume_type",
+                           prev_step="setting",
                            next_step="cache_type")
 
 
@@ -518,11 +525,16 @@ def couchbase_multi_cluster():
     if request.method == "GET":
         form = populate_form_data(form)
 
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "setting"
+    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
+        prev_step = "app_volume_type"
+
     return render_template("index.html",
                            form=form,
                            current_step=10,
                            template="couchbase_multi_cluster",
-                           prev_step="setting",
+                           prev_step=prev_step,
                            next_step="cache_type")
 
 
@@ -569,10 +581,18 @@ def cache_type():
         form.redis = populate_form_data(form.redis)
         form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
 
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "setting"
+    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
+        prev_step = "app_volume_type"
+    elif settings.get("DEPLOY_MULTI_CLUSTER"):
+        prev_step = "couchbase_multi_cluster"
+
     return render_template("index.html",
                            form=form,
                            current_step=11,
                            template="cache_type",
+                           prev_step=prev_step,
                            next_step="couchbase")
 
 
@@ -739,11 +759,23 @@ def backup():
     if request.method == "GET":
         form = populate_form_data(form)
 
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "setting"
+    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
+        prev_step = "app_volume_type"
+    elif settings.get("DEPLOY_MULTI_CLUSTER"):
+        prev_step = "couchbase_multi_cluster"
+    elif settings.get("INSTALL_COUCHBASE"):
+        prev_step = "couchbase"
+    elif settings.get("NUMBER_OF_EXPECTED_USERS"):
+        prev_step = "couchbase_calculator"
+
     return render_template("index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=14,
                            template="backup",
+                           prev_step=prev_step,
                            next_step="config")
 
 
@@ -786,11 +818,25 @@ def config():
         form.admin_pw_confirm.data = settings.get("ADMIN_PW")
         form.ldap_pw_confirm.data = settings.get("LDAP_PW")
 
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "setting"
+    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
+        prev_step = "app_volume_type"
+    elif settings.get("DEPLOY_MULTI_CLUSTER"):
+        prev_step = "couchbase_multi_cluster"
+    elif settings.get("INSTALL_COUCHBASE"):
+        prev_step = "couchbase"
+    elif settings.get("NUMBER_OF_EXPECTED_USERS"):
+        prev_step = "couchbase_calculator"
+    elif settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE") or settings.get("LDAP_BACKUP_SCHEDULE"):
+        prev_step = "backup"
+
     return render_template("index.html",
                            settings=settings.db,
                            form=form,
                            current_step=15,
                            template="config",
+                           prev_step=prev_step,
                            next_step="image_name_tag")
 
 
@@ -815,6 +861,7 @@ def image_name_tag():
                            form=form,
                            current_step=16,
                            template="image_name_tag",
+                           prev_step="config",
                            next_step="replicas")
 
 
@@ -843,6 +890,7 @@ def replicas():
                            form=form,
                            current_step=17,
                            template="replicas",
+                           prev_step="image_name_tag",
                            next_step="storage")
 
 
@@ -861,6 +909,7 @@ def storage():
                            form=form,
                            current_step=18,
                            template="storage",
+                           prev_step="replicas",
                            next_step="setting_summary")
 
 
