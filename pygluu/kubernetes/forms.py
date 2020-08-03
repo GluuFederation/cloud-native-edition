@@ -51,7 +51,7 @@ app_volume_types = {
     }
 }
 
-ldap_volumes = {
+volume_types = {
     "aks": {
         "label": "Azure Options",
         "choices": [("Standard_LRS", "Standard_LRS"),
@@ -342,10 +342,11 @@ class SettingForm(FlaskForm):
 class VolumeTypeForm(FlaskForm):
 
     if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
-        ldap_volume = ldap_volumes[settings.get("DEPLOYMENT_ARCH")]
+        ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
         ldap_jackrabbit_volume_label = ldap_volume["label"]
         ldap_jackrabbit_volume_choices = ldap_volume["choices"]
         ldap_jackrabbit_volume_validators = [DataRequired()]
+        ldap_jackrabbit_volume_render_kw = {}
     else:
         ldap_jackrabbit_volume_label = ""
         ldap_jackrabbit_volume_choices = []
@@ -504,37 +505,38 @@ class CouchbaseCalculatorForm(FlaskForm):
     using_scim_flow = RadioField("Will you be using the SCIM flow",
                                  choices=[("Y", "Yes"), ("N", "No")],
                                  default="Y")
-    expected_transaction_per_sec = IntegerField(
-        "Expected transactions per second",
-        default=2000)
-    couchbase_data_nodes = IntegerField(
+    expected_transaction_per_sec = StringField("Expected transactions per second",
+                                                default=2000)
+    couchbase_data_nodes = StringField(
         "Please enter the number of data nodes. (auto-calculated)",
         default="")
-    couchbase_index_nodes = IntegerField(
+    couchbase_index_nodes = StringField(
         "Please enter the number of index nodes. (auto-calculated)",
         default="")
-    couchbase_query_nodes = IntegerField(
+    couchbase_query_nodes = StringField(
         "Please enter the number of query nodes. (auto-calculated)",
         default="")
-    couchbase_search_eventing_analytics_nodes = IntegerField(
+    couchbase_search_eventing_analytics_nodes = StringField(
         "Please enter the number of search,eventing and analytics nodes. (auto-calculated)",
         default="")
-    chouchbase_general_storage = IntegerField(
+    couchbase_general_storage = StringField(
         "Please enter the general storage size used for couchbase. (auto-calculated)",
         default="")
-    couchbase_data_storage = IntegerField(
+    couchbase_data_storage = StringField(
         "Please enter the data storage size used for couchbase. (auto-calculated)",
         default="")
-    couchbase_index_storage = IntegerField(
+    couchbase_index_storage = StringField(
         "Please enter the index node storage size used for couchbase. (auto-calculated)",
         default="")
-    couchbase_query_storage = IntegerField(
+    couchbase_query_storage = StringField(
         "Please enter the data storage size used for couchbase. (auto-calculated)",
         default="")
-    couchbase_analytics_storage = IntegerField(
+    couchbase_analytics_storage = StringField(
         "Please enter the analytics node storage size used for couchbase. (auto-calculated)",
         default="")
-    couchbase_volume_type = RadioField()
+    couchbase_volume_type = RadioField("Please select the volume type.",
+                                       choices=[],
+                                       validators=[Optional()])
 
 
 class CouchbaseBackupForm(FlaskForm):

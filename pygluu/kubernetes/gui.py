@@ -26,7 +26,8 @@ from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
     SettingForm, VolumeTypeForm, CacheTypeForm, CouchbaseMultiClusterForm, \
     CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, \
-    LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm
+    LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm, \
+    volume_types
 
 from .settingdb import SettingDB
 
@@ -677,8 +678,40 @@ def couchbase():
                            form=form,
                            current_step=12,
                            template="couchbase",
+                           prev_step="couchbase_multi_cluster",
                            next_step="config")
 
+@app.route("/couchbase-calculator", methods=["GET", "POST"])
+def couchbase_calculator():
+
+    form = CouchbaseCalculatorForm()
+
+    if form.validate_on_submit():
+        data = {}
+        for field in form:
+            if field.name == "csrf_token":
+                continue
+            data[field.name.upper()] = field.data
+
+        settings.update(data)
+
+        if settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+            return redirect(url_for("backup"))
+
+        return redirect(url_for(request.form["next_step"]))
+
+    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+            not settings.get("COUCHBASE_VOLUME_TYPE"):
+        volume_type = volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.couchbase_volume_type.choices = volume_type["choices"]
+        form.couchbase_volume_type.validators = [DataRequired()]
+
+    return render_template("index.html",
+                           form=form,
+                           current_step=13,
+                           template="couchbase_calculator",
+                           prev_step="couchbase",
+                           next_step="config")
 
 @app.route("/backup", methods=["GET", "POST"])
 def backup():
