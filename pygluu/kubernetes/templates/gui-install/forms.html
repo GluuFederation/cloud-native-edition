@@ -1,6 +1,6 @@
-{% macro text(field) %}
+{% macro text(field, hidden=False) %}
   {% set validation = "is-invalid" if field.errors else "" %}
-  <div class="form-group">
+  <div class="form-group {{ 'collapse' if hidden else '' }}">
     {{ field.label(class_="col-form-label") }}
     {{ field(class_="form-control col-sm-5 " + validation) }}
     <small class="form-text text-muted">{{ field.description }}</small>
