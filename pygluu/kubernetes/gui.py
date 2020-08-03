@@ -88,7 +88,6 @@ static_files = ["/favicon.ico",
 
 settings = SettingDB()
 
-
 @app.before_request
 def initialize():
     """
@@ -619,7 +618,7 @@ def couchbase():
         else:
             data["COUCHBASE_CRT"] = ""
 
-        data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] =  form.couchbase_cluster_file_override.data
+        data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] = form.couchbase_cluster_file_override.data
         if data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
 
             for file in form.couchbase_cluster_files.data:
