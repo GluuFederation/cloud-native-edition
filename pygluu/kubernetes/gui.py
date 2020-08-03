@@ -671,10 +671,10 @@ def couchbase():
         if settings.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
                 settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
                 settings.get("INSTALL_COUCHBASE") == "Y":
-            next_step = "coucbase_calculator"
+            return redirect(url_for("couchbase_calculator"))
 
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-            next_step = "backup"
+            return redirect(url_for("backup"))
 
         return redirect(url_for(next_step))
 
