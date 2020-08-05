@@ -773,35 +773,26 @@ class ImageNameTagForm(FlaskForm):
 
 class ReplicasForm(FlaskForm):
     oxauth_replicas = IntegerField("Number of oxAuth replicas", default=1)
-
-    if settings.get("ENABLE_FIDO2") == "Y":
-        fido_replicas = IntegerField("Number of fido2 replicas", default=1)
-
-    if settings.get("ENABLE_SCIM") == "Y":
-        scim_replicas = IntegerField("Number of scim replicas", default=1)
-
+    fido2_replicas = IntegerField("Number of fido2 replicas", default=1,
+                                 render_kw={"disabled": "disabled"})
+    scim_replicas = IntegerField("Number of scim replicas", default=1,
+                                 render_kw={"disabled": "disabled"})
     oxtrust_replicas = IntegerField("Number of oxTrust replicas", default=1)
-
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        ldap_replicas = IntegerField("Number of LDAP replicas", default=1)
-
-    if settings.get("ENABLE_OXSHIBBOLETH") == "Y":
-        oxshibboleth_replicas = IntegerField("Number of oxShibboleth replicas",
-                                             default=1)
-
-    if settings.get("ENABLE_OXPASSPORT") == "Y":
-        oxpassport_replicas = IntegerField("Number of oxPassport replicas",
-                                           default=1)
-
-    if settings.get("ENABLE_OXD") == "Y":
-        oxd_server_replicas = IntegerField("Number of oxd-server replicas",
-                                           default=1)
-
-    if settings.get("ENABLE_CASA") == "Y":
-        casa_replicas = IntegerField("Number of Casa replicas", default=1)
-
-    if settings.get("ENABLE_RADIUS") == "Y":
-        radius_replicas = IntegerField("Number of Radius replicas", default=1)
+    ldap_replicas = IntegerField("Number of LDAP replicas", default=1,
+                                 render_kw={"disabled": "disabled"})
+    oxshibboleth_replicas = IntegerField("Number of oxShibboleth replicas",
+                                         default=1,
+                                         render_kw={"disabled": "disabled"})
+    oxpassport_replicas = IntegerField("Number of oxPassport replicas",
+                                       default=1,
+                                       render_kw={"disabled": "disabled"})
+    oxd_server_replicas = IntegerField("Number of oxd-server replicas",
+                                       default=1,
+                                       render_kw={"disabled": "disabled"})
+    casa_replicas = IntegerField("Number of Casa replicas", default=1,
+                                 render_kw={"disabled": "disabled"})
+    radius_replicas = IntegerField("Number of Radius replicas", default=1,
+                                   render_kw={"disabled": "disabled"})
 
 
 class StorageForm(FlaskForm):

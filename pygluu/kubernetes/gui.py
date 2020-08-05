@@ -889,6 +889,7 @@ def image_name_tag():
 @app.route("/replicas", methods=["POST", "GET"])
 def replicas():
     form = ReplicasForm()
+
     if form.validate_on_submit():
         data = {}
         for field in form:
@@ -906,6 +907,22 @@ def replicas():
 
     if request.method == "GET":
         form = populate_form_data(form)
+        if settings.get("ENABLE_FIDO2") == "Y":
+            form.fido2_replicas.render_kw = {}
+        if settings.get("ENABLE_SCIM") == "Y":
+            form.scim_replicas.render_kw = {}
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            form.ldap_replicas.render_kw = {}
+        if settings.get("ENABLE_OXSHIBBOLETH") == "Y":
+            form.oxshibboleth_replicas.render_kw = {}
+        if settings.get("ENABLE_OXPASSPORT") == "Y":
+            form.oxpassport_replicas.render_kw = {}
+        if settings.get("ENABLE_OXD") == "Y":
+            form.oxd_server_replicas.render_kw = {}
+        if settings.get("ENABLE_CASA") == "Y":
+            form.casa_replicas.render_kw = {}
+        if settings.get("ENABLE_RADIUS") == "Y":
+            form.radius_replicas.render_kw = {}
 
     return render_template("index.html",
                            form=form,
