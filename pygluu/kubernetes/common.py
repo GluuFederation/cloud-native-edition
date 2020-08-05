@@ -172,10 +172,9 @@ def get_supported_versions():
         return versions, version_number
 
 
-def prompt_password(password):
+def generate_password():
     """
     Returns randomly generated password,
-    :param password: string for the prompt name
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
@@ -184,21 +183,30 @@ def prompt_password(password):
     chars = chars.replace("$", "")
     chars = chars.replace("/", "")
     chars = chars.replace("!", "")
+
     while True:
-        while True:
-            random_password = ''.join(random.choice(chars) for _ in range(6))
-            regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
-            if regex_bool:
-                break
+        password = ''.join(random.choice(chars) for _ in range(6))
+        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)
+        if regex_bool:
+            break
 
-        if password == "Redis":
-            random_password = ''
+    return password
 
-        string_random_password = random_password[:1] + "***" + random_password[4:]
+
+def prompt_password(password):
+    """
+    Prompt password and password confirmation,
+    :param password: string for the prompt name
+    :return:
+    """
+    while True:
+        random_password = "" if password == "Redis" else generate_password()
+        string_random_password = '' if not random_password  else random_password[:1] + "***" + random_password[4:]
         pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
         if not pw_prompt:
             pw_prompt = random_password
             confirm_pw_prompt = random_password
+            regex_bool = True
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             regex_bool = True

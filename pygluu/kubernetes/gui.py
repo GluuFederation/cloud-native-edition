@@ -20,7 +20,7 @@ from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
-from .common import get_supported_versions, exec_cmd
+from .common import get_supported_versions, exec_cmd, generate_password
 from .kubeapi import Kubernetes
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
@@ -352,8 +352,17 @@ def gluu_gateway():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        form.kong_pg_password_confirm.data = settings.get("KONG_PG_PASSWORD")
-        form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
+        #populate password suggaestion
+        if not settings.get("KONG_PG_PASSWORD"):
+            form.kong_pg_password_confirm.data = form.kong_pg_password.data = generate_password()
+        else:
+            form.kong_pg_password_confirm.data = settings.get("KONG_PG_PASSWORD")
+
+        if not settings.get("GLUU_GATEWAY_UI_PG_PASSWORD"):
+            form.gluu_gateway_ui_pg_password.data = \
+                form.gluu_gateway_ui_pg_password_confirm.data = generate_password()
+        else:
+            form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
     return render_template("index.html",
                            form=form,
@@ -679,20 +688,25 @@ def couchbase():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        form.couchbase_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
 
-    if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        form.couchbase_use_low_resources.validators = [Optional()]
-        form.couchbase_use_low_resources.data = "Y"
-    else:
-        form.couchbase_use_low_resources.validators = [DataRequired()]
+        if not settings.get("COUCHBASE_PASSWORD"):
+            form.couchbase_password.data = \
+                form.couchbase_password_confirmation.data = generate_password()
+        else:
+            form.couchbase_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
 
-    if not custom_cb_ca_crt.exists() or \
-            not custom_cb_crt.exists() and not custom_cb_key.exists():
-        form.couchbase_cn.validators = [InputRequired()]
-    else:
-        form.couchbase_cn.validators = [Optional()]
-        form.couchbase_cn.render_kw = {"disabled": "disabled"}
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            form.couchbase_use_low_resources.validators = [Optional()]
+            form.couchbase_use_low_resources.data = "Y"
+        else:
+            form.couchbase_use_low_resources.validators = [DataRequired()]
+
+        if not custom_cb_ca_crt.exists() or \
+                not custom_cb_crt.exists() and not custom_cb_key.exists():
+            form.couchbase_cn.validators = [InputRequired()]
+        else:
+            form.couchbase_cn.validators = [Optional()]
+            form.couchbase_cn.render_kw = {"disabled": "disabled"}
 
     return render_template("index.html",
                            form=form,
@@ -807,16 +821,23 @@ def config():
 
         return redirect(url_for(request.form["next_step"]))
 
-    if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        form.is_gluu_fqdn_registered.validators = [Optional()]
-        form.is_gluu_fqdn_registered.data = "N"
-    else:
-        form.is_gluu_fqdn_registered.validators = [DataRequired()]
-
     if request.method == "GET":
         form = populate_form_data(form)
-        form.admin_pw_confirm.data = settings.get("ADMIN_PW")
-        form.ldap_pw_confirm.data = settings.get("LDAP_PW")
+        if not settings.get("ADMIN_PW"):
+            form.admin_pw.data = form.admin_pw_confirm.data = generate_password()
+        else:
+            form.admin_pw_confirm.data = settings.get("ADMIN_PW")
+
+        if not settings.get("LDAP_PW"):
+            form.ldap_pw.data = form.ldap_pw_confirm.data = generate_password()
+        else:
+            form.ldap_pw_confirm.data = settings.get("LDAP_PW")
+
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            form.is_gluu_fqdn_registered.validators = [Optional()]
+            form.is_gluu_fqdn_registered.data = "N"
+        else:
+            form.is_gluu_fqdn_registered.validators = [DataRequired()]
 
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "setting"
