@@ -168,8 +168,7 @@
 
         $('#validate-ip').on('click', function(){
           ValidateIP($('#host_ext_ip').val()).then(function(data){
-
-           if(data.status){
+            if(data.status){
               $('#host_ext_ip').removeClass('is-invalid');
               $('#host_ext_ip').addClass('is-valid');
               $('#host_ext_ip').closest('.form-group').find('.feedback').removeClass('invalid-feedback');
@@ -182,6 +181,15 @@
               $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('invalid-feedback').html(data.message);
             }
           });
+        });
+
+        $('input[name="test_environment"]').on('change', function(){
+          console.log($(this).val());
+          if($(this).val() == 'Y'){
+            $('.alert').collapse('show');
+          }else{
+            $('.alert').collapse('hide');
+          }
         });
 
         $('input[name="persistence_backend"]').on('change', function(){
