@@ -244,7 +244,9 @@ class GluuGatewayForm(FlaskForm):
         "Kong Postgress Password",
         widget=PasswordInput(hide_value=False),
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                    password_requirement_check])
+                    password_requirement_check],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
     kong_pg_password_confirm = StringField(
         "Kong Postgress Password Confirmation",
         widget=PasswordInput(hide_value=False),
@@ -263,7 +265,9 @@ class GluuGatewayForm(FlaskForm):
         "Gluu Gateway UI postgres password",
         widget=PasswordInput(hide_value=False),
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                    password_requirement_check])
+                    password_requirement_check],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
     gluu_gateway_ui_pg_password_confirm = StringField(
         "Gluu Gateway UI postgres password confirmation",
         widget=PasswordInput(hide_value=False),
@@ -480,10 +484,12 @@ class CouchbaseForm(FlaskForm):
     couchbase_user = StringField("Please enter couchbase username",
                                  default="admin",
                                  validators=[InputRequired()])
-    couchbase_password = StringField("Couchbase password",
-                                     widget=PasswordInput(hide_value=False),
-                                     validators=[InputRequired(),
-                                                 password_requirement_check])
+    couchbase_password = StringField(
+        "Couchbase password",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(), password_requirement_check],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
     couchbase_password_confirmation = PasswordField(
         "Couchbase password confirm",
         widget=PasswordInput(hide_value=False),
@@ -582,16 +588,22 @@ class ConfigForm(FlaskForm):
     org_name = StringField("Organization",
                            default="Gluu",
                            validators=[InputRequired()])
-    admin_pw = StringField("oxTrust Password",
-                           widget=PasswordInput(hide_value=False),
-                           validators=[InputRequired(),
-                                       password_requirement_check])
+    admin_pw = StringField(
+        "oxTrust Password",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(),
+                    password_requirement_check],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
     admin_pw_confirm = StringField(
         "oxTrust Password Confirm",
         widget=PasswordInput(hide_value=False),
         validators=[EqualTo("admin_pw")])
-    ldap_pw = StringField("LDAP Password",
-                          widget=PasswordInput(hide_value=False))
+    ldap_pw = StringField(
+        "LDAP Password",
+        widget=PasswordInput(hide_value=False),
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
     ldap_pw_confirm = StringField("LDAP Password Confirm",
                                   widget=PasswordInput(hide_value=False),
                                   validators=[EqualTo("ldap_pw")])
