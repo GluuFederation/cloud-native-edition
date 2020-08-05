@@ -70,6 +70,7 @@ def get_docker_repo_tag(org, repo):
     exec_get_repo_tag_curl_command = ["curl", "-s",
                                       "https://hub.docker.com/v2/repositories/{}/{}/tags/?page_size=100".format(org,
                                                                                                                 repo)]
+    stdout, stderr, retcode = None, None, None
     try:
         stdout, stderr, retcode = exec_cmd(" ".join(exec_get_repo_tag_curl_command))
 
