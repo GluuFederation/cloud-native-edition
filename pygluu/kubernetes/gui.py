@@ -877,35 +877,35 @@ def image_name_tag():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        if settings.get("ENABLE_CASA") == "Y":
-            form.casa_image_name.render_kw = {}
-            form.casa_image_tag.render_kw = {}
-        if settings.get("ENABLE_CACHE_REFRESH") == "Y":
-            form.cache_refresh_rotate_image_name.render_kw = {}
-            form.cache_refresh_rotate_image_tag.render_kw = {}
-        if settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
-            form.cert_manager_image_name.render_kw = {}
-            form.cert_manager_image_tag.render_kw = {}
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-            form.ldap_image_name.render_kw = {}
-            form.ldap_image_tag.render_kw = {}
-        if settings.get("ENABLE_OXD") == "Y":
-            form.oxd_image_name.render_kw = {}
-            form.oxd_image_tag.render_kw = {}
-        if settings.get("ENABLE_OXPASSPORT") == "Y":
-            form.oxpassport_image_name.render_kw = {}
-            form.oxpassport_image_tag.render_kw = {}
-        if settings.get("ENABLE_OXSHIBBOLETH") == "Y":
-            form.oxshibboleth_image_name.render_kw = {}
-            form.oxshibboleth_image_tag.render_kw = {}
-        if settings.get("ENABLE_RADIUS") == "Y":
-            form.radius_image_name.render_kw = {}
-            form.radius_image_tag.render_kw = {}
-        if settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-            form.gluu_gateway_image_name.render_kw = {}
-            form.gluu_gateway_image_tag.render_kw = {}
-            form.gluu_gateway_ui_image_name.render_kw = {}
-            form.gluu_gateway_ui_image_tag.render_kw = {}
+        if settings.get("ENABLE_CASA") == "N":
+            del form.casa_image_name
+            del form.casa_image_tag
+        if settings.get("ENABLE_CACHE_REFRESH") == "N":
+            del form.cache_refresh_rotate_image_name
+            del form.cache_refresh_rotate_image_tag
+        if settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
+            del form.cert_manager_image_name
+            del form.cert_manager_image_tag
+        if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+            del form.ldap_image_name
+            del form.ldap_image_tag
+        if settings.get("ENABLE_OXD") == "N":
+            del form.oxd_image_name
+            del form.oxd_image_tag
+        if settings.get("ENABLE_OXPASSPORT") == "N":
+            del form.oxpassport_image_name
+            del form.oxpassport_image_tag
+        if settings.get("ENABLE_OXSHIBBOLETH") == "N":
+            del form.oxshibboleth_image_name
+            del form.oxshibboleth_image_tag
+        if settings.get("ENABLE_RADIUS") == "N":
+            del form.radius_image_name
+            del form.radius_image_tag
+        if settings.get("INSTALL_GLUU_GATEWAY") == "N":
+            del form.gluu_gateway_image_name
+            del form.gluu_gateway_image_tag
+            del form.gluu_gateway_ui_image_name
+            del form.gluu_gateway_ui_image_tag
 
     return render_template("index.html",
                            form=form,
@@ -936,22 +936,22 @@ def replicas():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        if settings.get("ENABLE_FIDO2") == "Y":
-            form.fido2_replicas.render_kw = {}
-        if settings.get("ENABLE_SCIM") == "Y":
-            form.scim_replicas.render_kw = {}
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-            form.ldap_replicas.render_kw = {}
-        if settings.get("ENABLE_OXSHIBBOLETH") == "Y":
-            form.oxshibboleth_replicas.render_kw = {}
-        if settings.get("ENABLE_OXPASSPORT") == "Y":
-            form.oxpassport_replicas.render_kw = {}
-        if settings.get("ENABLE_OXD") == "Y":
-            form.oxd_server_replicas.render_kw = {}
-        if settings.get("ENABLE_CASA") == "Y":
-            form.casa_replicas.render_kw = {}
-        if settings.get("ENABLE_RADIUS") == "Y":
-            form.radius_replicas.render_kw = {}
+        if settings.get("ENABLE_FIDO2") == "N":
+            del form.fido2_replicas
+        if settings.get("ENABLE_SCIM") == "N":
+            del form.scim_replicas
+        if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+            del form.ldap_replicas
+        if settings.get("ENABLE_OXSHIBBOLETH") == "N":
+            del form.oxshibboleth_replicas
+        if settings.get("ENABLE_OXPASSPORT") == "N":
+            del form.oxpassport_replicas
+        if settings.get("ENABLE_OXD") == "N":
+            del form.oxd_server_replicas
+        if settings.get("ENABLE_CASA") == "N":
+            del form.casa_replicas
+        if settings.get("ENABLE_RADIUS") == "N":
+            del form.radius_replicas
 
     return render_template("index.html",
                            form=form,

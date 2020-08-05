@@ -642,13 +642,11 @@ class ImageNameTagForm(FlaskForm):
     casa_image_name = StringField(
         "Casa image name",
         default=settings.get("CASA_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     casa_image_tag = StringField(
         "Casa image tag",
         default=settings.get("CASA_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     config_image_name = StringField(
         "Config image name",
         default=settings.get("CONFIG_IMAGE_NAME"),
@@ -660,33 +658,27 @@ class ImageNameTagForm(FlaskForm):
     cache_refresh_rotate_image_name = StringField(
         "CR-rotate image name",
         default=settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cache_refresh_rotate_image_tag = StringField(
         "CR-rotate image tag",
         default=settings.get("CACHE_REFRESH_ROTATE_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cert_manager_image_name = StringField(
         "Key rotate image name",
         default=settings.get("CERT_MANAGER_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cert_manager_image_tag = StringField(
         "Key rotate image tag",
         default=settings.get("CERT_MANAGER_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_name = StringField(
         "WrenDS image name",
         default=settings.get("LDAP_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_tag = StringField(
         "WrenDS image tag",
         default=settings.get("LDAP_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     jackrabbit_image_name = StringField(
         "Jackrabbit image name",
         default=settings.get("JACKRABBIT_IMAGE_NAME"),
@@ -706,18 +698,15 @@ class ImageNameTagForm(FlaskForm):
     oxd_image_name = StringField(
         "Oxd Server image name",
         default=settings.get("OXD_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxd_image_tag = StringField(
         "Oxd Server image tag",
         default=settings.get("OXD_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxpassport_image_name = StringField(
         "oxPassport image name",
         default=settings.get("OXPASSPORT_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxpassport_image_tag = StringField(
         "oxPassport image tag",
         default=settings.get("OXPASSPORT_IMAGE_TAG"),
@@ -725,13 +714,11 @@ class ImageNameTagForm(FlaskForm):
     oxshibboleth_image_name = StringField(
         "oxShibboleth image name",
         default=settings.get("OXSHIBBOLETH_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxshibboleth_image_tag = StringField(
         "oxShibboleth image tag",
         default=settings.get("OXSHIBBOLETH_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxtrust_image_name = StringField(
         "oxTrust image name",
         default=settings.get("OXTRUST_IMAGE_NAME"),
@@ -751,57 +738,43 @@ class ImageNameTagForm(FlaskForm):
     radius_image_name = StringField(
         "Radius image name",
         default=settings.get("RADIUS_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     radius_image_tag = StringField(
         "Radius image tag",
         default=settings.get("RADIUS_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_image_name = StringField(
         "Gluu-Gateway image name",
         default=settings.get("GLUU_GATEWAY_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_image_tag = StringField(
         "Gluu-Gateway image tag",
         default=settings.get("GLUU_GATEWAY_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_ui_image_name = StringField(
         "Gluu-Gateway-UI image name",
         default=settings.get("GLUU_GATEWAY_IMAGE_NAME"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_ui_image_tag = StringField(
         "Gluu-Gateway-UI image tag",
         default=settings.get("GLUU_GATEWAY_IMAGE_TAG"),
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")],
-        render_kw={"disabled": "disabled"})
+        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
 
 
 class ReplicasForm(FlaskForm):
     oxauth_replicas = IntegerField("Number of oxAuth replicas", default=1)
-    fido2_replicas = IntegerField("Number of fido2 replicas", default=1,
-                                 render_kw={"disabled": "disabled"})
-    scim_replicas = IntegerField("Number of scim replicas", default=1,
-                                 render_kw={"disabled": "disabled"})
+    fido2_replicas = IntegerField("Number of fido2 replicas", default=1)
+    scim_replicas = IntegerField("Number of scim replicas", default=1)
     oxtrust_replicas = IntegerField("Number of oxTrust replicas", default=1)
-    ldap_replicas = IntegerField("Number of LDAP replicas", default=1,
-                                 render_kw={"disabled": "disabled"})
+    ldap_replicas = IntegerField("Number of LDAP replicas", default=1)
     oxshibboleth_replicas = IntegerField("Number of oxShibboleth replicas",
-                                         default=1,
-                                         render_kw={"disabled": "disabled"})
+                                         default=1)
     oxpassport_replicas = IntegerField("Number of oxPassport replicas",
-                                       default=1,
-                                       render_kw={"disabled": "disabled"})
+                                       default=1)
     oxd_server_replicas = IntegerField("Number of oxd-server replicas",
-                                       default=1,
-                                       render_kw={"disabled": "disabled"})
-    casa_replicas = IntegerField("Number of Casa replicas", default=1,
-                                 render_kw={"disabled": "disabled"})
-    radius_replicas = IntegerField("Number of Radius replicas", default=1,
-                                   render_kw={"disabled": "disabled"})
+                                       default=1)
+    casa_replicas = IntegerField("Number of Casa replicas", default=1)
+    radius_replicas = IntegerField("Number of Radius replicas", default=1)
 
 
 class StorageForm(FlaskForm):
