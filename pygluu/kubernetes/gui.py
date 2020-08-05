@@ -877,6 +877,35 @@ def image_name_tag():
 
     if request.method == "GET":
         form = populate_form_data(form)
+        if settings.get("ENABLE_CASA") == "Y":
+            form.casa_image_name.render_kw = {}
+            form.casa_image_tag.render_kw = {}
+        if settings.get("ENABLE_CACHE_REFRESH") == "Y":
+            form.cache_refresh_rotate_image_name.render_kw = {}
+            form.cache_refresh_rotate_image_tag.render_kw = {}
+        if settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
+            form.cert_manager_image_name.render_kw = {}
+            form.cert_manager_image_tag.render_kw = {}
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            form.ldap_image_name.render_kw = {}
+            form.ldap_image_tag.render_kw = {}
+        if settings.get("ENABLE_OXD") == "Y":
+            form.oxd_image_name.render_kw = {}
+            form.oxd_image_tag.render_kw = {}
+        if settings.get("ENABLE_OXPASSPORT") == "Y":
+            form.oxpassport_image_name.render_kw = {}
+            form.oxpassport_image_tag.render_kw = {}
+        if settings.get("ENABLE_OXSHIBBOLETH") == "Y":
+            form.oxshibboleth_image_name.render_kw = {}
+            form.oxshibboleth_image_tag.render_kw = {}
+        if settings.get("ENABLE_RADIUS") == "Y":
+            form.radius_image_name.render_kw = {}
+            form.radius_image_tag.render_kw = {}
+        if settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            form.gluu_gateway_image_name.render_kw = {}
+            form.gluu_gateway_image_tag.render_kw = {}
+            form.gluu_gateway_ui_image_name.render_kw = {}
+            form.gluu_gateway_ui_image_tag.render_kw = {}
 
     return render_template("index.html",
                            form=form,
