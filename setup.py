@@ -79,6 +79,9 @@ setup(
     ],
     include_package_data=True,
     entry_points={
-        "console_scripts": ["pygluu-kubernetes=pygluu.kubernetes.create:main"],
+        "console_scripts": [
+            "pygluu-kubernetes=pygluu.kubernetes.create:main",
+            "pygluu-kubernetes-gui=pygluu.kubernetes.gui.app:main",
+        ],
     },
 )
