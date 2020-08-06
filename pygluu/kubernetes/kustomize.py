@@ -496,7 +496,7 @@ class Kustomize(object):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # oxdserver
-        if "oxd-server" in app_file:
+        if self.settings["ENABLE_OXD"] == "Y":
             configmap_parser["data"]["GLUU_OXD_APPLICATION_CERT_CN"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
             configmap_parser["data"]["GLUU_OXD_ADMIN_CERT_CN"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
         # casa
