@@ -10,8 +10,8 @@ from wtforms.validators import DataRequired, InputRequired, \
     EqualTo, URL, IPAddress, Email, Required, ValidationError, \
     Optional
 from wtforms.widgets import PasswordInput
-from .common import get_supported_versions
-from .settingdb import SettingDB
+from pygluu.kubernetes.common import get_supported_versions
+from pygluu.kubernetes.settingdb import SettingDB
 settings = SettingDB()
 
 app_volume_types = {

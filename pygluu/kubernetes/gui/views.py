@@ -20,8 +20,10 @@ from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
-from .common import get_supported_versions, exec_cmd, generate_password
-from .kubeapi import Kubernetes
+from pygluu.kubernetes.common import get_supported_versions, exec_cmd, generate_password
+from pygluu.kubernetes.kubeapi import Kubernetes
+from pygluu.kubernetes.settingdb import SettingDB
+
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
     SettingForm, VolumeTypeForm, CacheTypeForm, CouchbaseMultiClusterForm, \
@@ -29,24 +31,7 @@ from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm, \
     volume_types
 
-from .settingdb import SettingDB
-
-# app = Flask(__name__, template_folder="templates/gui-install")
-wizard = Blueprint('wizard', __name__,
-                            template_folder="templates/gui-install")
-# cfg = "pygluu.kubernetes.gui_config.ProductionConfig"
-# cfg = "pygluu.kubernetes.gui_config.DevelopmentConfig"
-# app_mode = os.environ.get("FLASK_ENV")
-# if app_mode == "production":
-#
-# elif app_mode == "testing":
-#     cfg = "pygluu.kubernetes.gui_config.TestingConfig"
-
-# app.config.from_object(cfg)
-
-# csrf = CSRFProtect()
-# csrf.init_app(app)
-
+wizard = Blueprint('wizard', __name__, template_folder="templates")
 wizard_steps = ["License",
                 "Gluu version",
                 "Deployment architecture",
@@ -106,31 +91,31 @@ def inject_wizard_steps():
 
 @wizard.route('/favicon.ico')
 def favicon():
-    return send_from_directory(Path("templates/gui-install/static"),
+    return send_from_directory(Path("templates/static"),
                                'favicon.ico')
 
 
 @wizard.route('/styles.css')
 def styles():
-    return send_from_directory(Path("templates/gui-install/static"),
+    return send_from_directory(Path("templates/static"),
                                'styles.css')
 
 
 @wizard.route('/green-logo.svg')
 def logo():
-    return send_from_directory(Path("templates/gui-install/static"),
+    return send_from_directory(Path("templates/static"),
                                'green-logo.svg')
 
 
 @wizard.route('/bootstrap.min.css')
 def bootstrap():
-    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
+    return send_from_directory(Path("templates/static/bootstrap/css"),
                                'bootstrap.min.css')
 
 
 @wizard.route('/bootstrap.min.css.map')
 def bootstrap_min_map():
-    return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
+    return send_from_directory(Path("templates/static/bootstrap/css"),
                                'bootstrap.min.css.map')
 
 
@@ -592,7 +577,7 @@ def cache_type():
         form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "setting"
+    prev_step = "wizard.setting"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
         prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):

@@ -3,15 +3,15 @@
 import argparse
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
-from .common import copy_templates
-from .gui_wizard import wizard
+from pygluu.kubernetes.common import copy_templates
+from .views import wizard
 
 
 def create_app():
     app = Flask(__name__)
 
     # set app config
-    cfg = "pygluu.kubernetes.gui_config.ProductionConfig"
+    cfg = "pygluu.kubernetes.gui.config.ProductionConfig"
     app.config.from_object(cfg)
 
     # init csrf

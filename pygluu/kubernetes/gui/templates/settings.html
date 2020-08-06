@@ -10,7 +10,7 @@
 {% endif %}
 
 {{ forms.text(form.host_ext_ip) }}
-<button type="button" id="validate-ip" class="btn btn-primary btn-sm collapse">validate IP</button>
+
 {% if settings["DEPLOYMENT_ARCH"] == "eks" %}
   <fieldset class="form-group">
     <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.aws_lb_type.label }}</h6>

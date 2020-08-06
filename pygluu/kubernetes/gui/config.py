@@ -1,3 +1,5 @@
+import os
+
 class Config(object):
     DEBUG = False
     TESTING = False
@@ -11,7 +13,7 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    SECRET_KEY = ""
+    SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 class TestingConfig(Config):
