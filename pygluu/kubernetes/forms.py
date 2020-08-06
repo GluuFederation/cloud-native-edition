@@ -127,7 +127,7 @@ class GluuVersionForm(FlaskForm):
 
 class DeploymentArchForm(FlaskForm):
     deployment_arch = RadioField(
-        "Deployment Arch",
+        "Deployment Architecture",
         choices=[
             ("microk8s", "Microk8s"),
             ("minikube", "MiniKube"),
@@ -155,7 +155,7 @@ class OptionalServiceForm(FlaskForm):
                                           choices=[("Y", "Yes"), ("N", "No")],
                                           default="N",
                                           validators=[DataRequired()])
-    oxauth_key_life = IntegerField(
+    oxauth_keys_life = IntegerField(
         "oxAuth keys life in hours",
         default=48,
         validators=[RequiredIfFieldEqualTo("enable_oxauth_key_rotate", "Y")])
@@ -167,7 +167,7 @@ class OptionalServiceForm(FlaskForm):
                                    choices=[("Y", "Yes"), ("N", "No")],
                                    default="N",
                                    validators=[DataRequired()])
-    enable_shibboleth = RadioField("Deploy Shibboleth SAML IDP",
+    enable_oxshibboleth = RadioField("Deploy Shibboleth SAML IDP",
                                    choices=[("Y", "Yes"), ("N", "No")],
                                    default="N",
                                    validators=[DataRequired()])

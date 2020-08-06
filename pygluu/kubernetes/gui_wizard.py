@@ -245,7 +245,7 @@ def optional_services():
         data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
         data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
         if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
-            data["OXAUTH_KEYS_LIFE"] = form.oxauth_key_life.data
+            data["OXAUTH_KEYS_LIFE"] = form.oxauth_keys_life.data
         else:
             data["OXAUTH_KEYS_LIFE"] = ""
 
@@ -261,7 +261,7 @@ def optional_services():
         else:
             data["ENABLE_OXPASSPORT_BOOLEAN"] = ""
 
-        data["ENABLE_OXSHIBBOLETH"] = form.enable_shibboleth.data
+        data["ENABLE_OXSHIBBOLETH"] = form.enable_oxshibboleth.data
         if data["ENABLE_OXSHIBBOLETH"] == "Y":
             data["ENABLE_SAML_BOOLEAN"] = "true"
         else:
