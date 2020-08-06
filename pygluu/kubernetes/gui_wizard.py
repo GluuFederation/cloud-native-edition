@@ -9,11 +9,11 @@ A GUI for installing Gluu Cloud Native Edition.
 import ipaddress
 import shutil
 import json
-import os
 import base64
 
 from pathlib import Path
-from flask import Flask, jsonify, make_response, render_template, \
+from flask import current_app
+from flask import Blueprint, Flask, jsonify, make_response, render_template, \
     request, redirect, url_for, send_from_directory
 
 from flask_wtf.csrf import CSRFProtect
@@ -31,19 +31,21 @@ from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
 
 from .settingdb import SettingDB
 
-app = Flask(__name__, template_folder="templates/gui-install")
+# app = Flask(__name__, template_folder="templates/gui-install")
+wizard = Blueprint('wizard', __name__,
+                            template_folder="templates/gui-install")
+# cfg = "pygluu.kubernetes.gui_config.ProductionConfig"
+# cfg = "pygluu.kubernetes.gui_config.DevelopmentConfig"
+# app_mode = os.environ.get("FLASK_ENV")
+# if app_mode == "production":
+#
+# elif app_mode == "testing":
+#     cfg = "pygluu.kubernetes.gui_config.TestingConfig"
 
-cfg = "pygluu.kubernetes.gui_config.DevelopmentConfig"
-app_mode = os.environ.get("FLASK_ENV")
-if app_mode == "production":
-    cfg = "pygluu.kubernetes.gui_config.ProductionConfig"
-elif app_mode == "testing":
-    cfg = "pygluu.kubernetes.gui_config.TestingConfig"
+# app.config.from_object(cfg)
 
-app.config.from_object(cfg)
-
-csrf = CSRFProtect()
-csrf.init_app(app)
+# csrf = CSRFProtect()
+# csrf.init_app(app)
 
 wizard_steps = ["License",
                 "Gluu version",
@@ -88,60 +90,58 @@ static_files = ["/favicon.ico",
 
 settings = SettingDB()
 
-@app.before_request
+@wizard.before_request
 def initialize():
     """
     check accepting license
     """
     if not settings.get("ACCEPT_GLUU_LICENSE") and \
             request.path != "/agreement" and request.path not in static_files:
-        return redirect(url_for("agreement"))
+        return redirect(url_for("wizard.agreement"))
 
-@app.context_processor
+@wizard.context_processor
 def inject_wizard_steps():
     return dict(wizard_steps=wizard_steps)
 
 
-@app.route('/favicon.ico')
+@wizard.route('/favicon.ico')
 def favicon():
     return send_from_directory(Path("templates/gui-install/static"),
                                'favicon.ico')
 
 
-@app.route('/styles.css')
+@wizard.route('/styles.css')
 def styles():
     return send_from_directory(Path("templates/gui-install/static"),
                                'styles.css')
 
 
-@app.route('/green-logo.svg')
+@wizard.route('/green-logo.svg')
 def logo():
     return send_from_directory(Path("templates/gui-install/static"),
                                'green-logo.svg')
 
 
-@app.route('/bootstrap.min.css')
+@wizard.route('/bootstrap.min.css')
 def bootstrap():
     return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
                                'bootstrap.min.css')
 
 
-@app.route('/bootstrap.min.css.map')
+@wizard.route('/bootstrap.min.css.map')
 def bootstrap_min_map():
     return send_from_directory(Path("templates/gui-install/static/bootstrap/css"),
                                'bootstrap.min.css.map')
 
 
-@app.route("/agreement", methods=["GET", "POST"])
+@wizard.route("/agreement", methods=["GET", "POST"])
 def agreement():
     """Input for Accepting license
     """
     form = LicenseForm()
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
-        previous_step = "agreement"
         settings.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
-        return redirect(url_for(next_step))
+        return redirect(url_for(request.form["next_step"]))
 
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
@@ -155,15 +155,16 @@ def agreement():
                            form=form,
                            current_step=1,
                            template="agreement",
-                           next_step="gluu_version")
+                           next_step="wizard.gluu_version")
 
 
-@app.route("/gluu_version", methods=["GET", "POST"])
+@wizard.route("/gluu-version", methods=["GET", "POST"])
 def gluu_version():
     """Input for Gluu versions
     """
     form = GluuVersionForm()
     versions, version_number = get_supported_versions()
+
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         settings.set("GLUU_VERSION", form.gluu_version.data)
@@ -179,11 +180,11 @@ def gluu_version():
                            form=form,
                            current_step=2,
                            template="gluu_version",
-                           prev_step="agreement",
-                           next_step="deployment_arch")
+                           prev_step="wizard.agreement",
+                           next_step="wizard.deployment_arch")
 
 
-@app.route("/deployment-arch", methods=["GET", "POST"])
+@wizard.route("/deployment-arch", methods=["GET", "POST"])
 def deployment_arch():
     """
     Input for the kubernetes infrastructure used.
@@ -197,18 +198,18 @@ def deployment_arch():
 
     if request.method == "GET":
         # populate form
-        if settings.get("DEPLOYMENT_ARCH"):
-            form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
+        form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
+
 
     return render_template("index.html",
                            form=form,
                            current_step=3,
                            template="deployment_arch",
-                           prev_step="gluu_version",
-                           next_step="gluu_namespace")
+                           prev_step="wizard.gluu_version",
+                           next_step="wizard.gluu_namespace")
 
 
-@app.route("/gluu-namespace", methods=["GET", "POST"])
+@wizard.route("/gluu-namespace", methods=["GET", "POST"])
 def gluu_namespace():
     """
     Input for gluu namespace.
@@ -228,11 +229,11 @@ def gluu_namespace():
                            form=form,
                            current_step=4,
                            template="gluu_namespace",
-                           prev_step="deployment_arch",
-                           next_step="optional_services")
+                           prev_step="wizard.deployment_arch",
+                           next_step="wizard.optional_services")
 
 
-@app.route("/optional-services", methods=["GET", "POST"])
+@wizard.route("/optional-services", methods=["GET", "POST"])
 def optional_services():
     """
     Input for optional services.
@@ -306,11 +307,11 @@ def optional_services():
                            form=form,
                            current_step=5,
                            template="optional_services",
-                           prev_step="gluu_namespace",
-                           next_step="gluu_gateway")
+                           prev_step="wizard.gluu_namespace",
+                           next_step="wizard.gluu_gateway")
 
 
-@app.route("/gluu-gateway", methods=["GET", "POST"])
+@wizard.route("/gluu-gateway", methods=["GET", "POST"])
 def gluu_gateway():
     """
     Input for Gluu Gateway
@@ -368,11 +369,11 @@ def gluu_gateway():
                            form=form,
                            current_step=6,
                            template="gluu_gateway",
-                           prev_step="optional_services",
-                           next_step="install_jackrabbit")
+                           prev_step="wizard.optional_services",
+                           next_step="wizard.install_jackrabbit")
 
 
-@app.route("/install-jackrabbit", methods=["GET", "POST"])
+@wizard.route("/install-jackrabbit", methods=["GET", "POST"])
 def install_jackrabbit():
     """
     Install Jackrabbit
@@ -400,11 +401,11 @@ def install_jackrabbit():
                            form=form,
                            current_step=7,
                            template="install_jackrabbit",
-                           prev_step="gluu_gateway",
-                           next_step="setting")
+                           prev_step="wizard.gluu_gateway",
+                           next_step="wizard.setting")
 
 
-@app.route("/settings", methods=["GET", "POST"])
+@wizard.route("/settings", methods=["GET", "POST"])
 def setting():
     """
     Setup Backend setting
@@ -459,10 +460,10 @@ def setting():
 
             if not settings.get("APP_VOLUME_TYPE") \
                     or settings.get("DEPLOYMENT_ARCH") not in test_arch:
-                return redirect(url_for('app_volume_type'))
+                return redirect(url_for('wizard.app_volume_type'))
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            return redirect(url_for('couchbase_multi_cluster'))
+            return redirect(url_for('wizard.couchbase_multi_cluster'))
 
         return redirect(url_for(next_step))
 
@@ -480,11 +481,11 @@ def setting():
                            form=form,
                            current_step=8,
                            template="settings",
-                           prev_step="install_jackrabbit",
-                           next_step="cache_type")
+                           prev_step="wizard.install_jackrabbit",
+                           next_step="wizard.cache_type")
 
 
-@app.route("/app-volume-type", methods=["GET", "POST"])
+@wizard.route("/app-volume-type", methods=["GET", "POST"])
 def app_volume_type():
     """
     App Volume type Setting
@@ -506,7 +507,7 @@ def app_volume_type():
         settings.update(data)
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            next_step = "couchbase_multi_cluster"
+            next_step = "wizard.couchbase_multi_cluster"
         else:
             next_step = request.form['next_step']
 
@@ -517,11 +518,11 @@ def app_volume_type():
                            form=form,
                            current_step=9,
                            template="app_volume_type",
-                           prev_step="setting",
-                           next_step="cache_type")
+                           prev_step="wizard.setting",
+                           next_step="wizard.cache_type")
 
 
-@app.route("/couchbase-multi-cluster", methods=["GET", "POST"])
+@wizard.route("/couchbase-multi-cluster", methods=["GET", "POST"])
 def couchbase_multi_cluster():
     """
     Deploy multi-cluster settings
@@ -535,19 +536,19 @@ def couchbase_multi_cluster():
         form = populate_form_data(form)
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "setting"
+    prev_step = "wizard.setting"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "app_volume_type"
+        prev_step = "wizard.app_volume_type"
 
     return render_template("index.html",
                            form=form,
                            current_step=10,
                            template="couchbase_multi_cluster",
                            prev_step=prev_step,
-                           next_step="cache_type")
+                           next_step="wizard.cache_type")
 
 
-@app.route("/cache-type", methods=["GET", "POST"])
+@wizard.route("/cache-type", methods=["GET", "POST"])
 def cache_type():
     """
     Cache Layer setting
@@ -581,9 +582,9 @@ def cache_type():
             return redirect(url_for(request.form['next_step']))
 
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-            return redirect(url_for('backup'))
+            return redirect(url_for('wizard.backup'))
 
-        return redirect(url_for('config'))
+        return redirect(url_for('wizard.config'))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -593,19 +594,19 @@ def cache_type():
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "setting"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "app_volume_type"
+        prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "couchbase_multi_cluster"
+        prev_step = "wizard.couchbase_multi_cluster"
 
     return render_template("index.html",
                            form=form,
                            current_step=11,
                            template="cache_type",
                            prev_step=prev_step,
-                           next_step="couchbase")
+                           next_step="wizard.couchbase")
 
 
-@app.route("/couchbase", methods=["GET", "POST"])
+@wizard.route("/couchbase", methods=["GET", "POST"])
 def couchbase():
     form = CouchbaseForm()
     custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
@@ -679,10 +680,10 @@ def couchbase():
         if settings.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
                 settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
                 settings.get("INSTALL_COUCHBASE") == "Y":
-            return redirect(url_for("couchbase_calculator"))
+            return redirect(url_for("wizard.couchbase_calculator"))
 
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-            return redirect(url_for("backup"))
+            return redirect(url_for("wizard.backup"))
 
         return redirect(url_for(next_step))
 
@@ -712,11 +713,14 @@ def couchbase():
                            form=form,
                            current_step=12,
                            template="couchbase",
-                           prev_step="couchbase_multi_cluster",
-                           next_step="config")
+                           prev_step="wizard.couchbase_multi_cluster",
+                           next_step="wizard.config")
 
-@app.route("/couchbase-calculator", methods=["GET", "POST"])
+@wizard.route("/couchbase-calculator", methods=["GET", "POST"])
 def couchbase_calculator():
+    """
+    Attempt to Calculate resources needed
+    """
 
     form = CouchbaseCalculatorForm()
 
@@ -730,7 +734,7 @@ def couchbase_calculator():
         settings.update(data)
 
         if settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
-            return redirect(url_for("backup"))
+            return redirect(url_for("wizard.backup"))
 
         return redirect(url_for(request.form["next_step"]))
 
@@ -744,13 +748,13 @@ def couchbase_calculator():
                            form=form,
                            current_step=13,
                            template="couchbase_calculator",
-                           prev_step="couchbase",
-                           next_step="config")
+                           prev_step="wizard.couchbase",
+                           next_step="wizard.config")
 
-@app.route("/backup", methods=["GET", "POST"])
+@wizard.route("/backup", methods=["GET", "POST"])
 def backup():
     if not settings.get("PERSISTENCE_BACKEND"):
-        return redirect(url_for('setting'))
+        return redirect(url_for('wizard.setting'))
 
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
         form = CouchbaseBackupForm()
@@ -774,15 +778,15 @@ def backup():
         form = populate_form_data(form)
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "setting"
+    prev_step = "wizard.setting"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "app_volume_type"
+        prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "couchbase_multi_cluster"
+        prev_step = "wizard.couchbase_multi_cluster"
     elif settings.get("INSTALL_COUCHBASE"):
-        prev_step = "couchbase"
+        prev_step = "wizard.couchbase"
     elif settings.get("NUMBER_OF_EXPECTED_USERS"):
-        prev_step = "couchbase_calculator"
+        prev_step = "wizard.couchbase_calculator"
 
     return render_template("index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
@@ -790,10 +794,10 @@ def backup():
                            current_step=14,
                            template="backup",
                            prev_step=prev_step,
-                           next_step="config")
+                           next_step="wizard.config")
 
 
-@app.route("/config", methods=["GET", "POST"])
+@wizard.route("/config", methods=["GET", "POST"])
 def config():
     form = ConfigForm()
     if form.validate_on_submit():
@@ -840,17 +844,17 @@ def config():
             form.is_gluu_fqdn_registered.validators = [DataRequired()]
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "setting"
+    prev_step = "wizard.setting"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "app_volume_type"
+        prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "couchbase_multi_cluster"
+        prev_step = "wizard.couchbase_multi_cluster"
     elif settings.get("INSTALL_COUCHBASE"):
-        prev_step = "couchbase"
+        prev_step = "wizard.couchbase"
     elif settings.get("NUMBER_OF_EXPECTED_USERS"):
-        prev_step = "couchbase_calculator"
+        prev_step = "wizard.couchbase_calculator"
     elif settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE") or settings.get("LDAP_BACKUP_SCHEDULE"):
-        prev_step = "backup"
+        prev_step = "wizard.backup"
 
     return render_template("index.html",
                            settings=settings.db,
@@ -858,10 +862,10 @@ def config():
                            current_step=15,
                            template="config",
                            prev_step=prev_step,
-                           next_step="image_name_tag")
+                           next_step="wizard.image_name_tag")
 
 
-@app.route("/image-name-tag", methods=["POST", "GET"])
+@wizard.route("/image-name-tag", methods=["POST", "GET"])
 def image_name_tag():
     form = ImageNameTagForm()
     if form.validate_on_submit():
@@ -911,11 +915,11 @@ def image_name_tag():
                            form=form,
                            current_step=16,
                            template="image_name_tag",
-                           prev_step="config",
-                           next_step="replicas")
+                           prev_step="wizard.config",
+                           next_step="wizard.replicas")
 
 
-@app.route("/replicas", methods=["POST", "GET"])
+@wizard.route("/replicas", methods=["POST", "GET"])
 def replicas():
     form = ReplicasForm()
 
@@ -932,7 +936,7 @@ def replicas():
                 not settings.get("LDAP_STORAGE_SIZE"):
             return redirect(url_for(request.form["next_step"]))
 
-        return redirect(url_for("setting_summary"))
+        return redirect(url_for("wizard.setting_summary"))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -957,16 +961,16 @@ def replicas():
                            form=form,
                            current_step=17,
                            template="replicas",
-                           prev_step="image_name_tag",
-                           next_step="storage")
+                           prev_step="wizard.image_name_tag",
+                           next_step="wizard.storage")
 
 
-@app.route("/storage", methods=["POST", "GET"])
+@wizard.route("/storage", methods=["POST", "GET"])
 def storage():
     form = StorageForm()
     if form.validate_on_submit():
         settings.set("LDAP_STORAGE_SIZE", form.ldap_storage_size.data)
-        return redirect(url_for("setting_summary"))
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         if settings.get("LDAP_STORAGE_SIZE"):
@@ -976,11 +980,11 @@ def storage():
                            form=form,
                            current_step=18,
                            template="storage",
-                           prev_step="replicas",
-                           next_step="setting_summary")
+                           prev_step="wizard.replicas",
+                           next_step="wizard.setting_summary")
 
 
-@app.route("/setting-summary", methods=["POST", "GET"])
+@wizard.route("/setting-summary", methods=["POST", "GET"])
 def setting_summary():
     """
     Formats output of settings from prompts to the user.
@@ -996,23 +1000,29 @@ def setting_summary():
                            settings=settings.db)
 
 
-@app.route("/confirm-params", methods=["POST"])
+@wizard.route("/confirm-params", methods=["POST"])
 def confirm_params():
+    """
+    Display all data from settings.json except for passwords.
+    """
     settings.set("CONFIRM_PARAMS", request.form["confirm_params"])
     if settings.get("CONFIRM_PARAMS") == "Y":
-        return redirect(url_for('finished'))
+        return redirect(url_for('wizard.finished'))
     else:
         # reset to default settings
         settings.reset_data()
-        return redirect(url_for('agreement'))
+        return redirect(url_for('wizard.agreement'))
 
 
-@app.route("/finish")
+@wizard.route("/finish")
 def finished():
+    """
+    finish page
+    """
     return render_template("finish.html")
 
 
-@app.route("/determine_ip", methods=["GET"])
+@wizard.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
     Attempts to detect and return ip automatically.
@@ -1066,8 +1076,11 @@ def determine_ip():
     return make_response(jsonify(data), 200)
 
 
-@app.route("/validate_ip/<ip_address>", methods=["GET"])
+@wizard.route("/validate_ip/<ip_address>", methods=["GET"])
 def validate_ip(ip_address):
+    """
+    validate ip address
+    """
     try:
         ipaddress.ip_address(ip_address)
         return make_response({"status": True,
@@ -1109,7 +1122,7 @@ def generate_main_config():
     config_settings["org_name"] = settings.get("ORG_NAME")
 
     with open(Path('./config/base/generate.json'), 'w+') as file:
-        app.logger.warning("Main configuration settings has been "
+        current_app.logger.warning("Main configuration settings has been "
                            "outputted to file: ./config/base/generate.json. "
                            "Please store this file safely or delete it.")
         json.dump(config_settings, file)

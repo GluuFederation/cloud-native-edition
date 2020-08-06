@@ -19,7 +19,6 @@ from .prompt import Prompt
 from .common import get_logger, copy_templates
 from .helm import Helm
 from .kustomize import Kustomize
-from .gui import app
 
 logger = get_logger("gluu-create        ")
 
@@ -32,7 +31,6 @@ def create_parser():
     subparsers = parser.add_subparsers(title="Commands", dest="subparser_name")
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
                                                     "Gluu Enterprise Edition non-interactively")
-    subparsers.add_parser("gui-install", help="Install Gluu Enterprise Edition interactive web. ")
     subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
     subparsers.add_parser("install-no-wait", help="Install Gluu Enterprise Edition. "
                                                   "There will be no wait time between installing services. "
@@ -73,10 +71,6 @@ def main():
         return
     copy_templates()
 
-    # Not sure if we intercept the gui installation from here
-    if args.subparser_name == "gui-install":
-        app.run(host='0.0.0.0', port=5000)
-        return
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
 
