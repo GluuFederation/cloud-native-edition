@@ -18,10 +18,11 @@ def create_app():
     csrf = CSRFProtect()
     csrf.init_app(app)
 
-    #register blueprint
+    # register blueprint
     app.register_blueprint(wizard)
 
     return app
+
 
 def main():
     parser = argparse.ArgumentParser()

@@ -168,9 +168,9 @@ class OptionalServiceForm(FlaskForm):
                                    default="N",
                                    validators=[DataRequired()])
     enable_oxshibboleth = RadioField("Deploy Shibboleth SAML IDP",
-                                   choices=[("Y", "Yes"), ("N", "No")],
-                                   default="N",
-                                   validators=[DataRequired()])
+                                     choices=[("Y", "Yes"), ("N", "No")],
+                                     default="N",
+                                     validators=[DataRequired()])
     enable_casa = RadioField("Deploy Casa",
                              choices=[("Y", "Yes"), ("N", "No")],
                              default="N",
@@ -511,8 +511,9 @@ class CouchbaseCalculatorForm(FlaskForm):
     using_scim_flow = RadioField("Will you be using the SCIM flow",
                                  choices=[("Y", "Yes"), ("N", "No")],
                                  default="Y")
-    expected_transaction_per_sec = StringField("Expected transactions per second",
-                                                default=2000)
+    expected_transaction_per_sec = StringField(
+        "Expected transactions per second",
+        default=2000)
     couchbase_data_nodes = StringField(
         "Please enter the number of data nodes. (auto-calculated)",
         default="")

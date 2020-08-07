@@ -13,14 +13,13 @@ import base64
 
 from pathlib import Path
 from flask import current_app
-from flask import Blueprint, Flask, jsonify, make_response, render_template, \
+from flask import Blueprint, jsonify, make_response, render_template, \
     request, redirect, url_for, send_from_directory
-
-from flask_wtf.csrf import CSRFProtect
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
-from pygluu.kubernetes.common import get_supported_versions, exec_cmd, generate_password
+from pygluu.kubernetes.common import get_supported_versions, \
+    exec_cmd, generate_password
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settingdb import SettingDB
 
@@ -75,6 +74,7 @@ static_files = ["/favicon.ico",
 
 settings = SettingDB()
 
+
 @wizard.before_request
 def initialize():
     """
@@ -83,6 +83,7 @@ def initialize():
     if not settings.get("ACCEPT_GLUU_LICENSE") and \
             request.path != "/agreement" and request.path not in static_files:
         return redirect(url_for("wizard.agreement"))
+
 
 @wizard.context_processor
 def inject_wizard_steps():
@@ -184,7 +185,6 @@ def deployment_arch():
     if request.method == "GET":
         # populate form
         form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
-
 
     return render_template("wizard/index.html",
                            form=form,
@@ -338,7 +338,7 @@ def gluu_gateway():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        #populate password suggaestion
+        # populate password suggestion
         if not settings.get("KONG_PG_PASSWORD"):
             form.kong_pg_password_confirm.data = form.kong_pg_password.data = generate_password()
         else:
@@ -628,7 +628,7 @@ def couchbase():
                 shutil.copy(Path("./couchbase-ephemeral-buckets.yaml"),
                             Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
             except FileNotFoundError:
-                app.logger.error("An override option has been chosen but "
+                current_app.logger.error("An override option has been chosen but "
                                  "there is a missing couchbase file that "
                                  "could not be found at the current path.")
 
@@ -701,6 +701,7 @@ def couchbase():
                            prev_step="wizard.couchbase_multi_cluster",
                            next_step="wizard.config")
 
+
 @wizard.route("/couchbase-calculator", methods=["GET", "POST"])
 def couchbase_calculator():
     """
@@ -735,6 +736,7 @@ def couchbase_calculator():
                            template="couchbase_calculator",
                            prev_step="wizard.couchbase",
                            next_step="wizard.config")
+
 
 @wizard.route("/backup", methods=["GET", "POST"])
 def backup():
@@ -1053,9 +1055,9 @@ def determine_ip():
                 'ip_address': ip,
                 "message": "Is this the correct external IP address?"}
     except Exception as e:
-        app.logger.error(e)
+        current_app.logger.error(e)
         # prompt for user-inputted IP address
-        app.logger.warning("Cannot determine IP address")
+        current_app.logger.warning("Cannot determine IP address")
         data = {"status": False, 'message': "Cannot determine IP address"}
 
     return make_response(jsonify(data), 200)
