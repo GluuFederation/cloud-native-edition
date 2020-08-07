@@ -135,7 +135,7 @@ def agreement():
         # populate form
         form.accept_gluu_license.data = settings.get("ACCEPT_GLUU_LICENSE")
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            license=agreement_file,
                            form=form,
                            current_step=1,
@@ -161,7 +161,7 @@ def gluu_version():
         # populate form
         form.gluu_version.data = settings.get("GLUU_VERSION")
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=2,
                            template="gluu_version",
@@ -186,7 +186,7 @@ def deployment_arch():
         form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
 
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=3,
                            template="deployment_arch",
@@ -210,7 +210,7 @@ def gluu_namespace():
         if settings.get("GLUU_NAMESPACE"):
             form.gluu_namespace.data = settings.get("GLUU_NAMESPACE")
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=4,
                            template="gluu_namespace",
@@ -288,7 +288,7 @@ def optional_services():
     if request.method == "GET":
         form = populate_form_data(form)
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=5,
                            template="optional_services",
@@ -350,7 +350,7 @@ def gluu_gateway():
         else:
             form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=6,
                            template="gluu_gateway",
@@ -382,7 +382,7 @@ def install_jackrabbit():
     if request.method == "GET":
         form = populate_form_data(form)
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=7,
                            template="install_jackrabbit",
@@ -461,7 +461,7 @@ def setting():
     if request.method == "GET":
         form = populate_form_data(form)
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
                            current_step=8,
@@ -498,7 +498,7 @@ def app_volume_type():
 
         return redirect(url_for(next_step))
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
                            current_step=9,
@@ -525,7 +525,7 @@ def couchbase_multi_cluster():
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
         prev_step = "wizard.app_volume_type"
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=10,
                            template="couchbase_multi_cluster",
@@ -583,7 +583,7 @@ def cache_type():
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
         prev_step = "wizard.couchbase_multi_cluster"
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=11,
                            template="cache_type",
@@ -694,7 +694,7 @@ def couchbase():
             form.couchbase_cn.validators = [Optional()]
             form.couchbase_cn.render_kw = {"disabled": "disabled"}
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=12,
                            template="couchbase",
@@ -729,7 +729,7 @@ def couchbase_calculator():
         form.couchbase_volume_type.choices = volume_type["choices"]
         form.couchbase_volume_type.validators = [DataRequired()]
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=13,
                            template="couchbase_calculator",
@@ -773,7 +773,7 @@ def backup():
     elif settings.get("NUMBER_OF_EXPECTED_USERS"):
         prev_step = "wizard.couchbase_calculator"
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=14,
@@ -841,7 +841,7 @@ def config():
     elif settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE") or settings.get("LDAP_BACKUP_SCHEDULE"):
         prev_step = "wizard.backup"
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
                            current_step=15,
@@ -896,7 +896,7 @@ def image_name_tag():
             del form.gluu_gateway_ui_image_name
             del form.gluu_gateway_ui_image_tag
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=16,
                            template="image_name_tag",
@@ -942,7 +942,7 @@ def replicas():
         if settings.get("ENABLE_RADIUS") == "N":
             del form.radius_replicas
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=17,
                            template="replicas",
@@ -961,7 +961,7 @@ def storage():
         if settings.get("LDAP_STORAGE_SIZE"):
             form.ldap_storage_size.data = settings.get("LDAP_STORAGE_SIZE")
 
-    return render_template("index.html",
+    return render_template("wizard/index.html",
                            form=form,
                            current_step=18,
                            template="storage",
@@ -980,7 +980,7 @@ def setting_summary():
                        "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD",
                        "GLUU_GATEWAY_UI_PG_PASSWORD"]
 
-    return render_template("setting_summary.html",
+    return render_template("wizard/setting_summary.html",
                            hidden_settings=hidden_settings,
                            settings=settings.db)
 
@@ -1004,7 +1004,7 @@ def finished():
     """
     finish page
     """
-    return render_template("finish.html")
+    return render_template("wizard/finish.html")
 
 
 @wizard.route("/determine_ip", methods=["GET"])

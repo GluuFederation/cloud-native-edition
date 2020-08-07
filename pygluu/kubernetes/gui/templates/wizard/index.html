@@ -24,7 +24,7 @@
           <br>
           <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
             {{ form.csrf_token }}
-            {% include '%s.html' % template %}
+            {% include 'wizard/%s.html' % template %}
             {% if(next_step) %}
               {{ forms.hidden('next_step', next_step) }}
             {% endif %}
