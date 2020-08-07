@@ -58,11 +58,10 @@ spec:
         - eventing
       serverGroups:
        - us-west-2a
-      pod:
-        volumeMounts:
-          default: pvc-general  
-          analytics: 
-            - pvc-analytics     
+      volumeMounts:
+        default: pvc-general
+        analytics:
+          - pvc-analytics
     - name: analytics-us-west-2b
       size: 1
       services:
@@ -71,31 +70,28 @@ spec:
         - eventing
       serverGroups:
        - us-west-2b
-      pod:
-        volumeMounts:
-          default: pvc-general
-          analytics: 
-            - pvc-analytics 
+      volumeMounts:
+        default: pvc-general
+        analytics:
+          - pvc-analytics
     - name: data-us-west-2c
       size: 1
       services:
         - data
       serverGroups:
        - us-west-2c
-      pod:
-        volumeMounts:
-          default: pvc-general  
-          data: pvc-data     
+      volumeMounts:
+        default: pvc-general
+        data: pvc-data
     - name: data-us-west-2b
       size: 1
       services:
         - data
       serverGroups:
        - us-west-2b
-      pod:
-        volumeMounts:
-          default: pvc-general 
-          data: pvc-data     
+      volumeMounts:
+        default: pvc-general
+        data: pvc-data
     - name: index-us-west-2a
       size: 1
       services:
@@ -103,10 +99,9 @@ spec:
         - index
       serverGroups:
        - us-west-2a
-      pod:
-        volumeMounts:
-          default: pvc-general
-          index: pvc-index
+      volumeMounts:
+        default: pvc-general
+        index: pvc-index
     - name: index-us-west-2c
       size: 1
       services:
@@ -114,30 +109,27 @@ spec:
         - index
       serverGroups:
        - us-west-2c
-      pod:
-        volumeMounts:
-          default: pvc-general
-          index: pvc-index
+      volumeMounts:
+        default: pvc-general
+        index: pvc-index
     - name: query-us-west-2a
       size: 1
       services:
         - query
       serverGroups:
        - us-west-2a
-      pod:
-        volumeMounts:
-          default: pvc-general
-          query: pvc-query
+      volumeMounts:
+        default: pvc-general
+        query: pvc-query
     - name: query-us-west-2c
       size: 1
       services:
         - query
       serverGroups:
        - us-west-2c
-      pod:
-        volumeMounts:
-          default: pvc-general
-          query: pvc-query
+      volumeMounts:
+        default: pvc-general
+        query: pvc-query
   securityContext:
     fsGroup: 1000
   volumeClaimTemplates:
@@ -147,32 +139,32 @@ spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 20Gi
+            storage: 10Gi
     - metadata:
         name: pvc-data
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 100Gi
+            storage: 10Gi
     - metadata:
         name: pvc-index
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 60Gi
+            storage: 10Gi
     - metadata:
         name: pvc-query
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 60Gi
+            storage: 10Gi
     - metadata:
         name: pvc-analytics
       spec:
         storageClassName: couchbase-sc
         resources:
           requests:
-            storage: 20Gi
+            storage: 10Gi

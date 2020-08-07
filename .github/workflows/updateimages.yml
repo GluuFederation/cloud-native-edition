@@ -1,0 +1,53 @@
+name: updateimages
+# This builds, packages and releases pygluu-kubernetes
+on: [workflow_dispatch]
+jobs:
+  createPullRequest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo python3 -m pip install --upgrade pip
+          sudo pip3 install -r ./automation/requirements.txt
+          sudo apt-get update
+          sudo apt-get install jq
+
+      - uses: actions/checkout@v2
+
+      - name: Update images
+        run: |
+          cd automation
+          sudo python3 auto_update_image_pr.py
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update Image tags
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          branch: update-images
+          title: 'Update image tags'
+          body: |
+
+            - Updated images tags
+            - Auto-generated due to update in docker images
+
+          labels: |
+            enhancement
+          assignees: moabu
+          reviewers: moabu
+
+      - name: Check output
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"

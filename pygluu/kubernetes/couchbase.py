@@ -305,9 +305,9 @@ class Couchbase(object):
                 self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
             resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
-                                  "pod": {"volumeMounts": {"default": "pvc-general",
-                                                           "data": "pvc-data", "index": "pvc-index",
-                                                           "analytics": ["pvc-analytics"]}}}]
+                                  "volumeMounts": {"default": "pvc-general",
+                                                   "data": "pvc-data", "index": "pvc-index",
+                                                   "analytics": ["pvc-analytics"]}}]
             data_service_memory_quota = 1024
             index_service_memory_quota = 512
             search_service_memory_quota = 512

@@ -8,7 +8,7 @@ import pytest
 def prompter():
     from pygluu.kubernetes.prompt import Prompt
 
-    prompt = Prompt(accept_license=True, version="4.2.0_01")
+    prompt = Prompt(accept_license=True, version="4.2")
 
     yield prompt
 
@@ -36,12 +36,30 @@ def test_prompt_license_no_prompt(prompter):
 
 def test_prompt_version_no_prompt(prompter):
     prompter.prompt_version()
-    assert prompter.settings["GLUU_VERSION"] == "4.2.0_01"
+    assert prompter.settings["GLUU_VERSION"] == "4.2"
+
+
+@pytest.mark.parametrize("given, expected", [
+    ("", "4.2.0_01"),  # default if empty
+    ("4.2.1_dev", "4.2.1_dev"),  # non-empty shouldn't be overriden
+])
+def test_prompt_version_merge_names_tags(prompter, given, expected):
+    import json
+
+    with open("./gluu_versions.json", "w") as f:
+        json.dump({"4.2": {"LDAP_IMAGE_TAG": "4.2.0_01"}}, f)
+
+    prompter.settings["LDAP_IMAGE_TAG"] = given
+    prompter.prompt_version()
+    assert prompter.settings["LDAP_IMAGE_TAG"] == expected
+
+    with contextlib.suppress(FileNotFoundError):
+        os.unlink("./gluu_versions.json")
 
 
 @pytest.mark.parametrize("given, expected", [
     ("", "0"),
-    ("4.2.0_01", "4.2.0_01"),
+    ("4.2", "4.2"),
 ])
 def test_prompt_version(monkeypatch, prompter, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -216,7 +234,7 @@ def test_prompt_helm_gg_ui_helm_release_name(monkeypatch, prompter, given, expec
 
 @pytest.mark.parametrize("given, expected", [
     ("", "0"),
-    ("4.2.0_01", "4.2.0_01"),
+    ("4.2", "4.2"),
 ])
 def test_prompt_upgrade_version(monkeypatch, prompter, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)

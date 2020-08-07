@@ -496,7 +496,7 @@ class Kustomize(object):
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # oxdserver
-        if "oxd-server" in app_file:
+        if self.settings["ENABLE_OXD"] == "Y":
             configmap_parser["data"]["GLUU_OXD_APPLICATION_CERT_CN"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
             configmap_parser["data"]["GLUU_OXD_ADMIN_CERT_CN"] = self.settings["OXD_ADMIN_KEYSTORE_CN"]
         # casa
@@ -607,7 +607,7 @@ class Kustomize(object):
                                                image_tag_key="OXD_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
-                oxd_server_service_parser = Parser(app_file, "Deployment")
+                oxd_server_service_parser = Parser(app_file, "Service")
                 oxd_server_service_parser["metadata"]["name"] = self.settings["OXD_APPLICATION_KEYSTORE_CN"]
                 oxd_server_service_parser.dump_it()
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"

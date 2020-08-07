@@ -254,7 +254,11 @@ class Prompt:
             )
 
         image_names_and_tags = versions.get(self.settings["GLUU_VERSION"], {})
-        self.settings.update(image_names_and_tags)
+        # override non-empty image name and tag
+        self.settings.update({
+            k: v for k, v in image_names_and_tags.items()
+            if not self.settings.get(k, "")
+        })
 
     def confirm_params(self):
         """Formats output of settings from prompts to the user. Passwords are not displayed.
