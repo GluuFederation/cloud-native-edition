@@ -1063,21 +1063,6 @@ def determine_ip():
     return make_response(jsonify(data), 200)
 
 
-@wizard.route("/validate_ip/<ip_address>", methods=["GET"])
-def validate_ip(ip_address):
-    """
-    validate ip address
-    """
-    try:
-        ipaddress.ip_address(ip_address)
-        return make_response({"status": True,
-                              "message": "IP Address is valid"}, 200)
-    except ValueError as exc:
-        # raised if IP is invalid
-        return make_response({"status": False,
-                              "message": "Cannot determine IP address {}".format(exc)}, 400)
-
-
 def populate_form_data(form):
     """
     populate form data from settings

@@ -27,14 +27,13 @@ def create_app():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", action="store", default="5000")
-    parser.add_argument("-d", "--debug", type=bool, action="store", default=False,
+    parser.add_argument("-d", "--debug", type=bool, action="store",
+                        default=False,
                         help="Enable/Disable debug (default: false)")
-    parser.add_argument("-D", "--development", help="use development mode")
 
     args = parser.parse_args()
     port = int(args.port)
     debug = args.debug
-    mode = args.development
 
     copy_templates()
     app = create_app()
