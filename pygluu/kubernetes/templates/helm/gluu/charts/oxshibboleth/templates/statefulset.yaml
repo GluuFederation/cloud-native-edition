@@ -42,6 +42,11 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
+          {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+            - name: gluu-jackrabbit-admin-pass
+              mountPath: /etc/gluu/conf/jackrabbit_admin_password
+              subPath: jackrabbit_admin_password
+          {{- end }}
           {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
             mountPath: /scripts
@@ -81,6 +86,11 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+      {{- end }}
       {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
       - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
         configMap:

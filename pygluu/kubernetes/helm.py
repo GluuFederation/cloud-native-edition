@@ -225,9 +225,19 @@ class Helm(object):
             values_file_parser["global"]["scim"]["enabled"] = True
         if self.settings["INSTALL_JACKRABBIT"] == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
-            values_file_parser["config"]["configmap"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
-            values_file_parser["config"]["configmap"]["gluuJcaUrl"] = self.settings["JACKRABBIT_URL"]
-            values_file_parser["config"]["configmap"]["gluuJcaUsername"] = self.settings["JACKRABBIT_USER"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings["JACKRABBIT_URL"]
+            values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitAdminPass"] = self.settings["JACKRABBIT_ADMIN_PASSWORD"]
+
+        values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            values_file_parser["global"]["gluuJackrabbitCluster"] = "true"
+            values_file_parser["config"]["configmap"]["gluuJackrabbitAdminId"] = self.settings["JACKRABBIT_ADMIN_ID"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = self.settings["JACKRABBIT_PG_USER"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresDatabaseName"] = self.settings["POSTGRES_URL"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresHost"] = self.settings["JACKRABBIT_DATABASE"]
+
+
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"]
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":

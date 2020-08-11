@@ -172,10 +172,11 @@ def get_supported_versions():
         return versions, version_number
 
 
-def prompt_password(password):
+def prompt_password(password, length=6):
     """
     Returns randomly generated password,
     :param password: string for the prompt name
+    :param length: int for the length of the password
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
@@ -186,7 +187,7 @@ def prompt_password(password):
     chars = chars.replace("!", "")
     while True:
         while True:
-            random_password = ''.join(random.choice(chars) for _ in range(6))
+            random_password = ''.join(random.choice(chars) for _ in range(length))
             regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
             if regex_bool:
                 break

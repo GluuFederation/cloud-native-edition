@@ -16,7 +16,6 @@ from .pycert import check_cert_with_private_key
 from .kubeapi import Kubernetes
 from .couchbase import Couchbase
 
-
 logger = get_logger("gluu-kustomize     ")
 
 # TEST ENVIORNMENT DEPLOYMENTS
@@ -449,6 +448,16 @@ class Kustomize(object):
             jobs_parser.dump_it()
         parser.dump_it()
 
+    def setup_jackrabbit_volumes(self, app_file, type):
+        parser = Parser(app_file, type)
+        parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
+            {"mountPath": "/etc/gluu/conf/jackrabbit_admin_password",
+             "name": "gluu-jackrabbit-admin-pass", "subPath": "jackrabbit_admin_password"})
+        parser["spec"]["template"]["spec"]["volumes"].append({"name": "gluu-jackrabbit-admin-pass",
+                                                                         "secret": {
+                                                                             "secretName": "gluu-jackrabbit-admin-pass"}})
+        parser.dump_it()
+
     def parse_configmap(self, app_file):
         if "config" in app_file:
             configmap_parser = Parser(app_file, "ConfigMap", "gluu-config-cm")
@@ -473,7 +482,7 @@ class Kustomize(object):
         configmap_parser["data"]["DOMAIN"] = self.settings["GLUU_FQDN"]
         configmap_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings["COUCHBASE_URL"]
         configmap_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings["COUCHBASE_USER"]
-        configmap_parser["data"]["GLUU_JCA_URL"] = self.settings["JACKRABBIT_URL"]
+        configmap_parser["data"]["GLUU_JACKRABBIT_URL"] = self.settings["JACKRABBIT_URL"]
         # Persistence keys
         if self.settings["GLUU_CACHE_TYPE"] == "REDIS":
             configmap_parser["data"]["GLUU_REDIS_URL"] = self.settings["REDIS_URL"]
@@ -487,8 +496,15 @@ class Kustomize(object):
         configmap_parser["data"]["GLUU_PASSPORT_ENABLED"] = self.settings["ENABLE_OXPASSPORT_BOOLEAN"]
         configmap_parser["data"]["GLUU_RADIUS_ENABLED"] = self.settings["ENABLE_RADIUS_BOOLEAN"]
         configmap_parser["data"]["GLUU_SAML_ENABLED"] = self.settings["ENABLE_SAML_BOOLEAN"]
-        configmap_parser["data"]["GLUU_JCA_RMI_URL"] = self.settings["JACKRABBIT_URL"] + "/rmi"
-        configmap_parser["data"]["GLUU_JCA_USERNAME"] = self.settings["JACKRABBIT_USER"]
+        configmap_parser["data"]["GLUU_JACKRABBIT_ADMIN_ID"] = self.settings["JACKRABBIT_ADMIN_ID"]
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            configmap_parser["data"]["GLUU_JACKRABBIT_CLUSTER"] = "true"
+            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_USER"] = self.settings["JACKRABBIT_PG_USER"]
+            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_PASSWORD_FILE"] = "/etc/gluu/conf/postgres_password"
+            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_HOST"] = self.settings["POSTGRES_URL"]
+            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_PORT"] = "5432"
+            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_DATABASE"] = self.settings["JACKRABBIT_DATABASE"]
+
         # oxAuth
         if self.settings["ENABLE_CASA_BOOLEAN"] == "true":
             configmap_parser["data"]["GLUU_SYNC_CASA_MANIFESTS"] = "true"
@@ -533,6 +549,7 @@ class Kustomize(object):
                                     "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG", app_file)
                 self.adjust_ldap_jackrabbit(app_file)
                 self.remove_resources(app_file, "StatefulSet")
+                self.setup_jackrabbit_volumes(app_file, "StatefulSet")
 
             if app == "persistence":
                 self.build_manifest(app, kustomization_file, command,
@@ -547,6 +564,7 @@ class Kustomize(object):
                 self.build_manifest(app, kustomization_file, command,
                                     "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
+                self.setup_jackrabbit_volumes(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "fido2":
@@ -565,12 +583,14 @@ class Kustomize(object):
                 self.build_manifest(app, kustomization_file, command,
                                     "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "StatefulSet")
+                self.setup_jackrabbit_volumes(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxshibboleth" and self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
                 self.build_manifest(app, kustomization_file, command,
                                     "OXSHIBBOLETH_IMAGE_NAME", "OXSHIBBOLETH_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "StatefulSet")
+                self.setup_jackrabbit_volumes(app_file, "StatefulSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "StatefulSet"
 
             if app == "oxpassport" and self.settings["ENABLE_OXPASSPORT"] == "Y":
@@ -620,6 +640,7 @@ class Kustomize(object):
                                                image_tag_key="CASA_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
+                self.setup_jackrabbit_volumes(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "radius" and self.settings["ENABLE_RADIUS"] == "Y":
@@ -939,26 +960,30 @@ class Kustomize(object):
 
         self.kubernetes.create_objects_from_dict(ingress_file, self.settings["GLUU_NAMESPACE"])
 
+    @property
+    def generate_postgres_init_sql(self):
+        services_using_postgres = []
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            services_using_postgres.append("JACKRABBIT")
+        if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            services_using_postgres.append("KONG")
+            services_using_postgres.append("GLUU_GATEWAY_UI")
+        # Generate init sql
+        postgres_init_sql = ""
+        for service in services_using_postgres:
+            pg_user = self.settings["{}_PG_USER".format(service)]
+            pg_password = self.settings["{}_PG_PASSWORD".format(service)]
+            pg_database = self.settings["{}_DATABASE".format(service)]
+            postgres_init_sql_jackrabbit = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
+                                           "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\n" \
+                .format(pg_user, pg_user, pg_password, pg_database, pg_database, pg_user)
+            postgres_init_sql = postgres_init_sql + postgres_init_sql_jackrabbit
+        return postgres_init_sql
+
     def deploy_postgres(self):
         self.uninstall_postgres()
         self.kubernetes.create_namespace(name=self.settings["POSTGRES_NAMESPACE"], labels={"app": "postgres"})
-        postgres_init_sql = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE USER {};\n" \
-                            "ALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
-                            "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\nCREATE DATABASE {};\n" \
-                            "GRANT ALL PRIVILEGES ON DATABASE {} TO {};"\
-            .format(self.settings["KONG_PG_USER"],
-                    self.settings["KONG_PG_USER"],
-                    self.settings["KONG_PG_PASSWORD"],
-                    self.settings["GLUU_GATEWAY_UI_PG_USER"],
-                    self.settings["GLUU_GATEWAY_UI_PG_USER"],
-                    self.settings["GLUU_GATEWAY_UI_PG_PASSWORD"],
-                    self.settings["KONG_DATABASE"],
-                    self.settings["KONG_DATABASE"],
-                    self.settings["KONG_PG_USER"],
-                    self.settings["GLUU_GATEWAY_UI_DATABASE"],
-                    self.settings["GLUU_GATEWAY_UI_DATABASE"],
-                    self.settings["GLUU_GATEWAY_UI_PG_USER"]
-                    )
+        postgres_init_sql = self.generate_postgres_init_sql
         encoded_postgers_init_bytes = base64.b64encode(postgres_init_sql.encode("utf-8"))
         encoded_postgers_init_string = str(encoded_postgers_init_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="pg-init-sql",
@@ -1065,7 +1090,7 @@ class Kustomize(object):
             if env["name"] == "CONTROLLER_PUBLISH_SERVICE":
                 env_list.remove(env)
         env_list.append({"name": "CONTROLLER_PUBLISH_SERVICE", "value":
-                        self.settings["KONG_NAMESPACE"] + "/kong-proxy"})
+            self.settings["KONG_NAMESPACE"] + "/kong-proxy"})
         kong_all_in_one_db_parser_deploy["spec"]["template"]["spec"]["containers"][ingress_controller_index]["env"] \
             = env_list
         for container in kong_containers:
@@ -1104,7 +1129,9 @@ class Kustomize(object):
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings["GLUU_GATEWAY_UI_NAMESPACE"])
 
     def install_gluu_gateway_dbmode(self):
-        self.deploy_postgres()
+        # Jackrabbit Cluster would have installed postgres
+        if self.settings["JACKRABBIT_CLUSTER"] == "N":
+            self.deploy_postgres()
         self.deploy_kong()
         self.kustomize_gluu_gateway_ui()
         self.adjust_fqdn_yaml_entries()
@@ -1156,6 +1183,31 @@ class Kustomize(object):
             self.kubernetes.check_pods_statuses(self.settings["GLUU_NAMESPACE"], "app=opendj", self.timeout)
 
     def deploy_jackrabbit(self):
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            encoded_jackrabbit_pg_pass_bytes = base64.b64encode(
+                self.settings["JACKRABBIT_PG_PASSWORD"].encode("utf-8"))
+            encoded_jackrabbit_pg_pass_string = str(encoded_jackrabbit_pg_pass_bytes, "utf-8")
+
+            self.kubernetes.patch_or_create_namespaced_secret(name="gluu-jackrabbit-postgres-pass",
+                                                              namespace=self.settings["GLUU_NAMESPACE"],
+                                                              literal="postgres_password",
+                                                              value_of_literal=encoded_jackrabbit_pg_pass_string)
+            jackrabbit_parser = Parser(self.jackrabbit_yaml, "StatefulSet")
+            jackrabbit_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
+                {"mountPath": "/etc/gluu/conf/postgres_password",
+                 "name": "jackrabbit-postgres-pass", "subPath": "postgres_password"})
+            jackrabbit_parser["spec"]["template"]["spec"]["volumes"].append({"name": "jackrabbit-postgres-pass",
+                                "secret": {"secretName": "gluu-jackrabbit-postgres-pass"}})
+            jackrabbit_parser.dump_it()
+        encoded_jackrabbit_admin_pass_bytes = base64.b64encode(
+            self.settings["JACKRABBIT_ADMIN_PASSWORD"].encode("utf-8"))
+        encoded_jackrabbit_admin_pass_string = str(encoded_jackrabbit_admin_pass_bytes, "utf-8")
+
+        self.kubernetes.patch_or_create_namespaced_secret(name="gluu-jackrabbit-admin-pass",
+                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          literal="jackrabbit_admin_password",
+                                                          value_of_literal=encoded_jackrabbit_admin_pass_string)
+
         self.kubernetes.create_objects_from_dict(self.jackrabbit_yaml)
         logger.info("Deploying Jackrabbit content repository.Please wait..")
         time.sleep(10)
@@ -1277,7 +1329,7 @@ class Kustomize(object):
 
     def run_backup_command(self):
         try:
-            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "-n", "userRoot",
+            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "-n", " ",
                                  "-l", "/opt/opendj/ldif/backup-this-copy.ldif",
                                  "--bindPassword", self.settings["LDAP_PW"]]
             self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
@@ -1399,6 +1451,9 @@ class Kustomize(object):
 
         if self.settings["INSTALL_JACKRABBIT"] == "Y" and not restore:
             self.kubernetes = Kubernetes()
+            if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+                self.deploy_postgres()
+
             self.deploy_jackrabbit()
 
         if not self.settings["AWS_LB_TYPE"] == "alb":
@@ -1487,7 +1542,8 @@ class Kustomize(object):
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
-        secrets = ["oxdkeystorecm", "gluu", "tls-certificate"]
+        secrets = ["oxdkeystorecm", "gluu", "tls-certificate",
+                   "gluu-jackrabbit-admin-pass","gluu-jackrabbit-postgres-pass"]
         cb_secrets = ["cb-pass", "cb-crt"]
         daemon_set_label = "app=cr-rotate"
         all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label]
@@ -1586,10 +1642,10 @@ class Kustomize(object):
                     for node_name in self.settings["NODES_NAMES"]:
                         for zone in self.settings["NODES_ZONES"]:
                             exec_cmd("gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/opendj'".
-                                           format(node_name, zone))
+                                     format(node_name, zone))
                             exec_cmd(
                                 "gcloud compute ssh user@{} --zone={} --command='sudo rm -rf $HOME/jackrabbit'".
-                                format(node_name, zone))
+                                    format(node_name, zone))
         if not restore:
             shutil.rmtree(Path("./previousgluuminikubeyamls"), ignore_errors=True)
             shutil.rmtree(Path("./previousgluumicrok8yamls"), ignore_errors=True)

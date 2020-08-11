@@ -416,57 +416,62 @@ Please calculate the minimum required resources as per services deployed. The fo
         
     === "config"   
     
-        | Parameter                                          | Description                                                                                                                      | Default                                                     |
-        | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | 
-        | `config.orgName`                                   | Organisation Name                                                                                                                | `Gluu`                                                      |
-        | `config.email`                                     | Email address of the administrator usually. Used for certificate creation                                                        | `support@gluu.org`                                          |
-        | `config.adminPass`                                 | Admin password to log in to the UI                                                                                               | `P@ssw0rd`                                                  |
-        | `config.ldapPass`                                  | Ldap admin password                                                                                                              | `P@ssw0rd`                                                  |
-        | `config.redisPass`                                 | Redis password                                                                                                                   | `P@ssw0rd`                                                  |
-        | `config.countryCode`                               | Country code of where the Org is located                                                                                         | `US`                                                        |
-        | `config.state`                                     | State                                                                                                                            | `TX`                                                        |
-        | `config.city`                                      | City                                                                                                                             | `Austin`                                                    |
-        | `config.configmap.gluuOxdApplicationCertCn`        | oxd OAuth client application certificate common name                                                                             | `oxd-server`                                                |
-        | `config.configmap.gluuOxdAdminCertCn`              | oxd OAuth client admin certificate common name                                                                                   | `oxd-server`                                                |
-        | `config.configmap.gluuCouchbaseCrt`                | Couchbase certificate authority                                                                                                  | `LS0tLS1CRUdJTiBDRVJ.....`                                  |
-        | `config.configmap.gluuCouchbasePass`               | Couchbase password                                                                                                               | `P@ssw0rd`                                                  |
-        | `config.configmap.gluuCouchbaseUrl`                | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                            | `cbgluu.cbns.svc.cluster.local`                             |
-        | `config.configmap.gluuCouchbaseUser`               | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                           | `admin`                                                     |
-        | `config.configmap.gluuCouchbasePassFile`           | Location of `couchbase_password` file                                                                                            | `/etc/gluu/conf/couchbase_password`                         |
-        | `config.configmap.gluuCouchbaseCertFile`           | Location of `couchbase.crt` used by cb for tls termination                                                                       | `/etc/gluu/conf/couchbase.crt`                              |     
-        | `config.configmap.gluuPersistenceLdapMapping`      | if gluuPersistenceType is hybrid, what to store in ldap.                                                                         | `default`, `user`, `site`, `cache`, `statistic`             |     
-        | `config.configmap.gluuCacheType`                   | if gluuCacheType is hybrid, what to store in ldap.                                                                               | `REDIS`, `NATIVE_PERSISTENCE`, `IN_MEMORY`                  |     
-        | `config.configmap.gluuSyncShibManifests`           | Sync Shibboleth files.                                                                                                           | `false`                                                     |     
-        | `config.configmap.gluuSyncCasaManifests`           | Sync Casa files.                                                                                                                 | `false`                                                     |     
-        | `config.configmap.gluuMaxRamPercent`               | Used in conjunction with pod memory limitations to identify the percentage of the maximum amount of heap memory                  | `false`                                                     |     
-        | `config.configmap.configAdapterName`               | Configuration adapter.                                                                                                           | `kubernetes`                                                |     
-        | `config.configmap.containerMetadataName`           | The name of scheduler to pull container metadata                                                                                 | `kubernetes`                                                |     
-        | `config.configmap.configSecretAdapter`             | Secret adapter                                                                                                                   | `kubernetes`                                                |     
-        | `config.configmap.gluuRedisUrl`                    | Redis url with port. Used when Redis is deployed for Cache                                                                       | `redis:6379`                                                |     
-        | `config.configmap.gluuRedisUseSsl`                 | Redis SSL use                                                                                                                    | `"false"` or `"true"`                                       |
-        | `config.configmap.gluuRedisType`                   | Type of Redis deployed.                                                                                                          | `"SHARDED"`, `"STANDALONE"`, `"CLUSTER"`, or `"SENTINEL"`   |
-        | `config.configmap.gluuRedisSslTruststore`          | Redis SSL truststore. If using cloud provider services this is left empty.                                                       | ``                                                          |
-        | `config.configmap.gluuRedisSentinelGroup`          | Redis Sentinel group                                                                                                             | ``                                                          |
-        | `config.configmap.gluuOxtrustBackend`              | oxTrust backend address                                                                                                          | `oxtrust:8080`                                              |
-        | `config.configmap.gluuOxauthBackend`               | oxAuth backend address                                                                                                           | `oxauth:8080`                                               |
-        | `config.configmap.gluuOxdServerUrl`                | oxd Oauth client address                                                                                                         | `oxd-server:8443`                                           |
-        | `config.configmap.gluuLdapUrl`                     | wrends/ldap server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                                              |
-        | `config.configmap.gluuJcaSyncInterval`             | Jackrabbit sync interval                                                                                                         |  `300`                                                      |
-        | `config.configmap.gluuJcaRmiUrl`                   | Jackrabbit rmi url. Port and service name of Jackrabbit.                                                                         |  `jackrabbit:8080/rmi`                                      |
-        | `config.configmap.gluuJcaUrl`                      | Jackrabbit url. Port and service name of Jackrabbit                                                                              |  `jackrabbit:8080`                                          |
-        | `config.configmap.gluuJcaUsername`                 | Jackrabbit username                                                                                                              |  `admin`                                                    |
-        | `config.configmap.gluuJcaPasswordFile`             | Jackrabbit password file location                                                                                                |  `/etc/gluu/conf/jca_password`                              |
-        | `config.configmap.gluuDocumentStoreType`           | Jackrabbit document store type                                                                                                   |  `LOCAL`, `JCA`                                             |
-        | `config.configmap.lbAddr`                          | Address of LB or nginx                                                                                                           |  i.e `axx-109xx52.us-west-2.elb.amazonaws.com`              |
-        | `config.configmap.ldapServiceName`                 | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                                                    |
-        | `config.configmap.gluuOxtrustApiEnabled`           | Enable oxTrust API                                                                                                               | `false`                                                     |
-        | `config.configmap.gluuOxtrustApiTestMode`          | Enable oxTrust API Test mode                                                                                                     | `false`                                                     |
-        | `config.configmap.gluuPassportEnabled`             | Auto install passport service chart                                                                                              | `false`                                                     |
-        | `config.configmap.gluuCasaEnabled`                 | Enable Casa                                                                                                                      | `false`                                                     |
-        | `config.configmap.gluuRadiusEnabled`               | Enable Radius                                                                                                                    | `false`                                                     |
-        | `config.configmap.gluuSamlEnabled`                 | Enable SAML                                                                                                                      | `false`                                                     |
-        | `config.image.repository`                          | Config image repository                                                                                                          | `gluufederation/config-init`                                |
-        | `config.image.tag`                                 | Config image tag                                                                                                                 | `4.2.0_01`                                                  |
+        | Parameter                                             | Description                                                                                                                      | Default                                                     |
+        | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | 
+        | `config.orgName`                                      | Organisation Name                                                                                                                | `Gluu`                                                      |
+        | `config.email`                                        | Email address of the administrator usually. Used for certificate creation                                                        | `support@gluu.org`                                          |
+        | `config.adminPass`                                    | Admin password to log in to the UI                                                                                               | `P@ssw0rd`                                                  |
+        | `config.ldapPass`                                     | Ldap admin password                                                                                                              | `P@ssw0rd`                                                  |
+        | `config.redisPass`                                    | Redis password                                                                                                                   | `P@ssw0rd`                                                  |
+        | `config.countryCode`                                  | Country code of where the Org is located                                                                                         | `US`                                                        |
+        | `config.state`                                        | State                                                                                                                            | `TX`                                                        |
+        | `config.city`                                         | City                                                                                                                             | `Austin`                                                    |
+        | `config.configmap.gluuOxdApplicationCertCn`           | oxd OAuth client application certificate common name                                                                             | `oxd-server`                                                |
+        | `config.configmap.gluuOxdAdminCertCn`                 | oxd OAuth client admin certificate common name                                                                                   | `oxd-server`                                                |
+        | `config.configmap.gluuCouchbaseCrt`                   | Couchbase certificate authority                                                                                                  | `LS0tLS1CRUdJTiBDRVJ.....`                                  |
+        | `config.configmap.gluuCouchbasePass`                  | Couchbase password                                                                                                               | `P@ssw0rd`                                                  |
+        | `config.configmap.gluuCouchbaseUrl`                   | Couchbase URL. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                            | `cbgluu.cbns.svc.cluster.local`                             |
+        | `config.configmap.gluuCouchbaseUser`                  | Couchbase user. Used only when `global.gluuPersistenceType` is `hybrid` or `couchbase`                                           | `admin`                                                     |
+        | `config.configmap.gluuCouchbasePassFile`              | Location of `couchbase_password` file                                                                                            | `/etc/gluu/conf/couchbase_password`                         |
+        | `config.configmap.gluuCouchbaseCertFile`              | Location of `couchbase.crt` used by cb for tls termination                                                                       | `/etc/gluu/conf/couchbase.crt`                              |     
+        | `config.configmap.gluuPersistenceLdapMapping`         | if gluuPersistenceType is hybrid, what to store in ldap.                                                                         | `default`, `user`, `site`, `cache`, `statistic`             |     
+        | `config.configmap.gluuCacheType`                      | if gluuCacheType is hybrid, what to store in ldap.                                                                               | `REDIS`, `NATIVE_PERSISTENCE`, `IN_MEMORY`                  |     
+        | `config.configmap.gluuSyncShibManifests`              | Sync Shibboleth files.                                                                                                           | `false`                                                     |     
+        | `config.configmap.gluuSyncCasaManifests`              | Sync Casa files.                                                                                                                 | `false`                                                     |     
+        | `config.configmap.gluuMaxRamPercent`                  | Used in conjunction with pod memory limitations to identify the percentage of the maximum amount of heap memory                  | `false`                                                     |     
+        | `config.configmap.configAdapterName`                  | Configuration adapter.                                                                                                           | `kubernetes`                                                |     
+        | `config.configmap.containerMetadataName`              | The name of scheduler to pull container metadata                                                                                 | `kubernetes`                                                |     
+        | `config.configmap.configSecretAdapter`                | Secret adapter                                                                                                                   | `kubernetes`                                                |     
+        | `config.configmap.gluuRedisUrl`                       | Redis url with port. Used when Redis is deployed for Cache                                                                       | `redis:6379`                                                |     
+        | `config.configmap.gluuRedisUseSsl`                    | Redis SSL use                                                                                                                    | `"false"` or `"true"`                                       |
+        | `config.configmap.gluuRedisType`                      | Type of Redis deployed.                                                                                                          | `"SHARDED"`, `"STANDALONE"`, `"CLUSTER"`, or `"SENTINEL"`   |
+        | `config.configmap.gluuRedisSslTruststore`             | Redis SSL truststore. If using cloud provider services this is left empty.                                                       | ``                                                          |
+        | `config.configmap.gluuRedisSentinelGroup`             | Redis Sentinel group                                                                                                             | ``                                                          |
+        | `config.configmap.gluuOxtrustBackend`                 | oxTrust backend address                                                                                                          | `oxtrust:8080`                                              |
+        | `config.configmap.gluuOxauthBackend`                  | oxAuth backend address                                                                                                           | `oxauth:8080`                                               |
+        | `config.configmap.gluuOxdServerUrl`                   | oxd Oauth client address                                                                                                         | `oxd-server:8443`                                           |
+        | `config.configmap.gluuLdapUrl`                        | wrends/ldap server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                                              |
+        | `config.configmap.gluuJackrabbitSyncInterval`         | Jackrabbit sync interval                                                                                                         |  `300`                                                      |
+        | `config.configmap.gluuJackrabbitUrl`                  | Jackrabbit url. Port and service name of Jackrabbit                                                                              |  `jackrabbit:8080`                                          |
+        | `config.configmap.gluuJackrabbitAdminId`              | Jackrabbit admin user                                                                                                            |  i.e `admin`                                                |
+        | `config.configmap.gluuJackrabbitAdminPassFile`        | Jackrabbit admin password file location                                                                                          |  `/etc/gluu/conf/jackrabbit_admin_password`                 |
+        | `config.configmap.gluuJackrabbitPostgresUser`         | Jackrabbit postgres user                                                                                                         |  i.e `admin`                                                |
+        | `config.configmap.gluuJackrabbitPostgresPasswordFile` | Jackrabbit postgres password file location                                                                                       |  `/etc/gluu/conf/jackrabbit_admin_password`                 |
+        | `config.configmap.gluuJackrabbitPostgresDatabaseName` | Jackrabbit postgres database name                                                                                                |  i.e `jackrabbbit`                                          |
+        | `config.configmap.gluuJackrabbitPostgresHost`         | Jackrabbit postgres host                                                                                                         |  i.e `postgres.postgres.svc.cluster.local`                  |
+        | `config.configmap.gluuJackrabbitPostgresPort`         | Jackrabbit postgres port                                                                                                         |  `5432`                                                     |
+        | `config.configmap.gluuJackrabbitSyncInterval`         | Interval between files sync in seconds                                                                                           |  `300`                                                      |
+        | `config.configmap.gluuDocumentStoreType`              | Jackrabbit document store type                                                                                                   |  `LOCAL`, `JCA`                                             |
+        | `config.configmap.lbAddr`                             | Address of LB or nginx                                                                                                           |  i.e `axx-109xx52.us-west-2.elb.amazonaws.com`              |
+        | `config.configmap.ldapServiceName`                    | ldap service name. Used to connect other services to ldap                                                                        | `opendj`                                                    |
+        | `config.configmap.gluuOxtrustApiEnabled`              | Enable oxTrust API                                                                                                               | `false`                                                     |
+        | `config.configmap.gluuOxtrustApiTestMode`             | Enable oxTrust API Test mode                                                                                                     | `false`                                                     |
+        | `config.configmap.gluuPassportEnabled`                | Auto install passport service chart                                                                                              | `false`                                                     |
+        | `config.configmap.gluuCasaEnabled`                    | Enable Casa                                                                                                                      | `false`                                                     |
+        | `config.configmap.gluuRadiusEnabled`                  | Enable Radius                                                                                                                    | `false`                                                     |
+        | `config.configmap.gluuSamlEnabled`                    | Enable SAML                                                                                                                      | `false`                                                     |
+        | `config.image.repository`                             | Config image repository                                                                                                          | `gluufederation/config-init`                                |
+        | `config.image.tag`                                    | Config image tag                                                                                                                 | `4.2.0_01`                                                  |
 
     === "nginx-ingress"
     
@@ -785,12 +790,17 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW` | If using password flow [couchbase-resource-calc-alpha]                           | `""`, `"Y"` or `"N"`                                                                        |
 | `DEPLOY_MULTI_CLUSTER`                          | Deploying a Multi-cluster [alpha]                                                | `"Y"` or `"N"`                                                                              |
 | `HYBRID_LDAP_HELD_DATA`                         | Type of data to be held in LDAP with a hybrid installation of couchbase and LDAP | `""`, `"default"`, `"user"`, `"site"`, `"cache"` or `"token"`                               |
-| `LDAP_JACKRABBIT_VOLUME`                        | LDAP/Jackrabbit Volume type                                                                | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
+| `LDAP_JACKRABBIT_VOLUME`                        | LDAP/Jackrabbit Volume type                                                      | `""`, `"io1"`,`"ps-ssd"`, `"Premium_LRS"`                                                   |
 | `APP_VOLUME_TYPE`                               | Volume type for LDAP persistence                                                 | [options](#app_volume_type-options)                                                         |
 | `INSTALL_JACKRABBIT`                            | Install Jackrabbit                                                               | `"Y"` or `"N"`                                                                              |
 | `JACKRABBIT_STORAGE_SIZE`                       | Jackrabbit volume storage size                                                   | `""` i.e `"4Gi"`                                                                            |
 | `JACKRABBIT_URL`                                | http:// url for Jackrabbit                                                       | i.e `"http://jackrabbit:8080"`                                                              |
-| `JACKRABBIT_USER`                               | Jackrabbit user                                                                  | `"admin"`                                                                                   |
+| `JACKRABBIT_ADMIN_ID`                           | Jackrabbit admin ID                                                              | i.e `"admin"`                                                                               |
+| `JACKRABBIT_ADMIN_PASSWORD`                     | Jackrabbit admin password                                                        | i.e `"admin"`                                                                           |
+| `JACKRABBIT_CLUSTER`                            | Jackrabbit Cluster mode                                                          | `"N"` or `"Y"`                                                                              |
+| `JACKRABBIT_PG_USER`                            | Jackrabbit postgres username                                                     | i.e `"jackrabbit"`                                                                          |
+| `JACKRABBIT_PG_PASSWORD`                        | Jackrabbit postgres password                                                     | i.e `"jackrabbbit"`                                                                         |
+| `JACKRABBIT_DATABASE`                           | Jackrabbit postgres database name                                                | i.e `"jackrabbit"`                                                                          |
 | `LDAP_STATIC_VOLUME_ID`                         | LDAP static volume id (AWS EKS)                                                  | `""` or `"<static-volume-id>"`                                                              |
 | `LDAP_STATIC_DISK_URI`                          | LDAP static disk uri (GCE GKE or Azure)                                          | `""` or `"<disk-uri>"`                                                                      |
 | `LDAP_BACKUP_SCHEDULE`                          | LDAP back up cron job frequency                                                  |  i.e `"*/30 * * * *"`                                                                       |
@@ -964,6 +974,76 @@ Examples:
     ```
     kubectl scale --replicas=2 statefulset oxtrust
     ```
+    
+### Working with Jackrabbit
+
+| Services         | Folder  / File                      |  Jackrabbit Repository                                  | Method                 |
+| ---------------- | ----------------------------------- | ------------------------------------------------------- | ---------------------- |
+| `oxAuth`         | `/opt/gluu/jetty/oxauth/custom`     | `/repository/default/opt/gluu/jetty/oxauth/custom`      | `PULL` from Jackrabbit |
+| `oxTrust`        | `/opt/gluu/jetty/identity/custom`   |  `/repository/default/opt/gluu/jetty/identity/custom`   | `PULL` from Jackrabbit |
+| `Casa`           | `/opt/gluu/jetty/casa`              | `/repository/default/opt/gluu/jetty/casa`               | `PULL` from Jackrabbit |
+
+The above means that Jackrabbit will maintain the source folder on all replicas of a service. If one pushed a custom file to `/opt/gluu/jetty/oxauth/custom` at one replica all other replicas would have this file.
+
+#### oxTrust --> Jackrabbit --> oxShibboleth
+
+| Services         | Folder  / File                      |  Jackrabbit Repository                                  | Method                 |
+| ---------------- | ----------------------------------- | ------------------------------------------------------- | ---------------------- |
+| `oxTrust`        | `/opt/shibboleth-idp`               |  `/repository/default/opt/shibboleth-idp`               | `PUSH` to Jackrabbit   |
+| `oxShibboleth`   | `/opt/shibboleth-idp`               | `/repository/default/opt/shibboleth-idp`                | `PULL` from Jackrabbit |
+
+#### oxAuth --> Jackrabbit --> Casa
+
+| Services         | Folder  / File                      |  Jackrabbit Repository                                  | Method                 |
+| ---------------- | ----------------------------------- | ------------------------------------------------------- | ---------------------- |
+| `oxAuth `        | `/etc/certs/otp_configuration.json` |  `/repository/etc/certs/otp_configuration.json`         | `PUSH` to Jackrabbit   |
+| `oxAuth `        | `/etc/certs/super_gluu_creds.json`  |  `/repository/default/etc/certs/super_gluu_creds.json`  | `PUSH` to Jackrabbit   |
+| `Casa`           | `/etc/certs/otp_configuration.json` | `/repository/etc/certs/otp_configuration.json`          | `PULL` from Jackrabbit |
+| `Casa`           | `/etc/certs/super_gluu_creds.json`  | `/repository/default/etc/certs/super_gluu_creds.json`   | `PULL` from Jackrabbit |
+
+
+
+=== "File managers"
+
+    !!!note
+        You can use any client to connect to Jackrabbit. We assume Gluu is installed in `gluu` namespace
+
+    1. Port forward Jackrabbit at `localhost` on port `8080`
+    
+        ```bash
+            kubectl port-forward jackrabbit-0 --namespace gluu 8080:8080
+        ```
+    
+    
+    1. Optional: If your managing VM is in the cloud you must forward the connection to the mac, linux or windows computer you are working from.
+    
+        ```bash
+            ssh -i <key.pem> -L 8080:localhost:8080 user-of-managing-vm@ip-of-managing-vm
+        ```
+        
+    1. Use any filemanager to connect to Jackrabbit. Here are some examples:
+    
+        === "Linux"
+        
+            Open file manager which maybe `Nautilus` and find `Connect to Server` place the address which should be `http://localhost:8080`. By default the username and password are `admin` if not changed in `etc/gluu/conf/jca_password`.
+        
+        === "Windows"
+        
+            Open  `My PC` and inside the address that might read your `C` drive place the address which should be `http://localhost:8080`. By default the username and password are `admin` if not changed in `etc/gluu/conf/jca_password`.
+            
+        === "Mac"
+        
+            Open `Finder` , `Go` then `Connect to Server` and place the address which should be `http://localhost:8080`. By default the username and password are `admin` if not changed in `etc/gluu/conf/jca_password`. 
+        
+=== "Script"
+
+    !!!warning
+        Used for quick testing with Jackrabbit and should be avoided. 
+
+    1. Copy files to Jackrabbit container at `/opt/webdav`
+    
+    1. Run `python3 /app/scripts/jca_sync.py` .
+
 
 ## Build pygluu-kubernetes installer
 

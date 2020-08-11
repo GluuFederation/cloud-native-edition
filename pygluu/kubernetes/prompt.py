@@ -101,7 +101,12 @@ class Prompt:
                                 INSTALL_JACKRABBIT="",
                                 JACKRABBIT_STORAGE_SIZE="",
                                 JACKRABBIT_URL="",
-                                JACKRABBIT_USER="",
+                                JACKRABBIT_ADMIN_ID="",
+                                JACKRABBIT_ADMIN_PASSWORD="",
+                                JACKRABBIT_CLUSTER="",
+                                JACKRABBIT_PG_USER="",
+                                JACKRABBIT_PG_PASSWORD="",
+                                JACKRABBIT_DATABASE="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -500,19 +505,41 @@ class Prompt:
                         "the jackrabbit content repository is either installed locally or remotely")
             self.settings["INSTALL_JACKRABBIT"] = confirm_yesno("Install Jackrabbit content repository", default=True)
 
-        if self.settings["INSTALL_JACKRABBIT"] == "N":
-            if not self.settings["JACKRABBIT_URL"]:
-                self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url",
-                                                               default="http://jackrabbit:8080")
-            if not self.settings["JACKRABBIT_USER"]:
-                self.settings["JACKRABBIT_USER"] = click.prompt("Please enter jackrabbit user", default="admin")
-            logger.info("Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod")
-        else:
+        jackrabbit_cluster_prompt = "Is"
+        if self.settings["INSTALL_JACKRABBIT"] == "Y":
             if not self.settings["JACKRABBIT_STORAGE_SIZE"]:
                 self.settings["JACKRABBIT_STORAGE_SIZE"] = click.prompt(
                     "Size of Jackrabbit content repository volume storage", default="4Gi")
-            self.settings["JACKRABBIT_USER"] = "admin"
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
+            jackrabbit_cluster_prompt = "Enable"
+
+        if not self.settings["JACKRABBIT_URL"]:
+            self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url.",
+                                                           default="http://jackrabbit:8080")
+        if not self.settings["JACKRABBIT_ADMIN_ID"]:
+
+            self.settings["JACKRABBIT_ADMIN_ID"] = click.prompt("Please enter Jackrabit admin user", default="admin")
+
+        if not self.settings["JACKRABBIT_ADMIN_PASSWORD"]:
+            self.settings["JACKRABBIT_ADMIN_PASSWORD"] = prompt_password("jackrabbit-admin", 24)
+
+        if not self.settings["JACKRABBIT_CLUSTER"]:
+            self.settings["JACKRABBIT_CLUSTER"] = confirm_yesno("{} Jackrabbit in cluster mode[beta] "
+                                                                "Recommended in production"
+                                                                .format(jackrabbit_cluster_prompt), default=True)
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            self.prompt_postgres()
+            if not self.settings["JACKRABBIT_PG_USER"]:
+                self.settings["JACKRABBIT_PG_USER"] = click.prompt("Please enter a user for jackrabbit postgres "
+                                                                   "database",
+                                                                   default="jackrabbit")
+
+            if not self.settings["JACKRABBIT_PG_PASSWORD"]:
+                self.settings["JACKRABBIT_PG_PASSWORD"] = prompt_password("jackrabbit-postgres")
+
+            if not self.settings["JACKRABBIT_DATABASE"]:
+                self.settings["JACKRABBIT_DATABASE"] = click.prompt("Please enter jackrabbit postgres database name",
+                                                                    default="jackrabbit")
 
     def prompt_postgres(self):
         """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb

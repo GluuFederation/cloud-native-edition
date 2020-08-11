@@ -121,7 +121,7 @@ def test_prompt_jackrabbit_enable(monkeypatch, prompter):
 
     prompter.prompt_jackrabbit()
     assert prompter.settings["INSTALL_JACKRABBIT"] == "Y"
-    assert prompter.settings["JACKRABBIT_USER"] == "admin"
+    assert prompter.settings["JACKRABBIT_ADMIN_ID"] == "admin"
     assert prompter.settings["JACKRABBIT_URL"] == "http://jackrabbit:8080"
     assert prompter.settings["JACKRABBIT_STORAGE_SIZE"] == "4Gi"
 
@@ -130,7 +130,7 @@ def test_prompt_jackrabbit_disable_no_url(monkeypatch, prompter):
     monkeypatch.setattr("click.confirm", lambda x, default: False)
     monkeypatch.setattr("click.prompt", lambda x, default: "http://jackrabbit:8080")
 
-    prompter.settings["JACKRABBIT_USER"] = "admin"
+    prompter.settings["JACKRABBIT_ADMIN_ID"] = "admin"
     prompter.prompt_jackrabbit()
     assert prompter.settings["INSTALL_JACKRABBIT"] == "N"
     assert prompter.settings["JACKRABBIT_URL"] == "http://jackrabbit:8080"
@@ -143,7 +143,7 @@ def test_prompt_jackrabbit_disable_no_user(monkeypatch, prompter):
     prompter.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
     prompter.prompt_jackrabbit()
     assert prompter.settings["INSTALL_JACKRABBIT"] == "N"
-    assert prompter.settings["JACKRABBIT_USER"] == "admin"
+    assert prompter.settings["JACKRABBIT_ADMIN_ID"] == "admin"
 
 
 def test_prompt_confirm_params(monkeypatch, prompter):

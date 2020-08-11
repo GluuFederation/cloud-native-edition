@@ -23,6 +23,7 @@ spec:
                     values:
                       - jackrabbit
               topologyKey: "kubernetes.io/hostname"
+      volumes: []
       containers:
       - name: jackrabbit
         imagePullPolicy: Always

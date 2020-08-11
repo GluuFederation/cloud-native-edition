@@ -9,6 +9,9 @@ service:
 # values declaration
 replicas: 1
 
+secrets:
+  gluuJackrabbitAdminPass: admin
+
 image:
   repository: gluufederation/jackrabbit
   tag: 4.2.0_01

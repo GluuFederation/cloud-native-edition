@@ -14,8 +14,8 @@ data:
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
   GLUU_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
   GLUU_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
-  GLUU_JCA_SYNC_INTERVAL: {{ .Values.configmap.gluuJcaSyncInterval | quote }}
-  GLUU_JCA_URL: {{ .Values.configmap.gluuJcaUrl | quote }}
+  GLUU_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
+  GLUU_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
   GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
@@ -52,9 +52,17 @@ data:
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
-  GLUU_JCA_RMI_URL: {{ .Values.configmap.gluuJcaRmiUrl | quote }}
-  GLUU_JCA_USERNAME: {{ .Values.configmap.gluuJcaUsername | quote }}
-  GLUU_JCA_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }}
+  {{ if eq .Values.global.gluuJackrabbitCluster "true" }}
+  GLUU_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
+  GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
+  GLUU_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
+  GLUU_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
+  GLUU_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
+  GLUU_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
+  GLUU_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
+  GLUU_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
+  # GLUU_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
+  {{- end }}
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
