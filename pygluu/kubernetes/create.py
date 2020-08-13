@@ -138,7 +138,6 @@ def main():
 
         elif args.subparser_name == "uninstall-gg-dbmode":
             kustomize = Kustomize(settings, timeout)
-            kustomize.uninstall_postgres()
             kustomize.uninstall_kong()
             kustomize.uninstall_gluu_gateway_ui()
 

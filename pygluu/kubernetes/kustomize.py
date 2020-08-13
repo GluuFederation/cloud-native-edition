@@ -981,9 +981,7 @@ class Kustomize(object):
             postgres_init_sql = postgres_init_sql + postgres_init_sql_jackrabbit
         return postgres_init_sql
 
-    def deploy_postgres(self):
-        self.uninstall_postgres()
-        self.kubernetes.create_namespace(name=self.settings["POSTGRES_NAMESPACE"], labels={"app": "postgres"})
+    def create_patch_secret_init_sql(self):
         postgres_init_sql = self.generate_postgres_init_sql
         encoded_postgers_init_bytes = base64.b64encode(postgres_init_sql.encode("utf-8"))
         encoded_postgers_init_string = str(encoded_postgers_init_bytes, "utf-8")
@@ -991,6 +989,11 @@ class Kustomize(object):
                                                           namespace=self.settings["POSTGRES_NAMESPACE"],
                                                           literal="data.sql",
                                                           value_of_literal=encoded_postgers_init_string)
+
+    def deploy_postgres(self):
+        self.uninstall_postgres()
+        self.kubernetes.create_namespace(name=self.settings["POSTGRES_NAMESPACE"], labels={"app": "postgres"})
+        self.create_patch_secret_init_sql()
         postgres_storage_class = Path("./postgres/storageclasses.yaml")
         self.analyze_storage_class(postgres_storage_class)
         self.kubernetes.create_objects_from_dict(postgres_storage_class)
@@ -1133,6 +1136,17 @@ class Kustomize(object):
         # Jackrabbit Cluster would have installed postgres
         if self.settings["JACKRABBIT_CLUSTER"] == "N":
             self.deploy_postgres()
+        else:
+            self.create_patch_secret_init_sql()
+            logger.info("Restarting postgres...please wait 2mins..")
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=0,
+                                                                namespace=self.settings["POSTGRES_NAMESPACE"])
+            time.sleep(120)
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=3,
+                                                                namespace=self.settings["POSTGRES_NAMESPACE"])
+            self.kubernetes.check_pods_statuses(self.settings["POSTGRES_NAMESPACE"], "app=postgres", self.timeout)
         self.deploy_kong()
         self.kustomize_gluu_gateway_ui()
         self.adjust_fqdn_yaml_entries()
