@@ -405,8 +405,9 @@ class Kustomize(object):
                     parser["spec"]["template"]["spec"]["containers"][0]["command"] = \
                         ['/bin/sh', '-c', '/usr/bin/python3 /scripts/update-lb-ip.py & \n/app/scripts/entrypoint.sh\n']
                     volume_mount_list = parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
-                    parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"][len(volume_mount_list) - 1] = \
-                        dict([('mountPath', '/scripts'), ('name', 'update-lb-ip')])
+                    if {"mountPath": "/scripts", "name": "update-lb-ip"} not in volume_mount_list:
+                        parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
+                            {"mountPath": "/scripts", "name": "update-lb-ip"})
                     parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings["GLUU_FQDN"]]
                     parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings["HOST_EXT_IP"]
                 parser.dump_it()

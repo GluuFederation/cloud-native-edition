@@ -104,7 +104,7 @@ jobs:
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
           "JACKRABBIT_ADMIN_ID": "admin",
-          "JACKRABBIT_ADMIN_PASSWORD": "admin",s
+          "JACKRABBIT_ADMIN_PASSWORD": "admin",
           "JACKRABBIT_CLUSTER": "Y",
           "JACKRABBIT_PG_USER": "jackrabbit",
           "JACKRABBIT_PG_PASSWORD": "jackrabbit",
