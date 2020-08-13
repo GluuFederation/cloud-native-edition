@@ -1583,6 +1583,8 @@ class Kustomize(object):
                 self.uninstall_postgres()
                 self.uninstall_kong()
                 self.uninstall_gluu_gateway_ui()
+            elif self.settings["JACKRABBIT_CLUSTER"] == "Y":
+                self.uninstall_postgres()
 
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         self.kubernetes.delete_cronjob(self.settings["GLUU_NAMESPACE"], "app=oxauth-key-rotation")

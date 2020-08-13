@@ -29,3 +29,19 @@ spec:
   conflictResolution: seqno
   enableFlush: true
   compressionMode: passive
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseEphemeralBucket
+metadata:
+  name: gluu-session
+  labels:
+    cluster: gluu-couchbase
+spec:
+  name: gluu_session
+  memoryQuota: 100Mi
+  replicas: 1
+  ioPriority: high
+  evictionPolicy: nruEviction
+  conflictResolution: seqno
+  enableFlush: true
+  compressionMode: passive
