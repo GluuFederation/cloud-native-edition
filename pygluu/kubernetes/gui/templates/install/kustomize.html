@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+    <div class="card border-0">
+      <div class="card-header">
+        <div>
+          <img class="mx-auto d-block" src="/green-logo.svg" alt="Gluu green logo">
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="text-center">Gluu Cloud Native Edition</h3>
+        <div class="d-flex align-items-center">
+          <div>
+            <span id="progress" class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
+            <span id="install_status" class="font-weight-bold"></span>
+          </div>
+        </div>
+        <p class="text-muted text-monospace m-3"><span id="output"></span></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block custom_script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
+<script>
+    var output = document.getElementById('output');
+    var installStatus = document.getElementById('install_status');
+    var progress = document.getElementById('progress');
+    var installBtn = document.getElementById('installTrigger');
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+
+    window.addEventListener('load', (event) => {
+      socket.emit('install')
+    });
+
+    socket.on('response', response => {
+      if(response.status == 'COMPLETED'){
+        install_status.innerHTML = 'Installation Completed';
+        progress.classList.add('collapse')
+        socket.emit('disconnect')
+      }
+      install_status.innerHTML = response.title;
+      output.innerHTML = response.log;
+    });
+
+</script>
+{% endblock %}

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 import argparse
+import logging
 from flask import Flask
-from flask_wtf.csrf import CSRFProtect
-from pygluu.kubernetes.common import copy_templates
+
+from .extensions import csrf, socketio
 from .views import wizard
+from .install import install
+from pygluu.kubernetes.common import copy_templates
 
 
 def create_app():
@@ -15,11 +18,12 @@ def create_app():
     app.config.from_object(cfg)
 
     # init csrf
-    csrf = CSRFProtect()
     csrf.init_app(app)
+    socketio.init_app(app)
 
     # register blueprint
     app.register_blueprint(wizard)
+    app.register_blueprint(install)
 
     return app
 
@@ -37,6 +41,11 @@ def main():
 
     copy_templates()
     app = create_app()
+    app.logger.disabled = True
+    log = logging.getLogger('werkzeug')
+    logging.getLogger('socketio').setLevel(logging.ERROR)
+    logging.getLogger('engineio').setLevel(logging.ERROR)
+    log.disabled = True
     app.run(host="0.0.0.0", port=port, debug=debug)
 
 

@@ -29,7 +29,9 @@ body {
     border-color: #03a96d; /*set the color you want here*/
 }
 
-
+.text-primary {
+    color: #03a96d !important;
+}
 /* This is the default state */
 .custom-radio .custom-control-label::before {
     background-color: #0000;  /* orange */

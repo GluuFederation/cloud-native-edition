@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
  License terms and conditions for Gluu Cloud Native Edition:

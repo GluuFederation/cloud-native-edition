@@ -64,7 +64,9 @@ setup(
         "Flask==1.1.2",
         "Click!=7.0,>=6.7",
         "Flask-WTF >= 0.14.2",
-        "email_validator >= 1.1.0"
+        "email_validator >= 1.1.0",
+        "Flask-SocketIO >= 4.3.1",
+        "Pygtail >= 0.11.1",
     ],
     dependency_links=[
         get_k8s_pkg(),  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
