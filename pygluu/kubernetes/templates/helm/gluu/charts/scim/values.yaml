@@ -18,3 +18,4 @@ ports:
 # service
 service:
   scimServiceName: scim
+  name: http-scim

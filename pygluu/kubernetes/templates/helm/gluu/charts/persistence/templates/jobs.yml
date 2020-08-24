@@ -18,6 +18,17 @@ spec:
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        {{- if .Values.global.istio.enabled }}
+        command:
+          - tini
+          - -g
+          - --
+          - /bin/sh
+          - -c
+          - |
+            /app/scripts/entrypoint.sh
+            curl -X POST http://localhost:15020/quitquitquit
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm

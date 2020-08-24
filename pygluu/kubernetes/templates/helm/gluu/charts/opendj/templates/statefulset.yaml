@@ -17,7 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "opendj.name" . }} 
+        app: {{ include "opendj.name" . }}
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ include "opendj.fullname" . }}

@@ -4,6 +4,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oxpassport
+  annotations:
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
 spec:
   # serviceName: oxpassport
   replicas: 1
@@ -11,6 +13,11 @@ spec:
     matchLabels:
       app: oxpassport
   template:
+    metadata:
+      labels:
+        APP_NAME: oxpassport
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
       - name: oxpassport

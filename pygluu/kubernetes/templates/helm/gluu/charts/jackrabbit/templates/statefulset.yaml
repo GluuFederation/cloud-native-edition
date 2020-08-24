@@ -17,6 +17,10 @@ spec:
     metadata:
       labels:
         app: {{ include "jackrabbit.name" . }}
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       volumes:
       {{- if eq .Values.global.gluuJackrabbitCluster "true" }}

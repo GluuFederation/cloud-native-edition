@@ -74,6 +74,9 @@ jobs:
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "KONG_HELM_RELEASE_NAME": "kong",
           "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
+          "USE_ISTIO": "Y",
+          "USE_ISTIO_INGRESS": "N",
+          "ISTIO_SYSTEM_NAMESPACE": "istio-system",
           "NODES_IPS": [
             "$ip"
           ],
@@ -191,9 +194,9 @@ jobs:
     - name: Install microk8s
       run: |
         alias="kubectl=microk8s.kubectl"
-        sudo snap install microk8s --classic --channel=1.16/stable
+        sudo snap install microk8s --classic
         sudo microk8s.status --wait-ready
-        sudo microk8s.enable dns registry ingress
+        sudo microk8s.enable dns registry ingress istio
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
@@ -219,11 +222,11 @@ jobs:
           sudo microk8s.kubectl get po -n cbns
           sudo microk8s.kubectl get po -n gluu
           cat /home/runner/work/test/settings.json
-          sudo kubectl -n gluu wait --for=condition=available --timeout=900s deploy/gluu-oxauth || sudo kubectl logs -l app=oxauth -n gluu
-          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -n gluu
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -n gluu
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -n gluu
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -n gluu
-          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -n gluu
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-radius || sudo kubectl logs -l app=radius -n gluu
+          sudo kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-oxauth || sudo kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
+          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
+          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-radius || sudo kubectl logs -l app=radius -c radius -n gluu || echo "Not Found"
 

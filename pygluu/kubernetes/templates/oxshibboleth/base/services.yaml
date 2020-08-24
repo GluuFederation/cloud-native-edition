@@ -7,6 +7,6 @@ metadata:
 spec:
   ports:
   - port: 8080
-    name: oxshibboleth
+    name: http-oxshibboleth
   selector:
     app: oxshibboleth

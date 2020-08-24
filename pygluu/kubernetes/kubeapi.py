@@ -3,12 +3,14 @@
  https://www.apache.org/licenses/LICENSE-2.0
 """
 
+import sys
+import time
+
 from kubernetes import client, utils, config
 from kubernetes.stream import stream
+
+from .common import get_logger, check_microk8s_kube_config_file, exec_cmd
 from .yamlparser import Parser
-from .common import get_logger, check_microk8s_kube_config_file
-import time
-import sys
 
 logger = get_logger("gluu-kubernetes-api")
 
@@ -767,8 +769,13 @@ class Kubernetes(object):
                     manifest["metadata"]["namespace"] = namespace
                 utils.create_from_dict(self.api_client, manifest)
                 logger.info('Created {}/{}'.format(manifest["kind"], manifest["metadata"]["name"]))
-                retry = False
             except (client.rest.ApiException, Exception) as e:
+                # AttributeError: module 'kubernetes.client' has no attribute 'NetworkingIstioIoV1alpha3Api'
+                if "module 'kubernetes.client' has no attribute 'NetworkingIstioIoV1alpha3Api'" in str(e):
+                    logger.warning("Creating {} failed.".format(manifest["kind"]))
+                    logger.info("Trying again using kubectl...")
+                    exec_cmd("kubectl apply -f {}".format(filepath))
+                    break
                 self.check_create_error_and_response(e, manifest["kind"], manifest["metadata"]["name"])
 
     def list_pod_name_by_label(self, namespace="default", app_label=None):

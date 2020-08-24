@@ -13,6 +13,7 @@ spec:
     {{- range $key, $value := .Values.ports }}
     - port: {{ $value.port }}
       name: {{ $key }}
+      targetPort: {{ $value.targetPort }}
     {{- end }}
   clusterIP: None
   selector:

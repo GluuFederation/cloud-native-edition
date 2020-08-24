@@ -1,0 +1,26 @@
+{{- if .Values.global.istio.ingress }}
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  creationTimestamp: null
+  name: {{ .Release.Name }}-istio-casa
+  namespace: {{.Release.Namespace}}
+spec:
+  gateways:
+  - {{ .Release.Name }}-global-gtw
+  hosts:
+  - {{ .Values.global.domain }}
+  http:
+  - name: {{ .Release.Name }}-istio-casa
+    match:
+    - uri:
+        exact: /casa
+    route:
+    - destination:
+        host: {{ .Values.service.casaServiceName }}.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+{{- end }}

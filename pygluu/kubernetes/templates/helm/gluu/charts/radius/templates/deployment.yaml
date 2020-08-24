@@ -6,6 +6,7 @@ metadata:
   name: {{ include "radius.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: radius
 {{ include "radius.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
@@ -18,6 +19,7 @@ spec:
       labels:
         app: {{ include "radius.name" . }}
         release: {{ .Release.Name }}
+        APP_NAME: radius
     spec:
       containers:
       - name: {{ .Chart.Name }}
@@ -95,7 +97,7 @@ spec:
         {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
-        - ip: {{ .Values.global.nginxIp }}
+        - ip: {{ .Values.global.lbIp }}
           hostnames:
             - {{ .Values.global.domain }} 
       {{- end }}

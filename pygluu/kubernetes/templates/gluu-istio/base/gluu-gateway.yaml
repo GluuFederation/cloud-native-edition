@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: gluu-global-gtw
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  # oxtrust
+  - port:
+      number: 80
+      name: http-oxtrust
+      protocol: HTTP
+    hosts:
+      - demoexample.gluu.org
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+      - demoexample.gluu.org
+    tls:
+      mode: SIMPLE # enable https on this port
+      credentialName: tls-certificate # fetch cert from k8s secret
+  

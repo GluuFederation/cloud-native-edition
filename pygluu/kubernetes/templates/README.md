@@ -45,6 +45,8 @@ Please calculate the minimum required resources as per services deployed. The fo
             aws-cli
             kubectl version
     
+    - **Optional[alpha]:** If using Istio please [install](https://istio.io/latest/docs/setup/install/standalone-operator/) it prior to installing Gluu. You may choose to use any installation method Istio supports. If you have insalled istio ingress , a loadbalancer will have been created. Please save the address of loadblancer for use later during installation.
+
     !!!note
         Default  AWS deployment will install a classic load balancer with an `IP` that is not static. Don't worry about the `IP` changing. All pods will be updated automatically with our script when a change in the `IP` of the load balancer occurs. However, when deploying in production, **DO NOT** use our script. Instead, assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console).
       
@@ -74,6 +76,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         
     1.  If a connection is not made to google consul using google account the call to the api will fail. Either connect to google consul using an associated google account and run any `kubectl` command like `kubectl get pod` or create a service account using a json key [file](https://cloud.google.com/docs/authentication/getting-started).
     
+    - **Optional[alpha]:** If using Istio please [install](https://istio.io/latest/docs/setup/install/standalone-operator/) it prior to installing Gluu. You may choose to use any installation method Istio supports. If you have insalled istio ingress , a loadbalancer will have been created. Please save the ip of loadblancer for use later during installation.
 
     
 === "DOKS"
@@ -82,6 +85,8 @@ Please calculate the minimum required resources as per services deployed. The fo
     ### Setup Cluster
     
     -  Follow this [guide](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/) to create digital ocean kubernetes service cluster and connect to it.
+
+    - **Optional[alpha]:** If using Istio please [install](https://istio.io/latest/docs/setup/install/standalone-operator/) it prior to installing Gluu. You may choose to use any installation method Istio supports. If you have insalled istio ingress , a loadbalancer will have been created. Please save the ip of loadblancer for use later during installation.
 
 === "AKS"
     ## Azure - AKS
@@ -98,6 +103,8 @@ Please calculate the minimum required resources as per services deployed. The fo
     -  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#create-aks-cluster) to create the AKS cluster
     
     -  Follow this [section](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#connect-to-the-cluster) to connect to the AKS cluster
+    
+    - **Optional[alpha]:** If using Istio please [install](https://istio.io/latest/docs/setup/install/standalone-operator/) it prior to installing Gluu. You may choose to use any installation method Istio supports. If you have insalled istio ingress , a loadbalancer will have been created. Please save the ip of loadblancer for use later during installation.
 
       
 === "Minikube"
@@ -118,11 +125,14 @@ Please calculate the minimum required resources as per services deployed. The fo
     1. Configure `kubectl` to use the cluster:
     
             kubectl config use-context minikube
+            
     1. Enable ingress on minikube
     
         ```bash
         minikube addons enable ingress
         ```
+        
+    1. **Optional[alpha]:** If using Istio please [install](https://istio.io/latest/docs/setup/install/standalone-operator/) it prior to installing Gluu. You may choose to use any installation method Istio supports.Please note that at the moment Istio ingress is not supported with Minikube. 
     
 === "MicroK8s"
     ## MicroK8s
@@ -138,14 +148,20 @@ Please calculate the minimum required resources as per services deployed. The fo
         ```bash
         sudo microk8s.enable helm3 storage ingress dns
         ```
-           
+        
+    1. **Optional[alpha]:** If using Istio please enable it.  Please note that at the moment Istio ingress is not supported with Microk8s.
+    
+        ```bash
+        sudo microk8s.enable istio
+        ```   
+      
 2. Install using one of the following :
 
 === "Kustomize"
     ## Install Gluu using `pygluu-kubernetes`
     
     1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
-    
+
     1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
     
     
@@ -189,7 +205,7 @@ Please calculate the minimum required resources as per services deployed. The fo
       
     #### Installing Gluu using Helm manually
     
-    1. Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
+    1. **Optional if not using istio ingress:** Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
     
        ```bash
        helm repo add stable https://kubernetes-charts.storage.googleapis.com
@@ -271,8 +287,8 @@ Please calculate the minimum required resources as per services deployed. The fo
         provisioner: kubernetes.io/gce-pd #CHANGE-THIS
         lbAddr: ""
         domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-          # Networking configs
-        nginxIp: "" #CHANGE-THIS  to the IP received from the previous step
+        # Networking configs
+        lbIp: "" #CHANGE-THIS  to the IP received from the previous step
         isDomainRegistered: "false" # CHANGE-THIS  "true" or "false" to specify if the domain above is registered or not.
       nginx:
         ingress:
@@ -300,7 +316,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         provisioner: k8s.io/minikube-hostpath #CHANGE-THIS
         lbAddr: ""
         domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-        nginxIp: "" #CHANGE-THIS  to the IP of minikube <minikube ip>
+        lbIp: "" #CHANGE-THIS  to the IP of minikube <minikube ip>
     
       nginx:
         ingress:
@@ -343,7 +359,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         provisioner: microk8s.io/hostpath #CHANGE-THIS
         lbAddr: ""
         domain: demoexample.gluu.org #CHANGE-THIS to the FQDN used for Gluu
-        nginxIp: "" #CHANGE-THIS  to the IP of the microk8s vm
+        lbIp: "" #CHANGE-THIS  to the IP of the microk8s vm
     
       nginx:
         ingress:
@@ -388,6 +404,9 @@ Please calculate the minimum required resources as per services deployed. The fo
     
         | Parameter                                          | Description                                                                                                                      | Default                             |
         | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+        | `global.istio.ingress`                             | Enable use of Istio ingress  [Alpha]                                                                                             | `false`                             |
+        | `global.istio.true`                                | Enable use of Istio in Gluu namespace. This will inject sidecars into Gluu pods.  [Alpha]                                        | `false`                             |     
+        | `global.istio.namespace`                           | Istio namespace  [Alpha]                                                                                                         | `istio-system`                      |           
         | `global.cloud.testEnviroment`                      | Test Environment doesn't include resources section in yaml                                                                       | `false`                             |
         | `global.provisioner`                               | Which cloud provisioner to use when deploying                                                                                    | `k8s.io/minikube-hostpath`          |
         | `global.pool`                                      | Storage class pool                                                                                                               | `default`                           |
@@ -396,7 +415,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `global.azureStorageAccountType`                   | Azure storage class disk type                                                                                                    | `Standard_LRS`                      |
         | `global.azureStorageKind`                          | Azure storage class kind                                                                                                         | `Managed`                           |
         | `global.reclaimPolicy`                             | Storage class reclaim policy                                                                                                     | `Retain`                            |
-        | `global.nginxIp`                                   | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
+        | `global.lbIp`                                      | IP address to be used with a FQDN                                                                                                | `192.168.99.100` (for minikube)     |
         | `global.domain`                                    | DNS domain name                                                                                                                  | `demoexample.gluu.org`              |
         | `global.isDomainRegistered`                        | Whether the domain to be used is registered or not                                                                               | `false`                             |
         | `global.gluuPersistenceType`                       | Which database backend to use                                                                                                    | `ldap`                              |
@@ -725,6 +744,9 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Helm release name                                                          | `"<name>"`                                                                                  |
 | `GLUU_GATEWAY_UI_HELM_RELEASE_NAME`             |  Gluu Gateway UI release name                                                    | `"<name>"`                                                                                  |
 | `INSTALL_GLUU_GATEWAY`                          | Install Gluu Gateway Database mode                                               | `"Y"` or `"N"`                                                                              |
+| `USE_ISTIO`                                     | Enable use of Istio. This will inject sidecars in Gluu pods.[Alpha]              | `"Y"` or `"N"`                                                                              |
+| `USE_ISTIO_INGRESS`                             | Enable Istio ingress.[Alpha]                                                     | `"Y"` or `"N"`                                                                              |
+| `ISTIO_SYSTEM_NAMESPACE`                        | Postgres namespace - Gluu Gateway [Alpha]                                        | `"<name>"`                                                                                  |
 | `POSTGRES_NAMESPACE`                            | Postgres namespace - Gluu Gateway                                                | `"<name>"`                                                                                  |
 | `KONG_NAMESPACE`                                | Kong namespace - Gluu Gateway                                                    | `"<name>"`                                                                                  |
 | `GLUU_GATEWAY_UI_NAMESPACE`                     | Gluu Gateway UI namespace - Gluu Gateway                                         | `"<name>"`                                                                                  |
@@ -847,6 +869,7 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `ENABLE_OXPASSPORT_BOOLEAN`                     | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_CASA_BOOLEAN`                           | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_SAML_BOOLEAN`                           | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
+| `ENABLED_SERVICES_LIST`                         | Used by `pygluu-kubernetes`. List of all enabled services                        | `"[]"`                                                                                   |
 | `EDIT_IMAGE_NAMES_TAGS`                         | Manually place the image source and tag                                          | `"Y"` or `"N"`                                                                              |
 | `JACKRABBIT_IMAGE_NAME`                         | Jackrabbit image repository name                                                 | i.e `"gluufederation/jackrabbit"`                                                           |
 | `JACKRABBIT_IMAGE_TAG`                          | Jackrabbit image tag                                                             | i.e `"4.2.0_02"`                                                                            |

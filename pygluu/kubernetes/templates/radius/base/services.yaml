@@ -9,10 +9,10 @@ metadata:
 spec:
   ports:
   - port: 1812
-    name: radius-authentication
+    name: tcp-radius-authentication
   - port: 1813
-    name: radius-accounting
+    name: tcp-radius-accounting
   - port: 8080
-    name: jetty-service
+    name: http-jetty-service
   selector:
     app: radius

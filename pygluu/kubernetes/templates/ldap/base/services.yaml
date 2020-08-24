@@ -7,19 +7,19 @@ metadata:
 spec:
   ports:
   - port: 1636
-    name: ldaps
+    name: tcp-ldaps
     targetPort: 1636
     protocol: TCP
   - port: 1389
-    name: ldap
+    name: tcp-ldap
     targetPort: 1389
     protocol: TCP
   - port: 8989
-    name: replication
+    name: tcp-replication
     targetPort: 8989
     protocol: TCP
   - port: 4444
-    name: admin
+    name: tcp-admin
     targetPort: 4444
     protocol: TCP
   clusterIP: None

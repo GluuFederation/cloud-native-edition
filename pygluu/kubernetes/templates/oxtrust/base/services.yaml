@@ -7,6 +7,6 @@ metadata:
 spec:
   ports:
   - port: 8080
-    name: oxtrust
+    name: http-oxtrust
   selector:
     app: oxtrust
