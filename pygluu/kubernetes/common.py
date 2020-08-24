@@ -172,11 +172,10 @@ def get_supported_versions():
         return versions, version_number
 
 
-def prompt_password(password, length=6):
+def generate_password(length):
     """
-    Returns randomly generated password,
-    :param password: string for the prompt name
-    :param length: int for the length of the password
+    Returns randomly generated password
+    :param length: Length of password
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
@@ -185,24 +184,33 @@ def prompt_password(password, length=6):
     chars = chars.replace("$", "")
     chars = chars.replace("/", "")
     chars = chars.replace("!", "")
+
     while True:
-        while True:
-            random_password = ''.join(random.choice(chars) for _ in range(length))
-            regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', random_password)
-            if regex_bool:
-                break
+        password = ''.join(random.choice(chars) for _ in range(length))
+        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)
+        if regex_bool:
+            break
 
-        if password == "Redis":
-            random_password = ''
+    return password
 
-        string_random_password = random_password[:1] + "***" + random_password[4:]
+
+def prompt_password(password, length=6):
+    """
+    Prompt password and password confirmation,
+    :param password: string for the prompt name
+    :param length: Length of password
+    :return:
+    """
+    while True:
+        random_password = "" if password == "Redis" else generate_password(length)
+        string_random_password = '' if not random_password else random_password[:1] + "***" + random_password[4:]
         pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
+        regex_bool = True
         if not pw_prompt:
             pw_prompt = random_password
             confirm_pw_prompt = random_password
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
-            regex_bool = True
             if password != "Redis":
                 regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
 
