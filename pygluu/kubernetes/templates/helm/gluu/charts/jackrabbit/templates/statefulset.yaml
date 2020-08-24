@@ -17,7 +17,17 @@ spec:
     metadata:
       labels:
         app: {{ include "jackrabbit.name" . }}
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
+      volumes:
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+      {{- end }}
       containers:
       - name: {{ include "jackrabbit.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -30,6 +40,11 @@ spec:
             containerPort: {{ .Values.ports.jackrabbit.port }}
             protocol: TCP
         volumeMounts:
+        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+          - name: gluu-jackrabbit-admin-pass
+            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            subPath: jackrabbit_admin_password
+        {{- end }}
         {{- range $key, $values := .Values.volumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}

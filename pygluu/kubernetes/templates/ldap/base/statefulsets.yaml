@@ -12,6 +12,11 @@ spec:
       app: opendj
   volumeClaimTemplates: []
   template:
+    metadata:
+      labels:
+        APP_NAME: opendj
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       affinity:
         podAntiAffinity:

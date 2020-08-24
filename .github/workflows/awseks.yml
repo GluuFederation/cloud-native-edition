@@ -88,6 +88,12 @@ jobs:
         cat eks_cluster_name
         eksctl create cluster $EKS_NAME --version 1.15 --nodegroup-name standard-workers --node-type t2.xlarge --zones ${{ secrets.aws_region }}a,${{ secrets.aws_region }}b,${{ secrets.aws_region }}c --nodes 2 --region ${{ secrets.aws_region }} --node-ami auto --ssh-public-key "~/.ssh/id_rsa.pub"
 
+    - name: Install Istio
+      run: |
+          curl -sL https://istio.io/downloadIstioctl | sh -
+          export PATH=$PATH:$HOME/.istioctl/bin
+          istioctl operator init
+
     - name: Create settings.json
       id: settings
       run: |
@@ -114,6 +120,9 @@ jobs:
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "KONG_HELM_RELEASE_NAME": "kong",
           "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
+          "USE_ISTIO": "Y",
+          "USE_ISTIO_INGRESS": "N",
+          "ISTIO_SYSTEM_NAMESPACE": "istio-system",
           "NODES_IPS": [],
           "NODES_ZONES": [],
           "NODES_NAMES": [],
@@ -133,7 +142,12 @@ jobs:
           "INSTALL_JACKRABBIT": "Y",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
-          "JACKRABBIT_USER": "admin",
+          "JACKRABBIT_ADMIN_ID": "admin",
+          "JACKRABBIT_ADMIN_PASSWORD": "admin",
+          "JACKRABBIT_CLUSTER": "Y",
+          "JACKRABBIT_PG_USER": "jackrabbit",
+          "JACKRABBIT_PG_PASSWORD": "jackrabbit",
+          "JACKRABBIT_DATABASE": "jackrabbit",
           "INSTALL_COUCHBASE": "Y",
           "COUCHBASE_NAMESPACE": "cbns",
           "COUCHBASE_VOLUME_TYPE": "io1",
@@ -228,14 +242,14 @@ jobs:
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz install
           sleep 30
-          kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=opendj-0 || sudo kubectl logs -l app=opendj -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=600s deploy/oxauth || kubectl logs -l app=oxauth -n gluu || echo "Not Found"
-          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/casa || kubectl logs -l app=casa -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxd-server || kubectl logs -l app=oxd-server -n gluu || echo "Not Found"
-          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -n gluu
+          kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=opendj-0 || sudo kubectl logs -l app=opendj -c opendj -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=600s deploy/oxauth || kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
+          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/casa || kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxd-server || kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
+          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
           sudo kubectl get po -n gluu
           sudo kubectl delete -f ldap-backup.yaml || echo "Resources not found"
           sudo ./pygluu-kubernetes.pyz uninstall
@@ -246,14 +260,14 @@ jobs:
       run: |
           cd /home/runner/work/test/
           sudo ./pygluu-kubernetes.pyz helm-install
-          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=helm-opendj-0 || sudo kubectl logs -l app=opendj -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=600s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu || echo "Not Found"
-          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxd-server || kubectl logs -l app=oxd-server -n gluu || echo "Not Found"
-          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -n gluu || echo "Not Found"
-          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || kubectl logs -l app=radius -n gluu || echo "Not Found"
+          kubectl wait -n gluu --for=condition=ready pod --timeout=900s -l statefulset.kubernetes.io/pod-name=helm-opendj-0 || sudo kubectl logs -l app=opendj -c opendj -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=600s deploy/helm-oxauth || kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
+          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxd-server || kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
+          kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxshibboleth-0 || kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+          kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || kubectl logs -l app=radius -c radius -n gluu
           sudo helm delete helm-ldap-backup -n gluu || echo "Resources not found"
           sudo kubectl get po -n gluu
           sudo ./pygluu-kubernetes.pyz helm-uninstall
@@ -269,13 +283,13 @@ jobs:
         cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz install
-        kubectl -n gluu wait --for=condition=available --timeout=900s deploy/oxauth || kubectl logs -l app=oxauth -n gluu || echo "Not Found"
-        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/casa || kubectl logs -l app=casa -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxd-server || kubectl logs -l app=oxd-server -n gluu || echo "Not Found"
-        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=600s deploy/oxauth || kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
+        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxtrust-0 || kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxpassport || kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/casa || kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/oxd-server || kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
+        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=oxshibboleth-0 || kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
         kubectl get po -n cbns
         kubectl get po -n gluu
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase
@@ -295,13 +309,13 @@ jobs:
         cat settings.json | sed 's/"COUCHBASE_URL": "couchbase"/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         cat settings.json | sed 's/"COUCHBASE_URL": ""/"COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
         sudo ./pygluu-kubernetes.pyz helm-install
-        kubectl -n gluu wait --for=condition=available --timeout=900s deploy/helm-oxauth || kubectl logs -l app=oxauth -n gluu || echo "Not Found"
-        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxd-server || kubectl logs -l app=oxd-server -n gluu || echo "Not Found"
-        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxshibboleth-0 || kubectl logs -l app=oxshiboleth -n gluu || echo "Not Found"
-        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || kubectl logs -l app=radius -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=600s deploy/helm-oxauth || kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
+        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxtrust-0 || kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxpassport || kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-oxd-server || kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
+        kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxshibboleth-0 || kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+        kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || kubectl logs -l app=radius -c radius -n gluu
         kubectl get po -n cbns
         kubectl get po -n gluu
         kubectl delete -f couchbase-backup.yaml || echo "Resources not found"

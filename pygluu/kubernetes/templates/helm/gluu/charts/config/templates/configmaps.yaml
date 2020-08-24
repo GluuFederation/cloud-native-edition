@@ -14,8 +14,8 @@ data:
   GLUU_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
   GLUU_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
   GLUU_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
-  GLUU_JCA_SYNC_INTERVAL: {{ .Values.configmap.gluuJcaSyncInterval | quote }}
-  GLUU_JCA_URL: {{ .Values.configmap.gluuJcaUrl | quote }}
+  GLUU_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
+  GLUU_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
   GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
@@ -52,9 +52,17 @@ data:
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
-  GLUU_JCA_RMI_URL: {{ .Values.configmap.gluuJcaRmiUrl | quote }}
-  GLUU_JCA_USERNAME: {{ .Values.configmap.gluuJcaUsername | quote }}
-  GLUU_JCA_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }}
+  {{ if eq .Values.global.gluuJackrabbitCluster "true" }}
+  GLUU_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
+  GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
+  GLUU_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
+  GLUU_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
+  GLUU_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
+  GLUU_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
+  GLUU_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
+  GLUU_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
+  # GLUU_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
+  {{- end }}
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
@@ -103,19 +111,52 @@ data:
     import logging
 
     #use the serviceAccount k8s gives to pods
-    config.load_incluster_config() 
+    config.load_incluster_config()
     v1 = client.CoreV1Api()
 
     #global vars
     name = "tls-certificate"
-    namespace = {{ .Release.Namespace | quote }} 
+    namespace = {{ .Release.Namespace | quote }}
+
+    # if istio is enabled
+    istio_ns = {{ .Values.global.istio.namespace | quote }}
+
+    # create cert in istio-system
+    def create_tls_in_istio(cert, key):
+
+        v1 = client.CoreV1Api()
+        try:
+            secret = v1.read_namespaced_secret(name, istio_ns)
+        except client.rest.ApiException as e:
+            if e.status == 404:
+                print('secret/{} in ns/{} does not exist. Creating...'.format(
+                    name, istio_ns))
+                metadata = {
+                    'name': name,
+                    'namespace': istio_ns
+                }
+                data = {
+                    'tls.crt': cert,
+                    'tls.key' : key,
+                }
+                api_version = 'v1'
+                kind = 'Secret'
+                body = client.V1Secret(api_version, data , kind, metadata,
+                    type='kubernetes.io/tls')
+                api_response = v1.create_namespaced_secret(istio_ns, body )
+            else:
+                logging.exception(e)
+            return False
+        else:
+            print('tls-certificate already exists.')
+
 
     # check if gluu secret exists
     def get_certs():
         if ( v1.read_namespaced_secret( 'gluu', namespace ) ):
             ssl_cert = v1.read_namespaced_secret( 'gluu', namespace ).data['ssl_cert']
             ssl_key = v1.read_namespaced_secret( "gluu", namespace ).data['ssl_key']
-            
+
         return ssl_cert, ssl_key
 
     def create_tls(cert, key):
@@ -137,16 +178,23 @@ data:
                 }
                 api_version = 'v1'
                 kind = 'Secret'
-                body = client.V1Secret(api_version, data , kind, metadata, 
+                body = client.V1Secret(api_version, data , kind, metadata,
                     type='kubernetes.io/tls')
                 api_response = v1.create_namespaced_secret(namespace, body )
             else:
                 logging.exception(e)
             return False
-            
+        else:
+            print('tls-certificate already exists.')
+
     def main():
         cert, key = get_certs()
         create_tls(cert, key)
+
+        # create or check cert if istio is enabled
+        {{- if .Values.global.istio.ingress }}
+        create_tls_in_istio(cert, key)
+        {{- end }}
 
     if __name__ == "__main__":
         main()

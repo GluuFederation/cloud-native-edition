@@ -4,6 +4,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: oxshibboleth
+  annotations:
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
   labels:
     APP_NAME: oxshibboleth
 spec:
@@ -17,6 +19,8 @@ spec:
     metadata:
       labels:
         APP_NAME: oxshibboleth
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
       - name: oxshibboleth

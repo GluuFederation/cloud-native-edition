@@ -51,6 +51,11 @@ jobs:
         minikube version: 'v1.7.3'
         kubernetes version: 'v1.16.0'
 
+    - name: Install Istio
+      run: |
+          curl -sL https://istio.io/downloadIstioctl | sh -
+          export PATH=$PATH:$HOME/.istioctl/bin
+          istioctl operator init
 
     - name: Test 1 settings(LDAP)
       id: test1_settings
@@ -82,6 +87,9 @@ jobs:
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "KONG_HELM_RELEASE_NAME": "kong",
           "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": "ggui",
+          "USE_ISTIO": "Y",
+          "USE_ISTIO_INGRESS": "N",
+          "ISTIO_SYSTEM_NAMESPACE": "istio-system",
           "NODES_IPS": [
             "$ip"
           ],
@@ -103,7 +111,12 @@ jobs:
           "INSTALL_JACKRABBIT": "Y",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
-          "JACKRABBIT_USER": "admin",
+          "JACKRABBIT_ADMIN_ID": "admin",
+          "JACKRABBIT_ADMIN_PASSWORD": "admin",
+          "JACKRABBIT_CLUSTER": "Y",
+          "JACKRABBIT_PG_USER": "jackrabbit",
+          "JACKRABBIT_PG_PASSWORD": "jackrabbit",
+          "JACKRABBIT_DATABASE": "jackrabbit",
           "INSTALL_COUCHBASE": "Y",
           "COUCHBASE_NAMESPACE": "cbns",
           "COUCHBASE_VOLUME_TYPE": "io1",

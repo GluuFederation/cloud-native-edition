@@ -2,6 +2,10 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 #global values to be used across charts
 global:
+  istio:
+    ingress: false
+    enabled: false
+    namespace: istio-system
   cloud:
     testEnviroment: false
   # OpenDJ and Jackrabbit storage class
@@ -14,13 +18,14 @@ global:
   azureStorageKind: Managed
   reclaimPolicy: Retain
   # Networking configs
-  nginxIp: "" # SHOULD BE CHANGED FOR CLOUD
+  lbIp: "" # SHOULD BE CHANGED FOR CLOUD
   domain: demoexample.gluu.org
   # specify if the domain above is registered or not.
   isDomainRegistered: "false" # "true" or "false"
   #persistence types and options
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: couchbase
+  gluuJackrabbitCluster: "true"
   # Enable installation of services
   oxauth:
     enabled: true
@@ -114,11 +119,16 @@ config:
     gluuOxdBindIpAddresses: "*"
     gluuLdapUrl: opendj:1636
     # Jackrabbit content repository
-    gluuJcaSyncInterval: 300
-    gluuJcaRmiUrl: http://jackrabbit:8080/rmi
-    gluuJcaUrl: http://jackrabbit:8080
-    gluuJcaUsername: admin
-    gluuJcaPasswordFile: /etc/gluu/conf/jca_password
+    gluuJackrabbitPostgresUser: jackrabbit
+    gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
+    gluuJackrabbitPostgresDatabaseName: jackrabbit
+    gluuJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    gluuJackrabbitPostgresPort: 5432
+    gluuJackrabbitAdminId: admin
+    gluuJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
+    gluuJackrabbitSyncInterval: 300
+    gluuJackrabbitUrl: http://jackrabbit:8080
+    gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     # Options LOCAL / JCA (jackrabbit)
     gluuDocumentStoreType: JCA
     lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
@@ -158,6 +168,8 @@ jackrabbit:
   service:
     jackRabbitServiceName: jackrabbit
   replicas: 1
+  secrets:
+    gluuJackrabbitAdminPass: admin
   storage:
     size: 5Gi
   image:

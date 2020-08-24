@@ -14,7 +14,7 @@ spec:
   ports:
     - port: {{ .Values.service.port }}
       protocol: TCP
-      name: {{ .Values.service.crRotateServiceName }}
+      name: {{ .Values.service.name }}
   selector:
     app: {{ include "cr-rotate.name" . }}
     release: {{ .Release.Name }}

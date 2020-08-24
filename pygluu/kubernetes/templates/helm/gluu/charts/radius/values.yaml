@@ -15,11 +15,11 @@ service:
   type: ClusterIP
   radiusServiceName: radius
   ports:  
-    radius-authentication:
+    tcp-radius-authentication:
       port: 1812
-    radius-accounting: 
+    tcp-radius-accounting:
       port: 1813
-    jetty-service:
+    http-jetty-service:
       port: 8080
 
 resources: 

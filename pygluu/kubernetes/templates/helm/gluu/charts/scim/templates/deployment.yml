@@ -18,6 +18,10 @@ spec:
       labels:
         APP_NAME: scim
         app: {{ include "scim.name" . }}
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ template "gluu.fullname" . }}
@@ -71,7 +75,7 @@ spec:
           periodSeconds: 25
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
-      - ip: {{ .Values.global.nginxIp }}
+      - ip: {{ .Values.global.lbIp }}
         hostnames:
         - {{ .Values.global.domain }}
       {{- end }}

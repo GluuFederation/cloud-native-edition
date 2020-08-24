@@ -6,6 +6,7 @@ metadata:
   name: {{ include "cr-rotate.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: cr-rotote
 {{ include "cr-rotate.labels" . | indent 4 }}
 spec:
   selector:
@@ -17,6 +18,7 @@ spec:
       labels:
         app: {{ include "cr-rotate.name" . }}
         release: {{ .Release.Name }}
+        APP_NAME: cr-rotate
     spec:
       containers:
         - name: {{ .Chart.Name }}

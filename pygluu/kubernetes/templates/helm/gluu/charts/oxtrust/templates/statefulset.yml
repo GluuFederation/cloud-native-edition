@@ -19,6 +19,10 @@ spec:
       labels: 
         app: {{ include "oxtrust.name" . }}
         APP_NAME: oxtrust
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ include "oxtrust.name" . }}
@@ -49,6 +53,11 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
+        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+          - name: gluu-jackrabbit-admin-pass
+            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            subPath: jackrabbit_admin_password
+        {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           - name: {{ include "oxtrust.fullname" .}}-updatelbip
             mountPath: /scripts
@@ -74,6 +83,11 @@ spec:
           initialDelaySeconds: 35
           periodSeconds: 35
       volumes:
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+      {{- end }}
       {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
         - name: {{ include "oxtrust.fullname" .}}-updatelbip
           configMap:
@@ -89,7 +103,7 @@ spec:
       {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
-      - ip: {{ .Values.global.nginxIp }}
+      - ip: {{ .Values.global.lbIp }}
         hostnames:
         - {{ .Values.global.domain }}
       {{- end }}

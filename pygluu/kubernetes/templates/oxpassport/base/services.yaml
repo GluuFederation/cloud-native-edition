@@ -7,6 +7,6 @@ metadata:
 spec:
   ports:
   - port: 8090
-    name: oxpassport
+    name: http-oxpassport
   selector:
     app: oxpassport

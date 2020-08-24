@@ -81,7 +81,9 @@ def main():
         if args.subparser_name == "install" or args.subparser_name == "install-no-wait":
             kustomize = Kustomize(settings, timeout)
             kustomize.uninstall()
-            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            if settings["INSTALL_REDIS"] == "Y" or \
+                    settings["INSTALL_GLUU_GATEWAY"] == "Y" or \
+                    settings["JACKRABBIT_CLUSTER"] == "Y":
                 helm = Helm(settings)
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
@@ -137,7 +139,6 @@ def main():
 
         elif args.subparser_name == "uninstall-gg-dbmode":
             kustomize = Kustomize(settings, timeout)
-            kustomize.uninstall_postgres()
             kustomize.uninstall_kong()
             kustomize.uninstall_gluu_gateway_ui()
 

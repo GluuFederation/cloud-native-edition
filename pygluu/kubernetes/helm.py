@@ -188,7 +188,7 @@ class Helm(object):
         else:
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner
-        values_file_parser["global"]["nginxIp"] = self.settings["HOST_EXT_IP"]
+        values_file_parser["global"]["lbIp"] = self.settings["HOST_EXT_IP"]
         values_file_parser["global"]["domain"] = self.settings["GLUU_FQDN"]
         values_file_parser["global"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
@@ -225,9 +225,25 @@ class Helm(object):
             values_file_parser["global"]["scim"]["enabled"] = True
         if self.settings["INSTALL_JACKRABBIT"] == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
-            values_file_parser["config"]["configmap"]["gluuJcaRmiUrl"] = self.settings["JACKRABBIT_URL"] + "/rmi"
-            values_file_parser["config"]["configmap"]["gluuJcaUrl"] = self.settings["JACKRABBIT_URL"]
-            values_file_parser["config"]["configmap"]["gluuJcaUsername"] = self.settings["JACKRABBIT_USER"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings["JACKRABBIT_URL"]
+            values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitAdminPass"] = self.settings["JACKRABBIT_ADMIN_PASSWORD"]
+        if self.settings["USE_ISTIO_INGRESS"] == "Y":
+            values_file_parser["global"]["istio"]["ingress"] = True
+            values_file_parser["global"]["istio"]["enabled"] = True
+            values_file_parser["global"]["istio"]["namespace"] = self.settings["ISTIO_SYSTEM_NAMESPACE"]
+        elif self.settings["USE_ISTIO"] == "Y":
+            values_file_parser["global"]["istio"]["enabled"] = True
+
+        values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            values_file_parser["global"]["gluuJackrabbitCluster"] = "true"
+            values_file_parser["config"]["configmap"]["gluuJackrabbitAdminId"] = self.settings["JACKRABBIT_ADMIN_ID"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = self.settings["JACKRABBIT_PG_USER"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresDatabaseName"] = self.settings["POSTGRES_URL"]
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresHost"] = self.settings["JACKRABBIT_DATABASE"]
+
+
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"]
 
         if self.settings["PERSISTENCE_BACKEND"] == "hybrid" or \
                 self.settings["PERSISTENCE_BACKEND"] == "ldap":
@@ -322,7 +338,10 @@ class Helm(object):
         Helm install Gluu
         :param install_ingress:
         """
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels={"app": "gluu"})
+        labels = {"app": "gluu"}
+        if self.settings["USE_ISTIO"] == "Y":
+            labels = {"app": "gluu", "istio-injection": "enabled"}
+        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels=labels)
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
             couchbase_app.uninstall()

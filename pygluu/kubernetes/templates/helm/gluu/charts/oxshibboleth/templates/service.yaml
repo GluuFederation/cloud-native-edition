@@ -10,8 +10,8 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      protocol: TCP
-      name: {{ .Values.service.oxShibbolethServiceName }}
+      targetPort: {{ .Values.service.targetPort }}
+      name: {{ .Values.service.name }}
   selector:
     app: {{ include "oxshibboleth.name" . }}
     release: {{ .Release.Name }}

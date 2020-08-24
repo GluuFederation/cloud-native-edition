@@ -10,5 +10,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  port: 8080
   crRotateServiceName: cr-rotate
+  port: 8084
+  name: http-cr-rotate

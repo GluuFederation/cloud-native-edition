@@ -55,11 +55,15 @@ configmap:
   gluuOxdBindIpAddresses: "*"
   gluuLdapUrl: opendj:1636
   # Jackrabbit content repository
-  gluuJcaSyncInterval: 300
-  gluuJcaRmiUrl: http://jackrabbit:8080/rmi
-  gluuJcaUrl: http://jackrabbit:8080
-  gluuJcaUsername: admin
-  gluuJcaPasswordFile: /etc/gluu/conf/jca_password
+  gluuJackrabbitPostgresUser: jackrabbit
+  gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
+  gluuJackrabbitPostgresDatabaseName: jackrabbit
+  gluuJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+  gluuJackrabbitPostgresPort: 5432
+  gluuJackrabbitSyncInterval: 300
+  gluuJackrabbitUrl: http://jackrabbit:8080
+  gluuJackrabbitAdminId: admin
+  gluuJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
   # Options LOCAL / JCA (jackrabbit)
   gluuDocumentStoreType: JCA
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com

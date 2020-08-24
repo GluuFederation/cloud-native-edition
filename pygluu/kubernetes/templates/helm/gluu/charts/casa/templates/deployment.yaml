@@ -20,6 +20,10 @@ spec:
         APP_NAME: casa
         app: {{ include "casa.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -48,6 +52,11 @@ spec:
             - configMapRef: 
                 name: {{ .Release.Name }}-config-cm
           volumeMounts:
+          {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+            - name: gluu-jackrabbit-admin-pass
+              mountPath: /etc/gluu/conf/jackrabbit_admin_password
+              subPath: jackrabbit_admin_password
+          {{- end }}
           {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
             - name: {{ include "casa.fullname" .}}-updatelbip
               mountPath: "/scripts"
@@ -56,7 +65,7 @@ spec:
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
-            - name: cb-crt 
+            - name: cb-crt
               mountPath: "/etc/certs/couchbase.crt"
               subPath: couchbase.crt
           {{- end }}
@@ -81,11 +90,16 @@ spec:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
       volumes:
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+      {{- end }}
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass
-        - name: cb-crt 
+        - name: cb-crt
           secret:
             secretName: {{ .Release.Name }}-cb-crt  
       {{- end }}
@@ -96,7 +110,7 @@ spec:
       {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
-       - ip: {{ .Values.global.nginxIp }}
+       - ip: {{ .Values.global.lbIp }}
          hostnames:
          - {{ .Values.global.domain }}
       {{- end }}

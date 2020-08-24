@@ -39,7 +39,7 @@
 },
   "4.2": {
   "CASA_IMAGE_NAME": "gluufederation/casa",
-  "CASA_IMAGE_TAG": "4.2.0_01",
+  "CASA_IMAGE_TAG": "4.2.0_02",
   "FIDO2_IMAGE_NAME": "gluufederation/fido2",
   "FIDO2_IMAGE_TAG": "4.2.0_01",
   "SCIM_IMAGE_NAME": "gluufederation/scim",
@@ -65,7 +65,7 @@
   "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
   "OXTRUST_IMAGE_TAG": "4.2.0_02",
   "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-  "PERSISTENCE_IMAGE_TAG": "4.2.0_01",
+  "PERSISTENCE_IMAGE_TAG": "4.2.0_02",
   "RADIUS_IMAGE_NAME": "gluufederation/radius",
   "RADIUS_IMAGE_TAG": "4.2.0_01",
   "GLUU_GATEWAY_IMAGE_NAME": "gluufederation/gluu-gateway",

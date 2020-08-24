@@ -47,6 +47,11 @@ class Prompt:
         self.config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
                                 "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
 
+        # Default list of enabled services
+        self.enabled_services = ["config", "oxauth", "oxtrust", "persistence", "jackrabbit"]
+
+        self.settings["ENABLED_SERVICES_LIST"] = self.enabled_services
+
         if accept_license:
             self.settings["ACCEPT_GLUU_LICENSE"] = "Y"
         self.prompt_license()
@@ -78,6 +83,9 @@ class Prompt:
                                 POSTGRES_URL="",
                                 KONG_HELM_RELEASE_NAME="",
                                 GLUU_GATEWAY_UI_HELM_RELEASE_NAME="",
+                                USE_ISTIO="",
+                                USE_ISTIO_INGRESS="",
+                                ISTIO_SYSTEM_NAMESPACE="",
                                 NODES_IPS=[],
                                 NODES_ZONES=[],
                                 NODES_NAMES=[],
@@ -101,7 +109,12 @@ class Prompt:
                                 INSTALL_JACKRABBIT="",
                                 JACKRABBIT_STORAGE_SIZE="",
                                 JACKRABBIT_URL="",
-                                JACKRABBIT_USER="",
+                                JACKRABBIT_ADMIN_ID="",
+                                JACKRABBIT_ADMIN_PASSWORD="",
+                                JACKRABBIT_CLUSTER="",
+                                JACKRABBIT_PG_USER="",
+                                JACKRABBIT_PG_PASSWORD="",
+                                JACKRABBIT_DATABASE="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -184,6 +197,7 @@ class Prompt:
                                 ENABLE_OXPASSPORT_BOOLEAN="false",
                                 ENABLE_CASA_BOOLEAN="false",
                                 ENABLE_SAML_BOOLEAN="false",
+                                ENABLED_SERVICES_LIST=[],
                                 OXAUTH_KEYS_LIFE="",
                                 EDIT_IMAGE_NAMES_TAGS="",
                                 CASA_IMAGE_NAME="",
@@ -222,7 +236,7 @@ class Prompt:
                                 GLUU_GATEWAY_UI_IMAGE_TAG="",
                                 UPGRADE_IMAGE_NAME="",
                                 UPGRADE_IMAGE_TAG="",
-                                CONFIRM_PARAMS="N",
+                                CONFIRM_PARAMS="N"
                                 )
         return default_settings
 
@@ -269,6 +283,8 @@ class Prompt:
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.items():
             if k not in hidden_settings:
+                if k == "ENABLED_SERVICES_LIST":
+                    v = ", ".join(self.settings["ENABLED_SERVICES_LIST"])
                 print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', k, '|', v, '|'))
 
         if click.confirm("Please confirm the above settings"):
@@ -313,7 +329,7 @@ class Prompt:
         :return:
         """
         versions, version_number = get_supported_versions()
-
+        self.enabled_services.append("upgrade")
         if not self.settings["GLUU_UPGRADE_TARGET_VERSION"]:
             self.settings["GLUU_UPGRADE_TARGET_VERSION"] = click.prompt(
                 "Please enter the version to upgrade Gluu to", default=version_number,
@@ -468,6 +484,9 @@ class Prompt:
         if not self.settings["IS_GLUU_FQDN_REGISTERED"]:
             self.settings["IS_GLUU_FQDN_REGISTERED"] = confirm_yesno("Are you using a globally resolvable FQDN")
 
+            if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
+                self.enabled_services.append("update-lb-ip")
+
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentest.pyz is at.")
         self.generate_main_config()
@@ -500,19 +519,41 @@ class Prompt:
                         "the jackrabbit content repository is either installed locally or remotely")
             self.settings["INSTALL_JACKRABBIT"] = confirm_yesno("Install Jackrabbit content repository", default=True)
 
-        if self.settings["INSTALL_JACKRABBIT"] == "N":
-            if not self.settings["JACKRABBIT_URL"]:
-                self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url",
-                                                               default="http://jackrabbit:8080")
-            if not self.settings["JACKRABBIT_USER"]:
-                self.settings["JACKRABBIT_USER"] = click.prompt("Please enter jackrabbit user", default="admin")
-            logger.info("Jackrabbit password if exits must be mounted at /etc/gluu/conf/jca_password inside each pod")
-        else:
+        jackrabbit_cluster_prompt = "Is"
+        if self.settings["INSTALL_JACKRABBIT"] == "Y":
             if not self.settings["JACKRABBIT_STORAGE_SIZE"]:
                 self.settings["JACKRABBIT_STORAGE_SIZE"] = click.prompt(
                     "Size of Jackrabbit content repository volume storage", default="4Gi")
-            self.settings["JACKRABBIT_USER"] = "admin"
             self.settings["JACKRABBIT_URL"] = "http://jackrabbit:8080"
+            jackrabbit_cluster_prompt = "Enable"
+
+        if not self.settings["JACKRABBIT_URL"]:
+            self.settings["JACKRABBIT_URL"] = click.prompt("Please enter jackrabbit url.",
+                                                           default="http://jackrabbit:8080")
+        if not self.settings["JACKRABBIT_ADMIN_ID"]:
+            self.settings["JACKRABBIT_ADMIN_ID"] = click.prompt("Please enter Jackrabit admin user", default="admin")
+
+        if not self.settings["JACKRABBIT_ADMIN_PASSWORD"]:
+            self.settings["JACKRABBIT_ADMIN_PASSWORD"] = prompt_password("jackrabbit-admin", 24)
+
+        if not self.settings["JACKRABBIT_CLUSTER"]:
+            self.settings["JACKRABBIT_CLUSTER"] = confirm_yesno("{} Jackrabbit in cluster mode[beta] "
+                                                                "Recommended in production"
+                                                                .format(jackrabbit_cluster_prompt), default=True)
+        if self.settings["JACKRABBIT_CLUSTER"] == "Y":
+            self.prompt_postgres()
+            if not self.settings["JACKRABBIT_PG_USER"]:
+                self.settings["JACKRABBIT_PG_USER"] = click.prompt("Please enter a user for jackrabbit postgres "
+                                                                   "database",
+                                                                   default="jackrabbit")
+
+            if not self.settings["JACKRABBIT_PG_PASSWORD"]:
+                self.settings["JACKRABBIT_PG_PASSWORD"] = prompt_password("jackrabbit-postgres")
+
+            if not self.settings["JACKRABBIT_DATABASE"]:
+                self.settings["JACKRABBIT_DATABASE"] = click.prompt("Please enter jackrabbit postgres database name",
+                                                                    default="jackrabbit")
+        update_settings_json_file(self.settings)
 
     def prompt_postgres(self):
         """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
@@ -538,6 +579,7 @@ class Prompt:
             self.settings["INSTALL_GLUU_GATEWAY"] = confirm_yesno("Install Gluu Gateway Database mode")
 
         if self.settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            self.enabled_services.append("gluu-gateway-ui")
             self.settings["ENABLE_OXD"] = "Y"
             self.prompt_postgres()
             if not self.settings["KONG_NAMESPACE"]:
@@ -575,6 +617,35 @@ class Prompt:
         """
         if self.settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") and not self.settings["LDAP_STORAGE_SIZE"]:
             self.settings["LDAP_STORAGE_SIZE"] = click.prompt("Size of ldap volume storage", default="4Gi")
+        update_settings_json_file(self.settings)
+
+    def prompt_istio(self):
+        """Prompt for Istio
+        """
+        if not self.settings["USE_ISTIO_INGRESS"] and self.settings["DEPLOYMENT_ARCH"] not in ("microk8s", "minikube"):
+            self.settings["USE_ISTIO_INGRESS"] = confirm_yesno("[Alpha] Would you like to use "
+                                                               "Istio Ingress with Gluu ?")
+        if self.settings["USE_ISTIO_INGRESS"] == "Y":
+            self.settings["USE_ISTIO"] = "Y"
+
+        if not self.settings["USE_ISTIO"]:
+            logger.info("Please follow https://istio.io/latest/docs/ to learn more.")
+            logger.info("Istio will auto inject side cars into all pods in Gluus namespace chosen. "
+                        "The label istio-injection=enabled will be added to the namespace Gluu will be installed in "
+                        "if the namespace does not exist. If it does please run "
+                        "kubectl label namespace <namespace> istio-injection=enabled")
+            self.settings["USE_ISTIO"] = confirm_yesno("[Alpha] Would you like to use Istio with Gluu ?")
+
+        if not self.settings["ISTIO_SYSTEM_NAMESPACE"] and self.settings["USE_ISTIO"] == "Y":
+            self.settings["ISTIO_SYSTEM_NAMESPACE"] = click.prompt("Istio namespace",
+                                                                   default="istio-system")
+        if self.settings["USE_ISTIO_INGRESS"] == "Y":
+            self.enabled_services.append("gluu-istio-ingress")
+
+            if not self.settings["LB_ADD"]:
+                self.settings["LB_ADD"] = click.prompt("Istio loadbalancer adderss(eks) or "
+                                                       "ip (gke, aks, digital ocean, local)", default="")
+
         update_settings_json_file(self.settings)
 
     def prompt_backup(self):
@@ -646,6 +717,7 @@ class Prompt:
 
         if self.settings["ENABLE_RADIUS"] == "Y" and not self.settings["RADIUS_REPLICAS"]:
             self.settings["RADIUS_REPLICAS"] = click.prompt("Number of Radius replicas", default=1)
+
         update_settings_json_file(self.settings)
 
     @property
@@ -909,45 +981,57 @@ class Prompt:
     def prompt_optional_services(self):
         if not self.settings["ENABLE_CACHE_REFRESH"]:
             self.settings["ENABLE_CACHE_REFRESH"] = confirm_yesno("Deploy Cr-Rotate")
+        if self.settings["ENABLE_CACHE_REFRESH"] == "Y":
+            self.enabled_services.append("cr-rotate")
 
         if not self.settings["ENABLE_OXAUTH_KEY_ROTATE"]:
             self.settings["ENABLE_OXAUTH_KEY_ROTATE"] = confirm_yesno("Deploy Key-Rotation")
 
         if self.settings["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
+            self.enabled_services.append("oxauth-key-rotation")
             if not self.settings["OXAUTH_KEYS_LIFE"]:
                 self.settings["OXAUTH_KEYS_LIFE"] = click.prompt("oxAuth keys life in hours", default=48)
 
         if not self.settings["ENABLE_RADIUS"]:
             self.settings["ENABLE_RADIUS"] = confirm_yesno("Deploy Radius")
         if self.settings["ENABLE_RADIUS"] == "Y":
+            self.enabled_services.append("radius")
             self.settings["ENABLE_RADIUS_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_OXPASSPORT"]:
             self.settings["ENABLE_OXPASSPORT"] = confirm_yesno("Deploy Passport")
         if self.settings["ENABLE_OXPASSPORT"] == "Y":
+            self.enabled_services.append("oxpassport")
             self.settings["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_OXSHIBBOLETH"]:
             self.settings["ENABLE_OXSHIBBOLETH"] = confirm_yesno("Deploy Shibboleth SAML IDP")
         if self.settings["ENABLE_OXSHIBBOLETH"] == "Y":
+            self.enabled_services.append("oxshibboleth")
             self.settings["ENABLE_SAML_BOOLEAN"] = "true"
 
         if not self.settings["ENABLE_CASA"]:
             self.settings["ENABLE_CASA"] = confirm_yesno("Deploy Casa")
         if self.settings["ENABLE_CASA"] == "Y":
+            self.enabled_services.append("casa")
             self.settings["ENABLE_CASA_BOOLEAN"] = "true"
             self.settings["ENABLE_OXD"] = "Y"
 
         if not self.settings["ENABLE_FIDO2"]:
             self.settings["ENABLE_FIDO2"] = confirm_yesno("Deploy fido2")
+        if self.settings["ENABLE_FIDO2"] == "Y":
+            self.enabled_services.append("fido2")
 
         if not self.settings["ENABLE_SCIM"]:
             self.settings["ENABLE_SCIM"] = confirm_yesno("Deploy scim")
+        if self.settings["ENABLE_SCIM"] == "Y":
+            self.enabled_services.append("scim")
 
         if not self.settings["ENABLE_OXD"]:
             self.settings["ENABLE_OXD"] = confirm_yesno("Deploy oxd server")
 
         if self.settings["ENABLE_OXD"] == "Y":
+            self.enabled_services.append("oxd-server")
             if not self.settings["OXD_APPLICATION_KEYSTORE_CN"]:
                 self.settings["OXD_APPLICATION_KEYSTORE_CN"] = click.prompt("oxd server application keystore name",
                                                                             default="oxd-server")
@@ -1146,6 +1230,10 @@ class Prompt:
 
             choice = click.prompt("Persistence layer", default=1)
             self.settings["PERSISTENCE_BACKEND"] = persistence_map.get(choice, "ldap")
+
+        if self.settings["PERSISTENCE_BACKEND"] == "ldap":
+            self.enabled_services.append("ldap")
+
         update_settings_json_file(self.settings)
 
     def prompt_hybrid_ldap_held_data(self):
@@ -1279,6 +1367,7 @@ class Prompt:
         self.prompt_optional_services()
         self.prompt_gluu_gateway()
         self.prompt_jackrabbit()
+        self.prompt_istio()
 
         if not self.settings["TEST_ENVIRONMENT"] and \
                 self.settings["DEPLOYMENT_ARCH"] == "microk8s" and \
@@ -1325,6 +1414,8 @@ class Prompt:
 
         if self.settings["CONFIRM_PARAMS"] != "Y":
             self.confirm_params()
+
+        self.settings["ENABLED_SERVICES_LIST"] = self.enabled_services
 
         update_settings_json_file(self.settings)
         return self.settings

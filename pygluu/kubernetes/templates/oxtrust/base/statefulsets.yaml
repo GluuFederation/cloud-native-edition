@@ -17,6 +17,8 @@ spec:
     metadata:
       labels:
         APP_NAME: oxtrust
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
       - name: oxtrust

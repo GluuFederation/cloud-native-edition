@@ -18,3 +18,4 @@ ports:
 
 service:
   fido2ServiceName: fido2
+  name: http-fido2

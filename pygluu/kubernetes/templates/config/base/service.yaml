@@ -1,0 +1,16 @@
+# License terms and conditions:
+# https://www.gluu.org/license/enterprise-edition/
+# Used with Istio
+apiVersion: v1
+kind: Service
+metadata:
+    name: config-init-load-job
+spec:
+    ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+    selector:
+        app: config-init-load
+    type: ClusterIP
+    

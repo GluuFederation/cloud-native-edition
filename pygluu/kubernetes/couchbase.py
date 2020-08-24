@@ -33,7 +33,7 @@ def extract_couchbase_tar(tar_file):
 
 def set_memory_for_buckets(memory_quota):
     buckets = ["gluu", "gluu-site", "gluu-user"]
-    ephemeral_buckets = ["gluu-cache", "gluu-token"]
+    ephemeral_buckets = ["gluu-cache", "gluu-token", "gluu-session"]
 
     for bucket in buckets:
         parser = Parser("./couchbase/couchbase-buckets.yaml", "CouchbaseBucket", bucket)
@@ -313,7 +313,7 @@ class Couchbase(object):
             search_service_memory_quota = 512
             eventing_service_memory_quota = 512
             analytics_service_memory_quota = 1024
-            memory_quota = 100
+            memory_quota = 0
             self.settings["COUCHBASE_GENERAL_STORAGE"] = "5Gi"
             self.settings["COUCHBASE_DATA_STORAGE"] = "5Gi"
             self.settings["COUCHBASE_INDEX_STORAGE"] = "5Gi"

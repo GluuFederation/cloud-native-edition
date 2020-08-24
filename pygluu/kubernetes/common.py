@@ -172,9 +172,11 @@ def get_supported_versions():
         return versions, version_number
 
 
-def generate_password():
+
+def generate_password(length):
     """
-    Returns randomly generated password,
+    Returns randomly generated password
+    :param length: Length of password
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
@@ -185,7 +187,7 @@ def generate_password():
     chars = chars.replace("!", "")
 
     while True:
-        password = ''.join(random.choice(chars) for _ in range(6))
+        password = ''.join(random.choice(chars) for _ in range(length))
         regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)
         if regex_bool:
             break
@@ -193,23 +195,25 @@ def generate_password():
     return password
 
 
-def prompt_password(password):
+
+def prompt_password(password, length=6):
     """
     Prompt password and password confirmation,
     :param password: string for the prompt name
+    :param length: Length of password
     :return:
     """
     while True:
-        random_password = "" if password == "Redis" else generate_password()
-        string_random_password = '' if not random_password  else random_password[:1] + "***" + random_password[4:]
+        random_password = "" if password == "Redis" else generate_password(length)
+        string_random_password = '' if not random_password else random_password[:1] + "***" + random_password[4:]
         pw_prompt = getpass(prompt='{} password [{}]: '.format(password, string_random_password), stream=None)
+        regex_bool = True
         if not pw_prompt:
             pw_prompt = random_password
             confirm_pw_prompt = random_password
             regex_bool = True
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
-            regex_bool = True
             if password != "Redis":
                 regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
 
