@@ -25,7 +25,7 @@ global:
   #persistence types and options
   # options: ldap/couchbase/hybrid
   gluuPersistenceType: couchbase
-  gluuJackrabbitCluster: true
+  gluuJackrabbitCluster: "true"
   # Enable installation of services
   oxauth:
     enabled: true
