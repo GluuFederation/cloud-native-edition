@@ -20,16 +20,16 @@ persistence:
 
 #servicePorts values used in StatefulSet container
 ports:
-  ldaps:
+  tcp-ldaps:
     port: 1636
     targetPort: 1636
-  ldap:
+  tcp-ldap:
     port: 1389
     targetPort: 1389
-  replication:
+  tcp-repl:
     port: 8989
     targetPort: 8989
-  admin:
+  tcp-admin:
     port: 4444
     targetPort: 4444
 # VolumeMounts for StatefulSet

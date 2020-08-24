@@ -45,6 +45,8 @@ spec:
           - |
               /app/scripts/entrypoint.sh load
               /usr/bin/python3 /scripts/tls_generator.py
-
+              {{- if .Values.global.istio.enabled }}
+              curl -X POST http://localhost:15020/quitquitquit
+              {{- end }}
       restartPolicy: Never
           

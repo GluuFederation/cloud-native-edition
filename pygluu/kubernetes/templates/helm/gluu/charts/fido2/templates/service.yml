@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: {{ .Values.service.fido2ServiceName }}
+    name: {{ .Values.service.name }}
   selector:
     app: {{ include "fido2.name" . }} #fido2
     

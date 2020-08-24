@@ -10,8 +10,7 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
-      protocol: TCP
-      name: {{ .Values.service.oxPassportServiceName }}
+      name: {{ .Values.service.name }}
   selector:
     app: {{ include "oxpassport.name" . }}
     release: {{ .Release.Name }}

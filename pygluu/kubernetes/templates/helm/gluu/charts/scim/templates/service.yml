@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: {{ .Values.service.scimServiceName }}
+    name: {{ .Values.service.name }}
   selector:
     app: {{ include "scim.name" . }} #scim
     

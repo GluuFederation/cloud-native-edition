@@ -188,7 +188,7 @@ class Helm(object):
         else:
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner
-        values_file_parser["global"]["nginxIp"] = self.settings["HOST_EXT_IP"]
+        values_file_parser["global"]["lbIp"] = self.settings["HOST_EXT_IP"]
         values_file_parser["global"]["domain"] = self.settings["GLUU_FQDN"]
         values_file_parser["global"]["isDomainRegistered"] = "false"
         if self.settings["IS_GLUU_FQDN_REGISTERED"] == "Y":
@@ -227,6 +227,12 @@ class Helm(object):
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
             values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings["JACKRABBIT_URL"]
             values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitAdminPass"] = self.settings["JACKRABBIT_ADMIN_PASSWORD"]
+        if self.settings["USE_ISTIO_INGRESS"] == "Y":
+            values_file_parser["global"]["istio"]["ingress"] = True
+            values_file_parser["global"]["istio"]["enabled"] = True
+            values_file_parser["global"]["istio"]["namespace"] = self.settings["ISTIO_SYSTEM_NAMESPACE"]
+        elif self.settings["USE_ISTIO"] == "Y":
+            values_file_parser["global"]["istio"]["enabled"] = True
 
         values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
         if self.settings["JACKRABBIT_CLUSTER"] == "Y":

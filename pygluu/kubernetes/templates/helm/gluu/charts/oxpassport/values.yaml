@@ -12,8 +12,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  port: 8090
   oxPassportServiceName: oxpassport
+  port: 8090
+  name: http-oxpassport
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -19,6 +19,10 @@ spec:
       labels: 
         app: {{ include "oxtrust.name" . }}
         APP_NAME: oxtrust
+      {{- if .Values.global.istio.ingress }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
     spec:
       containers:
       - name: {{ include "oxtrust.name" . }}
@@ -99,7 +103,7 @@ spec:
       {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
-      - ip: {{ .Values.global.nginxIp }}
+      - ip: {{ .Values.global.lbIp }}
         hostnames:
         - {{ .Values.global.domain }}
       {{- end }}

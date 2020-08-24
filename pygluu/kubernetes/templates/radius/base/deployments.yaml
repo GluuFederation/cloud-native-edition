@@ -4,12 +4,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: radius
+  labels:
+    APP_NAME: radius
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: radius
   template:
+    metadata:
+      labels:
+        app: radius
+        APP_NAME: radius
     spec:
       containers:
       - name: radius

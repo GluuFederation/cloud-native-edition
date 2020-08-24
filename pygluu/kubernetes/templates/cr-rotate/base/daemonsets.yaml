@@ -4,11 +4,16 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: cr-rotate
+  labels:
+    APP_NAME: cr-rotote
 spec:
   selector:
     matchLabels:
       app: cr-rotate
   template:
+    metadata:
+      labels:
+        APP_NAME: cr-rotate
     spec:
       containers:
       - name: cr-rotate

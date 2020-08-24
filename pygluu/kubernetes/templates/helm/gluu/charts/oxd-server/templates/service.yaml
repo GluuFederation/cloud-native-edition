@@ -11,8 +11,8 @@ metadata:
 spec:
   ports:
     - port: 8444
-      name: {{ include "oxd-server.name" . }}-admin-gui
+      name: tcp-{{ include "oxd-server.name" . }}-admin-gui
     - port: 8443
-      name: {{ include "oxd-server.name" . }}-app-connector
+      name: tcp-{{ include "oxd-server.name" . }}-app-connector
   selector:
     app: {{ include "oxd-server.name" . }}

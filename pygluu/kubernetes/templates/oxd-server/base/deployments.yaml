@@ -10,6 +10,11 @@ spec:
     matchLabels:
       app: oxd-server
   template:
+    metadata:
+      labels:
+        APP_NAME: oxd-server
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
       - name: oxd-server

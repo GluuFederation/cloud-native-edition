@@ -12,6 +12,11 @@ spec:
       app: jackrabbit
   volumeClaimTemplates: []
   template:
+    metadata:
+      labels:
+        APP_NAME: jackrabbit
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       affinity:
         podAntiAffinity:

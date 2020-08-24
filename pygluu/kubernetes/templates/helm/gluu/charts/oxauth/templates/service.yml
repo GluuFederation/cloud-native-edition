@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: {{ .Values.service.oxAuthServiceName }}
+    name: http-oxauth
   selector:
     app: {{ include "oxauth.name" . }} #oxauth
     

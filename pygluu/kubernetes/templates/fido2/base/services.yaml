@@ -7,6 +7,6 @@ metadata:
 spec:
   ports:
   - port: 8080
-    name: fido2
+    name: http-fido2
   selector:
     app: fido2

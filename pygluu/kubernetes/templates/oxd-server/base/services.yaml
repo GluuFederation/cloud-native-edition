@@ -7,8 +7,8 @@ metadata:
 spec:
   ports:
   - port: 8444
-    name: oxd-server-admin-gui
+    name: tcp-oxd-server-admin-gui
   - port: 8443
-    name: oxd-server-app-connector
+    name: tcp-oxd-server-app-connector
   selector:
     app: oxd-server

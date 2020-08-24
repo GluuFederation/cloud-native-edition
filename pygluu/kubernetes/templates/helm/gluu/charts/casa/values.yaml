@@ -25,6 +25,7 @@ securityContext: {}
 service:
   casaServiceName: casa
   port: 8080
+  name: http-casa
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
