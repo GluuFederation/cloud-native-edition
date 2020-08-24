@@ -338,7 +338,10 @@ class Helm(object):
         Helm install Gluu
         :param install_ingress:
         """
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels={"app": "gluu"})
+        labels = {"app": "gluu"}
+        if self.settings["USE_ISTIO"] == "Y":
+            labels = {"app": "gluu", "istio-injection": "enabled"}
+        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"], labels=labels)
         if self.settings["PERSISTENCE_BACKEND"] != "ldap" and self.settings["INSTALL_COUCHBASE"] == "Y":
             couchbase_app = Couchbase(self.settings)
             couchbase_app.uninstall()
