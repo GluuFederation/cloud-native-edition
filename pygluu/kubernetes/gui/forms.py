@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import re
 
 from flask_wtf import FlaskForm
@@ -11,8 +8,8 @@ from wtforms.validators import DataRequired, InputRequired, \
     Optional
 from wtforms.widgets import PasswordInput
 from pygluu.kubernetes.common import get_supported_versions
-from pygluu.kubernetes.settingdb import SettingDB
-settings = SettingDB()
+from pygluu.kubernetes.settings import SettingsHandler
+settings = SettingsHandler()
 
 app_volume_types = {
     "eks": {
@@ -74,7 +71,7 @@ volume_types = {
 }
 
 
-def password_requirement_check(form, field):
+def password_requirement_check(field):
     regex_bool = re.match(
         '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
         field.data)
@@ -87,7 +84,7 @@ def password_requirement_check(form, field):
 
 class RequiredIfFieldEqualTo(Required):
     """
-    a validator which makes a field optional if
+    A validator which makes a field optional if
     another field has a desired value
     """
 
@@ -625,7 +622,8 @@ class ConfigForm(FlaskForm):
 
     def validate_gluu_fqdn(form, field):
         regex_bool = re.match(
-            '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
+            '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*['
+            'A-Za-z0-9]){2,}$',
             # noqa: W605
             form.gluu_fqdn.data)
 

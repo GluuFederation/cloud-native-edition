@@ -1,12 +1,12 @@
 import json
-import os
 import shutil
 from pathlib import Path
 from .common import get_logger, update_settings_json_file
 
 logger = get_logger("gluu-setting        ")
 
-class SettingDB(object):
+
+class SettingsHandler(object):
     def __init__(self):
         # self.path = os.path.expanduser(path)
         self.load()

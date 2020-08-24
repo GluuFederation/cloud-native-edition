@@ -20,7 +20,7 @@ from werkzeug.utils import secure_filename
 from pygluu.kubernetes.common import get_supported_versions, \
     exec_cmd, generate_password
 from pygluu.kubernetes.kubeapi import Kubernetes
-from pygluu.kubernetes.settingdb import SettingDB
+from pygluu.kubernetes.settings import SettingsHandler
 
 from .forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
     GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
@@ -71,7 +71,7 @@ static_files = ["/favicon.ico",
                 "/bootstrap.min.css",
                 "/bootstrap.min.css.map"]
 
-settings = SettingDB()
+settings = SettingsHandler()
 
 
 @wizard.before_request

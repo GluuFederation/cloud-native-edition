@@ -70,7 +70,6 @@ def main():
         parser.print_help()
         return
     copy_templates()
-
     prompts = Prompt()
     settings = prompts.check_settings_and_prompt
 

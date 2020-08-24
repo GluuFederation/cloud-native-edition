@@ -1,27 +1,19 @@
-#!/usr/bin/env python
-
 import threading
-import time
 import os
-import subprocess
-import shlex
-
-from math import sqrt
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template
 from flask_socketio import emit
 from pygtail import Pygtail
 from queue import Queue
 
 from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.helm import Helm
-from pygluu.kubernetes.settingdb import SettingDB
+from pygluu.kubernetes.settings import SettingsHandler
 from .extensions import socketio
-import sys
+
 install = Blueprint('install', __name__, template_folder="templates")
-settings = SettingDB()
+settings = SettingsHandler()
 timeout = 120
 queue = Queue()
-
 
 
 @install.route('/install')
@@ -48,9 +40,11 @@ def installer_logs():
             tail_log = False
             emit('response', {'title': data[0], 'log': 'Installation has been completed', 'status': data[1]})
 
+
 @socketio.on('disconnect', namespace='/test')
 def installation_finish():
     print('Installation completed')
+
 
 def do_installation(q):
     q.put(('Preparing Installation', 'ONPROGRESS'))

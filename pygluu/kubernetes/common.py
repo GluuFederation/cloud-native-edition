@@ -172,7 +172,6 @@ def get_supported_versions():
         return versions, version_number
 
 
-
 def generate_password(length):
     """
     Returns randomly generated password
@@ -195,7 +194,6 @@ def generate_password(length):
     return password
 
 
-
 def prompt_password(password, length=6):
     """
     Prompt password and password confirmation,
@@ -211,7 +209,6 @@ def prompt_password(password, length=6):
         if not pw_prompt:
             pw_prompt = random_password
             confirm_pw_prompt = random_password
-            regex_bool = True
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             if password != "Redis":
