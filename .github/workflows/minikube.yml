@@ -51,6 +51,11 @@ jobs:
         minikube version: 'v1.7.3'
         kubernetes version: 'v1.16.0'
 
+    - name: Install Istio
+      run: |
+          curl -sL https://istio.io/downloadIstioctl | sh -
+          export PATH=$PATH:$HOME/.istioctl/bin
+          istioctl operator init
 
     - name: Test 1 settings(LDAP)
       id: test1_settings

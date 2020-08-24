@@ -81,6 +81,12 @@ jobs:
         sudo gcloud container clusters create $GKE_NAME --num-nodes 2 --machine-type e2-highcpu-8 --zone ${{ secrets.google_region }}-a
         sudo gcloud container clusters get-credentials $GKE_NAME --zone ${{ secrets.google_region }}-a
 
+    - name: Install Istio
+      run: |
+          curl -sL https://istio.io/downloadIstioctl | sh -
+          export PATH=$PATH:$HOME/.istioctl/bin
+          istioctl operator init
+        
     - name: Create settings.json
       id: test1_settings
       run: |
