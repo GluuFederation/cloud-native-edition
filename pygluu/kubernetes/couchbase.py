@@ -10,6 +10,7 @@ import tarfile
 from .kubeapi import Kubernetes
 from .yamlparser import Parser
 from .common import get_logger, update_settings_json_file, exec_cmd
+from .settings import SettingsHandler
 from .pycert import setup_crts
 import sys
 import base64
@@ -90,8 +91,8 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
 
 
 class Couchbase(object):
-    def __init__(self, settings):
-        self.settings = settings
+    def __init__(self):
+        self.settings = SettingsHandler()
         self.kubernetes = Kubernetes()
         self.storage_class_file = Path("./couchbase/storageclasses.yaml")
         self.couchbase_cluster_file = Path("./couchbase/couchbase-cluster.yaml")
@@ -108,7 +109,7 @@ class Couchbase(object):
         Returns the couchbase extracted package folder path containing manifests and the tar package file
         :return:
         """
-        if self.settings["INSTALL_COUCHBASE"] == "Y":
+        if self.settings.get("INSTALL_COUCHBASE") == "Y":
             couchbase_tar_pattern = "couchbase-autonomous-operator-kubernetes_*.tar.gz"
             directory = Path('.')
             try:
@@ -138,13 +139,13 @@ class Couchbase(object):
         """
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
-                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           literal="couchbase.crt",
                                                           value_of_literal=encoded_ca_crt_string)
 
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
-                                                          namespace=self.settings["GLUU_NAMESPACE"],
+                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           literal="couchbase_password",
                                                           value_of_literal=encoded_cb_pass_string)
 
@@ -154,16 +155,16 @@ class Couchbase(object):
         """
         couchbase_backup_file = Path("./couchbase/backup/couchbase-backup.yaml")
         parser = Parser(couchbase_backup_file, "CouchbaseBackup")
-        parser["spec"]["full"]["schedule"] = self.settings["COUCHBASE_FULL_BACKUP_SCHEDULE"]
-        parser["spec"]["incremental"]["schedule"] = self.settings["COUCHBASE_INCR_BACKUP_SCHEDULE"]
-        parser["spec"]["backupRetention"] = self.settings["COUCHBASE_BACKUP_RETENTION_TIME"]
-        parser["spec"]["size"] = self.settings["COUCHBASE_BACKUP_STORAGE_SIZE"]
+        parser["spec"]["full"]["schedule"] = self.settings.get("COUCHBASE_FULL_BACKUP_SCHEDULE")
+        parser["spec"]["incremental"]["schedule"] = self.settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE")
+        parser["spec"]["backupRetention"] = self.settings.get("COUCHBASE_BACKUP_RETENTION_TIME")
+        parser["spec"]["size"] = self.settings.get("COUCHBASE_BACKUP_STORAGE_SIZE")
         parser.dump_it()
         self.kubernetes.create_namespaced_custom_object(filepath=couchbase_backup_file,
                                                         group="couchbase.com",
                                                         version="v2",
                                                         plural="couchbasebackups",
-                                                        namespace=self.settings["COUCHBASE_NAMESPACE"])
+                                                        namespace=self.settings.get("COUCHBASE_NAMESPACE"))
 
     @property
     def calculate_couchbase_resources(self):
@@ -172,56 +173,56 @@ class Couchbase(object):
         Alpha
         :return:
         """
-        tps = int(self.settings["EXPECTED_TRANSACTIONS_PER_SEC"])
+        tps = int(self.settings.get("EXPECTED_TRANSACTIONS_PER_SEC"))
         number_of_data_nodes = 0
         number_of_query_nodes = 0
         number_of_index_nodes = 0
         number_of_eventing_service_memory_nodes = 0
-        user_ratio = int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 50000000
+        user_ratio = int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 50000000
         tps_ratio = tps / 14000
 
-        if self.settings["USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW"] == "Y":
+        if self.settings.get("USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW") == "Y":
             number_of_data_nodes += tps_ratio * 7 * user_ratio
             number_of_query_nodes += tps_ratio * 5 * user_ratio
             number_of_index_nodes += tps_ratio * 5 * user_ratio
             number_of_eventing_service_memory_nodes += tps_ratio * 4 * user_ratio
 
-        if self.settings["USING_CODE_FLOW"] == "Y":
+        if self.settings.get("USING_CODE_FLOW") == "Y":
             number_of_data_nodes += tps_ratio * 14 * user_ratio
             number_of_query_nodes += tps_ratio * 12 * user_ratio
             number_of_index_nodes += tps_ratio * 13 * user_ratio
             number_of_eventing_service_memory_nodes += tps_ratio * 7 * user_ratio
 
-        if self.settings["USING_SCIM_FLOW"] == "Y":
+        if self.settings.get("USING_SCIM_FLOW") == "Y":
             number_of_data_nodes += tps_ratio * 7 * user_ratio
             number_of_query_nodes += tps_ratio * 5 * user_ratio
             number_of_index_nodes += tps_ratio * 5 * user_ratio
             number_of_eventing_service_memory_nodes += tps_ratio * 4 * user_ratio
 
-        if not self.settings["COUCHBASE_GENERAL_STORAGE"]:
-            self.settings["COUCHBASE_GENERAL_STORAGE"] = str(int((tps_ratio * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 125000)) + 5)) + "Gi"
-        if not self.settings["COUCHBASE_DATA_STORAGE"]:
-            self.settings["COUCHBASE_DATA_STORAGE"] = str(int((tps_ratio * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 100000)) + 5)) + "Gi"
-        if not self.settings["COUCHBASE_INDEX_STORAGE"]:
-            self.settings["COUCHBASE_INDEX_STORAGE"] = str(int((tps_ratio * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 200000)) + 5)) + "Gi"
-        if not self.settings["COUCHBASE_QUERY_STORAGE"]:
-            self.settings["COUCHBASE_QUERY_STORAGE"] = str(int((tps_ratio * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 200000)) + 5)) + "Gi"
-        if not self.settings["COUCHBASE_ANALYTICS_STORAGE"]:
-            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = str(int((tps_ratio * (
-                    int(self.settings["NUMBER_OF_EXPECTED_USERS"]) / 250000)) + 5)) + "Gi"
+        if not self.settings.get("COUCHBASE_GENERAL_STORAGE"):
+            self.settings.set("COUCHBASE_GENERAL_STORAGE", str(int((tps_ratio * (
+                    int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 125000)) + 5)) + "Gi")
+        if not self.settings.get("COUCHBASE_DATA_STORAGE"):
+            self.settings.set("COUCHBASE_DATA_STORAGE", str(int((tps_ratio * (
+                    int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 100000)) + 5)) + "Gi")
+        if not self.settings.get("COUCHBASE_INDEX_STORAGE"):
+            self.settings.set("COUCHBASE_INDEX_STORAGE", str(int((tps_ratio * (
+                    int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
+        if not self.settings.get("COUCHBASE_QUERY_STORAGE"):
+            self.settings.set("COUCHBASE_QUERY_STORAGE", str(int((tps_ratio * (
+                    int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
+        if not self.settings.get("COUCHBASE_ANALYTICS_STORAGE"):
+            self.settings.set("COUCHBASE_ANALYTICS_STORAGE", str(int((tps_ratio * (
+                    int(self.settings.get("NUMBER_OF_EXPECTED_USERS")) / 250000)) + 5)) + "Gi")
 
-        if self.settings["COUCHBASE_DATA_NODES"]:
-            number_of_data_nodes = self.settings["COUCHBASE_DATA_NODES"]
-        if self.settings["COUCHBASE_QUERY_NODES"]:
-            number_of_query_nodes = self.settings["COUCHBASE_QUERY_NODES"]
-        if self.settings["COUCHBASE_INDEX_NODES"]:
-            number_of_index_nodes = self.settings["COUCHBASE_INDEX_NODES"]
-        if self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]:
-            number_of_eventing_service_memory_nodes = self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"]
+        if self.settings.get("COUCHBASE_DATA_NODES"):
+            number_of_data_nodes = self.settings.get("COUCHBASE_DATA_NODES")
+        if self.settings.get("COUCHBASE_QUERY_NODES"):
+            number_of_query_nodes = self.settings.get("COUCHBASE_QUERY_NODES")
+        if self.settings.get("COUCHBASE_INDEX_NODES"):
+            number_of_index_nodes = self.settings.get("COUCHBASE_INDEX_NODES")
+        if self.settings.get("COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"):
+            number_of_eventing_service_memory_nodes = self.settings.get("COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES")
 
         data_service_memory_quota = (tps_ratio * 40000 * user_ratio) + 512
         data_memory_request = data_service_memory_quota / 4
@@ -288,10 +289,10 @@ class Couchbase(object):
                               TOTAL_RAM_NEEDED=round(total_mem_resources),
                               TOTAL_CPU_NEEDED=round(total_cpu_resources)
                               )
-        self.settings["COUCHBASE_DATA_NODES"] = number_of_data_nodes
-        self.settings["COUCHBASE_QUERY_NODES"] = number_of_query_nodes
-        self.settings["COUCHBASE_INDEX_NODES"] = number_of_index_nodes
-        self.settings["COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES"] = number_of_eventing_service_memory_nodes
+        self.settings.set("COUCHBASE_DATA_NODES", number_of_data_nodes)
+        self.settings.set("COUCHBASE_QUERY_NODES", number_of_query_nodes)
+        self.settings.set("COUCHBASE_INDEX_NODES", number_of_index_nodes)
+        self.settings.set("COUCHBASE_SEARCH_EVENTING_ANALYTICS_NODES", number_of_eventing_service_memory_nodes)
         return resources_info
 
     def analyze_couchbase_cluster_yaml(self):
@@ -299,10 +300,10 @@ class Couchbase(object):
         Dumps created calculated resources into couchbase.yaml file. ALso includes cloud zones.
         """
         parser = Parser("./couchbase/couchbase-cluster.yaml", "CouchbaseCluster")
-        parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
+        parser["metadata"]["name"] = self.settings.get("COUCHBASE_CLUSTER_NAME")
         number_of_buckets = 5
-        if self.settings["DEPLOYMENT_ARCH"] == "microk8s" or self.settings["DEPLOYMENT_ARCH"] == "minikube" or \
-                self.settings["COUCHBASE_USE_LOW_RESOURCES"] == "Y":
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") or \
+                self.settings.get("COUCHBASE_USE_LOW_RESOURCES") == "Y":
             resources_servers = [{"name": "allServices", "size": 1,
                                   "services": ["data", "index", "query", "search", "eventing", "analytics"],
                                   "volumeMounts": {"default": "pvc-general",
@@ -314,11 +315,11 @@ class Couchbase(object):
             eventing_service_memory_quota = 512
             analytics_service_memory_quota = 1024
             memory_quota = 0
-            self.settings["COUCHBASE_GENERAL_STORAGE"] = "5Gi"
-            self.settings["COUCHBASE_DATA_STORAGE"] = "5Gi"
-            self.settings["COUCHBASE_INDEX_STORAGE"] = "5Gi"
-            self.settings["COUCHBASE_QUERY_STORAGE"] = "5Gi"
-            self.settings["COUCHBASE_ANALYTICS_STORAGE"] = "5Gi"
+            self.settings.set("COUCHBASE_GENERAL_STORAGE", "5Gi")
+            self.settings.set("COUCHBASE_DATA_STORAGE", "5Gi")
+            self.settings.set("COUCHBASE_INDEX_STORAGE", "5Gi")
+            self.settings.set("COUCHBASE_QUERY_STORAGE", "5Gi")
+            self.settings.set("COUCHBASE_ANALYTICS_STORAGE", "5Gi")
 
         else:
             resources = self.calculate_couchbase_resources
@@ -328,7 +329,7 @@ class Couchbase(object):
             eventing_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"]
             analytics_service_memory_quota = resources["COUCHBASE_SEARCH_EVENTING_ANALYTICS_MEM_QUOTA"] + 1024
             memory_quota = ((resources["COUCHBASE_DATA_MEM_QUOTA"] - 500) / number_of_buckets)
-            zones_list = self.settings["NODES_ZONES"]
+            zones_list = self.settings.get("NODES_ZONES")
             data_server_spec = create_server_spec_per_cb_service(zones_list, int(resources["COUCHBASE_DATA_NODES"]),
                                                                  "data",
                                                                  str(resources["COUCHBASE_DATA_MEM_REQUEST"]),
@@ -362,8 +363,8 @@ class Couchbase(object):
                 data_server_spec + query_server_spec + index_server_spec + \
                 search_eventing_analytics_server_spec
 
-        if self.settings["NODES_ZONES"]:
-            unique_zones = list(dict.fromkeys(self.settings["NODES_ZONES"]))
+        if self.settings.get("NODES_ZONES"):
+            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
             parser["spec"]["serverGroups"] = unique_zones
         parser["spec"]["cluster"]["dataServiceMemoryQuota"] = str(data_service_memory_quota) + "Mi"
         parser["spec"]["cluster"]["indexServiceMemoryQuota"] = str(index_service_memory_quota) + "Mi"
@@ -372,7 +373,7 @@ class Couchbase(object):
         parser["spec"]["cluster"]["analyticsServiceMemoryQuota"] = str(analytics_service_memory_quota) + "Mi"
 
         set_memory_for_buckets(memory_quota)
-        parser["metadata"]["name"] = self.settings["COUCHBASE_CLUSTER_NAME"]
+        parser["metadata"]["name"] = self.settings.get("COUCHBASE_CLUSTER_NAME")
         parser["spec"]["servers"] = resources_servers
 
         number_of_volume_claims = len(parser["spec"]["volumeClaimTemplates"])
@@ -380,45 +381,45 @@ class Couchbase(object):
             name = parser["spec"]["volumeClaimTemplates"][i]["metadata"]["name"]
             if name == "pvc-general":
                 parser["spec"]["volumeClaimTemplates"][i]["spec"]["resources"]["requests"]["storage"] = \
-                    self.settings["COUCHBASE_GENERAL_STORAGE"]
+                    self.settings.get("COUCHBASE_GENERAL_STORAGE")
             elif name == "pvc-data":
                 parser["spec"]["volumeClaimTemplates"][i]["spec"]["resources"]["requests"]["storage"] = \
-                    self.settings["COUCHBASE_DATA_STORAGE"]
+                    self.settings.get("COUCHBASE_DATA_STORAGE")
             elif name == "pvc-index":
                 parser["spec"]["volumeClaimTemplates"][i]["spec"]["resources"]["requests"]["storage"] = \
-                    self.settings["COUCHBASE_INDEX_STORAGE"]
+                    self.settings.get("COUCHBASE_INDEX_STORAGE")
             elif name == "pvc-query":
                 parser["spec"]["volumeClaimTemplates"][i]["spec"]["resources"]["requests"]["storage"] = \
-                    self.settings["COUCHBASE_QUERY_STORAGE"]
+                    self.settings.get("COUCHBASE_QUERY_STORAGE")
             elif name == "pvc-analytics":
                 parser["spec"]["volumeClaimTemplates"][i]["spec"]["resources"]["requests"]["storage"] = \
-                    self.settings["COUCHBASE_ANALYTICS_STORAGE"]
+                    self.settings.get("COUCHBASE_ANALYTICS_STORAGE")
         parser.dump_it()
 
     def install(self):
         """
         Installs Couchbase
         """
-        self.kubernetes.create_namespace(name=self.settings["GLUU_NAMESPACE"])
-        if self.settings["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "N":
+        self.kubernetes.create_namespace(name=self.settings.get("GLUU_NAMESPACE"))
+        if self.settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N":
             self.analyze_couchbase_cluster_yaml()
-        cb_namespace = self.settings["COUCHBASE_NAMESPACE"]
+        cb_namespace = self.settings.get("COUCHBASE_NAMESPACE")
         storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
-        if self.settings['DEPLOYMENT_ARCH'] == "gke" or \
-                self.settings['DEPLOYMENT_ARCH'] == "aks" or \
-                self.settings['DEPLOYMENT_ARCH'] == "do":
+        if self.settings.get('DEPLOYMENT_ARCH') == "gke" or \
+                self.settings.get('DEPLOYMENT_ARCH') == "aks" or \
+                self.settings.get('DEPLOYMENT_ARCH') == "do":
             try:
                 del storage_class_file_parser["parameters"]["encrypted"]
             except KeyError:
                 logger.info("Key not found")
-            storage_class_file_parser["parameters"]["type"] = self.settings["COUCHBASE_VOLUME_TYPE"]
-        if self.settings['DEPLOYMENT_ARCH'] == "gke":
+            storage_class_file_parser["parameters"]["type"] = self.settings.get("COUCHBASE_VOLUME_TYPE")
+        if self.settings.get('DEPLOYMENT_ARCH') == "gke":
             storage_class_file_parser["provisioner"] = "kubernetes.io/gce-pd"
-        elif self.settings['DEPLOYMENT_ARCH'] == "aks":
+        elif self.settings.get('DEPLOYMENT_ARCH') == "aks":
             storage_class_file_parser["provisioner"] = "kubernetes.io/azure-disk"
-        elif self.settings['DEPLOYMENT_ARCH'] == "do":
+        elif self.settings.get('DEPLOYMENT_ARCH') == "do":
             storage_class_file_parser["provisioner"] = "dobs.csi.digitalocean.com"
-        elif self.settings['DEPLOYMENT_ARCH'] == "microk8s":
+        elif self.settings.get('DEPLOYMENT_ARCH') == "microk8s":
             storage_class_file_parser["provisioner"] = "microk8s.io/hostpath"
             try:
                 del storage_class_file_parser["allowVolumeExpansion"]
@@ -426,7 +427,7 @@ class Couchbase(object):
             except KeyError:
                 logger.info("Key not found")
             storage_class_file_parser.dump_it()
-        elif self.settings['DEPLOYMENT_ARCH'] == "minikube":
+        elif self.settings.get('DEPLOYMENT_ARCH') == "minikube":
             storage_class_file_parser["provisioner"] = "k8s.io/minikube-hostpath"
             try:
                 del storage_class_file_parser["allowVolumeExpansion"]
@@ -436,7 +437,7 @@ class Couchbase(object):
             storage_class_file_parser.dump_it()
         else:
             try:
-                storage_class_file_parser["parameters"]["type"] = self.settings["COUCHBASE_VOLUME_TYPE"]
+                storage_class_file_parser["parameters"]["type"] = self.settings.get("COUCHBASE_VOLUME_TYPE")
             except KeyError:
                 logger.info("Key not found")
         storage_class_file_parser.dump_it()
@@ -449,9 +450,9 @@ class Couchbase(object):
         custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
         custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
         if not custom_cb_ca_crt.exists() and not custom_cb_crt.exists() and not custom_cb_key.exists():
-            setup_crts(ca_common_name=self.settings["COUCHBASE_CN"],
+            setup_crts(ca_common_name=self.settings.get("COUCHBASE_CN"),
                        cert_common_name="couchbase-server",
-                       san_list=self.settings["COUCHBASE_SUBJECT_ALT_NAME"],
+                       san_list=self.settings.get("COUCHBASE_SUBJECT_ALT_NAME"),
                        ca_cert_file="./couchbase_crts_keys/ca.crt",
                        ca_key_file="./couchbase_crts_keys/ca.key",
                        cert_file="./couchbase_crts_keys/chain.pem",
@@ -466,13 +467,13 @@ class Couchbase(object):
         shutil.copyfile(chain_pem_filepath, tls_cert_filepath)
         shutil.copyfile(pkey_filepath, tls_private_key_filepath)
 
-        encoded_ca_crt_string = self.settings["COUCHBASE_CRT"]
+        encoded_ca_crt_string = self.settings.get("COUCHBASE_CRT")
         if not encoded_ca_crt_string:
             with open(ca_cert_filepath) as content_file:
                 ca_crt_content = content_file.read()
                 encoded_ca_crt_bytes = base64.b64encode(ca_crt_content.encode("utf-8"))
                 encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
-            self.settings["COUCHBASE_CRT"] = encoded_ca_crt_string
+            self.settings.set("COUCHBASE_CRT", encoded_ca_crt_string)
 
         with open(chain_pem_filepath) as content_file:
             chain_pem_content = content_file.read()
@@ -496,15 +497,15 @@ class Couchbase(object):
                                                           literal=ca_cert_filepath.name,
                                                           value_of_literal=encoded_ca_crt_string)
 
-        encoded_cb_user_bytes = base64.b64encode(self.settings["COUCHBASE_USER"].encode("utf-8"))
+        encoded_cb_user_bytes = base64.b64encode(self.settings.get("COUCHBASE_USER").encode("utf-8"))
         encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
-        encoded_cb_pass_bytes = base64.b64encode(self.settings["COUCHBASE_PASSWORD"].encode("utf-8"))
+        encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
         encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
 
         self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
 
         command = "./{}/bin/cbopcfg -backup=true -namespace={}".format(self.couchbase_source_file,
-                                                                       self.settings["COUCHBASE_NAMESPACE"])
+                                                                       self.settings.get("COUCHBASE_NAMESPACE"))
         exec_cmd(command, output_file=self.couchbase_operator_dac_file)
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
@@ -550,11 +551,11 @@ class Couchbase(object):
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_query=enabled", 700)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_search=enabled", 700)
         # Setup couchbase backups
-        if self.settings["DEPLOYMENT_ARCH"] != "microk8s" and self.settings["DEPLOYMENT_ARCH"] != "minikube":
+        if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
             self.setup_backup_couchbase()
         shutil.rmtree(self.couchbase_source_folder_pattern, ignore_errors=True)
 
-        if self.settings["DEPLOY_MULTI_CLUSTER"] == "Y":
+        if self.settings.get("DEPLOY_MULTI_CLUSTER") == "Y":
             logger.info("Setup XDCR between the running Gluu couchbase cluster and this one")
 
     def uninstall(self):
@@ -568,15 +569,15 @@ class Couchbase(object):
         self.kubernetes.delete_mutating_webhook_configuration("couchbase-operator-admission")
         self.kubernetes.delete_cluster_role_binding("couchbase-operator-admission")
         self.kubernetes.delete_cluster_role("couchbase-operator-admission")
-        self.kubernetes.delete_role("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_secret("cb-auth", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_deployment_using_name("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_role_binding("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_service_account("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_service("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
+        self.kubernetes.delete_role("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_secret("cb-auth", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_deployment_using_name("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_role_binding("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_service_account("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_service("couchbase-operator-admission", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_deployment_using_name("couchbase-operator-admission",
-                                                     self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_service("couchbase-operator", self.settings["COUCHBASE_NAMESPACE"])
+                                                     self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_service("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_custom_resource("couchbasebackuprestores.couchbase.com")
         self.kubernetes.delete_custom_resource("couchbasebackups.couchbase.com")
         self.kubernetes.delete_custom_resource("couchbasebuckets.couchbase.com")
@@ -587,7 +588,7 @@ class Couchbase(object):
         self.kubernetes.delete_custom_resource("couchbasememcachedbuckets.couchbase.com")
         self.kubernetes.delete_custom_resource("couchbaseusers.couchbase.com")
 
-        self.kubernetes.delete_service_account("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_secret("couchbase-operator-admission", self.settings["COUCHBASE_NAMESPACE"])
-        self.kubernetes.delete_secret("couchbase-operator-tls", self.settings["COUCHBASE_NAMESPACE"])
+        self.kubernetes.delete_service_account("couchbase-operator-admission", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_secret("couchbase-operator-admission", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_secret("couchbase-operator-tls", self.settings.get("COUCHBASE_NAMESPACE"))
         shutil.rmtree(Path("./couchbase-source-folder"), ignore_errors=True)
