@@ -104,7 +104,7 @@ def main():
 
         elif args.subparser_name == "upgrade":
             logger.info("Starting upgrade...")
-            settings = prompts.prompt_upgrade()
+            prompts.prompt_upgrade()
             kustomize = Kustomize(settings.db, timeout)
             kustomize.upgrade()
 
@@ -115,17 +115,17 @@ def main():
             kustomize.install(install_couchbase=False, restore=True)
 
         elif args.subparser_name == "install-couchbase":
-            settings = prompts.prompt_couchbase()
+            prompts.prompt_couchbase()
             couchbase = Couchbase(settings.db)
             couchbase.install()
 
         elif args.subparser_name == "install-couchbase-backup":
-            settings = prompts.prompt_couchbase()
+            prompts.prompt_couchbase()
             couchbase = Couchbase(settings.db)
             couchbase.setup_backup_couchbase()
 
         elif args.subparser_name == "uninstall-couchbase":
-            settings = prompts.prompt_couchbase()
+            prompts.prompt_couchbase()
             couchbase = Couchbase(settings.db)
             couchbase.uninstall()
 
@@ -147,7 +147,7 @@ def main():
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "helm-install":
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             helm = Helm(settings.db)
             if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
                 helm.install_kubedb()
@@ -158,7 +158,7 @@ def main():
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             kustomize = Kustomize(settings.db, timeout)
             helm = Helm(settings.db)
             helm.uninstall_gluu()
@@ -171,7 +171,7 @@ def main():
             helm.uninstall_kubedb()
 
         elif args.subparser_name == "helm-install-gluu":
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             helm = Helm(settings.db)
             helm.uninstall_gluu()
             helm.install_gluu(install_ingress=False)
@@ -179,7 +179,7 @@ def main():
         elif args.subparser_name == "helm-install-gg-dbmode":
             kustomize = Kustomize(settings.db, timeout)
             kustomize.deploy_postgres()
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             helm = Helm(settings.db)
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
@@ -187,13 +187,13 @@ def main():
         elif args.subparser_name == "helm-uninstall-gg-dbmode":
             kustomize = Kustomize(settings.db, timeout)
             kustomize.uninstall_postgres()
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             helm = Helm(settings.db)
             helm.uninstall_gluu_gateway_dbmode()
             helm.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gluu":
-            settings = prompts.prompt_helm()
+            prompts.prompt_helm()
             helm = Helm(settings.db)
             helm.uninstall_gluu()
 
