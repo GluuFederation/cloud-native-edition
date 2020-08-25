@@ -1,3 +1,12 @@
+"""
+pygluu.kubernetes.settings
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contains helpers to interact with settings saved in a dictionary  for terminal and GUI installations.
+
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
+"""
 import json
 import shutil
 from pathlib import Path
@@ -8,7 +17,7 @@ logger = get_logger("gluu-setting        ")
 
 class SettingsHandler(object):
     def __init__(self):
-        # self.path = os.path.expanduser(path)
+        self.db = self.default_settings
         self.load()
 
     @property
@@ -34,6 +43,9 @@ class SettingsHandler(object):
                                 POSTGRES_URL="",
                                 KONG_HELM_RELEASE_NAME="",
                                 GLUU_GATEWAY_UI_HELM_RELEASE_NAME="",
+                                USE_ISTIO="",
+                                USE_ISTIO_INGRESS="",
+                                ISTIO_SYSTEM_NAMESPACE="",
                                 NODES_IPS=[],
                                 NODES_ZONES=[],
                                 NODES_NAMES=[],
@@ -57,7 +69,12 @@ class SettingsHandler(object):
                                 INSTALL_JACKRABBIT="",
                                 JACKRABBIT_STORAGE_SIZE="",
                                 JACKRABBIT_URL="",
-                                JACKRABBIT_USER="",
+                                JACKRABBIT_ADMIN_ID="",
+                                JACKRABBIT_ADMIN_PASSWORD="",
+                                JACKRABBIT_CLUSTER="",
+                                JACKRABBIT_PG_USER="",
+                                JACKRABBIT_PG_PASSWORD="",
+                                JACKRABBIT_DATABASE="",
                                 DEPLOYMENT_ARCH="",
                                 PERSISTENCE_BACKEND="",
                                 INSTALL_COUCHBASE="",
@@ -140,6 +157,7 @@ class SettingsHandler(object):
                                 ENABLE_OXPASSPORT_BOOLEAN="false",
                                 ENABLE_CASA_BOOLEAN="false",
                                 ENABLE_SAML_BOOLEAN="false",
+                                ENABLED_SERVICES_LIST=[],
                                 OXAUTH_KEYS_LIFE="",
                                 EDIT_IMAGE_NAMES_TAGS="",
                                 CASA_IMAGE_NAME="",
@@ -178,16 +196,12 @@ class SettingsHandler(object):
                                 GLUU_GATEWAY_UI_IMAGE_TAG="",
                                 UPGRADE_IMAGE_NAME="",
                                 UPGRADE_IMAGE_TAG="",
-                                CONFIRM_PARAMS="N",
+                                CONFIRM_PARAMS="N"
                                 )
         return default_settings
 
     def load(self):
-        self.db = self.default_settings
         self.get_settings()
-
-    def _load(self):
-        self.db = json.load(open(self.path, "r"))
 
     def get_settings(self):
         """Get merged settings (default and custom settings from json file).
@@ -227,7 +241,7 @@ class SettingsHandler(object):
         try:
             return self.db[key]
         except KeyError:
-            print("No Value Can Be Found for " + str(key))
+            logger.info("No Value Can Be Found for " + str(key))
             return False
 
     def update(self, collection):
