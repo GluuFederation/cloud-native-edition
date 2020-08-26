@@ -9,7 +9,7 @@ import shutil
 import tarfile
 from .kubeapi import Kubernetes
 from .yamlparser import Parser
-from .common import get_logger, update_settings_json_file, exec_cmd
+from .common import get_logger, exec_cmd
 from .settings import SettingsHandler
 from .pycert import setup_crts
 import sys
@@ -485,7 +485,6 @@ class Couchbase(object):
             encoded_pkey_bytes = base64.b64encode(pkey_content.encode("utf-8"))
             encoded_pkey_string = str(encoded_pkey_bytes, "utf-8")
 
-        update_settings_json_file(self.settings)
         self.kubernetes.patch_or_create_namespaced_secret(name="couchbase-server-tls",
                                                           namespace=cb_namespace,
                                                           literal=chain_pem_filepath.name,
