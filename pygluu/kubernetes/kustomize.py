@@ -499,11 +499,7 @@ class Kustomize(object):
         else:
             configmap_parser = Parser(app_file, "ConfigMap")
         if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "minikube" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "gke" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "aks" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "do":
+                self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube", "gke", "aks", "do") :
             try:
                 del configmap_parser["data"]["LB_ADDR"]
             except KeyError:
@@ -568,8 +564,7 @@ class Kustomize(object):
                 self.parse_configmap(app_file)
 
             if app == "ldap":
-                if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
-                        self.settings.get("PERSISTENCE_BACKEND") == "ldap":
+                if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
                     command = self.kubectl + " kustomize " + str(
                         self.ldap_kustomize_yaml_directory.resolve())
                     self.build_manifest(app, kustomization_file, command,
@@ -723,7 +718,7 @@ class Kustomize(object):
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "update-lb-ip" and self.settings.get("IS_GLUU_FQDN_REGISTERED") == "N":
-                if self.settings.get("DEPLOYMENT_ARCH") == "eks" or self.settings.get("DEPLOYMENT_ARCH") == "local":
+                if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
                     logger.info("Building {} manifests".format(app))
                     parser = Parser(kustomization_file, "Kustomization")
                     parser["namespace"] = self.settings.get("GLUU_NAMESPACE")
@@ -915,9 +910,7 @@ class Kustomize(object):
             statefulset_parser["spec"]["volumeClaimTemplates"][0]["spec"]["resources"]["requests"]["storage"] \
                 = self.settings.get("LDAP_STORAGE_SIZE")
         statefulset_parser.dump_it()
-        if self.settings.get("APP_VOLUME_TYPE") != 7 and self.settings.get("APP_VOLUME_TYPE") != 12 and \
-                self.settings.get("APP_VOLUME_TYPE") != 17 and self.settings.get("APP_VOLUME_TYPE") != 22 and \
-                self.settings.get("APP_VOLUME_TYPE") != 26:
+        if self.settings.get("APP_VOLUME_TYPE") not in (7, 12, 17, 22, 26):
             pv_parser = Parser(app_file, "PersistentVolume")
             pv_parser["spec"]["capacity"]["storage"] = self.settings.get("JACKRABBIT_STORAGE_SIZE")
             if "ldap" in app_file:
@@ -930,7 +923,7 @@ class Kustomize(object):
             pv_parser.dump_it()
 
     def remove_resources(self, app_file, kind):
-        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or self.settings.get("DEPLOYMENT_ARCH") == "minikube" \
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") \
                 or self.settings.get("TEST_ENVIRONMENT") == "Y":
             parser = Parser(app_file, kind)
             try:
@@ -1008,12 +1001,11 @@ class Kustomize(object):
 
             self.wait_for_nginx_add()
 
-        if self.settings.get("DEPLOYMENT_ARCH") == "gke" or self.settings.get("DEPLOYMENT_ARCH") == "aks" \
-                or self.settings.get("DEPLOYMENT_ARCH") == "do" or self.settings.get("DEPLOYMENT_ARCH") == "local":
+        if self.settings.get("DEPLOYMENT_ARCH") in  ("gke", "aks",  "do", "local"):
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             self.wait_for_nginx_add()
 
-        if self.settings.get("DEPLOYMENT_ARCH") == "eks" or self.settings.get("DEPLOYMENT_ARCH") == "local":
+        if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
             self.wait_for_nginx_add()
             cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
             cm_parser["data"]["LB_ADDR"] = self.settings.get("LB_ADD")
@@ -1075,8 +1067,7 @@ class Kustomize(object):
         postgres_parser["spec"]["replicas"] = self.settings.get("POSTGRES_REPLICAS")
         postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
         postgres_parser["metadata"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "minikube" or \
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") or \
                 self.settings.get("TEST_ENVIRONMENT") == "Y":
             try:
                 del postgres_parser["spec"]["podTemplate"]["spec"]["resources"]
@@ -1243,9 +1234,7 @@ class Kustomize(object):
         redis_parser["spec"]["cluster"]["replicas"] = self.settings.get("REDIS_NODES_PER_MASTER")
         redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
         redis_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "minikube" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "local":
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
             del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
         redis_parser.dump_it()
         self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
@@ -1308,8 +1297,7 @@ class Kustomize(object):
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=persistence-load",
                                                 self.timeout)
-        if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
-                self.settings.get("PERSISTENCE_BACKEND") == "ldap":
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.patch_namespaced_stateful_set_scale(name="opendj",
                                                                 replicas=self.settings.get("LDAP_REPLICAS"),
                                                                 namespace=self.settings.get("GLUU_NAMESPACE"))
@@ -1544,7 +1532,7 @@ class Kustomize(object):
             else:
                 self.deploy_nginx()
         self.adjust_fqdn_yaml_entries()
-        if self.settings.get("DEPLOY_MULTI_CLUSTER") != "Y" and self.settings.get("DEPLOY_MULTI_CLUSTER") != "y":
+        if self.settings.get("DEPLOY_MULTI_CLUSTER") != "Y":
             self.kubernetes = Kubernetes()
             if restore:
                 self.mount_config()
@@ -1586,7 +1574,7 @@ class Kustomize(object):
             self.deploy_persistence()
 
         if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
-            if self.settings.get("DEPLOYMENT_ARCH") == "eks" or self.settings.get("DEPLOYMENT_ARCH") == "local":
+            if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
                 self.kubernetes = Kubernetes()
                 self.deploy_update_lb_ip()
 
@@ -1741,7 +1729,7 @@ class Kustomize(object):
                 elif self.settings.get("DEPLOYMENT_ARCH") == "microk8s":
                     shutil.rmtree('/data', ignore_errors=True)
                 else:
-                    if self.settings.get("APP_VOLUME_TYPE") == 6 or self.settings.get("APP_VOLUME_TYPE") == 16:
+                    if self.settings.get("APP_VOLUME_TYPE") in (6, 16):
                         if self.settings.get("DEPLOYMENT_ARCH") == "eks":
                             ssh_and_remove(self.settings.get("NODE_SSH_KEY"), "ec2-user", node_ip, "/data")
                         elif self.settings.get("DEPLOYMENT_ARCH") == "aks":
