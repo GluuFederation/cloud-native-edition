@@ -140,6 +140,14 @@
             $('#jackrabbitYesInstall').collapse('hide');
            }
         });
+
+        $('input[name="jackrabbit_cluster"').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#jackrabbitCluster').collapse('show');
+           }else{
+            $('#jackrabbitCluster').collapse('hide');
+           }
+        });
       {% endif %}
 
       {% if template == "settings" %}
