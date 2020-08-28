@@ -7,12 +7,20 @@ This module contains helpers to interact with settings saved in a dictionary  fo
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+import contextlib
 import json
+import os
 import shutil
 from pathlib import Path
 from .common import get_logger, update_settings_json_file
 
 logger = get_logger("gluu-setting        ")
+
+
+def unlink_settings_json():
+    filename = Path("./settings.json")
+    with contextlib.suppress(FileNotFoundError):
+        os.unlink(filename)
 
 
 class SettingsHandler(object):
@@ -157,7 +165,7 @@ class SettingsHandler(object):
                                 ENABLE_OXPASSPORT_BOOLEAN="false",
                                 ENABLE_CASA_BOOLEAN="false",
                                 ENABLE_SAML_BOOLEAN="false",
-                                ENABLED_SERVICES_LIST=[],
+                                ENABLED_SERVICES_LIST=["config", "oxauth", "oxtrust", "persistence", "jackrabbit"],
                                 OXAUTH_KEYS_LIFE="",
                                 EDIT_IMAGE_NAMES_TAGS="",
                                 CASA_IMAGE_NAME="",
@@ -210,7 +218,8 @@ class SettingsHandler(object):
         try:
             shutil.copy(Path("./installer-settings.json"), "./settings.json")
         except FileNotFoundError:
-            logger.info("No installation settings mounted as /installer-settings.json. Checking settings.json...")
+            # No installation settings mounted as /installer-settings.json. Checking settings.json.
+            pass
         filename = Path("./settings.json")
         try:
             with open(filename) as f:
