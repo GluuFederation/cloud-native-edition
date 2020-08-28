@@ -172,10 +172,10 @@ def get_supported_versions():
         return versions, version_number
 
 
-def generate_password(length):
+def generate_password(length=6):
     """
     Returns randomly generated password
-    :param length: Length of password
+    :param length: Length of password. default 6
     :return:
     """
     chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
