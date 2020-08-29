@@ -1,5 +1,5 @@
 import os
-
+import secrets
 
 class Config(object):
     DEBUG = False
@@ -14,7 +14,7 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = secrets.token_urlsafe(32)
 
 
 class TestingConfig(Config):
