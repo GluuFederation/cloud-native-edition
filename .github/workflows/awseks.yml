@@ -91,7 +91,7 @@ jobs:
     - name: Install Istio
       run: |
           sudo curl -sL https://istio.io/downloadIstioctl | sh -
-          sudo export PATH=$PATH:$HOME/.istioctl/bin
+          export PATH=$PATH:$HOME/.istioctl/bin
           sudo istioctl operator init
 
     - name: Create settings.json
