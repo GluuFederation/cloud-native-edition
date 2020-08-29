@@ -1,9 +1,11 @@
-#!/usr/bin/env python
-
 """
- License terms and conditions for Gluu Cloud Native Edition:
- https://www.apache.org/licenses/LICENSE-2.0
-A GUI for installing Gluu Cloud Native Edition.
+pygluu.kubernetes.gui.views.wizard
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contain gui views for user's input settings.json
+
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
 """
 import ipaddress
 import shutil
