@@ -87,7 +87,7 @@ def password_requirement_check(form, field):
             "letter, one lower case letter and one symbol")
 
 
-class RequiredIfFieldEqualTo(Required):
+class RequiredIfFieldEqualTo(DataRequired):
     """
     A validator which makes a field optional if
     another field has a desired value
@@ -109,12 +109,25 @@ class RequiredIfFieldEqualTo(Required):
 
 
 class LicenseForm(FlaskForm):
+    """
+    License form,
+    form to accept Apache 2.0 lisence
+
+    Fields :
+        accept_gluu_license (string|required)
+    """
     accept_gluu_license = BooleanField(
         "I accept the Gluu license stated above",
         validators=[DataRequired(message="License has not been accepted")])
 
 
 class GluuVersionForm(FlaskForm):
+    """
+    Gluu version form
+
+    Fields :
+        gluu_version (string|required)
+    """
     versions, version_number = get_supported_versions()
     supported_versions = []
 
