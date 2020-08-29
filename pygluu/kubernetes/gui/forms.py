@@ -141,6 +141,12 @@ class GluuVersionForm(FlaskForm):
 
 
 class DeploymentArchForm(FlaskForm):
+    """
+    Deployment architecture form.
+
+    Fields :
+        deployment_arch (string|required|default: microk8s)
+    """
     deployment_arch = RadioField(
         "Deployment Architecture",
         choices=[
@@ -156,12 +162,37 @@ class DeploymentArchForm(FlaskForm):
 
 
 class GluuNamespaceForm(FlaskForm):
+    """
+    Gluu namespace form
+
+    Fields :
+        gluu_namespace (string|required|default: gluu)
+    """
     gluu_namespace = StringField("Gluu Namespace",
                                  default="gluu",
                                  validators=[InputRequired()])
 
 
 class OptionalServiceForm(FlaskForm):
+    """
+    Optional Service Form
+
+    Fields :
+        enable_cache_refresh (string|required|default: N)
+        enable_oxauth_key_rotate (string|required|default: N)
+        oxauth_keys_life (string|required|default: N)
+        enable_radius (string|required|default: N)
+        enable_oxpassport (string|required|default: N)
+        enable_oxshibboleth (string|required|default: N)
+        enable_casa (string|required|default: N)
+        enable_fido2 (string|required|default: N)
+        enable_scim (string|required|default: N)
+        enable_oxd (string|required|default: N)
+        oxd_application_keystore_cn (string|required_if enable_oxd = Y|default: oxd-server)
+        oxd_admin_keystore_cn (string|required_if enable_oxd = Y|default: oxd-server)
+        enable_oxtrust_api (string|required|default: N)
+        enable_oxtrust_test_mode (string|required|default: N)
+    """
     enable_cache_refresh = RadioField("Deploy Cr-Rotate",
                                       choices=[("Y", "Yes"), ("N", "No")],
                                       default="N",
@@ -222,6 +253,25 @@ class OptionalServiceForm(FlaskForm):
 
 
 class GluuGatewayForm(FlaskForm):
+    """
+    Gluu Gateway Form
+
+    Fields :
+        install_gluu_gateway (string|required|default: N)
+        postgres_namespace (string|required_if install_gluu_gateway = Y|default: postgres)
+        postgres_replicas (integer|required_if install_gluu_gateway = Y|default: 3)
+        postgres_url (string|required_if install_gluu_gateway = Y|default: postgres)
+        kong_namespace (string|required_if install_gluu_gateway = Y|default: gluu-gateway)
+        gluu_gateway_ui_namesapce (string|required_if install_gluu_gateway = Y|default: gg-ui)
+        kong_database (string|required_if install_gluu_gateway = Y|default: kong)
+        kong_pg_user (string|required_if install_gluu_gateway = Y|default: konga)
+        kong_pg_password (string|required_if install_gluu_gateway = Y|default: auto generated)
+        kong_pg_password_confirmation (string|required_if install_gluu_gateway = Y|default: auto generated)
+        gluu_gateway_ui_database (string|required_if install_gluu_gateway = Y|default: kong)
+        gluu_gateway_ui_user (string|required_if install_gluu_gateway = Y|default: konga)
+        gluu_gateway_ui_pg_password (string|required_if install_gluu_gateway = Y|default: auto generated)
+        gluu_gateway_ui_pg_password_confirmation (string|required_if install_gluu_gateway = Y|default: auto generated)
+    """
     install_gluu_gateway = RadioField("Install Gluu Gateway Database mode",
                                       choices=[("Y", "Yes"), ("N", "No")],
                                       default="N",
@@ -359,6 +409,22 @@ class JackrabbitForm(FlaskForm):
 
 
 class SettingForm(FlaskForm):
+    """
+    Setting Form.
+
+    Fields :
+        test_environment (string|required|default: N)
+        node_ssh_key (string|optional|default: ~/.ssh/id_rsa)
+        host_ext_ip (string|required|default: 127.0.0.1)
+        use_lb_type (string|optional|default: clb)
+        use_arn (string|optional|default: N)
+        arn_aws_iam (string|optional, available when deployment_arch is eks)
+        gmail_account(string|optional, available when deployment_arch is gke)
+        persistence_backend(string|required|default: ldap)
+        hybrid_ldap_held_data(string|optional, available when persistence_backend is hybrid)
+
+    TODO: do we need to separate form for eks, gke and persistence backend?
+    """
     test_environment = RadioField("Is this test a test environment?",
                                   choices=[("Y", "Yes"), ("N", "No")],
                                   default="N",
@@ -406,7 +472,14 @@ class SettingForm(FlaskForm):
 
 
 class VolumeTypeForm(FlaskForm):
+    """
+    Volume Type Form
 
+    Fields:
+        app_volume_type (string|required|default: based on deployment_arch selection see app_volume_types var)
+        ldap_static_volume_id (string|optional)
+        ldap_jackrabbit_volume(string|optional, became required for aks, eks and gke)
+    """
     if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
         ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
         ldap_jackrabbit_volume_label = ldap_volume["label"]
@@ -447,6 +520,12 @@ class VolumeTypeForm(FlaskForm):
 
 
 class CouchbaseMultiClusterForm(FlaskForm):
+    """
+    Couchbase Multi Cluster Form
+
+    Fields:
+        deploy_multi_cluster (string|optional, available for hybrid and couchbase backend)
+    """
     deploy_multi_cluster = RadioField(
         "Is this a multi-cloud/region setup?",
         choices=[("Y", "Yes"), ("N", "No")],
@@ -456,6 +535,19 @@ class CouchbaseMultiClusterForm(FlaskForm):
 
 
 class RedisForm(FlaskForm):
+    """
+    Redis Form
+
+    Fields:
+        redis_type (string|optional|default: CLUSTER)
+        install_redis (string|required|default: Y)
+        redis_master_nodes (integer|required_if, install_redis is Y| default: 3| min: 3)
+        redis_node_per_master (integer|required_if install_redis is Y| default: 2)
+        redis_namespace (string|required_if install_redis is Y| default: gluu-redis-cluster)
+        redis_pw (string|required_if install_redis is Y)
+        redis_pw_confirm (string|required_if install_redis is Y|equal_to redis_pw)
+        redis_url (string|optional|default : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379)
+    """
     redis_type = RadioField("Please select redis Type",
                             choices=[("STANDALONE", "STANDALONE"),
                                      ("CLUSTER", "CLUSTER")],
@@ -496,11 +588,20 @@ class RedisForm(FlaskForm):
         "[Configuration Endpoint]: clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
 
     def validate_master_nodes(form, field):
+        """
+        validate field redis_master_nodes, minimum value is 3
+        """
         if field.data < 3:
             raise ValidationError("minimum number of master node is 3")
 
 
 class CacheTypeForm(FlaskForm):
+    """
+    Cache Type Form
+
+    Fields :
+        gluu_cache_type (string|required|default: NATIVE_PERSISTENCE)
+    """
     gluu_cache_type = RadioField(
         "Cache Layer",
         choices=[("NATIVE_PERSISTENCE", "NATIVE_PERSISTENCE"),
@@ -511,6 +612,26 @@ class CacheTypeForm(FlaskForm):
 
 
 class CouchbaseForm(FlaskForm):
+    """
+    Couchbase Form
+
+    Fields:
+        install_couchbase (string|required)
+        couchbase_crt (file|required_if install_couchbase is N)
+        couchbase_cluster_file_override (string|required|default: N)
+        couchbase_cluster_files (file|required_if couchbase_cluster_file_override is Y)
+        couchbase_use_low_resource (string|optional|default: N|forced to Y for microk8s and minikube)
+        couchbase_namespace (string|required|default: cbns)
+        couchbase_cluster_name (string|required|default: cbgluu)
+        couchbase_url (string|required|default: cbgluu.cbns.svc.cluster.local)
+        couchbase_user (string|required|default: admin)
+        couchbase_password (string|required|default: auto generate)
+        couchbase_password_confirmation (string|required|equal to couchbase_password)
+        couchbase_cn (string|optional|default: Couchbase CA)
+
+    Note:
+        COUCHBASE_CN will be required when couchbase certs inside couchbase_crts-keys folder not exist
+    """
     install_couchbase = RadioField(
         "Install Couchbase", choices=[("Y", "Yes"), ("N", "No")],
         description="For the following prompt if placed [N] the couchbase "
@@ -561,8 +682,28 @@ class CouchbaseForm(FlaskForm):
 
 
 class CouchbaseCalculatorForm(FlaskForm):
+    """
+    Couchbase Calculator Form.
+
+    Fields:
+        number_of_expected_users (integer|required|default: 10000000)
+        using_resource_owner_password_cred_grant_flow (string|required|default: Y)
+        using_code_flow (string|required|default: Y)
+        using_scim_flow (string|required|default Y)
+        expected_transaction_per_sec (integer|required|default:2000)
+        couchbase_data_nodes (string|optional|default: "")
+        couchbase_index_nodes (string|optional|default: "")
+        couchbase_search_eventing_analytics_nodes (string|optional|default: "")
+        couchbase_general_storage (string|optional|default: "")
+        couchbase_data_storage (string|optional|default: ""|auto calculated)
+        couchbase_index_storage (string|optional|default: ""|auto calculated)
+        couchbase_query_storage (string|optional|default: ""|auto calculated)
+        couchbase_analytics_storage (string|optional|default: ""|auto calculated)
+        couchbase_volume_type (string|optional|default: see volume_types variable)
+    """
     number_of_expected_users = IntegerField(
         "Please enter the number of expected users", default=1000000)
+        validators=[InputRequired()])
     using_resource_owner_password_cred_grant_flow = RadioField(
         "Will you be using the resource owner password credential grant flow",
         choices=[("Y", "Yes"), ("N", "No")],
@@ -609,6 +750,15 @@ class CouchbaseCalculatorForm(FlaskForm):
 
 
 class CouchbaseBackupForm(FlaskForm):
+    """
+    Couchbase Backup Form
+
+    Fields :
+        couchbase_incr_backup_schedule (string|required|default: */30 * * * *)
+        couchbase_full_backup_schedule (string|required|default: 0 2 * * 6)
+        couchbase_backup_rentention_time (string|required|default: 168h)
+        couchbase_backup_storage_file_size (string|required|default: 20Gi)
+    """
     couchbase_incr_backup_schedule = StringField(
         "Please input couchbase backup cron job schedule for incremental backups. "
         "This will run backup job every 30 mins by default.",
@@ -626,6 +776,12 @@ class CouchbaseBackupForm(FlaskForm):
 
 
 class LdapBackupForm(FlaskForm):
+    """
+    LDAP backup Form
+
+    Fields:
+        ldap_backup_schedule (string|required|default: */30 * * * *)
+    """
     ldap_backup_schedule = StringField(
         "Please input ldap backup cron job schedule. "
         "This will run backup job every 30 mins by default.",
@@ -633,6 +789,24 @@ class LdapBackupForm(FlaskForm):
 
 
 class ConfigForm(FlaskForm):
+    """
+    Config Form
+
+    Fields:
+        gluu_fqdn (string|required|default: demoexample.gluu.org)
+        country_code (string|required|default: US)
+        state (string|required|default: TX)
+        city (string|required|default: Austin)
+        email (string|required|default: support@gluu.org)
+        org_name (string|required|default: Gluu)
+        admin_pw (string|required|default: auto generated)
+        admin_pw_confirm (string|required, equal to admin_pw)
+        ldap_pw (string|optional, required for hybrid and ldap backend)
+        ldap_pw_confirm (string|equal to ldap_pw)
+        is_gluu_fqdn_registered (string|optional)
+
+    TODO: find a better way to override ldap_pw validators
+    """
     gluu_fqdn = StringField("Hostname",
                             default="demoexample.gluu.org",
                             validators=[InputRequired()])
@@ -686,6 +860,9 @@ class ConfigForm(FlaskForm):
         ldap_pw.render_kw = {"disabled": "disabled"}
 
     def validate_gluu_fqdn(form, field):
+        """
+        FQDN validation format
+        """
         regex_bool = re.match(
             '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*['
             'A-Za-z0-9]){2,}$',
@@ -697,6 +874,42 @@ class ConfigForm(FlaskForm):
 
 
 class ImageNameTagForm(FlaskForm):
+    """
+    Image Name Tag Form
+
+    Fields :
+        edit_image_names_tags (string|required)
+        casa_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        casa_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        config_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        config_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        cache_refresh_rotate_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        cache_refresh_rotate_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        cert_manager_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        cert_manager_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        ldap_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        ldap_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        jackrabbit_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        jackrabbit_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxauth_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxauth_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxd_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxd_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxpassport_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxpassport_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxshibboleth_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxshibboleth_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxtrust_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxtrust_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        persistence_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        persistence_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        radius_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        radius_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        gluu_gateway_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        gluu_gateway_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        gluu_gateway_ui_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        gluu_gateway_ui_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+    """
     # TODO: find a way to generate dynamic fields
 
     edit_image_names_tags = RadioField(
@@ -826,11 +1039,21 @@ class ImageNameTagForm(FlaskForm):
 
 
 class ReplicasForm(FlaskForm):
-    oxauth_replicas = IntegerField("Number of oxAuth replicas", default=1)
-    fido2_replicas = IntegerField("Number of fido2 replicas", default=1)
+    """
+    Replicas Form
     scim_replicas = IntegerField("Number of scim replicas", default=1)
-    oxtrust_replicas = IntegerField("Number of oxTrust replicas", default=1)
-    ldap_replicas = IntegerField("Number of LDAP replicas", default=1)
+    Fields:
+        oxauth_replicas (integer|required|default: 1)
+        fido2_replicas (integer|optional|default: 1)
+        scim_replicas (integer|optional|default: 1)
+        oxtrust_replicas (integer|optional|default: 1)
+        ldap_replicas (integer|optional|default: 1)
+        oxshibboleth_replicas (integer|optional|default: 1)
+        oxpassport_replicas (integer|optional|default: 1)
+        oxd_server_replicas (integer|optional|default: 1)
+        casa_replicas (integer|optional|default: 1)
+        radius_replicas (integer|optional|default: 1)
+    """
     oxshibboleth_replicas = IntegerField("Number of oxShibboleth replicas",
                                          default=1)
     oxpassport_replicas = IntegerField("Number of oxPassport replicas",
@@ -842,5 +1065,11 @@ class ReplicasForm(FlaskForm):
 
 
 class StorageForm(FlaskForm):
+    """
+    Storage Form
+
+    Fields :
+        ldap_storage_size (string|required|default: 4gi)
+    """
     ldap_storage_size = StringField("Size of ldap volume storage",
                                     default="4Gi")
