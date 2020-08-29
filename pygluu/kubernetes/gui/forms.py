@@ -877,7 +877,7 @@ class ConfigForm(FlaskForm):
             '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*['
             'A-Za-z0-9]){2,}$',
             # noqa: W605
-            form.gluu_fqdn.data)
+            self.gluu_fqdn.data)
 
         if not regex_bool:
             raise ValidationError("Input not FQDN structred. Please enter a FQDN with the format demoexample.gluu.org")
