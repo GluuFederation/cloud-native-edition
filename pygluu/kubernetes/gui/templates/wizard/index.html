@@ -1,39 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="container">
-    <div class="card border-0">
-      <div class="card-header">
-        <div>
-          <img class="mx-auto d-block" src="{{ url_for('static', filename='img/green-logo.svg') }}" alt="Gluu green logo">
-        </div>
-      </div>
-      <div class="card-body">
-        <h3 class="text-center">Gluu Cloud Native Edition</h3>
-          <ul class="wizard wizard-steps-18">
-            {% for wizard_step in wizard_steps %}
-              {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
-              <li>
-                <div class="step {{ step_status }}">
-                  <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step }}">{{ loop.index }}</span>
-                  <i>{{ wizard_step }}</i>
-                </div>
-              </li>
-            {% endfor %}
+  <div class="card border-0 shadow p-1 mb-5 bg-white rounded">
+    <div class="card-body">
+      <h3 class="text-center">Gluu Cloud Native Edition</h3>
+        <ul class="wizard wizard-steps-19">
+          {% for wizard_step in wizard_steps %}
+            {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
+            <li>
+              <div class="step {{ step_status }}">
+                <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step }}">{{ loop.index }}</span>
+                <i>{{ wizard_step }}</i>
+              </div>
+            </li>
+          {% endfor %}
 
-          </ul>
-          <br>
-          <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
-            {{ form.csrf_token }}
-            {% include 'wizard/%s.html' % template %}
-            {% if(next_step) %}
-              {{ forms.hidden('next_step', next_step) }}
-            {% endif %}
-            {% if(prev_step) %}
-              <a href="{{ url_for(prev_step) }}" class="btn btn-info">Prev</a>
-            {% endif %}
-            <button type="submit" class="btn btn-primary float-right">Next</button>
-          </form>
-        </div>
+        </ul>
+        <br>
+        <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
+          {{ form.csrf_token }}
+          {% include 'wizard/%s.html' % template %}
+          {% if(next_step) %}
+            {{ forms.hidden('next_step', next_step) }}
+          {% endif %}
+          {% if(prev_step) %}
+            <a href="{{ url_for(prev_step) }}" class="btn btn-info">Prev</a>
+          {% endif %}
+          <button type="submit" class="btn btn-primary float-right">Next</button>
+        </form>
       </div>
     </div>
   </div>
