@@ -15,10 +15,11 @@ import argparse
 import time
 import sys
 from .couchbase import Couchbase
-from .prompt import Prompt
+from pygluu.kubernetes.terminal.prompt import Prompt
 from .common import get_logger, copy_templates
 from .helm import Helm
 from .kustomize import Kustomize
+from .settings import SettingsHandler
 
 logger = get_logger("gluu-create        ")
 
@@ -71,73 +72,84 @@ def main():
         return
     copy_templates()
     prompts = Prompt()
-    settings = prompts.check_settings_and_prompt
+    prompts.prompt()
+    settings = SettingsHandler()
 
     timeout = 120
     if args.subparser_name == "install-no-wait":
         timeout = 0
     try:
         if args.subparser_name == "install" or args.subparser_name == "install-no-wait":
-            kustomize = Kustomize(settings, timeout)
+            kustomize = Kustomize(timeout)
             kustomize.uninstall()
-            if settings["INSTALL_REDIS"] == "Y" or \
-                    settings["INSTALL_GLUU_GATEWAY"] == "Y" or \
-                    settings["JACKRABBIT_CLUSTER"] == "Y":
-                helm = Helm(settings)
+            if settings.get("INSTALL_REDIS") == "Y" or \
+                    settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                    settings.get("JACKRABBIT_CLUSTER") == "Y":
+                helm = Helm()
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
             kustomize.install()
 
         if args.subparser_name == "install-ldap-backup":
-            kustomize = Kustomize(settings, timeout)
+            kustomize = Kustomize(timeout)
             kustomize.setup_backup_ldap()
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
-            kustomize = Kustomize(settings, timeout)
+            kustomize = Kustomize(timeout)
             kustomize.uninstall()
-            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
-                helm = Helm(settings)
+            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+                helm = Helm()
                 helm.uninstall_kubedb()
 
         elif args.subparser_name == "upgrade":
+            from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
+            prompt_upgrade = PromptUpgrade(settings)
             logger.info("Starting upgrade...")
-            settings = prompts.prompt_upgrade
-            kustomize = Kustomize(settings, timeout)
+            prompt_upgrade.prompt_upgrade()
+            kustomize = Kustomize(timeout)
             kustomize.upgrade()
 
         elif args.subparser_name == "restore":
-            kustomize = Kustomize(settings, timeout)
+            kustomize = Kustomize(timeout)
             kustomize.copy_configs_before_restore()
             kustomize.uninstall(restore=True)
             kustomize.install(install_couchbase=False, restore=True)
 
         elif args.subparser_name == "install-couchbase":
-            settings = prompts.prompt_couchbase
-            couchbase = Couchbase(settings)
+            from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
+            prompt_couchbase = PromptCouchbase(settings)
+            prompt_couchbase.prompt_couchbase()
+            couchbase = Couchbase()
             couchbase.install()
 
         elif args.subparser_name == "install-couchbase-backup":
-            settings = prompts.prompt_couchbase
-            couchbase = Couchbase(settings)
+            from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
+            prompt_couchbase = PromptCouchbase(settings)
+            prompt_couchbase.prompt_couchbase()
+            couchbase = Couchbase()
             couchbase.setup_backup_couchbase()
 
         elif args.subparser_name == "uninstall-couchbase":
-            settings = prompts.prompt_couchbase
-            couchbase = Couchbase(settings)
+            from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
+            prompt_couchbase = PromptCouchbase(settings)
+            prompt_couchbase.prompt_couchbase()
+            couchbase = Couchbase()
             couchbase.uninstall()
 
         elif args.subparser_name == "install-gg-dbmode":
-            kustomize = Kustomize(settings, timeout)
-            prompts.prompt_gluu_gateway()
+            from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
+            prompt_gluu_gateway = PromptGluuGateway(settings)
+            prompt_gluu_gateway.prompt_gluu_gateway()
+            kustomize = Kustomize(timeout)
             kustomize.install_gluu_gateway_dbmode()
 
         elif args.subparser_name == "install-kubedb":
-            helm = Helm(settings)
+            helm = Helm()
             helm.install_kubedb()
 
         elif args.subparser_name == "uninstall-gg-dbmode":
-            kustomize = Kustomize(settings, timeout)
+            kustomize = Kustomize(timeout)
             kustomize.uninstall_kong()
             kustomize.uninstall_gluu_gateway_ui()
 
@@ -145,20 +157,24 @@ def main():
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "helm-install":
-            settings = prompts.prompt_helm
-            helm = Helm(settings)
-            if settings["INSTALL_REDIS"] == "Y" or settings["INSTALL_GLUU_GATEWAY"] == "Y":
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            helm = Helm()
+            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
                 helm.install_kubedb()
-            if settings["INSTALL_REDIS"] == "Y":
-                kustomize = Kustomize(settings, timeout)
+            if settings.get("INSTALL_REDIS") == "Y":
+                kustomize = Kustomize(timeout)
                 kustomize.uninstall_redis()
                 kustomize.deploy_redis()
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
-            settings = prompts.prompt_helm
-            kustomize = Kustomize(settings, timeout)
-            helm = Helm(settings)
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            kustomize = Kustomize(timeout)
+            helm = Helm()
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
             helm.uninstall_gluu_gateway_dbmode()
@@ -169,30 +185,38 @@ def main():
             helm.uninstall_kubedb()
 
         elif args.subparser_name == "helm-install-gluu":
-            settings = prompts.prompt_helm
-            helm = Helm(settings)
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            helm = Helm()
             helm.uninstall_gluu()
             helm.install_gluu(install_ingress=False)
 
         elif args.subparser_name == "helm-install-gg-dbmode":
-            kustomize = Kustomize(settings, timeout)
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            kustomize = Kustomize(timeout)
             kustomize.deploy_postgres()
-            settings = prompts.prompt_helm
-            helm = Helm(settings)
+            helm = Helm()
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gg-dbmode":
-            kustomize = Kustomize(settings, timeout)
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            kustomize = Kustomize(timeout)
             kustomize.uninstall_postgres()
-            settings = prompts.prompt_helm
-            helm = Helm(settings)
+            helm = Helm()
             helm.uninstall_gluu_gateway_dbmode()
             helm.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gluu":
-            settings = prompts.prompt_helm
-            helm = Helm(settings)
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
+            helm = Helm()
             helm.uninstall_gluu()
 
     except KeyboardInterrupt:
