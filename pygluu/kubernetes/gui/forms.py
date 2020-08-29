@@ -587,7 +587,7 @@ class RedisForm(FlaskForm):
         "in a redis deployment Redis URL using AWS ElastiCach "
         "[Configuration Endpoint]: clustercfg.testing-redis.icrbdv.euc1.cache.amazonaws.com:6379")
 
-    def validate_master_nodes(form, field):
+    def validate_redis_master_nodes(self, field):
         """
         validate field redis_master_nodes, minimum value is 3
         """
@@ -869,7 +869,7 @@ class ConfigForm(FlaskForm):
         ldap_pw.validators = [Optional()]
         ldap_pw.render_kw = {"disabled": "disabled"}
 
-    def validate_gluu_fqdn(form, field):
+    def validate_gluu_fqdn(self, field):
         """
         FQDN validation format
         """
