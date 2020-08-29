@@ -36,12 +36,14 @@ def main():
     App initialization with parser to handle argument from CLI
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument("-H", "--host", action="store", default="0.0.0.0")
     parser.add_argument("-p", "--port", action="store", default="5000")
     parser.add_argument("-d", "--debug", type=bool, action="store",
                         default=False,
                         help="Enable/Disable debug (default: false)")
 
     args = parser.parse_args()
+    host = args.host
     port = int(args.port)
     debug = args.debug
 
@@ -52,7 +54,8 @@ def main():
     logging.getLogger('socketio').setLevel(logging.ERROR)
     logging.getLogger('engineio').setLevel(logging.ERROR)
     log.disabled = True
-    app.run(host="0.0.0.0", port=port, debug=debug)
+
+    app.run(host=host, port=port, debug=debug)
 
 
 if __name__ == "__main__":
