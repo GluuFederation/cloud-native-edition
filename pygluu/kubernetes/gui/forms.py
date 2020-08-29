@@ -1092,3 +1092,34 @@ class StorageForm(FlaskForm):
     ldap_storage_size = StringField("Size of ldap volume storage",
                                     default="4Gi",
                                     validators=[InputRequired()])
+
+
+class IstioForm(FlaskForm):
+    """
+    Istio Form
+
+    Fields:
+        use_istio_ingress
+        use_istio
+        istio_system_namespace
+        lb_add
+    """
+
+    use_istio_ingress = RadioField("[Alpha] Would you like to use Istio Ingress with Gluu ?",
+                                   choices=[("Y", "Yes"), ("N", "No")],
+                                   validators = [Optional()])
+    use_istio = RadioField(
+        "[Alpha] Would you like to use Istio with Gluu ?",
+        choices=[("Y", "Yes"), ("N", "No")],
+        validators=[DataRequired()],
+        description="Istio will auto inject side cars into all pods in Gluus namespace chosen. "
+                    "The label istio-injection=enabled will be added to the namespace Gluu will be installed in "
+                    "if the namespace does not exist. If it does please run "
+                    "kubectl label namespace <namespace> istio-injection=enabled")
+    istio_system_namespace = StringField("Istio namespace",
+                                          default="istio-system",
+                                          validators=[RequiredIfFieldEqualTo("use_istio", "Y")])
+    lb_add = StringField("Istio loadbalancer address (eks) or "
+                         "ip (gke, aks, digital ocean, local)",
+                         default = "",
+                         validators=[Optional()])

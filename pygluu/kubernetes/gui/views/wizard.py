@@ -27,7 +27,7 @@ from pygluu.kubernetes.gui.forms import LicenseForm, GluuVersionForm, Deployment
     SettingForm, VolumeTypeForm, CacheTypeForm, CouchbaseMultiClusterForm, \
     CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, \
     LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm, \
-    volume_types
+    IstioForm, volume_types
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 wizard_steps = ["License",
@@ -37,6 +37,7 @@ wizard_steps = ["License",
                 "Optional settings",
                 "Gluu gateway",
                 "Install jackrabbit",
+                "Install Istio",
                 "Persistence backend",
                 "App volume type",
                 "Couchbase multi cluster",
@@ -377,6 +378,47 @@ def install_jackrabbit():
                            current_step=7,
                            template="install_jackrabbit",
                            prev_step="wizard.gluu_gateway",
+                           next_step="wizard.install_istio")
+
+
+@wizard_blueprint.route("/install-istio", methods=["GET", "POST"])
+def install_istio():
+    """
+    Setup Istio
+
+    Note:
+    use_istio_ingress field will be required except for microk8s and minikube
+    """
+    form = IstioForm()
+    if form.validate_on_submit():
+        next_step = request.form["next_step"]
+        data = {}
+        if settings.get("DEPLOYMENT_ARCH") not in test_arch:
+            data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
+            if data["USE_ISTIO_INGRESS"] == "Y":
+                data["ENABLE_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+                data["ENABLE_SERVICES_LIST"].append('gluu-istio-ingress')
+
+        data["USE_ISTIO"] = form.use_istio.data
+        data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
+
+        settings.update(data)
+        return redirect(url_for(next_step))
+
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        del form.use_istio_ingress
+    else:
+        form.use_istio_ingress.validators = [DataRequired()]
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+
+    return render_template("wizard/index.html",
+                           form=form,
+                           current_step=8,
+                           template="install_istio",
+                           prev_step="wizard.install_jackrabbit",
                            next_step="wizard.setting")
 
 
@@ -454,9 +496,9 @@ def setting():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=8,
+                           current_step=9,
                            template="settings",
-                           prev_step="wizard.install_jackrabbit",
+                           prev_step="wizard.install_istio",
                            next_step="wizard.cache_type")
 
 
@@ -491,7 +533,7 @@ def app_volume_type():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=9,
+                           current_step=10,
                            template="app_volume_type",
                            prev_step="wizard.setting",
                            next_step="wizard.cache_type")
@@ -517,7 +559,7 @@ def couchbase_multi_cluster():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=10,
+                           current_step=11,
                            template="couchbase_multi_cluster",
                            prev_step=prev_step,
                            next_step="wizard.cache_type")
@@ -575,7 +617,7 @@ def cache_type():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=11,
+                           current_step=12,
                            template="cache_type",
                            prev_step=prev_step,
                            next_step="wizard.couchbase")
@@ -686,7 +728,7 @@ def couchbase():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=12,
+                           current_step=13,
                            template="couchbase",
                            prev_step="wizard.couchbase_multi_cluster",
                            next_step="wizard.config")
@@ -722,7 +764,7 @@ def couchbase_calculator():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=13,
+                           current_step=14,
                            template="couchbase_calculator",
                            prev_step="wizard.couchbase",
                            next_step="wizard.config")
@@ -768,7 +810,7 @@ def backup():
     return render_template("wizard/index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           current_step=14,
+                           current_step=15,
                            template="backup",
                            prev_step=prev_step,
                            next_step="wizard.config")
@@ -836,7 +878,7 @@ def config():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=15,
+                           current_step=16,
                            template="config",
                            prev_step=prev_step,
                            next_step="wizard.image_name_tag")
@@ -890,7 +932,7 @@ def image_name_tag():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=16,
+                           current_step=17,
                            template="image_name_tag",
                            prev_step="wizard.config",
                            next_step="wizard.replicas")
@@ -936,7 +978,7 @@ def replicas():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=17,
+                           current_step=18,
                            template="replicas",
                            prev_step="wizard.image_name_tag",
                            next_step="wizard.storage")
@@ -955,7 +997,7 @@ def storage():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=18,
+                           current_step=19,
                            template="storage",
                            prev_step="wizard.replicas",
                            next_step="wizard.setting_summary")
