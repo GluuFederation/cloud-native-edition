@@ -1,5 +1,7 @@
 import argparse
 import logging
+import os
+import re
 from flask import Flask
 
 from .extensions import csrf, socketio
@@ -27,6 +29,21 @@ def create_app():
     app.register_blueprint(wizard)
     app.register_blueprint(wizard_blueprint)
     app.register_blueprint(install_blueprint)
+
+    @app.context_processor
+    def hash_processor():
+        def hashed_url(filepath):
+            directory, filename = filepath.rsplit('/')
+            name, extension = filename.rsplit(".")
+            folder = os.path.join(os.path.sep, app.root_path, 'static', directory)
+            files = os.listdir(folder)
+            for f in files:
+                regex = name + "\.[a-z0-9]+\." + extension
+                if re.match(regex, f):
+                    return os.path.join('/static', directory, f)
+            return os.path.join('/static', filepath)
+
+        return dict(hashed_url=hashed_url)
 
     return app
 
