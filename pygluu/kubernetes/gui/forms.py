@@ -557,7 +557,7 @@ class RedisForm(FlaskForm):
         description="For the following prompt if placed [N] "
                     "the Redis is assumed to be "
                     "installed or remotely provisioned",
-        validators=[RequiredIfFieldEqualTo("install_redis", "Y")])
+        validators=[DataRequired()])
     redis_master_nodes = IntegerField(
         "The number of master node. Minimum is 3",
         default=3,
@@ -702,24 +702,29 @@ class CouchbaseCalculatorForm(FlaskForm):
         couchbase_volume_type (string|optional|default: see volume_types variable)
     """
     number_of_expected_users = IntegerField(
-        "Please enter the number of expected users", default=1000000)
+        "Please enter the number of expected users", default=1000000,
         validators=[InputRequired()])
     using_resource_owner_password_cred_grant_flow = RadioField(
         "Will you be using the resource owner password credential grant flow",
         choices=[("Y", "Yes"), ("N", "No")],
-        default="Y")
+        default="Y",
+        validators=[DataRequired()])
     using_code_flow = RadioField("Will you be using the code flow",
                                  choices=[("Y", "Yes"), ("N", "No")],
-                                 default="Y")
+                                 default="Y",
+                                 validators=[DataRequired()])
     using_scim_flow = RadioField("Will you be using the SCIM flow",
                                  choices=[("Y", "Yes"), ("N", "No")],
-                                 default="Y")
+                                 default="Y",
+                                 validators=[DataRequired()])
     expected_transaction_per_sec = StringField(
         "Expected transactions per second",
-        default=2000)
+        default=2000,
+        validators=[InputRequired()])
     couchbase_data_nodes = StringField(
         "Please enter the number of data nodes. (auto-calculated)",
-        default="")
+        default="",
+        validators=[Optional()])
     couchbase_index_nodes = StringField(
         "Please enter the number of index nodes. (auto-calculated)",
         default="")
@@ -762,17 +767,21 @@ class CouchbaseBackupForm(FlaskForm):
     couchbase_incr_backup_schedule = StringField(
         "Please input couchbase backup cron job schedule for incremental backups. "
         "This will run backup job every 30 mins by default.",
-        default="*/30 * * * *")
+        default="*/30 * * * *",
+        validators=[InputRequired()])
     couchbase_full_backup_schedule = StringField(
         "Please input couchbase backup cron job schedule for full backups. ",
-        default="0 2 * * 6")
+        default="0 2 * * 6",
+        validators=[InputRequired()])
     couchbase_backup_retention_time = StringField(
         "Please enter the time period in which to retain existing backups. "
         "Older backups outside this time frame are deleted",
-        default="168h")
+        default="168h",
+        validators=[InputRequired()])
     couchbase_backup_storage_size = StringField(
         "Size of couchbase backup volume storage",
-        default="20Gi")
+        default="20Gi",
+        validators=[InputRequired()])
 
 
 class LdapBackupForm(FlaskForm):
@@ -785,7 +794,8 @@ class LdapBackupForm(FlaskForm):
     ldap_backup_schedule = StringField(
         "Please input ldap backup cron job schedule. "
         "This will run backup job every 30 mins by default.",
-        default="*/30 * * * *")
+        default="*/30 * * * *",
+        validators=[InputRequired()])
 
 
 class ConfigForm(FlaskForm):
@@ -1041,7 +1051,7 @@ class ImageNameTagForm(FlaskForm):
 class ReplicasForm(FlaskForm):
     """
     Replicas Form
-    scim_replicas = IntegerField("Number of scim replicas", default=1)
+
     Fields:
         oxauth_replicas (integer|required|default: 1)
         fido2_replicas (integer|optional|default: 1)
@@ -1054,14 +1064,22 @@ class ReplicasForm(FlaskForm):
         casa_replicas (integer|optional|default: 1)
         radius_replicas (integer|optional|default: 1)
     """
+    oxauth_replicas = IntegerField("Number of oxAuth replicas", default=1, validators=[InputRequired()])
+    fido2_replicas = IntegerField("Number of fido2 replicas", default=1, validators=[Optional()])
+    scim_replicas = IntegerField("Number of scim replicas", default=1, validators=[Optional()])
+    oxtrust_replicas = IntegerField("Number of oxTrust replicas", default=1, validators=[Optional()])
+    ldap_replicas = IntegerField("Number of LDAP replicas", default=1, validators=[Optional()])
     oxshibboleth_replicas = IntegerField("Number of oxShibboleth replicas",
-                                         default=1)
+                                         default=1,
+                                         validators=[Optional()])
     oxpassport_replicas = IntegerField("Number of oxPassport replicas",
-                                       default=1)
+                                       default=1,
+                                       validators=[Optional()])
     oxd_server_replicas = IntegerField("Number of oxd-server replicas",
-                                       default=1)
-    casa_replicas = IntegerField("Number of Casa replicas", default=1)
-    radius_replicas = IntegerField("Number of Radius replicas", default=1)
+                                       default=1,
+                                       validators=[Optional()])
+    casa_replicas = IntegerField("Number of Casa replicas", default=1, validators=[Optional()])
+    radius_replicas = IntegerField("Number of Radius replicas", default=1, validators=[Optional()])
 
 
 class StorageForm(FlaskForm):
@@ -1072,4 +1090,5 @@ class StorageForm(FlaskForm):
         ldap_storage_size (string|required|default: 4gi)
     """
     ldap_storage_size = StringField("Size of ldap volume storage",
-                                    default="4Gi")
+                                    default="4Gi",
+                                    validators=[InputRequired()])
