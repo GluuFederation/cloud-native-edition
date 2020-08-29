@@ -10,6 +10,9 @@ from pygluu.kubernetes.common import copy_templates
 
 
 def create_app():
+    """
+    GUI installer app for gluu cloud native
+    """
     app = Flask(__name__)
 
     # set app config
@@ -29,6 +32,9 @@ def create_app():
 
 
 def main():
+    """
+    App initialization with parser to handle argument from CLI
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", action="store", default="5000")
     parser.add_argument("-d", "--debug", type=bool, action="store",
