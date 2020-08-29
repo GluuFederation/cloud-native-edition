@@ -14,6 +14,11 @@ from pygluu.kubernetes.common import copy_templates
 def create_app():
     """
     GUI installer app for gluu cloud native
+
+    - set app config
+    - initialize extensions
+    - registering blueprints
+    - generate urls for static files
     """
     app = Flask(__name__)
 
@@ -51,6 +56,15 @@ def create_app():
 def main():
     """
     App initialization with parser to handle argument from CLI
+
+    Arguments :
+        -H --host : define hostname
+        -p --port : define port
+        -d --debug : override debug value default is False
+
+    Note :
+        web logs and socketio is disabled to avoid mixing with system logs
+        this make easier to read system logs.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", action="store", default="0.0.0.0")
@@ -66,6 +80,7 @@ def main():
 
     copy_templates()
     app = create_app()
+
     app.logger.disabled = True
     log = logging.getLogger('werkzeug')
     logging.getLogger('socketio').setLevel(logging.ERROR)
