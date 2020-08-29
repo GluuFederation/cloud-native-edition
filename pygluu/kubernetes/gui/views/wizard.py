@@ -362,13 +362,15 @@ def install_jackrabbit():
             form.jackrabbit_admin_password.data = \
                 form.jackrabbit_admin_password_confirmation.data = generate_password(24)
         else:
-            form.jackrabbit_admin_password.data = settings.get("JACKRABBIT_ADMIN_PASSWORD")
+            form.jackrabbit_admin_password.data = \
+                form.jackrabbit_admin_password_confirmation.data = settings.get("JACKRABBIT_ADMIN_PASSWORD")
 
         if not settings.get("JACKRABBIT_PG_PASSWORD"):
             form.jackrabbit_pg_password.data = \
                 form.jackrabbit_pg_password_confirmation.data = generate_password()
         else:
-            form.jackrabbit_pg_password.data = settings.get("JACKRABBIT_PG_PASSWORD")
+            form.jackrabbit_pg_password.data = \
+                form.jackrabbit_pg_password_confirmation.data = settings.get("JACKRABBIT_PG_PASSWORD")
 
     return render_template("wizard/index.html",
                            form=form,
