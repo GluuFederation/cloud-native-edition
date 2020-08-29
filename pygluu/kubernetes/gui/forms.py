@@ -71,7 +71,12 @@ volume_types = {
 }
 
 
-def password_requirement_check(field):
+def password_requirement_check(form, field):
+    """
+    Password Requirement validation,
+    password required contain at least one digit,
+    uppercase letter, lower case and symbol
+    """
     regex_bool = re.match(
         '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
         field.data)
