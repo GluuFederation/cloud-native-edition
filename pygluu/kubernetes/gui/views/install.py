@@ -8,15 +8,15 @@ from queue import Queue
 from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.helm import Helm
 from pygluu.kubernetes.settings import SettingsHandler
-from .extensions import socketio
+from ..extensions import socketio
 
-install = Blueprint('install', __name__, template_folder="templates")
+install_blueprint = Blueprint('install', __name__, template_folder="templates")
 settings = SettingsHandler()
 timeout = 120
 queue = Queue()
 
 
-@install.route('/install')
+@install_blueprint.route('/install')
 def install_kustomize():
     t = threading.Thread(target=do_installation, args=(queue,))
     t.daemon = True
