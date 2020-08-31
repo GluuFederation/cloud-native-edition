@@ -92,7 +92,7 @@ jobs:
       run: |
           sudo curl -sL https://istio.io/downloadIstioctl | sh -
           export PATH=$PATH:$HOME/.istioctl/bin
-          sudo istioctl operator init
+          $HOME/.istioctl/bin/istioctl operator init
 
     - name: Create settings.json
       id: settings
