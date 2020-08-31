@@ -283,6 +283,8 @@ def gluu_gateway():
         data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
 
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
+            data["ENABLE_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+            data["ENABLE_SERVICES_LIST"].append("gluu-gateway-ui")
             data["ENABLE_OXD"] = "Y"
             data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
             data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
