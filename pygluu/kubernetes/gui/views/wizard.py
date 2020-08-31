@@ -284,9 +284,9 @@ def gluu_gateway():
 
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
             data["ENABLE_OXD"] = "Y"
-            data["POSTGRES_NAMESPACE"] = form.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres_replicas.data
-            data["POSTGRES_URL"] = form.postgres_url.data
+            data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
+            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+            data["POSTGRES_URL"] = form.postgres.postgres_url.data
             data["KONG_NAMESPACE"] = form.kong_namespace.data
             data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
             data["KONG_DATABASE"] = form.kong_database.data
@@ -297,9 +297,12 @@ def gluu_gateway():
             data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
             data["ENABLE_OXD"] = "N"
-            data["POSTGRES_NAMESPACE"] = ""
-            data["POSTGRES_REPLICAS"] = ""
-            data["POSTGRES_URL"] = ""
+            if not settings.get("POSTGRES_NAMESPACE") and not settings.get("JACKRABBIT_CLUSTER"):
+                data["POSTGRES_NAMESPACE"] = ""
+            if not settings.get("POSTGRES_REPLICAS") and not settings.get("JACKRABBIT_CLUSTER"):
+                data["POSTGRES_REPLICAS"] = ""
+            if not settings.get("POSTGRES_URL") and not settings.get("JACKRABBIT_CLUSTER"):
+                data["POSTGRES_URL"] = ""
             data["KONG_NAMESPACE"] = ""
             data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
             data["KONG_DATABASE"] = ""
@@ -313,6 +316,7 @@ def gluu_gateway():
 
     if request.method == "GET":
         form = populate_form_data(form)
+        form.postgres = populate_form_data(form.postgres)
         # populate password suggestion
         if not settings.get("KONG_PG_PASSWORD"):
             form.kong_pg_password_confirm.data = form.kong_pg_password.data = generate_password()
@@ -352,6 +356,9 @@ def install_jackrabbit():
             data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
         if data["JACKRABBIT_CLUSTER"] == "Y":
+            data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
+            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+            data["POSTGRES_URL"] = form.postgres.postgres_url.data
             data["JACKRABBIT_PG_USER"] = form.jackrabbit_pg_user.data
             data["JACKRABBIT_PG_PASSWORD"] = form.jackrabbit_pg_password.data
             data["JACKRABBIT_DATABASE"] = form.jackrabbit_database.data
@@ -361,6 +368,7 @@ def install_jackrabbit():
 
     if request.method == "GET":
         form = populate_form_data(form)
+        form.postgres = populate_form_data(form.postgres)
         if not settings.get("JACKRABBIT_ADMIN_PASSWORD"):
             form.jackrabbit_admin_password.data = \
                 form.jackrabbit_admin_password_confirmation.data = generate_password(24)

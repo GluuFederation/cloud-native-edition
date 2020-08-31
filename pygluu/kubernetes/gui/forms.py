@@ -252,15 +252,36 @@ class OptionalServiceForm(FlaskForm):
                                           validators=[DataRequired()])
 
 
+class PostgresForm(FlaskForm):
+    """
+    Postgres Form
+
+    Fields :
+    postgres_namespace (string|required|default: postgres)
+    postgres_replicas (integer|required|default: 3)
+    postgres_url (string|required|default: postgres.postgres.svc.cluster.local  )
+    """
+    postgres_namespace = StringField(
+        "Please enter number of replicas for postgres",
+        default="postgres",
+        validators=[InputRequired()])
+    postgres_replicas = IntegerField(
+        "Please enter a namespace for postgres",
+        default=3,
+        validators=[InputRequired()])
+    postgres_url = StringField(
+        "Please enter  postgres (remote or local) URL base name. "
+        "If postgres is to be installed",
+        default="postgres.postgres.svc.cluster.local",
+        validators=[InputRequired()])
+
+
 class GluuGatewayForm(FlaskForm):
     """
     Gluu Gateway Form
 
     Fields :
         install_gluu_gateway (string|required|default: N)
-        postgres_namespace (string|required_if install_gluu_gateway = Y|default: postgres)
-        postgres_replicas (integer|required_if install_gluu_gateway = Y|default: 3)
-        postgres_url (string|required_if install_gluu_gateway = Y|default: postgres)
         kong_namespace (string|required_if install_gluu_gateway = Y|default: gluu-gateway)
         gluu_gateway_ui_namesapce (string|required_if install_gluu_gateway = Y|default: gg-ui)
         kong_database (string|required_if install_gluu_gateway = Y|default: kong)
@@ -276,19 +297,7 @@ class GluuGatewayForm(FlaskForm):
                                       choices=[("Y", "Yes"), ("N", "No")],
                                       default="N",
                                       validators=[DataRequired()])
-    postgres_namespace = StringField(
-        "Please enter number of replicas for postgres",
-        default="postgres",
-        validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
-    postgres_replicas = IntegerField(
-        "Please enter a namespace for postgres",
-        default=3,
-        validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
-    postgres_url = StringField(
-        "Please enter  postgres (remote or local) URL base name. "
-        "If postgres is to be installed",
-        default="postgres.postgres.svc.cluster.local",
-        validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
+    postgres = FormField(PostgresForm)
     kong_namespace = StringField(
         "Please enter a namespace for Gluu Gateway",
         default="gluu-gateway",
@@ -406,7 +415,7 @@ class JackrabbitForm(FlaskForm):
         "Size of Jackrabbit content repository volume storage",
         default="4Gi",
         validators=[RequiredIfFieldEqualTo("install_jackrabbit", "Y")])
-
+    postgres = FormField(PostgresForm)
 
 class SettingForm(FlaskForm):
     """
