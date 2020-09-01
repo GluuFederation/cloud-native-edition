@@ -477,19 +477,19 @@ class Kustomize(object):
 
     def adjust_istio_virtual_services_destination_rules(self, app, virtual_service):
         app_internal_addresss = app + "." + self.settings.get("GLUU_NAMESPACE") + "." + "svc.cluster.local"
-        destination_rule_name = "gluu-" + app + "-mlts"
+        destination_rule_name = "gluu-" + app + "-mtls"
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
             # Adjust virtual services
-            virtual_service_parser = Parser("./gluu-istio/base/gluu-virtual-services.yaml",
-                                            "VirtualService", virtual_service)
+            virtual_service_path = Path("./gluu-istio/base/gluu-virtual-services.yaml")
+            virtual_service_parser = Parser(virtual_service_path, "VirtualService", virtual_service)
             virtual_service_parser["spec"]["hosts"] = [self.settings.get("GLUU_FQDN")]
             http_entries = virtual_service_parser["spec"]["http"]
             for i, http in enumerate(http_entries):
                 virtual_service_parser["spec"]["http"][i]["route"][0]["destination"]["host"] = app_internal_addresss
             virtual_service_parser.dump_it()
             # Adjust destination rules
-            destination_rule_parser = Parser("./gluu-istio/base/gluu-destination-rules.yaml",
-                                             "DestinationRule", destination_rule_name)
+            destination_rule_path = Path("./gluu-istio/base/gluu-destination-rules.yaml")
+            destination_rule_parser = Parser(destination_rule_path, "DestinationRule", destination_rule_name)
             destination_rule_parser["spec"]["host"] = app_internal_addresss
             destination_rule_parser.dump_it()
 
@@ -726,6 +726,7 @@ class Kustomize(object):
                     exec_cmd(command, output_file=app_file)
 
             if self.settings.get("USE_ISTIO_INGRESS") == "Y" and app == "gluu-istio-ingress":
+                command = self.kubectl + " kustomize ./gluu-istio/base"
                 exec_cmd(command, output_file=app_file)
 
     def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key, app_file):
