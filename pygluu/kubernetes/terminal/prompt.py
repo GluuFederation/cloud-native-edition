@@ -86,7 +86,7 @@ class Prompt:
         self.load_settings()
         test_environment = PromptTestEnvironment(self.settings)
         if not self.settings.get("TEST_ENVIRONMENT") and \
-                self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
+                self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
             test_environment.prompt_test_environment()
 
         if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "gke", "do", "local", "aks"):

@@ -242,6 +242,9 @@ class SettingsHandler(object):
         single update
         """
         try:
+            # TODO: Enabled services should not contain duplicat values from the start.
+            if key == "ENABLED_SERVICES_LIST":
+                value = list(set(value))
             self.db[str(key)] = value
             self.store_data()
         except:

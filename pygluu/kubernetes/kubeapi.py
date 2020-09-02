@@ -774,7 +774,7 @@ class Kubernetes(object):
                 if "module 'kubernetes.client' has no attribute 'NetworkingIstioIoV1alpha3Api'" in str(e):
                     logger.warning("Creating {} failed.".format(manifest["kind"]))
                     logger.info("Trying again using kubectl...")
-                    exec_cmd("kubectl apply -f {}".format(filepath))
+                    exec_cmd("kubectl apply -f {} -n {}".format(filepath, namespace))
                     break
                 self.check_create_error_and_response(e, manifest["kind"], manifest["metadata"]["name"])
 
