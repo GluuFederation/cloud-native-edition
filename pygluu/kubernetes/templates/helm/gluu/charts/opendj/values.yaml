@@ -32,6 +32,9 @@ ports:
   tcp-admin:
     port: 4444
     targetPort: 4444
+  tcp-serf:
+    port: 7946
+    targetPort: 7946
 # VolumeMounts for StatefulSet
 # opendj-init vm
 volumeMounts:

@@ -44,6 +44,8 @@ spec:
             name: replication
           - containerPort: 4444
             name: admin
+          - containerPort: 7946
+            name: serf
         volumeMounts:
           - mountPath: /opt/opendj/config
             name: opendj-pvc

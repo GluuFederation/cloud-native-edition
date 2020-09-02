@@ -18,6 +18,7 @@ configMapGenerator:
       - GLUU_OXD_SERVER_URL="oxd-server:8443"
       - GLUU_OXD_BIND_IP_ADDRESSES="*"
       - GLUU_KEY_ROTATION_FORCE="false"
+      - GLUU_SSL_CERT_FROM_SECRETS="true"
       - GLUU_KEY_ROTATION_CHECK="3600"
       - GLUU_KEY_ROTATION_INTERVAL="48"
       - GLUU_LDAP_INIT="true"
