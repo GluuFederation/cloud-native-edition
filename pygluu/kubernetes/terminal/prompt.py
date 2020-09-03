@@ -99,7 +99,7 @@ class Prompt:
             self.load_settings()
             self.settings.set("HOST_EXT_IP", ip)
 
-            if self.settings.get("DEPLOYMENT_ARCH") == "eks":
+            if self.settings.get("DEPLOYMENT_ARCH") == "eks" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
                 aws = PromptAws(self.settings)
                 aws.prompt_aws_lb()
 
