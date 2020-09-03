@@ -878,7 +878,7 @@ class Kubernetes(object):
         for pod_name in pods_name:
             self.read_namespaced_pod_status(name=pod_name, namespace=namespace, timeout=timeout)
 
-    def connect_get_namespaced_pod_exec(self, exec_command, app_label=None, namespace="default", stdout=True):
+    def connect_get_namespaced_pod_exec(self, exec_command, container, app_label=None, namespace="default",stdout=True):
         """Execute command in pod with app label in namespace"""
         pods_name = self.list_pod_name_by_label(namespace, app_label)
         for pod_name in pods_name:
@@ -887,6 +887,7 @@ class Kubernetes(object):
                               name=pod_name,
                               namespace=namespace,
                               command=exec_command,
+                              container=container,
                               stderr=True, stdin=False,
                               stdout=True, tty=False)
                 if stdout:
