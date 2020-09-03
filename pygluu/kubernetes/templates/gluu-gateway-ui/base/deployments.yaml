@@ -38,7 +38,7 @@ spec:
             - -c
             - |
                 /usr/bin/python3 /scripts/update-lb-ip.py &
-                /app/scripts/entrypoint.sh
+                ./entrypoint.sh
           resources:
             requests:
               memory: "2000Mi"
