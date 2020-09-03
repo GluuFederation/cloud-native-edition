@@ -36,9 +36,7 @@ spec:
           command:
             - /bin/sh
             - -c
-            - |
-                /usr/bin/python3 /scripts/update-lb-ip.py &
-                ./entrypoint.sh
+            - "/usr/bin/python3 /scripts/update-lb-ip.py \n./entrypoint.sh              \n"
           resources:
             requests:
               memory: "2000Mi"

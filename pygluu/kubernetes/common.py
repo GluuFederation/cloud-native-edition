@@ -183,6 +183,7 @@ def generate_password(length):
     chars = chars.replace("'", "")
     chars = chars.replace("$", "")
     chars = chars.replace("/", "")
+    chars = chars.replace("\\", "")
     chars = chars.replace("!", "")
 
     while True:
