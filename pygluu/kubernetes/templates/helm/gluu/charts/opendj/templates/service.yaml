@@ -14,6 +14,7 @@ spec:
     - port: {{ $value.port }}
       name: {{ $key }}
       targetPort: {{ $value.targetPort }}
+      protocol: {{ $value.protocol}}
     {{- end }}
   clusterIP: None
   selector:

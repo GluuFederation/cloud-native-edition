@@ -26,6 +26,10 @@ spec:
     name: tcp-serf
     targetPort: 7946
     protocol: TCP
+  - port: 7946
+    name: udp-serf
+    targetPort: 7946
+    protocol: UDP
   clusterIP: None
   selector:
     app: opendj
