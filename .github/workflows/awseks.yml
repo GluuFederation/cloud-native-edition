@@ -92,7 +92,7 @@ jobs:
       run: |
           sudo curl -sL https://istio.io/downloadIstioctl | sh -
           export PATH=$PATH:$HOME/.istioctl/bin
-          $HOME/.istioctl/bin/istioctl install
+          $HOME/.istioctl/bin/istioctl install --set profile=default
 
     - name: Create settings.json
       id: settings
