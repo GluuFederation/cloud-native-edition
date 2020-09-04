@@ -1015,8 +1015,10 @@ class Kustomize(object):
 
         if self.settings.get("DEPLOYMENT_ARCH") in  ("gke", "aks",  "do", "local"):
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
-        self.wait_for_nginx_add()
-        self.set_lb_address()
+            self.wait_for_nginx_add()
+        if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
+            self.wait_for_nginx_add()
+            self.set_lb_address()
         ingress_name_list = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
