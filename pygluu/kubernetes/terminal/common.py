@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.common
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers for terminal prompt classes
 

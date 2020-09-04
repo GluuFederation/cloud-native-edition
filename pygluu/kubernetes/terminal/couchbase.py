@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.couchbase
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for couchbase terminal prompts.
 

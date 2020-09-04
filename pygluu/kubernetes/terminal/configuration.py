@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.configuration
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for configuration terminal prompts.
 

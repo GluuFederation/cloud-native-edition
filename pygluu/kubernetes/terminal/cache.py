@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.cache
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for cache terminal prompts.
 

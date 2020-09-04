@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.namespace
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for namespace terminal prompts.
 

@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.gluugateway
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for gluu gateway terminal prompts.
 
