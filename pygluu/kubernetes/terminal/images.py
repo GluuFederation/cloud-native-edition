@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.image
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for image names and tags terminal prompts.
 

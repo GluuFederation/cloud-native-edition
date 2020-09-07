@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.gke
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for gke terminal prompt.
 

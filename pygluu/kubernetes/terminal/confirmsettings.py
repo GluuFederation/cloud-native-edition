@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.confirmsettings
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for  confirming user settings terminal prompt.
 

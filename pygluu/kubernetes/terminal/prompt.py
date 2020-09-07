@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.prompt
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to initialize all terminal prompts to
 interact with user's inputs for terminal installations.

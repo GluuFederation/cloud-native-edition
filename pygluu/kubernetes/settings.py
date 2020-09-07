@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.settings
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with settings saved in a dictionary  for terminal and GUI installations.
 

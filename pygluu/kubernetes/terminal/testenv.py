@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.testenv
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for terminal test environment prompts.
 

@@ -1,4 +1,7 @@
 """
+pygluu.kubernetes.pycert
+~~~~~~~~~~~~~~~~~~~~~~~~
+
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
  Generate certificate authority cert,  key and chain cert and key signed by CA generated.
@@ -7,7 +10,7 @@
 import datetime
 import OpenSSL.crypto
 import OpenSSL.SSL
-from.common import get_logger
+from .common import get_logger
 from cryptography import x509
 from cryptography.x509.oid import NameOID, ExtendedKeyUsageOID
 from cryptography.hazmat.primitives import hashes
@@ -24,7 +27,8 @@ def setup_crts(ca_common_name, cert_common_name, san_list,
                cert_file="./chain.pem",
                key_file="./pkey.key"):
     """
-     Generate certificate authority cert,  key and chain cert and key signed by CA generated.
+    Generate certificate authority cert,  key and chain cert and key signed by CA generated.
+
     :param ca_common_name:
     :param cert_common_name:
     :param san_list:
