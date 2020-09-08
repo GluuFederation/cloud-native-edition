@@ -533,7 +533,7 @@ def persistence_backend():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=9,
+                           current_step=10,
                            template="settings",
                            prev_step="wizard.install_istio",
                            next_step="wizard.cache_type")
@@ -570,7 +570,7 @@ def app_volume_type():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=10,
+                           current_step=11,
                            template="app_volume_type",
                            prev_step="wizard.setting",
                            next_step="wizard.cache_type")
@@ -596,7 +596,7 @@ def couchbase_multi_cluster():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=11,
+                           current_step=12,
                            template="couchbase_multi_cluster",
                            prev_step=prev_step,
                            next_step="wizard.cache_type")
@@ -654,7 +654,7 @@ def cache_type():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=12,
+                           current_step=13,
                            template="cache_type",
                            prev_step=prev_step,
                            next_step="wizard.couchbase")
@@ -765,7 +765,7 @@ def couchbase():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=13,
+                           current_step=14,
                            template="couchbase",
                            prev_step="wizard.couchbase_multi_cluster",
                            next_step="wizard.config")
@@ -801,7 +801,7 @@ def couchbase_calculator():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=14,
+                           current_step=15,
                            template="couchbase_calculator",
                            prev_step="wizard.couchbase",
                            next_step="wizard.config")
@@ -847,7 +847,7 @@ def backup():
     return render_template("wizard/index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           current_step=15,
+                           current_step=16,
                            template="backup",
                            prev_step=prev_step,
                            next_step="wizard.config")
@@ -915,7 +915,7 @@ def config():
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
-                           current_step=16,
+                           current_step=17,
                            template="config",
                            prev_step=prev_step,
                            next_step="wizard.image_name_tag")
@@ -969,7 +969,7 @@ def image_name_tag():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=17,
+                           current_step=18,
                            template="image_name_tag",
                            prev_step="wizard.config",
                            next_step="wizard.replicas")
@@ -1015,7 +1015,7 @@ def replicas():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=18,
+                           current_step=19,
                            template="replicas",
                            prev_step="wizard.image_name_tag",
                            next_step="wizard.storage")
