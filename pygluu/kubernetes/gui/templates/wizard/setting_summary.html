@@ -13,6 +13,9 @@
         <tbody>
           {% for k, v in settings.items() %}
             {% if k not in hidden_settings %}
+              {% if k == "ENABLED_SERVICES_LIST" %}
+                    {% set v = ", ".join(settings.get("ENABLED_SERVICES_LIST")) %}
+              {% endif %}
               <tr>
                 <th>{{ k }}</th>
                 <td>{{ v }}</td>
