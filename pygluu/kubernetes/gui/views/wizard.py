@@ -620,6 +620,15 @@ def app_volume_type():
 
         return redirect(url_for(next_step))
 
+        # TODO: find a way to apply dynamic validation
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        form.ldap_storage_size.validators = [InputRequired()]
+    else:
+        form.ldap_storage_size.validators = [Optional()]
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
     return render_template("wizard/index.html",
                            settings=settings.db,
                            form=form,
