@@ -828,6 +828,14 @@ def couchbase_calculator():
 
     form = CouchbaseCalculatorForm()
 
+    # override couchbase_volume_type with
+    # dynamic value of volume_type based on deployment arch value
+    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+            not settings.get("COUCHBASE_VOLUME_TYPE"):
+        volume_type = volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.couchbase_volume_type.choices = volume_type["choices"]
+        form.couchbase_volume_type.validators = [DataRequired()]
+
     if form.validate_on_submit():
         data = {}
         for field in form:
@@ -842,11 +850,7 @@ def couchbase_calculator():
 
         return redirect(url_for(request.form["next_step"]))
 
-    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
-            not settings.get("COUCHBASE_VOLUME_TYPE"):
-        volume_type = volume_types[settings.get("DEPLOYMENT_ARCH")]
-        form.couchbase_volume_type.choices = volume_type["choices"]
-        form.couchbase_volume_type.validators = [DataRequired()]
+
 
     return render_template("wizard/index.html",
                            form=form,
