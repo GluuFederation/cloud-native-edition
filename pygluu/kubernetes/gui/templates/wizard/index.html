@@ -189,6 +189,15 @@
           }
         });
 
+        $('input[name="use_arn"]').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('input[name="arn_aws_iam"]').parents('.form-group').collapse("show");
+          }else{
+            $('input[name="arn_aws_iam"]').parents('.form-group').collapse("hide");
+          }
+        });
+      {% endif %}
+
         $('input[name="persistence_backend"]').on('change', function(){
           if($(this).val() == 'hybrid'){
             $('#hybridLdapHeldData').collapse('show');
