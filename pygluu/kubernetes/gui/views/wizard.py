@@ -1083,25 +1083,6 @@ def replicas():
                            current_step=19,
                            template="replicas",
                            prev_step="wizard.image_name_tag",
-                           next_step="wizard.storage")
-
-
-@wizard_blueprint.route("/storage", methods=["POST", "GET"])
-def storage():
-    form = StorageForm()
-    if form.validate_on_submit():
-        settings.set("LDAP_STORAGE_SIZE", form.ldap_storage_size.data)
-        return redirect(url_for(request.form["next_step"]))
-
-    if request.method == "GET":
-        if settings.get("LDAP_STORAGE_SIZE"):
-            form.ldap_storage_size.data = settings.get("LDAP_STORAGE_SIZE")
-
-    return render_template("wizard/index.html",
-                           form=form,
-                           current_step=19,
-                           template="storage",
-                           prev_step="wizard.replicas",
                            next_step="wizard.setting_summary")
 
 
