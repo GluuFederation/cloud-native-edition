@@ -138,3 +138,44 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro switchbox(field) %}
+  {% set validation = "is-invalid" if field.errors else "" %}
+  <div class="form-group">
+    <div class="custom-control custom-switch pull-right">
+      {{ field.label(class_="custom-control-label") }}
+      {{ field(class_="custom-control-input " + validation) }}
+
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro radio_toggle(field) %}
+  {% set validation = "is-invalid" if field.errors else "" %}
+
+  <div class="form-group row {{ validation }}">
+    <label class="col-sm-5 col-form-label">{{ field.label }}</label>
+    <div class="col-sm-5 ">
+      <ul class="radio-switch">
+      {% for choice in field %}
+        <li class="radio-switch__item">
+          {{ choice(class_="radio-switch__input sr-only") }}
+          {{ choice.label(class_="radio-switch__label" ) }}
+          {% if loop.index == 2 %}
+            <div aria-hidden="true" class="radio-switch__marker"></div>
+          {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+    {% if field.description %}
+      <small class="form-text text-muted">{{ field.description }}</small>
+    {% endif %}
+    <div class="feedback invalid-feedback">
+      {% for error in field.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endmacro %}

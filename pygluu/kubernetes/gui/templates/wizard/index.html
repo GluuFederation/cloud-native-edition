@@ -100,13 +100,33 @@
       });
 
       {% if template == 'optional_services' %}
+        /* function check casa option yes/no */
+        casaOption = function(el){
+          if(el.val() == "Y"){
+            $('#enable_oxd-0').prop('checked', true).trigger('change');
+            $('#enable_oxd-1').prop('disabled', true);
+            $('#enable_oxd-0').parents('.radio-switch').addClass('disabled');
+          }else{
+            if($('#enable_oxd-0').val() == "N"){
+              $('#enable_oxd-1').prop('checked', true).trigger('change');
+            }
+            $('#enable_oxd-0').parents('.radio-switch').removeClass('disabled');
+            $('#enable_oxd-1').prop('disabled', false);
+          }
+        }
+        /* load function on load */
+        casaOption($('input[name="enable_casa"]:checked'));
+
         $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
-        showHideOption($('#oxauthKeyLife'), $(this).val());
+          showHideOption($('#oxauthKeyLife'), $(this).val());
+        });
+
+        $('input[name="enable_casa"]').on('change', function(){
+          casaOption($(this));
         });
 
         $('input[name="enable_oxd"]').on('change', function(){
           showHideOption($('#oxdSetup'), $(this).val());
-
         });
 
         $('input[name="enable_oxtrust_api"]').on('change', function(){
