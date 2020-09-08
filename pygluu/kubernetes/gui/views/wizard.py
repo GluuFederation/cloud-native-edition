@@ -95,9 +95,8 @@ def initialize():
     """
     check accepting license
     """
-    if not settings.get("ACCEPT_GLUU_LICENSE") and \
-            request.path != "/agreement" and request.path not in static_files:
-        return redirect(url_for("wizard.agreement"))
+    if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/license":
+        return redirect(url_for("wizard.license"))
 
 
 @wizard_blueprint.context_processor
@@ -108,8 +107,8 @@ def inject_wizard_steps():
     return dict(wizard_steps=wizard_steps)
 
 
-@wizard_blueprint.route("/agreement", methods=["GET", "POST"])
-def agreement():
+@wizard_blueprint.route("/license", methods=["GET", "POST"])
+def license():
     """Input for Accepting license
     """
     form = LicenseForm()
@@ -121,14 +120,14 @@ def agreement():
         agreement_file = f.read()
 
     if request.method == "GET":
-        # populate form
+        # populate form data from settings
         form.accept_gluu_license.data = settings.get("ACCEPT_GLUU_LICENSE")
 
     return render_template("wizard/index.html",
                            license=agreement_file,
                            form=form,
                            current_step=1,
-                           template="agreement",
+                           template="license",
                            next_step="wizard.gluu_version")
 
 
@@ -147,14 +146,14 @@ def gluu_version():
         return redirect(url_for(next_step))
 
     if request.method == "GET":
-        # populate form
+        # populate form data from settings
         form.gluu_version.data = settings.get("GLUU_VERSION")
 
     return render_template("wizard/index.html",
                            form=form,
                            current_step=2,
                            template="gluu_version",
-                           prev_step="wizard.agreement",
+                           prev_step="wizard.license",
                            next_step="wizard.deployment_arch")
 
 
@@ -1068,7 +1067,7 @@ def confirm_params():
     else:
         # reset to default settings
         settings.reset_data()
-        return redirect(url_for('wizard.agreement'))
+        return redirect(url_for('wizard.license'))
 
 
 @wizard_blueprint.route("/finish")
