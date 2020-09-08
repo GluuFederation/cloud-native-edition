@@ -7,7 +7,6 @@ This module contain gui views for user's input settings.json
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
-import ipaddress
 import shutil
 import json
 import base64
@@ -15,7 +14,7 @@ import base64
 from pathlib import Path
 from flask import current_app
 from flask import Blueprint, jsonify, make_response, render_template, \
-    request, redirect, url_for, send_from_directory
+    request, redirect, url_for
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
@@ -71,21 +70,9 @@ test_arch = ("microk8s", "minikube")
 cloud_arch = ("eks", "gke", "aks", "do")
 local_arch = "local"
 
-gluu_cache_map = {
-    1: "NATIVE_PERSISTENCE",
-    2: "IN_MEMORY",
-    3: "REDIS",
-}
-
 config_settings = {"hostname": "", "country_code": "", "state": "", "city": "",
                    "admin_pw": "", "ldap_pw": "", "email": "", "org_name": "",
                    "redis_pw": ""}
-
-static_files = ["/favicon.ico",
-                "/styles.css",
-                "/green-logo.svg",
-                "/bootstrap.min.css",
-                "/bootstrap.min.css.map"]
 
 settings = SettingsHandler()
 
@@ -170,7 +157,7 @@ def deployment_arch():
         return redirect(url_for(next_step))
 
     if request.method == "GET":
-        # populate form
+        # populate form settings
         form.deployment_arch.data = settings.get("DEPLOYMENT_ARCH")
 
     return render_template("wizard/index.html",
