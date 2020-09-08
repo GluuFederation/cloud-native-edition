@@ -574,8 +574,8 @@ def persistence_backend():
                            settings=settings.db,
                            form=form,
                            current_step=10,
-                           template="settings",
-                           prev_step="wizard.install_istio",
+                           template="persistence_backend",
+                           prev_step="wizard.environment",
                            next_step="wizard.cache_type")
 
 
@@ -612,7 +612,7 @@ def app_volume_type():
                            form=form,
                            current_step=11,
                            template="app_volume_type",
-                           prev_step="wizard.setting",
+                           prev_step="wizard.persistence_backend",
                            next_step="wizard.cache_type")
 
 
@@ -630,7 +630,7 @@ def couchbase_multi_cluster():
         form = populate_form_data(form)
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.setting"
+    prev_step = "wizard.persistence_backend"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
         prev_step = "wizard.app_volume_type"
 
@@ -686,7 +686,7 @@ def cache_type():
         form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.setting"
+    prev_step = "wizard.persistence_backend"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
         prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
@@ -943,7 +943,7 @@ def config():
             form.is_gluu_fqdn_registered.validators = [DataRequired()]
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.setting"
+    prev_step = "wizard.persistence_backend"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
         prev_step = "wizard.app_volume_type"
     elif settings.get("DEPLOY_MULTI_CLUSTER"):
