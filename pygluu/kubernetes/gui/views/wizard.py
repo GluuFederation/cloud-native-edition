@@ -214,44 +214,70 @@ def optional_services():
     if form.validate_on_submit():
         data = {}
         next_step = request.form["next_step"]
+        service_list = {
+            'cr-rotate': False,
+            'oxauth-key-rotation': False,
+            'radius': False,
+            'oxpassport': False,
+            'oxshibboleth': False,
+            'casa': False,
+            'fido2': False,
+            'scim': False,
+            'oxd-server': False
+        }
         data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
+        if data["ENABLE_CACHE_REFRESH"] == "Y":
+            service_list['cr-rotate'] = True
+
         data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
         if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
             data["OXAUTH_KEYS_LIFE"] = form.oxauth_keys_life.data
+            service_list['oxauth-key-rotation'] = True
         else:
             data["OXAUTH_KEYS_LIFE"] = ""
 
         data["ENABLE_RADIUS"] = form.enable_radius.data
         if data["ENABLE_RADIUS"] == "Y":
             data["ENABLE_RADIUS_BOOLEAN"] = "true"
+            service_list['radius'] = True
         else:
             data["ENABLE_RADIUS_BOOLEAN"] = ""
 
         data["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
         if data["ENABLE_OXPASSPORT"] == "Y":
             data["ENABLE_OXPASSPORT_BOOLEAN"] = "true"
+            service_list['oxpassport'] = True
         else:
             data["ENABLE_OXPASSPORT_BOOLEAN"] = ""
 
         data["ENABLE_OXSHIBBOLETH"] = form.enable_oxshibboleth.data
         if data["ENABLE_OXSHIBBOLETH"] == "Y":
             data["ENABLE_SAML_BOOLEAN"] = "true"
+            service_list['oxshibboleth'] = True
         else:
             data["ENABLE_SAML_BOOLEAN"] = ""
 
         data["ENABLE_CASA"] = form.enable_casa.data
         if data["ENABLE_CASA"] == "Y":
             data["ENABLE_CASA_BOOLEAN"] = "true"
+            service_list['casa'] = True
         else:
             data["ENABLE_CASA_BOOLEAN"] = ""
 
         data["ENABLE_FIDO2"] = form.enable_fido2.data
+        if data["ENABLE_FIDO2"] == "Y":
+            service_list['fido2'] = True
+
         data["ENABLE_SCIM"] = form.enable_scim.data
+        if data["ENABLE_SCIM"] == "Y":
+            service_list['scim'] = True
+
         data["ENABLE_OXD"] = form.enable_oxd.data
 
         if data["ENABLE_OXD"] == "Y":
             data["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
             data["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
+            service_list['oxd-server'] = True
         else:
             data["OXD_APPLICATION_KEYSTORE_CN"] = ""
             data["OXD_ADMIN_KEYSTORE_CN"] = ""
@@ -268,6 +294,15 @@ def optional_services():
             data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = "true"
         else:
             data["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"] = ""
+
+        data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+        for service, stat in service_list.items():
+            if stat:
+                if service not in data["ENABLED_SERVICES_LIST"]:
+                    data["ENABLED_SERVICES_LIST"].append(service)
+            else:
+                if service in data["ENABLED_SERVICES_LIST"]:
+                    data["ENABLED_SERVICES_LIST"].remove(service)
 
         settings.update(data)
         return redirect(url_for(next_step))
@@ -295,8 +330,8 @@ def gluu_gateway():
         data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
 
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
-            data["ENABLE_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
-            data["ENABLE_SERVICES_LIST"].append("gluu-gateway-ui")
+            data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+            data["ENABLED_SERVICES_LIST"].append("gluu-gateway-ui")
             data["ENABLE_OXD"] = "Y"
             data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
             data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
@@ -420,8 +455,9 @@ def install_istio():
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
             if data["USE_ISTIO_INGRESS"] == "Y":
-                data["ENABLE_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
-                data["ENABLE_SERVICES_LIST"].append('gluu-istio-ingress')
+                data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+                data["ENABLED_SERVICES_LIST"].append('gluu-istio-ingress')
+                data["LB_ADD"] = form.lb_add.data
 
         data["USE_ISTIO"] = form.use_istio.data
         data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
@@ -502,6 +538,10 @@ def persistence_backend():
         data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
         if data["PERSISTENCE_BACKEND"] == "hybrid":
             data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
+
+        if data["PERSISTENCE_BACKEND"] == "ldap":
+            data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+            data["ENABLED_SERVICES_LIST"].append("ldap")
 
         settings.update(data)
 
@@ -876,6 +916,9 @@ def config():
         else:
             data["IS_GLUU_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
 
+        if data["IS_GLUU_FQDN_REGISTERED"] == "N":
+            data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+            data["ENABLED_SERVICES_LIST"].append("update-lb-ip")
         settings.update(data)
         generate_main_config()
 
