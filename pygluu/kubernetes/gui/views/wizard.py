@@ -980,6 +980,38 @@ def config():
 @wizard_blueprint.route("/image-name-tag", methods=["POST", "GET"])
 def image_name_tag():
     form = ImageNameTagForm()
+
+    # modify form, remove the form if the services is not enabled
+    if settings.get("ENABLE_CASA") == "N":
+        del form.casa_image_name
+        del form.casa_image_tag
+    if settings.get("ENABLE_CACHE_REFRESH") == "N":
+        del form.cache_refresh_rotate_image_name
+        del form.cache_refresh_rotate_image_tag
+    if settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
+        del form.cert_manager_image_name
+        del form.cert_manager_image_tag
+    if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+        del form.ldap_image_name
+        del form.ldap_image_tag
+    if settings.get("ENABLE_OXD") == "N":
+        del form.oxd_image_name
+        del form.oxd_image_tag
+    if settings.get("ENABLE_OXPASSPORT") == "N":
+        del form.oxpassport_image_name
+        del form.oxpassport_image_tag
+    if settings.get("ENABLE_OXSHIBBOLETH") == "N":
+        del form.oxshibboleth_image_name
+        del form.oxshibboleth_image_tag
+    if settings.get("ENABLE_RADIUS") == "N":
+        del form.radius_image_name
+        del form.radius_image_tag
+    if settings.get("INSTALL_GLUU_GATEWAY") == "N":
+        del form.gluu_gateway_image_name
+        del form.gluu_gateway_image_tag
+        del form.gluu_gateway_ui_image_name
+        del form.gluu_gateway_ui_image_tag
+
     if form.validate_on_submit():
         data = {}
         for field in form:
@@ -993,35 +1025,6 @@ def image_name_tag():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        if settings.get("ENABLE_CASA") == "N":
-            del form.casa_image_name
-            del form.casa_image_tag
-        if settings.get("ENABLE_CACHE_REFRESH") == "N":
-            del form.cache_refresh_rotate_image_name
-            del form.cache_refresh_rotate_image_tag
-        if settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
-            del form.cert_manager_image_name
-            del form.cert_manager_image_tag
-        if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
-            del form.ldap_image_name
-            del form.ldap_image_tag
-        if settings.get("ENABLE_OXD") == "N":
-            del form.oxd_image_name
-            del form.oxd_image_tag
-        if settings.get("ENABLE_OXPASSPORT") == "N":
-            del form.oxpassport_image_name
-            del form.oxpassport_image_tag
-        if settings.get("ENABLE_OXSHIBBOLETH") == "N":
-            del form.oxshibboleth_image_name
-            del form.oxshibboleth_image_tag
-        if settings.get("ENABLE_RADIUS") == "N":
-            del form.radius_image_name
-            del form.radius_image_tag
-        if settings.get("INSTALL_GLUU_GATEWAY") == "N":
-            del form.gluu_gateway_image_name
-            del form.gluu_gateway_image_tag
-            del form.gluu_gateway_ui_image_name
-            del form.gluu_gateway_ui_image_tag
 
     return render_template("wizard/index.html",
                            form=form,
@@ -1034,6 +1037,24 @@ def image_name_tag():
 @wizard_blueprint.route("/replicas", methods=["POST", "GET"])
 def replicas():
     form = ReplicasForm()
+
+    # modify form, remove the form if the services is not enabled
+    if settings.get("ENABLE_FIDO2") == "N":
+        del form.fido2_replicas
+    if settings.get("ENABLE_SCIM") == "N":
+        del form.scim_replicas
+    if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+        del form.ldap_replicas
+    if settings.get("ENABLE_OXSHIBBOLETH") == "N":
+        del form.oxshibboleth_replicas
+    if settings.get("ENABLE_OXPASSPORT") == "N":
+        del form.oxpassport_replicas
+    if settings.get("ENABLE_OXD") == "N":
+        del form.oxd_server_replicas
+    if settings.get("ENABLE_CASA") == "N":
+        del form.casa_replicas
+    if settings.get("ENABLE_RADIUS") == "N":
+        del form.radius_replicas
 
     if form.validate_on_submit():
         data = {}
@@ -1052,22 +1073,6 @@ def replicas():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        if settings.get("ENABLE_FIDO2") == "N":
-            del form.fido2_replicas
-        if settings.get("ENABLE_SCIM") == "N":
-            del form.scim_replicas
-        if settings.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
-            del form.ldap_replicas
-        if settings.get("ENABLE_OXSHIBBOLETH") == "N":
-            del form.oxshibboleth_replicas
-        if settings.get("ENABLE_OXPASSPORT") == "N":
-            del form.oxpassport_replicas
-        if settings.get("ENABLE_OXD") == "N":
-            del form.oxd_server_replicas
-        if settings.get("ENABLE_CASA") == "N":
-            del form.casa_replicas
-        if settings.get("ENABLE_RADIUS") == "N":
-            del form.radius_replicas
 
     return render_template("wizard/index.html",
                            form=form,
