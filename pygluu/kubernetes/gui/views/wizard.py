@@ -24,24 +24,38 @@ from pygluu.kubernetes.common import get_supported_versions, \
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import SettingsHandler
 
-from pygluu.kubernetes.gui.forms import LicenseForm, GluuVersionForm, DeploymentArchForm, \
-    GluuNamespaceForm, OptionalServiceForm, GluuGatewayForm, JackrabbitForm, \
-    SettingForm, VolumeTypeForm, CacheTypeForm, CouchbaseMultiClusterForm, \
-    CouchbaseForm, CouchbaseBackupForm, CouchbaseCalculatorForm, \
-    LdapBackupForm, ConfigForm, ImageNameTagForm, ReplicasForm, StorageForm, \
-    IstioForm, volume_types
+from ..forms.architecture import DeploymentArchForm
+from ..forms.backup import CouchbaseBackupForm, LdapBackupForm
+from ..forms.cache import CacheTypeForm
+from ..forms.configuration import ConfigurationForm
+from ..forms.couchbase import CouchbaseForm, CouchbaseCalculatorForm, CouchbaseMultiClusterForm
+from ..forms.environment import EnvironmentForm
+from ..forms.gluugateway import GluuGatewayForm
+from ..forms.helpers import volume_types
+from ..forms.images import ImageNameTagForm
+from ..forms.istio import IstioForm
+from ..forms.jackrabbit import JackrabbitForm
+from ..forms.license import LicenseForm
+from ..forms.namespace import NamespaceForm
+from ..forms.optionalservices import OptionalServiceForm
+from ..forms.persistencebackend import PersistenceBackendForm
+from ..forms.replicas import ReplicasForm
+from ..forms.version import VersionForm
+from ..forms.volumes import VolumeForm
+
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 wizard_steps = ["License",
                 "Gluu version",
                 "Deployment architecture",
                 "Gluu namespace",
-                "Optional settings",
+                "Optional Services",
                 "Gluu gateway",
                 "Install jackrabbit",
                 "Install Istio",
+                "Environment Setting",
                 "Persistence backend",
-                "App volume type",
+                "App volumes",
                 "Couchbase multi cluster",
                 "Cache type",
                 "Couchbase",
@@ -49,8 +63,7 @@ wizard_steps = ["License",
                 "Backup",
                 "Config",
                 "Image name tag",
-                "Replicas",
-                "Storage"]
+                "Replicas"]
 
 kubernetes = Kubernetes()
 
@@ -123,7 +136,7 @@ def agreement():
 def gluu_version():
     """Input for Gluu versions
     """
-    form = GluuVersionForm()
+    form = VersionForm()
     versions, version_number = get_supported_versions()
 
     if form.validate_on_submit():
@@ -174,7 +187,7 @@ def gluu_namespace():
     """
     Input for gluu namespace.
     """
-    form = GluuNamespaceForm()
+    form = NamespaceForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         settings.set("GLUU_NAMESPACE", form.gluu_namespace.data)
@@ -431,18 +444,19 @@ def install_istio():
                            current_step=8,
                            template="install_istio",
                            prev_step="wizard.install_jackrabbit",
-                           next_step="wizard.setting")
+                           next_step="wizard.environment")
 
 
-@wizard_blueprint.route("/settings", methods=["GET", "POST"])
-def setting():
+@wizard_blueprint.route("/environment", methods=["GET", "POST"])
+def environment():
     """
-    Setup Backend setting
+    Environment Setting
     """
-    form = SettingForm()
+    form = EnvironmentForm()
     if form.validate_on_submit():
-        next_step = request.form['next_step']
         data = {}
+        next_step = request.form['next_step']
+
         if not settings.get("TEST_ENVIRONMENT") and \
                 settings.get("DEPLOYMENT_ARCH") in test_arch:
             data["TEST_ENVIRONMENT"] = form.test_environment.data
@@ -473,6 +487,18 @@ def setting():
                             break
                     if data["GOOGLE_NODE_HOME_DIR"]:
                         break
+
+
+
+@wizard_blueprint.route("/persistence-backend", methods=["GET", "POST"])
+def persistence_backend():
+    """
+    Setup Persistence Backend setting
+    """
+    form = PersistenceBackendForm()
+    if form.validate_on_submit():
+        next_step = request.form['next_step']
+        data = {}
 
         data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
         if data["PERSISTENCE_BACKEND"] == "hybrid":
@@ -519,7 +545,7 @@ def app_volume_type():
     """
     App Volume type Setting
     """
-    form = VolumeTypeForm()
+    form = VolumeForm()
     if form.validate_on_submit():
         data = {}
         data["APP_VOLUME_TYPE"] = form.app_volume_type.data
@@ -830,7 +856,7 @@ def backup():
 
 @wizard_blueprint.route("/config", methods=["GET", "POST"])
 def config():
-    form = ConfigForm()
+    form = ConfigurationForm()
     if form.validate_on_submit():
         data = {}
         data["GLUU_FQDN"] = form.gluu_fqdn.data
