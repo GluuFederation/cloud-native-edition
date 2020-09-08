@@ -874,9 +874,9 @@ def backup():
     if not settings.get("PERSISTENCE_BACKEND"):
         return redirect(url_for('wizard.setting'))
 
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-        form = CouchbaseBackupForm()
-    elif settings.get("PERSISTENCE_BACKEND") == "ldap":
+    form = CouchbaseBackupForm()
+
+    if settings.get("PERSISTENCE_BACKEND") == "ldap":
         form = LdapBackupForm()
 
     if form.validate_on_submit():
