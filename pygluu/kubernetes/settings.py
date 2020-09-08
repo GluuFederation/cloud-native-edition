@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.settings
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with settings saved in a dictionary  for terminal and GUI installations.
 
@@ -234,7 +234,8 @@ class SettingsHandler(object):
             update_settings_json_file(self.db)
             # json.dump(self.db, open(self.path, "w+"))
             return True
-        except:
+        except Exception as exc:
+            logger.debug(f"Uncaught error={exc}")
             return False
 
     def set(self, key, value):
@@ -242,12 +243,13 @@ class SettingsHandler(object):
         single update
         """
         try:
-            # TODO: Enabled services should not contain duplicat values from the start.
+            # TODO: Enabled services should not contain duplicate values from the start.
             if key == "ENABLED_SERVICES_LIST":
                 value = list(set(value))
             self.db[str(key)] = value
             self.store_data()
-        except:
+        except Exception as exc:
+            logger.debug(f"Uncaught error={exc}")
             return False
 
     def get(self, key):
@@ -264,13 +266,18 @@ class SettingsHandler(object):
         try:
             self.db.update(collection)
             self.store_data()
-        except:
+        except Exception as exc:
+            logger.debug(f"Uncaught error={exc}")
             return False
 
     def reset_data(self):
         """
         reset settings.json to default_settings
         """
-        self.db = self.default_settings
-        self.store_data()
-        return True
+        try:
+            self.db = self.default_settings
+            self.store_data()
+            return True
+        except Exception as exc:
+            logger.debug(f"Uncaught error={exc}")
+            return False

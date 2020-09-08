@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.jackrabbit
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for jackrabbit terminal prompts.
 

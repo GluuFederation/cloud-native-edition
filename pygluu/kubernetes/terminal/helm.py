@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.helm
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for helm terminal prompts.
 

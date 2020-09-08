@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.license
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for terminal license prompt .
 

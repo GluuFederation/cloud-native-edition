@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.redis
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for terminal redis prompts.
 

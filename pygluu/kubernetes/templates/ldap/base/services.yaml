@@ -22,6 +22,14 @@ spec:
     name: tcp-admin
     targetPort: 4444
     protocol: TCP
+  - port: 7946
+    name: tcp-serf
+    targetPort: 7946
+    protocol: TCP
+  - port: 7946
+    name: udp-serf
+    targetPort: 7946
+    protocol: UDP
   clusterIP: None
   selector:
     app: opendj

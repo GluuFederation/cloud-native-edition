@@ -1,4 +1,7 @@
 """
+pygluu.kubernetes.kustomize
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
 """
@@ -84,6 +87,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
                                                        app_label="app=oxauth",
+                                                       container="oxauth",
                                                        namespace=namespace,
                                                        stdout=False)
 
@@ -934,6 +938,16 @@ class Kustomize(object):
                 logger.info("Key not deleted as it does not exist inside yaml.")
             parser.dump_it()
 
+    def set_lb_address(self):
+        """
+        Sets LB address in configMap
+        :return:
+        """
+        if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
+            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
+            cm_parser["data"]["LB_ADDR"] = self.settings.get("LB_ADD")
+            cm_parser.dump_it()
+
     def wait_for_nginx_add(self):
         hostname_ip = None
         while True:
@@ -1005,12 +1019,9 @@ class Kustomize(object):
         if self.settings.get("DEPLOYMENT_ARCH") in  ("gke", "aks",  "do", "local"):
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             self.wait_for_nginx_add()
-
         if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
             self.wait_for_nginx_add()
-            cm_parser = Parser(self.config_yaml, "ConfigMap", "gluu-config-cm")
-            cm_parser["data"]["LB_ADDR"] = self.settings.get("LB_ADD")
-            cm_parser.dump_it()
+            self.set_lb_address()
         ingress_name_list = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
@@ -1183,7 +1194,11 @@ class Kustomize(object):
                                                           namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
                                                           literal="DB_PASSWORD",
                                                           value_of_literal=encoded_gg_ui_pg_pass_string)
-
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+            if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
+                self.kubernetes = Kubernetes()
+                self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml,
+                                                         self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
         self.kubernetes.create_objects_from_dict(self.gg_ui_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
@@ -1417,6 +1432,7 @@ class Kustomize(object):
                                  "--bindPassword", self.settings.get("LDAP_PW")]
             self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
                                                             app_label="app=opendj",
+                                                            container="opendj",
                                                             namespace=self.settings.get("GLUU_NAMESPACE"))
         except (ConnectionError, Exception):
             pass
@@ -1530,6 +1546,7 @@ class Kustomize(object):
                 self.deploy_alb()
             elif self.settings.get("USE_ISTIO_INGRESS") == "Y":
                 self.deploy_gluu_istio_ingress()
+                self.set_lb_address()
             else:
                 self.deploy_nginx()
         self.adjust_fqdn_yaml_entries()

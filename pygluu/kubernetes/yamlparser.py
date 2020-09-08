@@ -1,7 +1,11 @@
 """
- License terms and conditions for Gluu Cloud Native Edition:
- https://www.apache.org/licenses/LICENSE-2.0
- Yaml parser
+pygluu.kubernetes.yamlparser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+YAML parser.
+
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
 """
 
 from pathlib import Path

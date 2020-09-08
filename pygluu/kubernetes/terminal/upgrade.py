@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.upgrade
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for upgrade terminal prompts.
 

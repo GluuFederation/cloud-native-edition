@@ -23,15 +23,27 @@ ports:
   tcp-ldaps:
     port: 1636
     targetPort: 1636
+    protocol: TCP
   tcp-ldap:
     port: 1389
     targetPort: 1389
+    protocol: TCP
   tcp-repl:
     port: 8989
     targetPort: 8989
+    protocol: TCP
   tcp-admin:
     port: 4444
     targetPort: 4444
+    protocol: TCP
+  tcp-serf:
+    port: 7946
+    targetPort: 7946
+    protocol: TCP
+  udp-serf:
+    port: 7946
+    targetPort: 7946
+    protocol: UDP
 # VolumeMounts for StatefulSet
 # opendj-init vm
 volumeMounts:

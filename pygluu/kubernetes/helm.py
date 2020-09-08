@@ -1,4 +1,7 @@
 """
+pygluu.kubernetes.helm
+~~~~~~~~~~~~~~~~~~~~~~
+
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
  Handles Helm Gluu Chart
@@ -44,6 +47,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
                                                        app_label="app=oxauth",
+                                                       container="oxauth",
                                                        namespace=namespace,
                                                        stdout=False)
 
@@ -95,9 +99,8 @@ class Helm(object):
                         if ip_static:
                             break
                 elif self.settings.get("DEPLOYMENT_ARCH") == "local":
-                    self.settings.set("LB_ADD", self.settings.get('NGINX_INGRESS_RELEASE_NAME') + \
-                                      "-nginx-ingress-controller." + \
-                                      self.settings.get("NGINX_INGRESS_NAMESPACE") + \
+                    self.settings.set("LB_ADD", self.settings.get('NGINX_INGRESS_RELEASE_NAME') +
+                                      "-nginx-ingress-controller." + self.settings.get("NGINX_INGRESS_NAMESPACE") +
                                       ".svc.cluster.local")
                     break
                 else:

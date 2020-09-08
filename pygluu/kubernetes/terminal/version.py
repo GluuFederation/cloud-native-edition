@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.version
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for terminal gluu version prompts.
 

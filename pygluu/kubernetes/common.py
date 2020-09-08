@@ -1,4 +1,7 @@
 """
+pygluu.kubernetes.common
+~~~~~~~~~~~~~~~~~~~~~~~~
+
  License terms and conditions for Gluu Cloud Native Edition:
  https://www.apache.org/licenses/LICENSE-2.0
 """
@@ -183,6 +186,7 @@ def generate_password(length=6):
     chars = chars.replace("'", "")
     chars = chars.replace("$", "")
     chars = chars.replace("/", "")
+    chars = chars.replace("\\", "")
     chars = chars.replace("!", "")
 
     while True:

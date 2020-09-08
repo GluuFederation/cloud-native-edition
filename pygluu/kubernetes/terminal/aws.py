@@ -1,6 +1,6 @@
 """
 pygluu.kubernetes.terminal.aws
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains helpers to interact with user's inputs for aws terminal prompts.
 

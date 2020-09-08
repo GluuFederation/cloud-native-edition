@@ -32,6 +32,10 @@ spec:
       - name: opendj
         imagePullPolicy: Always
         image: gluufederation/wrends:4.2.0_02
+        lifecycle:
+          preStop:
+            exec:
+              command: ["python3", "/app/scripts/deregister_peer.py"]
         envFrom:
         - configMapRef:
             name: gluu-config-cm
@@ -44,6 +48,8 @@ spec:
             name: replication
           - containerPort: 4444
             name: admin
+          - containerPort: 7946
+            name: serf
         volumeMounts:
           - mountPath: /opt/opendj/config
             name: opendj-pvc
