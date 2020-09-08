@@ -48,7 +48,7 @@ def installation_finish():
 
 def do_installation(q):
     q.put(('Preparing Installation', 'ONPROGRESS'))
-    kustomize = Kustomize(settings.db, timeout)
+    kustomize = Kustomize(timeout)
     kustomize.uninstall()
 
     if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":

@@ -289,6 +289,12 @@ img {
 	 right: 2.5%;
 }
 
+.log-box {
+    list-style: none;
+    max-height: 300px;
+    margin-bottom: 10px;
+    overflow: scroll;
+}
 
 :root {
     --radio-switch-width: 70px;

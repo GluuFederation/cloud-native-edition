@@ -1,22 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="container">
-    <div class="card border-0">
-      <div class="card-header">
+  <div class="card border-0">
+    <div class="card-body">
+      <h3 class="text-center">Gluu Cloud Native Edition</h3>
+      <div class="d-flex align-items-center">
         <div>
-          <img class="mx-auto d-block" src="{{ url_for('static', filename='/green-logo.svg') }}" alt="Gluu green logo">
+          <span id="progress" class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
+          <span id="install_status" class="font-weight-bold"></span>
         </div>
       </div>
-      <div class="card-body">
-        <h3 class="text-center">Gluu Cloud Native Edition</h3>
-        <div class="d-flex align-items-center">
-          <div>
-            <span id="progress" class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
-            <span id="install_status" class="font-weight-bold"></span>
-          </div>
-        </div>
-        <p class="text-muted text-monospace m-3"><span id="output"></span></p>
-      </div>
+      <p class="text-muted text-monospace m-3"><span id="output"></span></p>
+      <ul id="install_logs" class="log-box"></ul>
     </div>
   </div>
 {% endblock %}
@@ -24,10 +18,11 @@
 {% block custom_script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
 <script>
-    var output = document.getElementById('output');
-    var installStatus = document.getElementById('install_status');
-    var progress = document.getElementById('progress');
-    var installBtn = document.getElementById('installTrigger');
+    const output = document.getElementById('output');
+    const installStatus = document.getElementById('install_status');
+    const progress = document.getElementById('progress');
+    const installBtn = document.getElementById('installTrigger');
+    const installLogs = document.getElementById('install_logs');
 
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
 
@@ -43,6 +38,8 @@
       }
       install_status.innerHTML = response.title;
       output.innerHTML = response.log;
+      var line = document.createElement('li');
+      installLogs.prepend(response.log, line);
     });
 
 </script>
