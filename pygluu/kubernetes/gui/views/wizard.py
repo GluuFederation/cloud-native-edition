@@ -523,6 +523,25 @@ def environment():
                     if data["GOOGLE_NODE_HOME_DIR"]:
                         break
 
+        settings.update(data)
+        return redirect(url_for(next_step))
+
+    # TODO: find a way to apply dynamic validation
+    if settings.get("DEPLOYMENT_ARCH") == "gke":
+        form.gmail_account.validators.append(InputRequired())
+    else:
+        form.gmail_account.validators.append(Optional())
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("wizard/index.html",
+                           settings=settings.db,
+                           form=form,
+                           current_step=9,
+                           template="environment",
+                           prev_step="wizard.install_istio",
+                           next_step="wizard.persistence_backend")
 
 
 @wizard_blueprint.route("/persistence-backend", methods=["GET", "POST"])
@@ -560,12 +579,6 @@ def persistence_backend():
             return redirect(url_for('wizard.couchbase_multi_cluster'))
 
         return redirect(url_for(next_step))
-
-    # TODO: find a way to apply dynamic validation
-    if settings.get("DEPLOYMENT_ARCH") == "gke":
-        form.gmail_account.validators.append(InputRequired())
-    else:
-        form.gmail_account.validators.append(Optional())
 
     if request.method == "GET":
         form = populate_form_data(form)
