@@ -12,7 +12,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from .common import get_logger, update_settings_json_file
+from pygluu.kubernetes.helpers import get_logger, update_settings_json_file
 
 logger = get_logger("gluu-setting        ")
 

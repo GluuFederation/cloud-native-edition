@@ -12,8 +12,8 @@ import time
 from kubernetes import client, utils, config
 from kubernetes.stream import stream
 
-from .common import get_logger, check_microk8s_kube_config_file, exec_cmd
-from .yamlparser import Parser
+from pygluu.kubernetes.helpers import get_logger, check_microk8s_kube_config_file, exec_cmd
+from pygluu.kubernetes.yamlparser import Parser
 
 logger = get_logger("gluu-kubernetes-api")
 

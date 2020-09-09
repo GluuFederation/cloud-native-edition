@@ -10,7 +10,7 @@ pygluu.kubernetes.pycert
 import datetime
 import OpenSSL.crypto
 import OpenSSL.SSL
-from .common import get_logger
+from pygluu.kubernetes.helpers import get_logger
 from cryptography import x509
 from cryptography.x509.oid import NameOID, ExtendedKeyUsageOID
 from cryptography.hazmat.primitives import hashes

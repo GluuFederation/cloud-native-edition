@@ -8,8 +8,8 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 import click
-from pygluu.kubernetes.terminal.common import confirm_yesno
-from pygluu.kubernetes.common import get_logger
+from pygluu.kubernetes.terminal.helpers import confirm_yesno
+from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-prompt-test-env")
 

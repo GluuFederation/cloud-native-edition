@@ -24,7 +24,7 @@ from pygluu.kubernetes.terminal.namespace import PromptNamespace
 from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
 from pygluu.kubernetes.terminal.testenv import PromptTestEnvironment
 from pygluu.kubernetes.terminal.aws import PromptAws
-from pygluu.kubernetes.terminal.common import gather_ip
+from pygluu.kubernetes.terminal.helpers import gather_ip
 from pygluu.kubernetes.terminal.persistencebackend import PromptPersistenceBackend
 from pygluu.kubernetes.terminal.ldap import PromptLdap
 from pygluu.kubernetes.terminal.images import PromptImages

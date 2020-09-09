@@ -7,11 +7,11 @@
 from pathlib import Path
 import shutil
 import tarfile
-from .kubeapi import Kubernetes
-from .yamlparser import Parser
-from .common import get_logger, exec_cmd
-from .settings import SettingsHandler
-from .pycert import setup_crts
+from pygluu.kubernetes.kubeapi import Kubernetes
+from pygluu.kubernetes.yamlparser import Parser
+from pygluu.kubernetes.helpers import get_logger, exec_cmd
+from pygluu.kubernetes.settings import SettingsHandler
+from pygluu.kubernetes.pycert import setup_crts
 import sys
 import base64
 import random

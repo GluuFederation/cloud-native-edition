@@ -13,8 +13,8 @@ import re
 import json
 import click
 
-from pygluu.kubernetes.common import get_logger, prompt_password
-from pygluu.kubernetes.terminal.common import confirm_yesno
+from pygluu.kubernetes.helpers import get_logger, prompt_password
+from pygluu.kubernetes.terminal.helpers import confirm_yesno
 
 logger = get_logger("gluu-prompt-config ")
 

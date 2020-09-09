@@ -10,7 +10,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 
 import click
 
-from pygluu.kubernetes.common import get_logger
+from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-prompt-volumes")
 

@@ -8,7 +8,7 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 import click
-from pygluu.kubernetes.common import exec_cmd
+from pygluu.kubernetes.helpers import exec_cmd
 
 
 class PromptGke:

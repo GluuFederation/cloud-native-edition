@@ -14,12 +14,12 @@ import time
 from ast import literal_eval
 from pathlib import Path
 
-from .common import get_logger, copy, exec_cmd, ssh_and_remove
-from .couchbase import Couchbase
-from .kubeapi import Kubernetes
-from .pycert import check_cert_with_private_key
-from .yamlparser import Parser
-from .settings import SettingsHandler
+from pygluu.kubernetes.helpers import get_logger, copy, exec_cmd, ssh_and_remove
+from pygluu.kubernetes.couchbase import Couchbase
+from pygluu.kubernetes.kubeapi import Kubernetes
+from pygluu.kubernetes.pycert import check_cert_with_private_key
+from pygluu.kubernetes.yamlparser import Parser
+from pygluu.kubernetes.settings import SettingsHandler
 
 logger = get_logger("gluu-kustomize     ")
 
