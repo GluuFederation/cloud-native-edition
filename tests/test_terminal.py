@@ -24,7 +24,7 @@ def test_confirm_yesno(monkeypatch, given, expected):
     assert confirm_yesno("Random question") == expected
 
 
-def test_prompt_license_no_prompt(settings):
+def test_terminal_license_no_prompt(settings):
     from pygluu.kubernetes.terminal.license import PromptLicense
 
     prompt = PromptLicense(settings, accept_license=True)
@@ -32,7 +32,7 @@ def test_prompt_license_no_prompt(settings):
     assert settings.get("ACCEPT_GLUU_LICENSE") == "Y"
 
 
-def test_prompt_version_no_prompt(settings):
+def test_terminal_version_no_prompt(settings):
     from pygluu.kubernetes.terminal.version import PromptVersion
 
     prompt = PromptVersion(settings, version="4.2")
@@ -44,7 +44,7 @@ def test_prompt_version_no_prompt(settings):
     ("", "4.2.0_01"),  # default if empty
     ("4.2.1_dev", "4.2.1_dev"),  # non-empty shouldn't be overriden
 ])
-def test_prompt_version_merge_names_tags(settings, given, expected):
+def test_terminal_version_merge_names_tags(settings, given, expected):
     import json
     from pygluu.kubernetes.terminal.version import PromptVersion
 
@@ -65,7 +65,7 @@ def test_prompt_version_merge_names_tags(settings, given, expected):
     ("", "4.2"),
     ("4.2", "4.2"),
 ])
-def test_prompt_version(monkeypatch, settings, given, expected):
+def test_terminal_version(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.version import PromptVersion
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -79,7 +79,7 @@ def test_prompt_version(monkeypatch, settings, given, expected):
     assert settings.get("GLUU_VERSION") == expected
 
 
-def test_prompt_license_accepted(monkeypatch, settings):
+def test_terminal_license_accepted(monkeypatch, settings):
     from pygluu.kubernetes.terminal.license import PromptLicense
 
     monkeypatch.setattr("click.confirm", lambda x: True)
@@ -88,7 +88,7 @@ def test_prompt_license_accepted(monkeypatch, settings):
     assert settings.get("ACCEPT_GLUU_LICENSE") == "Y"
 
 
-def test_prompt_license_rejected(monkeypatch, settings):
+def test_terminal_license_rejected(monkeypatch, settings):
     from pygluu.kubernetes.terminal.license import PromptLicense
 
     monkeypatch.setattr("click.confirm", lambda x: False)
@@ -107,7 +107,7 @@ def test_prompt_license_rejected(monkeypatch, settings):
     (7, "local"),
     ("random", "microk8s"),
 ])
-def test_prompt_arch(monkeypatch, settings, given, expected):
+def test_terminal_arch(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.architecture import PromptArch
 
     monkeypatch.setattr("click.prompt", lambda x, default: given)
@@ -122,7 +122,7 @@ def test_prompt_arch(monkeypatch, settings, given, expected):
     ("", "gluu"),
     ("my-ns", "my-ns"),
 ])
-def test_prompt_gluu_namespace(monkeypatch, settings, given, expected):
+def test_terminal_gluu_namespace(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.namespace import PromptNamespace
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -132,7 +132,7 @@ def test_prompt_gluu_namespace(monkeypatch, settings, given, expected):
     assert settings.get("GLUU_NAMESPACE") == expected
 
 
-def test_prompt_jackrabbit_enable(monkeypatch, settings):
+def test_terminal_jackrabbit_enable(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.confirm", lambda x, default: True)
@@ -153,7 +153,7 @@ def test_prompt_jackrabbit_enable(monkeypatch, settings):
     assert settings.get("JACKRABBIT_CLUSTER") == "N"
 
 
-def test_prompt_jackrabbit_disable_no_url(monkeypatch, settings):
+def test_terminal_jackrabbit_disable_no_url(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.confirm", lambda x, default: False)
@@ -170,7 +170,7 @@ def test_prompt_jackrabbit_disable_no_url(monkeypatch, settings):
     assert settings.get("JACKRABBIT_URL") == "http://jackrabbit:8080"
 
 
-def test_prompt_confirm_params(monkeypatch, settings):
+def test_terminal_confirm_params(monkeypatch, settings):
     from pygluu.kubernetes.terminal.confirmsettings import PromptConfirmSettings
 
     monkeypatch.setattr("click.confirm", lambda x: True)
@@ -184,7 +184,7 @@ def test_prompt_confirm_params(monkeypatch, settings):
     ("", "gluu"),  # default
     ("random", "random"),
 ])
-def test_prompt_helm_release_name(monkeypatch, settings, given, expected):
+def test_terminal_helm_release_name(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -202,7 +202,7 @@ def test_prompt_helm_release_name(monkeypatch, settings, given, expected):
     ("", "ningress"),  # default
     ("random", "random"),
 ])
-def test_prompt_helm_ingress_release_name(monkeypatch, settings, given, expected):
+def test_terminal_helm_ingress_release_name(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -220,7 +220,7 @@ def test_prompt_helm_ingress_release_name(monkeypatch, settings, given, expected
     ("", "ingress-nginx"),  # default
     ("random", "random"),
 ])
-def test_prompt_helm_ingress_namespace(monkeypatch, settings, given, expected):
+def test_terminal_helm_ingress_namespace(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -238,7 +238,7 @@ def test_prompt_helm_ingress_namespace(monkeypatch, settings, given, expected):
     ("", "gluu-gateway"),  # default
     ("random", "random"),
 ])
-def test_prompt_helm_gg_helm_release_name(monkeypatch, settings, given, expected):
+def test_terminal_helm_gg_helm_release_name(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -257,7 +257,7 @@ def test_prompt_helm_gg_helm_release_name(monkeypatch, settings, given, expected
     ("", "gluu-gateway-ui"),  # default
     ("random", "random"),
 ])
-def test_prompt_helm_gg_ui_helm_release_name(monkeypatch, settings, given, expected):
+def test_terminal_helm_gg_ui_helm_release_name(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -276,7 +276,7 @@ def test_prompt_helm_gg_ui_helm_release_name(monkeypatch, settings, given, expec
     ("", "4.2"),
     ("4.2", "4.2"),
 ])
-def test_prompt_upgrade_version(monkeypatch, settings, given, expected):
+def test_terminal_upgrade_version(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -287,7 +287,7 @@ def test_prompt_upgrade_version(monkeypatch, settings, given, expected):
 
 
 @pytest.mark.parametrize("persistence", ["ldap", "hybrid"])
-def test_prompt_volumes_identifier(monkeypatch, settings, persistence):
+def test_terminal_volumes_identifier(monkeypatch, settings, persistence):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
 
     monkeypatch.setattr("click.prompt", lambda x: "vol-1234")
@@ -300,7 +300,7 @@ def test_prompt_volumes_identifier(monkeypatch, settings, persistence):
 
 
 @pytest.mark.parametrize("persistence", ["ldap", "hybrid"])
-def test_prompt_disk_uris(monkeypatch, settings, persistence):
+def test_terminal_disk_uris(monkeypatch, settings, persistence):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
 
     monkeypatch.setattr("click.prompt", lambda x: "MC_aks")
@@ -316,7 +316,7 @@ def test_prompt_disk_uris(monkeypatch, settings, persistence):
     ("", "postgres"),  # default
     ("random", "random"),
 ])
-def test_prompt_postgres_namespace(monkeypatch, settings, given, expected):
+def test_terminal_postgres_namespace(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -333,7 +333,7 @@ def test_prompt_postgres_namespace(monkeypatch, settings, given, expected):
     ("", 3),  # default
     (2, 2),
 ])
-def test_prompt_postgres_replicas(monkeypatch, settings, given, expected):
+def test_terminal_postgres_replicas(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
@@ -350,7 +350,7 @@ def test_prompt_postgres_replicas(monkeypatch, settings, given, expected):
     ("", "postgres.postgres.svc.cluster.local"),  # default
     ("random", "random"),
 ])
-def test_prompt_postgres_url(monkeypatch, settings, given, expected):
+def test_terminal_postgres_url(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
