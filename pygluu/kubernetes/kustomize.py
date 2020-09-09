@@ -62,8 +62,8 @@ hostpath_jcr_local_folder = Path("./jackrabbit/overlays/local/hostpath/")
 
 
 def register_op_client(namespace, client_name, op_host, oxd_url):
-    """
-    Registers an op client using oxd.
+    """Registers an op client using oxd.
+
     :param namespace:
     :param client_name:
     :param op_host:
