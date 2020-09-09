@@ -1,7 +1,7 @@
-Common
-~~~~~~
+Helpers
+~~~~~~~
 
-.. module:: pygluu.kubernetes.common
+.. module:: pygluu.kubernetes.helpers
 
 .. autofunction:: update_settings_json_file
 
