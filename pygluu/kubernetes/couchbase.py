@@ -509,6 +509,11 @@ class Couchbase(object):
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            volume_claims = couchbase_cluster_parser["spec"]["volumeClaimTemplates"]
+            for i, volume_claim in enumerate(volume_claims):
+                couchbase_cluster_parser["spec"]["volumeClaimTemplates"][i]["spec"]["storageClassName"] = \
+                    "openebs-hostpath"
         couchbase_cluster_parser.dump_it()
 
         self.kubernetes.create_objects_from_dict(self.couchbase_custom_resource_definition_file,
