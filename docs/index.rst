@@ -21,8 +21,8 @@ This part of the documentation lists the API reference of public classes and fun
 .. toctree::
    :maxdepth: 2
 
-   common
    helm
+   helpers
    kubeapi
    kustomize
    pycert

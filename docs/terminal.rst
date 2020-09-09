@@ -4,7 +4,7 @@ Terminal
 The ``pygluu.kubernetes.terminal`` sub-package contains functions and classes
 to handle interaction with user-inputs.
 
-.. module:: pygluu.kubernetes.terminal.common
+.. module:: pygluu.kubernetes.terminal.helpers
 
 .. autofunction:: confirm_yesno
 

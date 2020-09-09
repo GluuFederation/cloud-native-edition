@@ -2,8 +2,8 @@
 pygluu.kubernetes.common
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
- License terms and conditions for Gluu Cloud Native Edition:
- https://www.apache.org/licenses/LICENSE-2.0
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
 """
 import subprocess
 import shlex
@@ -22,6 +22,7 @@ from pathlib import Path
 
 def update_settings_json_file(settings):
     """Write settings out to a json file
+
     :param settings:
     """
     with open(Path('./settings.json'), 'w+') as file:
@@ -29,8 +30,8 @@ def update_settings_json_file(settings):
 
 
 def exec_cmd(cmd, output_file=None):
-    """
-    Execute command cmd
+    """Execute command cmd
+
     :param cmd:
     :param output_file:
     :return:
@@ -53,8 +54,8 @@ def exec_cmd(cmd, output_file=None):
 
 
 def get_logger(name):
-    """
-    Set logger configs with name.
+    """Set logger configs with name.
+
     :param name:
     :return:
     """
@@ -72,6 +73,7 @@ def get_logger(name):
 
 def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
     """Execute ssh command and remove directory.
+
     :param key:
     :param user:
     :param node_ip:
@@ -83,6 +85,7 @@ def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
 
 def check_port(host, port):
     """Check if ports are open
+
     :param host:
     :param port:
     :return:
@@ -96,8 +99,8 @@ def check_port(host, port):
 
 
 def copy(src, dest):
-    """
-    Copy from source to destination
+    """Copy from source to destination
+
     :param src:
     :param dest:
     """
@@ -112,8 +115,7 @@ def copy(src, dest):
 
 
 def copy_templates():
-    """
-    Copy templates folder. /pygluu/kubernetes/templates to working dir.
+    """Copy templates folder. /pygluu/kubernetes/templates to working dir.
     """
     entries = Path(
         os.path.join(os.path.dirname(__file__), "templates")
@@ -127,8 +129,7 @@ def copy_templates():
 
 
 def check_microk8s_kube_config_file():
-    """
-    Copy microk8s kuber config to ~/.kube/config
+    """Copy microk8s kuber config to ~/.kube/config
     """
     kube_config_file_location = Path(os.path.expanduser("~/.kube/config"))
 
@@ -146,6 +147,7 @@ def check_microk8s_kube_config_file():
 
 def get_supported_versions():
     """Get Gluu versions from gluu_versions.json
+
     return:
     """
     versions = {}
@@ -176,8 +178,8 @@ def get_supported_versions():
 
 
 def generate_password(length):
-    """
-    Returns randomly generated password
+    """Returns randomly generated password
+
     :param length: Length of password
     :return:
     """
@@ -191,7 +193,7 @@ def generate_password(length):
 
     while True:
         password = ''.join(random.choice(chars) for _ in range(length))
-        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)
+        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)  # noqa: W605
         if regex_bool:
             break
 
@@ -199,8 +201,8 @@ def generate_password(length):
 
 
 def prompt_password(password, length=6):
-    """
-    Prompt password and password confirmation,
+    """Prompt password and password confirmation
+
     :param password: string for the prompt name
     :param length: Length of password
     :return:
@@ -216,7 +218,7 @@ def prompt_password(password, length=6):
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             if password != "Redis":
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)
+                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)  # noqa: W605
 
         if confirm_pw_prompt != pw_prompt:
             logger.error("Passwords do not match")
