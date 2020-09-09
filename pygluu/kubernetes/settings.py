@@ -11,6 +11,7 @@ import contextlib
 import json
 import os
 import shutil
+import sys
 from pathlib import Path
 from pygluu.kubernetes.helpers import get_logger, update_settings_json_file
 
@@ -223,7 +224,12 @@ class SettingsHandler(object):
         filename = Path("./settings.json")
         try:
             with open(filename) as f:
-                custom_settings = json.load(f)
+                try:
+                    custom_settings = json.load(f)
+                except json.decoder.JSONDecodeError as e:
+                    logger.error("Non valid settings.json")
+                    logger.error(str(e))
+                    sys.exit()
             self.db.update(custom_settings)
         except FileNotFoundError:
             pass
