@@ -2,7 +2,7 @@
 ![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.2)
 ![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.2)
 ![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=4.2)
-
+![testcases](https://github.com/GluuFederation/cloud-native-edition/workflows/testcases/badge.svg?branch=4.2)
 
 # pygluu-kubernetes
 
@@ -51,5 +51,3 @@
     ```
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
-    
- 

@@ -13,10 +13,10 @@ import shutil
 import base64
 
 import click
-from pygluu.kubernetes.common import get_logger, prompt_password
+from pygluu.kubernetes.helpers import get_logger, prompt_password
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.architecture import PromptArch
-from pygluu.kubernetes.terminal.common import confirm_yesno, gather_ip
+from pygluu.kubernetes.terminal.helpers import confirm_yesno, gather_ip
 from pygluu.kubernetes.terminal.namespace import PromptNamespace
 logger = get_logger("gluu-prompt-couchbase")
 

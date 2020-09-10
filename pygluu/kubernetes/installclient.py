@@ -5,7 +5,7 @@
 """
 # TODO: Delete this script as soon as the kubernetes python client fixes CRD issue
 
-from .common import get_logger
+from pygluu.kubernetes.helpers import get_logger
 from pathlib import Path
 import os
 import tarfile

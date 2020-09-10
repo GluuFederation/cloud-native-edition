@@ -7,8 +7,8 @@ This module contains helpers to interact with user's inputs for terminal license
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
-from pygluu.kubernetes.terminal.common import confirm_yesno
-from pygluu.kubernetes.common import get_logger
+from pygluu.kubernetes.terminal.helpers import confirm_yesno
+from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-prompt-license")
 

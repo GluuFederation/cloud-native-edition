@@ -60,13 +60,13 @@ spec:
         {{- end }}
         livenessProbe:
           httpGet:
-            path: /oxauth/.well-known/openid-configuration
+            path: /oxauth/restv1/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
           httpGet:
-            path: /oxauth/.well-known/openid-configuration
+            path: /oxauth/restv1/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25

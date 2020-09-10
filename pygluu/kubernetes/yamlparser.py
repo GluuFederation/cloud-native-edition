@@ -14,7 +14,7 @@ import os
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 from collections import OrderedDict, Mapping
-from .common import get_logger
+from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-yaml-parser   ")
 

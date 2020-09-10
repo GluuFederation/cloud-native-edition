@@ -14,12 +14,12 @@
 import argparse
 import time
 import sys
-from .couchbase import Couchbase
+from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
-from .common import get_logger, copy_templates
-from .helm import Helm
-from .kustomize import Kustomize
-from .settings import SettingsHandler
+from pygluu.kubernetes.helpers import get_logger, copy_templates
+from pygluu.kubernetes.helm import Helm
+from pygluu.kubernetes.kustomize import Kustomize
+from pygluu.kubernetes.settings import SettingsHandler
 
 logger = get_logger("gluu-create        ")
 
