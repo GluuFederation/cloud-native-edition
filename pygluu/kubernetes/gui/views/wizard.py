@@ -18,7 +18,7 @@ from flask import Blueprint, jsonify, make_response, render_template, \
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
-from pygluu.kubernetes.common import get_supported_versions, \
+from pygluu.kubernetes.helpers import get_supported_versions, \
     exec_cmd, generate_password
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import SettingsHandler

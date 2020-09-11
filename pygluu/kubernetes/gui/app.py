@@ -8,7 +8,7 @@ from .extensions import csrf, socketio
 from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
 from pygluu.kubernetes.gui.views.install import install_blueprint
-from pygluu.kubernetes.common import copy_templates
+from pygluu.kubernetes.helpers import copy_templates
 
 
 def create_app():

@@ -11,7 +11,7 @@ from flask_wtf import FlaskForm
 from wtforms import RadioField
 from wtforms.validators import  DataRequired
 
-from pygluu.kubernetes.common import get_supported_versions
+from pygluu.kubernetes.helpers import get_supported_versions
 
 
 class VersionForm(FlaskForm):
