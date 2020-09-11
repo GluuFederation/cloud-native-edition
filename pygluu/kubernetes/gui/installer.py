@@ -1,8 +1,7 @@
 import os
 import threading
-from pygtail import Pygtail
+from pathlib import Path
 from queue import Queue
-from flask_socketio import emit
 from pygluu.kubernetes.helm import Helm
 from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.settings import SettingsHandler
@@ -16,7 +15,10 @@ class InstallHandler(object):
         self.settings = SettingsHandler()
 
     def run_install_kustomize(self):
-        os.remove('./setup.log.offset')
+        log_offset = Path("./setup.log.offset")
+        if log_offset.exists():
+            os.unlink('./setup.log.offset')
+
         t = threading.Thread(target=self.install_kustomize, args=(self.queue,))
         t.daemon = True
         t.start()
