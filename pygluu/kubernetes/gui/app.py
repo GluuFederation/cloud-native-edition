@@ -7,7 +7,6 @@ from flask import Flask
 from .extensions import csrf, socketio
 from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
-from pygluu.kubernetes.gui.views.install import install_blueprint
 from pygluu.kubernetes.helpers import copy_templates
 
 
@@ -33,7 +32,6 @@ def create_app():
     # register blueprint
     app.register_blueprint(main_blueprint)
     app.register_blueprint(wizard_blueprint)
-    app.register_blueprint(install_blueprint)
 
     @app.context_processor
     def hash_processor():

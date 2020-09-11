@@ -1065,28 +1065,6 @@ def setting_summary():
                            settings=settings.db)
 
 
-@wizard_blueprint.route("/confirm-params", methods=["POST"])
-def confirm_params():
-    """
-    Display all data from settings.json except for passwords.
-    """
-    settings.set("CONFIRM_PARAMS", request.form["confirm_params"])
-    if settings.get("CONFIRM_PARAMS") == "Y":
-        return redirect(url_for('wizard.finished'))
-    else:
-        # reset to default settings
-        settings.reset_data()
-        return redirect(url_for('wizard.license'))
-
-
-@wizard_blueprint.route("/finish")
-def finished():
-    """
-    finish page
-    """
-    return render_template("wizard/finish.html")
-
-
 @wizard_blueprint.route("/determine_ip", methods=["GET"])
 def determine_ip():
     """
