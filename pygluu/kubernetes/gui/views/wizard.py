@@ -561,6 +561,10 @@ def persistence_backend():
             elif settings.get("DEPLOYMENT_ARCH") == "minikube":
                 settings.set("APP_VOLUME_TYPE", 2)
 
+        if settings.get('DEPLOYMENT_ARCH') in test_arch and \
+            settings.get("PERSISTENCE_BACKEND") == "couchbase":
+            next_step = 'wizard.couchbase_multi_cluster'
+
         return redirect(url_for(next_step))
 
     if request.method == "GET":
