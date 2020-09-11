@@ -42,29 +42,10 @@ from ..forms.replicas import ReplicasForm
 from ..forms.version import VersionForm
 from ..forms.volumes import VolumeForm
 
-
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
-wizard_steps = ["License",
-                "Gluu version",
-                "Deployment architecture",
-                "Gluu namespace",
-                "Optional Services",
-                "Gluu gateway",
-                "Install jackrabbit",
-                "Install Istio",
-                "Environment Setting",
-                "Persistence backend",
-                "Volumes",
-                "Couchbase multi cluster",
-                "Couchbase",
-                "Couchbase calculator",
-                "Cache type",
-                "Backup",
-                "Configuration",
-                "Images",
-                "Replicas"]
 
 kubernetes = Kubernetes()
+settings = SettingsHandler()
 
 test_arch = ("microk8s", "minikube")
 cloud_arch = ("eks", "gke", "aks", "do")
@@ -74,7 +55,7 @@ config_settings = {"hostname": "", "country_code": "", "state": "", "city": "",
                    "admin_pw": "", "ldap_pw": "", "email": "", "org_name": "",
                    "redis_pw": ""}
 
-settings = SettingsHandler()
+
 
 
 @wizard_blueprint.before_request
@@ -94,6 +75,27 @@ def inject_wizard_steps():
     """
     inject wizard_step variable to Jinja
     """
+    wizard_steps = [
+        {"title": "License", "url": url_for("wizard.license")},
+        {"title": "Gluu version", "url": url_for("wizard.gluu_version")},
+        {"title": "Deployment architecture", "url": url_for("wizard.deployment_arch")},
+        {"title": "Gluu namespace", "url": url_for("wizard.gluu_namespace")},
+        {"title": "Optional Services", "url": url_for("wizard.optional_services")},
+        {"title": "Gluu gateway", "url": url_for("wizard.gluu_gateway")},
+        {"title": "Install jackrabbit", "url": url_for("wizard.install_jackrabbit")},
+        {"title": "Install Istio", "url": url_for("wizard.install_istio")},
+        {"title": "Environment Setting", "url": url_for("wizard.environment")},
+        {"title": "Persistence backend", "url": url_for("wizard.persistence_backend")},
+        {"title": "Volumes", "url": url_for("wizard.volumes")},
+        {"title": "Couchbase multi cluster", "url": url_for("wizard.couchbase_multi_cluster")},
+        {"title": "Couchbase", "url": url_for("wizard.couchbase")},
+        {"title": "Couchbase calculator", "url": url_for("wizard.couchbase_calculator")},
+        {"title": "Cache type", "url": url_for("wizard.cache_type")},
+        {"title": "Backup", "url": url_for("wizard.backup")},
+        {"title": "Configuration", "url": url_for("wizard.configuration")},
+        {"title": "Images", "url": url_for("wizard.images")},
+        {"title": "Replicas", "url": url_for("wizard.replicas")}
+    ]
     return dict(wizard_steps=wizard_steps)
 
 

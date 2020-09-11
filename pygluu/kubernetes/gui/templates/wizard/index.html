@@ -8,8 +8,14 @@
             {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
             <li>
               <div class="step {{ step_status }}">
-                <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step }}">{{ loop.index }}</span>
-                <i>{{ wizard_step }}</i>
+                <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step['title'] }}">
+                  {% if step_status %}
+                    <a href="{{ wizard_step['url'] }}" class="text-decoration-none text-reset">{{ loop.index }}</a>
+                  {% else %}
+                    {{ loop.index }}
+                  {% endif %}
+                </span>
+                <i>{{ wizard_step['title'] }}</i>
               </div>
             </li>
           {% endfor %}
