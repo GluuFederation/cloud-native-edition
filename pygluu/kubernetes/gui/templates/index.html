@@ -23,7 +23,7 @@
                   <p class="card-text">Install Gluu Cloud Native Edition</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <a href="{{ url_for('main.install') }}" class="btn btn-primary float-right">Install</a>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -35,7 +35,7 @@
                         hierarchy pods to be running</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <a href="{{ url_for('main.install_no_wait') }}" class="btn btn-primary float-right">Install</a>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -45,7 +45,7 @@
                     installs the nginx-ingress chart</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -55,7 +55,7 @@
                         assumes nginx-ingress is installed</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
           </div>
@@ -66,7 +66,7 @@
                   <p class="card-text">Install LDAP backup cronjob only</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -75,7 +75,7 @@
                   <p class="card-text">Install KubeDB for Redis or Postgres</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -84,7 +84,7 @@
                   <p class="card-text">Install Gluu Gateway with Postgres database</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -93,7 +93,7 @@
                   <p class="card-text">Install Couchbase only. Used with installation of Gluu with Helm</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -102,7 +102,7 @@
                   <p class="card-text">Install Couchbase backup only.</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Install</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
           </div>
@@ -114,7 +114,7 @@
                         Edition non-interactively</p>
               </div>
               <div class="card-footer">
-                <a href="{{ url_for('wizard.license') }}" class="btn btn-primary float-right">Run</a>
+                <a href="{{ url_for('main.generate_settings') }}" class="btn btn-primary float-right">Run</a>
               </div>
             </div>
             <div class="card shadow mb-4 bg-white rounded">
@@ -123,7 +123,7 @@
                   <p class="card-text">Upgrade Gluu Cloud Native Edition</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Run</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
              <div class="card shadow mb-4 bg-white rounded">
@@ -132,7 +132,7 @@
                   <p class="card-text">Install Gluu Cloud Native Edition with a running database and previous configuration</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary float-right">Run</a>
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
               </div>
             </div>
           </div>

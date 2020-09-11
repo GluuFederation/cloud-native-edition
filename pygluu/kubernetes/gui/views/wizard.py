@@ -14,7 +14,7 @@ import base64
 from pathlib import Path
 from flask import current_app
 from flask import Blueprint, jsonify, make_response, render_template, \
-    request, redirect, url_for
+    request, redirect, url_for, session
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
@@ -82,6 +82,9 @@ def initialize():
     """
     check accepting license
     """
+    if not session.get('finish_endpoint'):
+        return redirect(url_for('main.index'))
+
     if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/license":
         return redirect(url_for("wizard.license"))
 
