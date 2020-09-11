@@ -54,14 +54,14 @@ wizard_steps = ["License",
                 "Install Istio",
                 "Environment Setting",
                 "Persistence backend",
-                "App volumes",
+                "Volumes",
                 "Couchbase multi cluster",
-                "Cache type",
                 "Couchbase",
                 "Couchbase calculator",
+                "Cache type",
                 "Backup",
-                "Config",
-                "Image name tag",
+                "Configuration",
+                "Images",
                 "Replicas"]
 
 kubernetes = Kubernetes()
@@ -558,13 +558,6 @@ def persistence_backend():
             elif settings.get("DEPLOYMENT_ARCH") == "minikube":
                 settings.set("APP_VOLUME_TYPE", 2)
 
-            if not settings.get("APP_VOLUME_TYPE") \
-                    or settings.get("DEPLOYMENT_ARCH") not in test_arch:
-                return redirect(url_for('wizard.app_volume_type'))
-
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            return redirect(url_for('wizard.couchbase_multi_cluster'))
-
         return redirect(url_for(next_step))
 
     if request.method == "GET":
@@ -576,18 +569,20 @@ def persistence_backend():
                            current_step=10,
                            template="persistence_backend",
                            prev_step="wizard.environment",
-                           next_step="wizard.cache_type")
+                           next_step="wizard.volumes")
 
 
-@wizard_blueprint.route("/app-volume-type", methods=["GET", "POST"])
-def app_volume_type():
+@wizard_blueprint.route("/volumes", methods=["GET", "POST"])
+def volumes():
     """
     App Volume type Setting
     """
     form = VolumeForm()
     if form.validate_on_submit():
         data = {}
-        data["APP_VOLUME_TYPE"] = form.app_volume_type.data
+        data["APP_VOLUME_TYPE"] = settings.get("APP_VOLUME_TYPE");
+        if not data["APP_VOLUME_TYPE"]:
+            data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
         if data["APP_VOLUME_TYPE"] in (8, 13):
             data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
@@ -598,16 +593,19 @@ def app_volume_type():
         if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
             data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
 
+        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            data["LDAP_STORAGE_SIZE"] = form.ldap_storage_size.data
+
         settings.update(data)
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            next_step = "wizard.couchbase_multi_cluster"
-        else:
             next_step = request.form['next_step']
+        else:
+            next_step = 'wizard.cache_type'
 
         return redirect(url_for(next_step))
 
-        # TODO: find a way to apply dynamic validation
+    # TODO: find a way to apply dynamic validation
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         form.ldap_storage_size.validators = [InputRequired()]
     else:
@@ -622,7 +620,7 @@ def app_volume_type():
                            current_step=11,
                            template="app_volume_type",
                            prev_step="wizard.persistence_backend",
-                           next_step="wizard.cache_type")
+                           next_step="wizard.couchbase_multi_cluster")
 
 
 @wizard_blueprint.route("/couchbase-multi-cluster", methods=["GET", "POST"])
@@ -641,70 +639,12 @@ def couchbase_multi_cluster():
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "wizard.persistence_backend"
     if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "wizard.app_volume_type"
+        prev_step = "wizard.volumes"
 
     return render_template("wizard/index.html",
                            form=form,
                            current_step=12,
                            template="couchbase_multi_cluster",
-                           prev_step=prev_step,
-                           next_step="wizard.cache_type")
-
-
-@wizard_blueprint.route("/cache-type", methods=["GET", "POST"])
-def cache_type():
-    """
-    Cache Layer setting
-    """
-    form = CacheTypeForm()
-    if form.validate_on_submit():
-        data = {}
-        data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
-
-        if data["GLUU_CACHE_TYPE"] == "REDIS":
-            data["REDIS_TYPE"] = form.redis.redis_type.data
-            data["INSTALL_REDIS"] = form.redis.install_redis.data
-
-            if data["INSTALL_REDIS"] == "Y":
-                data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
-                data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
-                data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
-                data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
-                    data["REDIS_NAMESPACE"])
-                data["REDIS_PW"] = ""
-            else:
-                data["REDIS_MASTER_NODES"] = ""
-                data["REDIS_NODES_PER_MASTER"] = ""
-                data["REDIS_NAMESPACE"] = ""
-                data["REDIS_URL"] = form.redis.redis_url.data
-                data["REDIS_PW"] = form.redis.redis_pw.data
-
-        settings.update(data)
-
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            return redirect(url_for(request.form['next_step']))
-
-        if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-            return redirect(url_for('wizard.backup'))
-
-        return redirect(url_for('wizard.config'))
-
-    if request.method == "GET":
-        form = populate_form_data(form)
-        form.redis = populate_form_data(form.redis)
-        form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
-
-    # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.persistence_backend"
-    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "wizard.app_volume_type"
-    elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "wizard.couchbase_multi_cluster"
-
-    return render_template("wizard/index.html",
-                           form=form,
-                           current_step=13,
-                           template="cache_type",
                            prev_step=prev_step,
                            next_step="wizard.couchbase")
 
@@ -785,9 +725,6 @@ def couchbase():
                 settings.get("INSTALL_COUCHBASE") == "Y":
             return redirect(url_for("wizard.couchbase_calculator"))
 
-        if settings.get("DEPLOYMENT_ARCH") not in test_arch:
-            return redirect(url_for("wizard.backup"))
-
         return redirect(url_for(next_step))
 
     if request.method == "GET":
@@ -814,10 +751,10 @@ def couchbase():
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=14,
+                           current_step=13,
                            template="couchbase",
                            prev_step="wizard.couchbase_multi_cluster",
-                           next_step="wizard.config")
+                           next_step="wizard.cache_type")
 
 
 @wizard_blueprint.route("/couchbase-calculator", methods=["GET", "POST"])
@@ -844,20 +781,70 @@ def couchbase_calculator():
             data[field.name.upper()] = field.data
 
         settings.update(data)
-
-        if settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
-            return redirect(url_for("wizard.backup"))
-
         return redirect(url_for(request.form["next_step"]))
 
+    return render_template("wizard/index.html",
+                           form=form,
+                           current_step=14,
+                           template="couchbase_calculator",
+                           prev_step="wizard.couchbase",
+                           next_step="wizard.cache_type")
 
+
+@wizard_blueprint.route("/cache-type", methods=["GET", "POST"])
+def cache_type():
+    """
+    Cache Layer setting
+    """
+    form = CacheTypeForm()
+    if form.validate_on_submit():
+        data = {}
+        data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
+
+        if data["GLUU_CACHE_TYPE"] == "REDIS":
+            data["REDIS_TYPE"] = form.redis.redis_type.data
+            data["INSTALL_REDIS"] = form.redis.install_redis.data
+
+            if data["INSTALL_REDIS"] == "Y":
+                data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
+                data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
+                data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
+                data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
+                    data["REDIS_NAMESPACE"])
+                data["REDIS_PW"] = ""
+            else:
+                data["REDIS_MASTER_NODES"] = ""
+                data["REDIS_NODES_PER_MASTER"] = ""
+                data["REDIS_NAMESPACE"] = ""
+                data["REDIS_URL"] = form.redis.redis_url.data
+                data["REDIS_PW"] = form.redis.redis_pw.data
+
+        settings.update(data)
+
+        # skip backup form if deployment_arch is microk8s or minikube
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            return redirect(url_for('wizard.configuration'))
+
+        return redirect(request.form["next_step"])
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.redis = populate_form_data(form.redis)
+        form.redis.redis_pw_confirm.data = settings.get("REDIS_PW")
+
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "wizard.volumes"
+    if settings.get("DEPLOY_MULTI_CLUSTER"):
+        prev_step = "wizard.couchbase_multi_cluster"
+    elif settings.get("INSTALL_COUCHBASE") == "Y":
+        prev_step = "wizard.couchbase"
 
     return render_template("wizard/index.html",
                            form=form,
                            current_step=15,
-                           template="couchbase_calculator",
-                           prev_step="wizard.couchbase",
-                           next_step="wizard.config")
+                           template="cache_type",
+                           prev_step=prev_step,
+                           next_step="wizard.backup")
 
 
 @wizard_blueprint.route("/backup", methods=["GET", "POST"])
@@ -886,28 +873,17 @@ def backup():
     if request.method == "GET":
         form = populate_form_data(form)
 
-    # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.setting"
-    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "wizard.app_volume_type"
-    elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "wizard.couchbase_multi_cluster"
-    elif settings.get("INSTALL_COUCHBASE"):
-        prev_step = "wizard.couchbase"
-    elif settings.get("NUMBER_OF_EXPECTED_USERS"):
-        prev_step = "wizard.couchbase_calculator"
-
     return render_template("wizard/index.html",
                            persistence_backend=settings.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=16,
                            template="backup",
-                           prev_step=prev_step,
-                           next_step="wizard.config")
+                           prev_step="wizard.cache_type",
+                           next_step="wizard.configuration")
 
 
-@wizard_blueprint.route("/config", methods=["GET", "POST"])
-def config():
+@wizard_blueprint.route("/configuration", methods=["GET", "POST"])
+def configuration():
     form = ConfigurationForm()
     if form.validate_on_submit():
         data = {}
@@ -956,17 +932,9 @@ def config():
             form.is_gluu_fqdn_registered.validators = [DataRequired()]
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.persistence_backend"
-    if settings.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "wizard.app_volume_type"
-    elif settings.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "wizard.couchbase_multi_cluster"
-    elif settings.get("INSTALL_COUCHBASE"):
-        prev_step = "wizard.couchbase"
-    elif settings.get("NUMBER_OF_EXPECTED_USERS"):
-        prev_step = "wizard.couchbase_calculator"
-    elif settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE") or settings.get("LDAP_BACKUP_SCHEDULE"):
-        prev_step = "wizard.backup"
+    prev_step = "wizard.backup"
+    if settings.get("APP_VOLUME_TYPE") in (1, 2):
+        prev_step = "wizard.cache_type"
 
     return render_template("wizard/index.html",
                            settings=settings.db,
@@ -974,11 +942,11 @@ def config():
                            current_step=17,
                            template="config",
                            prev_step=prev_step,
-                           next_step="wizard.image_name_tag")
+                           next_step="wizard.images")
 
 
-@wizard_blueprint.route("/image-name-tag", methods=["POST", "GET"])
-def image_name_tag():
+@wizard_blueprint.route("/images", methods=["POST", "GET"])
+def images():
     form = ImageNameTagForm()
 
     # modify form, remove the form if the services is not enabled
@@ -1030,7 +998,7 @@ def image_name_tag():
                            form=form,
                            current_step=18,
                            template="image_name_tag",
-                           prev_step="wizard.config",
+                           prev_step="wizard.configuration",
                            next_step="wizard.replicas")
 
 
@@ -1064,12 +1032,7 @@ def replicas():
             data[field.name.upper()] = field.data
 
         settings.update(data)
-
-        if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
-                not settings.get("LDAP_STORAGE_SIZE"):
-            return redirect(url_for(request.form["next_step"]))
-
-        return redirect(url_for("wizard.setting_summary"))
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -1078,7 +1041,7 @@ def replicas():
                            form=form,
                            current_step=19,
                            template="replicas",
-                           prev_step="wizard.image_name_tag",
+                           prev_step="wizard.images",
                            next_step="wizard.setting_summary")
 
 
