@@ -1070,6 +1070,16 @@ def setting_summary():
                            hidden_settings=hidden_settings,
                            settings=settings.db)
 
+@wizard_blueprint.route("/quit", methods=["POST"])
+def quit_settings():
+    """
+    Quit installation wizard and discard settings.json
+    """
+    if request.form["quit_confirm"] == "yes":
+        settings.reset_data()
+
+    return redirect(url_for('main.index'))
+
 
 @wizard_blueprint.route("/determine_ip", methods=["GET"])
 def determine_ip():
