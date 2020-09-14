@@ -723,6 +723,103 @@ Please calculate the minimum required resources as per services deployed. The fo
       cr-rotate:
         enabled: true
     ```
+    
+=== "GUI-alpha"
+    ## Install Gluu using the gui installer
+    
+    !!!warning
+        The GUI installer is currently alpha. Please report any bugs found by opening an [issue](https://github.com/GluuFederation/cloud-native-edition/issues/new/choose).
+    
+    ```
+    
+    1. Create the GUI installer job
+    
+    ```bash
+        cat <<EOF | kubectl apply -f -
+        apiVersion: apps/v1
+        kind: Job
+        metadata:
+          name: cloud-native-installer
+          labels:
+            APP_NAME: cloud-native-installer
+        spec:
+          template:
+            metadata:
+              labels:
+                APP_NAME: cloud-native-installer
+            spec:
+              restartPolicy: Never
+              containers:
+                - name: cloud-native-installer
+                  image: gluufederation/config-init:4.2.1_dev
+        ---
+        kind: Service
+        apiVersion: v1
+        metadata:
+          name: cloud-native-installer
+        spec:
+          type: LoadBalancer
+          selector:
+            app: cloud-native-installer
+          ports:
+            - name: http
+              port: 80
+              targetPort: 5000           
+        EOF
+    ```
+    
+    1. Grab the Loadbalancer address , ip or Nodeport and follow installation setup.
+    
+        === "AWS"
+        
+            ```bash
+                kubectl -n default get svc cloud-native-installer --output jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+            ```
+            
+        === "GKE"
+        
+            ```bash
+                kubectl -n default get svc cloud-native-installer --output jsonpath='{.status.loadBalancer.ingress[0].ip}'
+            ```
+            
+        === "Azure"
+        
+            ```bash
+                kubectl -n default get svc cloud-native-installer --output jsonpath='{.status.loadBalancer.ingress[0].ip}'
+            ```
+        === "DigitalOcean"
+        
+            ```bash
+                kubectl -n default get svc cloud-native-installer --output jsonpath='{.status.loadBalancer.ingress[0].ip}'
+            ```
+            
+        === "Microk8s"
+        
+            1. Get ip of microk8s vm
+            
+            1. Get `NodePort` of the GUI installer service
+            
+                ```bash
+                   kubectl -n default get svc cloud-native-installer
+                ```
+            
+        === "Minikube"
+        
+            1. Get ip of minikube vm
+            
+                ```bash
+                minikube ip
+                ```
+            
+            1. Get `NodePort` of the GUI installer service
+            
+                ```bash
+                   kubectl -n default get svc cloud-native-installer
+                ```
+                
+    1. Head to the address from previous step to start the installation.
+
+    
 
 ### `settings.json` parameters file contents
 

@@ -34,7 +34,7 @@
     make install
     ```
 
-    This command will install executable called `pygluu-kubernetes` available in virtual environment `PATH`.
+    This command will install executable called `pygluu-kubernetes` and `pygluu-kubernetes-gui` available in virtual environment `PATH`.
 
 ### Python zipapp
 
@@ -51,3 +51,9 @@
     ```
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
+
+    ```sh
+    make guizipapp
+    ```
+
+    This command will generate executable called `pygluu-kubernetes-gui.pyz` under the same directory.
