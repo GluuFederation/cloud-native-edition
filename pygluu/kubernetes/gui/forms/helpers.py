@@ -70,20 +70,25 @@ volume_types = {
 }
 
 
-def password_requirement_check(field):
+def password_requirement_check():
     """
     Password Requirement validation,
     password required contain at least one digit,
     uppercase letter, lower case and symbol
     """
-    regex_bool = re.match(
-        '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
-        field.data)
-    if not regex_bool:
-        raise ValidationError(
-            "Password does not meet requirements. "
-            "The password must contain one digit, one uppercase "
-            "letter, one lower case letter and one symbol")
+
+    message = "Password does not meet requirements. "\
+              "The password must contain one digit, one uppercase "\
+              "letter, one lower case letter and one symbol"
+
+    def _password_requirement_check(form, field):
+        regex_bool = re.match(
+            '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
+            field.data)
+        if not regex_bool:
+            raise ValidationError(message)
+
+    return _password_requirement_check
 
 
 class RequiredIfFieldEqualTo(DataRequired):
