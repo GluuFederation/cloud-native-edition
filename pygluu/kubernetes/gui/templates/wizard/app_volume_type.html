@@ -1,0 +1,21 @@
+{% if settings["DEPLOYMENT_ARCH"] in ("eks", "gke", "do", "local", "aks") %}
+<fieldset id="appVolumeType" class="form-group">
+  <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.app_volume_type.label }}</h6>
+  {% for choice in form.app_volume_type %}
+    {{ forms.single_radio(choice) }}
+  {% endfor %}
+</fieldset>
+{% endif %}
+
+{{ forms.text(form.ldap_static_volume_id, true) }}
+{{ forms.text(form.ldap_static_disk_uri, true) }}
+{% if settings["DEPLOYMENT_ARCH"] in ("eks", "gke", "aks") %}
+  <fieldset id="ldapVolume" class="form-group">
+    <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.ldap_jackrabbit_volume.label }}</h6>
+    {% for choice in form.ldap_jackrabbit_volume %}
+      {{ forms.single_radio(choice) }}
+    {% endfor %}
+  </fieldset>
+{% endif %}
+
+{{ forms.text(form.ldap_storage_size, hidden = True if settings["PERSISTENCE_BACKEND"] == 'couchbase' else False) }}

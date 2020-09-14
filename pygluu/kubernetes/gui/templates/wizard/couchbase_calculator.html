@@ -1,0 +1,17 @@
+{{ forms.text(form.number_of_expected_users) }}
+{{ forms.radio(form.using_resource_owner_password_cred_grant_flow) }}
+{{ forms.radio(form.using_code_flow) }}
+{{ forms.radio(form.using_scim_flow) }}
+{{ forms.text(form.expected_transaction_per_sec) }}
+{{ forms.text(form.couchbase_data_nodes) }}
+{{ forms.text(form.couchbase_index_nodes) }}
+{{ forms.text(form.couchbase_query_nodes) }}
+{{ forms.text(form.couchbase_search_eventing_analytics_nodes) }}
+{{ forms.text(form.couchbase_general_storage) }}
+{{ forms.text(form.couchbase_data_storage) }}
+{{ forms.text(form.couchbase_index_storage) }}
+{{ forms.text(form.couchbase_query_storage) }}
+{{ forms.text(form.couchbase_analytics_storage) }}
+{% if form.couchbase_volume_type.choices %}
+  {{ forms.radio(form.couchbase_volume_type) }}
+{% endif %}

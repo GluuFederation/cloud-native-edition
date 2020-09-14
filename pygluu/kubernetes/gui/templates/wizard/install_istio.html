@@ -1,0 +1,14 @@
+{% if form.use_istio_ingress %}
+    {{ forms.radio(form.use_istio_ingress) }}
+{% endif %}
+
+{{ forms.radio(form.use_istio) }}
+<p class="text-muted small">Please follow <a target="_blank" href="https://istio.io/latest/docs/">https://istio.io/latest/docs/</a>  to learn more.</p>
+
+<div id="istioNamespace" class="collapse {{ 'show' if form.use_istio.data == 'Y' else '' }}">
+  {{ forms.text(form.istio_system_namespace) }}
+</div>
+
+{% if form.use_istio_ingress %}
+    {{ forms.text(form.lb_add) }}
+{% endif %}

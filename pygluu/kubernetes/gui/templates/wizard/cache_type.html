@@ -1,0 +1,29 @@
+<fieldset class="form-group">
+  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.gluu_cache_type.label }}</h6>
+  {% for choice in form.gluu_cache_type %}
+    {{ forms.single_radio(choice) }}
+  {% endfor %}
+</fieldset>
+
+<div id="redisSetup" class="collapse {{ 'show' if form.gluu_cache_type.data == 'REDIS' else '' }}">
+  <fieldset class="form-group">
+    <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.redis.redis_type.label }}</h6>
+    {% for choice in form.redis.redis_type %}
+      {{ forms.single_radio(choice) }}
+    {% endfor %}
+  </fieldset>
+
+
+  {{ forms.radio(form.redis.install_redis) }}
+  <div id="redisNodes" class="collapse {{ 'show' if form.redis.install_redis.data == 'Y' else '' }}">
+    {{ forms.text(form.redis.redis_master_nodes) }}
+    {{ forms.text(form.redis.redis_nodes_per_master) }}
+    {{ forms.text(form.redis.redis_namespace) }}
+  </div>
+  <div id="redisPassword" class="collapse {{ 'show' if form.redis.install_redis.data == 'N' else '' }}">
+    {{ forms.text(form.redis.redis_url) }}
+    {{ forms.password(form.redis.redis_pw) }}
+    {{ forms.password(form.redis.redis_pw_confirm) }}
+  </div>
+
+</div>

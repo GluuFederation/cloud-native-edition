@@ -11,3 +11,6 @@ uninstall:
 
 zipapp:
 	shiv --compressed -o pygluu-kubernetes.pyz -p '/usr/bin/env python3' -e pygluu.kubernetes.create:main pygluu/kubernetes/templates/kubernetesv11.0.0.tar.gz . --no-cache
+
+guizipapp:
+	shiv --compressed -o pygluu-kubernetes-gui.pyz -p '/usr/bin/env python3' -e pygluu.kubernetes.gui.app:main pygluu/kubernetes/templates/kubernetesv11.0.0.tar.gz . --no-cache

@@ -61,8 +61,12 @@ setup(
         "websocket-client>=0.32.0,!=0.40.0,!=0.41.*,!=0.42.*",  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
         "certifi>=2020.6.20",  # TODO: May be removed, required by requests package.
         "kubernetes==11.0.0",
-
+        "Flask==1.1.2",
         "Click!=7.0,>=6.7",
+        "Flask-WTF >= 0.14.2",
+        "email_validator >= 1.1.0",
+        "Flask-SocketIO >= 4.3.1",
+        "Pygtail >= 0.11.1",
     ],
     dependency_links=[
         get_k8s_pkg(),  # TODO: Remove the following as soon as the kubernetes python client is fixed upstream
@@ -77,6 +81,9 @@ setup(
     ],
     include_package_data=True,
     entry_points={
-        "console_scripts": ["pygluu-kubernetes=pygluu.kubernetes.create:main"],
+        "console_scripts": [
+            "pygluu-kubernetes=pygluu.kubernetes.create:main",
+            "pygluu-kubernetes-gui=pygluu.kubernetes.gui.app:main",
+        ],
     },
 )

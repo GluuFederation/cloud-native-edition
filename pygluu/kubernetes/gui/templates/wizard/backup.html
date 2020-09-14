@@ -1,0 +1,8 @@
+{% if persistence_backend in ("hybrid", "couchbase") %}
+  {{ forms.croninput(form.couchbase_incr_backup_schedule) }}
+  {{ forms.croninput(form.couchbase_full_backup_schedule) }}
+  {{ forms.text(form.couchbase_backup_retention_time) }}
+  {{ forms.text(form.couchbase_backup_storage_size) }}
+{% elif persistence_backend == "ldap" %}
+  {{ forms.croninput(form.ldap_backup_schedule) }}
+{% endif %}

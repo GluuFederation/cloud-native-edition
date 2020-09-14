@@ -1,0 +1,5 @@
+{% for field in form %}
+  {% if field.type == "IntegerField" %}
+    {{ forms.text(field) }}
+  {% endif %}
+{% endfor %}

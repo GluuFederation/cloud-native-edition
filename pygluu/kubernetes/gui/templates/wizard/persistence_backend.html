@@ -1,0 +1,14 @@
+<fieldset class="form-group">
+  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.persistence_backend.label }}</h6>
+  {% for choice in form.persistence_backend %}
+    {{ forms.single_radio(choice) }}
+  {% endfor %}
+</fieldset>
+
+<fieldset id="hybridLdapHeldData" class="form-group collapse {{ 'show' if form.persistence_backend.data == 'hybrid' else '' }}">
+  <h6 class="border-bottom border-gray mt-2 font-weight-bolder">{{ form.hybrid_ldap_held_data.label }}</h6>
+  {% for choice in form.hybrid_ldap_held_data %}
+    {{ forms.single_radio(choice) }}
+  {% endfor %}
+</fieldset>
+

@@ -221,6 +221,7 @@ class SettingsHandler(object):
         except FileNotFoundError:
             # No installation settings mounted as /installer-settings.json. Checking settings.json.
             pass
+        
         filename = Path("./settings.json")
         try:
             with open(filename) as f:

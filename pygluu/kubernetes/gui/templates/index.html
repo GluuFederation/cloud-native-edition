@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card border-0 shadow p-1 mb-5 bg-white rounded">
+      <div class="card-body">
+        <h3 class="text-center">Gluu Cloud Native Edition</h3>
+        <ul class="nav nav-pills justify-content-center" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="main-tab" data-toggle="tab" href="#main" role="tab" aria-controls="main" aria-selected="true">Install Gluu</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="components-tab" data-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="false">Install Components</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="utilities-tab" data-toggle="tab" href="#utilities" role="tab" aria-controls="utilities" aria-selected="false">Utilities</a>
+          </li>
+        </ul>
+
+        <div class="tab-content mt-3 pl-5 pr-5">
+          <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="home-tab">
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install Gluu</h5>
+                  <p class="card-text">Install Gluu Cloud Native Edition</p>
+              </div>
+              <div class="card-footer">
+                <a href="{{ url_for('main.install') }}" class="btn btn-primary float-right">Install</a>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install Gluu with no wait</h5>
+                  <p class="card-text">Install Gluu Cloud Native Edition. There will be no wait
+                        time between installing services. Pods may look like
+                        they are restarting but they will be waiting for
+                        hierarchy pods to be running</p>
+              </div>
+              <div class="card-footer">
+                <a href="{{ url_for('main.install_no_wait') }}" class="btn btn-primary float-right">Install</a>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Helm Install</h5>
+                <p class="card-text">Install Gluu Cloud Native Edition using helm. This also
+                    installs the nginx-ingress chart</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Helm Install Gluu</h5>
+                <p class="card-text">Install Gluu Cloud Native Edition using helm. This
+                        assumes nginx-ingress is installed</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="components" role="tabpanel" aria-labelledby="components-tab">
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install LDAP backup</h5>
+                  <p class="card-text">Install LDAP backup cronjob only</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install KubeDB</h5>
+                  <p class="card-text">Install KubeDB for Redis or Postgres</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install Gluu Gateway DB mode</h5>
+                  <p class="card-text">Install Gluu Gateway with Postgres database</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install Couchbase</h5>
+                  <p class="card-text">Install Couchbase only. Used with installation of Gluu with Helm</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Install Couchbase backup</h5>
+                  <p class="card-text">Install Couchbase backup only.</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="utilities" role="tabpanel" aria-labelledby="utilities-tab">
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Generate Settings</h5>
+                  <p class="card-text">Generate settings.json to install Gluu Cloud Native
+                        Edition non-interactively</p>
+              </div>
+              <div class="card-footer">
+                <a href="{{ url_for('main.generate_settings') }}" class="btn btn-primary float-right">Run</a>
+              </div>
+            </div>
+            <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Upgrade</h5>
+                  <p class="card-text">Upgrade Gluu Cloud Native Edition</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+             <div class="card shadow mb-4 bg-white rounded">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Restore</h5>
+                  <p class="card-text">Install Gluu Cloud Native Edition with a running database and previous configuration</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-secondary float-right font-italic" aria-disabled="true" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block custom_script %}
+{% endblock %}

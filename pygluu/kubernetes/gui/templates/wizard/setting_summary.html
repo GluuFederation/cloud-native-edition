@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card border-0 shadow p-1 mb-5 bg-white rounded">
+    <div class="card-body">
+      <h3 class="text-center">Gluu Cloud Native Edition</h3>
+      <table class="table table-responsive overflow-auto">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Setting</th>
+            <th scope="col">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k, v in settings.items() %}
+            {% if k not in hidden_settings %}
+              {% if k == "ENABLED_SERVICES_LIST" %}
+                    {% set v = ", ".join(settings.get("ENABLED_SERVICES_LIST")) %}
+              {% endif %}
+              <tr>
+                <th>{{ k }}</th>
+                <td>{{ v }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <form class="d-flex justify-content-center" action="{{ url_for(session['finish_endpoint']) }}" method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="mx-2 btn btn-primary" name="install_confirm" value="Y">Confirm settings</button>
+        <button type="button" class="mx-2 btn btn-danger" data-toggle="modal" data-target="#cancelModal">Discard settings</button>
+      </form>
+
+      <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{{ url_for(session['finish_endpoint']) }}" method="post" novalidate>
+              <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Are you absolutely sure?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <p>This action <strong>cannot</strong> be undone. you configuration settings will be removed.</p>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                <button type="submit" name="install_confirm" class="btn btn-secondary" value="N">Yes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block custom_script %}
+  <script></script>
+{% endblock %}
