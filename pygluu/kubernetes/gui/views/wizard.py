@@ -126,12 +126,14 @@ def gluu_version():
     """Input for Gluu versions
     """
     form = VersionForm()
-    versions, version_number = get_supported_versions()
-
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         settings.set("GLUU_VERSION", form.gluu_version.data)
+
+        # get supported versions image name and tag
+        versions, version_number = get_supported_versions()
         image_names_and_tags = versions.get(settings.get("GLUU_VERSION"), {})
+
         settings.update(image_names_and_tags)
         return redirect(url_for(next_step))
 

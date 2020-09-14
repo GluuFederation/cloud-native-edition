@@ -25,9 +25,10 @@ class VersionForm(FlaskForm):
     supported_versions = []
 
     for k, v in versions.items():
-        supported_versions.append((version_number, k))
+        supported_versions.append((k, k))
 
     gluu_version = RadioField(
         "Please select the current version of Gluu or the version to be installed",
         choices=supported_versions,
+        default=version_number,
         validators=[DataRequired(message="Please select version")])
