@@ -178,6 +178,17 @@
         });
       {% endif %}
 
+      {% if template == "install_istio" %}
+        $('input[name="use_istio"').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#istioNamespace').collapse('show');
+           }else{
+            $('#istioNamespace').collapse('hide');
+           }
+        });
+      {% endif %}
+
+
       {% if template == "install_jackrabbit" %}
         $('input[name="install_jackrabbit"').on('change', function(){
           if($(this).val() == 'Y'){

@@ -70,7 +70,7 @@ volume_types = {
 }
 
 
-def password_requirement_check(form, field):
+def password_requirement_check(field):
     """
     Password Requirement validation,
     password required contain at least one digit,

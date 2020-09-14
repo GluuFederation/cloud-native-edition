@@ -12,6 +12,7 @@ from wtforms import RadioField, StringField
 from wtforms.validators import DataRequired, Optional
 from .helpers import RequiredIfFieldEqualTo
 
+
 class IstioForm(FlaskForm):
     """
     Istio Form
@@ -25,7 +26,7 @@ class IstioForm(FlaskForm):
 
     use_istio_ingress = RadioField("[Alpha] Would you like to use Istio Ingress with Gluu ?",
                                    choices=[("Y", "Yes"), ("N", "No")],
-                                   validators = [Optional()])
+                                   validators=[Optional()])
     use_istio = RadioField(
         "[Alpha] Would you like to use Istio with Gluu ?",
         choices=[("Y", "Yes"), ("N", "No")],
@@ -35,9 +36,9 @@ class IstioForm(FlaskForm):
                     "if the namespace does not exist. If it does please run "
                     "kubectl label namespace <namespace> istio-injection=enabled")
     istio_system_namespace = StringField("Istio namespace",
-                                          default="istio-system",
-                                          validators=[RequiredIfFieldEqualTo("use_istio", "Y")])
+                                         default="istio-system",
+                                         validators=[RequiredIfFieldEqualTo("use_istio", "Y")])
     lb_add = StringField("Istio loadbalancer address (eks) or "
                          "ip (gke, aks, digital ocean, local)",
-                         default = "",
+                         default="",
                          validators=[Optional()])

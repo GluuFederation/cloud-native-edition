@@ -102,4 +102,4 @@ class ConfigurationForm(FlaskForm):
             self.gluu_fqdn.data)
 
         if not regex_bool:
-            raise ValidationError("Input not FQDN structred. Please enter a FQDN with the format demoexample.gluu.org")
+            raise ValidationError("Input not FQDN structured. Please enter a FQDN with the format demoexample.gluu.org")

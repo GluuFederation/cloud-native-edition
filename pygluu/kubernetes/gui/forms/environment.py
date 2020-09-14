@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired, InputRequired, IPAddress, \
     Email
 from .helpers import RequiredIfFieldEqualTo
 
+
 class EnvironmentForm(FlaskForm):
     """
     Setting Form.

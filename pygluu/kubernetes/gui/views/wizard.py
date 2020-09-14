@@ -56,8 +56,6 @@ config_settings = {"hostname": "", "country_code": "", "state": "", "city": "",
                    "redis_pw": ""}
 
 
-
-
 @wizard_blueprint.before_request
 def initialize():
     """
@@ -452,7 +450,11 @@ def install_istio():
                 data["LB_ADD"] = form.lb_add.data
 
         data["USE_ISTIO"] = form.use_istio.data
-        data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
+        if data["USE_ISTIO"] == "N":
+            del form.istio_system_namespace
+            data["ISTIO_SYSTEM_NAMESPACE"] = ""
+        else:
+            data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
 
         settings.update(data)
         return redirect(url_for(next_step))
@@ -464,7 +466,6 @@ def install_istio():
 
     if request.method == "GET":
         form = populate_form_data(form)
-
 
     return render_template("wizard/index.html",
                            form=form,
@@ -485,7 +486,7 @@ def environment():
         next_step = request.form['next_step']
 
         if not settings.get("TEST_ENVIRONMENT") and \
-                settings.get("DEPLOYMENT_ARCH") in test_arch:
+                settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["TEST_ENVIRONMENT"] = form.test_environment.data
 
         if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
@@ -563,8 +564,8 @@ def persistence_backend():
             elif settings.get("DEPLOYMENT_ARCH") == "minikube":
                 settings.set("APP_VOLUME_TYPE", 2)
 
-        if settings.get('DEPLOYMENT_ARCH') in test_arch and \
-            settings.get("PERSISTENCE_BACKEND") == "couchbase":
+        if settings.get('DEPLOYMENT_ARCH') not in test_arch and \
+                settings.get("PERSISTENCE_BACKEND") == "couchbase":
             next_step = 'wizard.couchbase_multi_cluster'
 
         return redirect(url_for(next_step))
@@ -696,8 +697,8 @@ def couchbase():
                             Path("./couchbase/couchbase-ephemeral-buckets.yaml"))
             except FileNotFoundError:
                 current_app.logger.error("An override option has been chosen but "
-                                 "there is a missing couchbase file that "
-                                 "could not be found at the current path.")
+                                         "there is a missing couchbase file that "
+                                         "could not be found at the current path.")
 
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             data["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
@@ -710,7 +711,7 @@ def couchbase():
         data["COUCHBASE_USER"] = form.couchbase_user.data
         data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
 
-        if not custom_cb_ca_crt.exists() or\
+        if not custom_cb_ca_crt.exists() or \
                 not custom_cb_crt.exists() and not custom_cb_key.exists():
             data['COUCHBASE_SUBJECT_ALT_NAME'] = [
                 "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
@@ -1070,6 +1071,7 @@ def setting_summary():
                            hidden_settings=hidden_settings,
                            settings=settings.db)
 
+
 @wizard_blueprint.route("/quit", methods=["POST"])
 def quit_settings():
     """
@@ -1167,6 +1169,6 @@ def generate_main_config():
 
     with open(Path('./config/base/generate.json'), 'w+') as file:
         current_app.logger.warning("Main configuration settings has been "
-                           "outputted to file: ./config/base/generate.json. "
-                           "Please store this file safely or delete it.")
+                                   "outputted to file: ./config/base/generate.json. "
+                                   "Please store this file safely or delete it.")
         json.dump(config_settings, file)

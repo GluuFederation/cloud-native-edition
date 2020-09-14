@@ -56,6 +56,7 @@ def generate_settings():
     session['finish_endpoint'] = request.endpoint
     return redirect(url_for('wizard.license'))
 
+
 @socketio.on('install', namespace='/test')
 def installer_logs():
     data = {}

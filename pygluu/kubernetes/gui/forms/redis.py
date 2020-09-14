@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired, EqualTo, ValidationError
 from wtforms.widgets import PasswordInput
 from .helpers import RequiredIfFieldEqualTo
 
+
 class RedisForm(FlaskForm):
     """
     Redis Form
