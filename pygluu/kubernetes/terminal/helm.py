@@ -23,11 +23,11 @@ class PromptHelm:
         if not self.settings.get("GLUU_HELM_RELEASE_NAME"):
             self.settings.set("GLUU_HELM_RELEASE_NAME", click.prompt("Please enter Gluu helm name", default="gluu"))
 
-        if not self.settings.get("NGINX_INGRESS_RELEASE_NAME"):
+        if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))
 
-        if not self.settings.get("NGINX_INGRESS_NAMESPACE"):
+        if not self.settings.get("NGINX_INGRESS_NAMESPACE") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_NAMESPACE", click.prompt("Please enter nginx-ingress helm namespace",
                                                                       default="ingress-nginx"))
 

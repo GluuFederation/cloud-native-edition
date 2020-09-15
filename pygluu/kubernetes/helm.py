@@ -405,7 +405,7 @@ class Helm(object):
         if self.settings.get("AWS_LB_TYPE") == "alb":
             self.prepare_alb()
             self.deploy_alb()
-        if not self.settings.get("AWS_LB_TYPE") == "alb" and not self.settings.get("USE_ISTIO_INGRESS") == "Y":
+        if self.settings.get("AWS_LB_TYPE") != "alb" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
             self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
         try:
