@@ -406,6 +406,7 @@ class Helm(object):
             couchbase_app.uninstall()
             couchbase_app = Couchbase()
             couchbase_app.install()
+            self.settings = SettingsHandler()
         if self.settings.get("AWS_LB_TYPE") == "alb":
             self.prepare_alb()
             self.deploy_alb()
