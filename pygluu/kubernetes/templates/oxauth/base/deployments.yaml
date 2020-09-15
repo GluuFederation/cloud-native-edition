@@ -51,13 +51,13 @@ spec:
             name: update-lb-ip
         livenessProbe:
           httpGet:
-            path: /oxauth/restv1/health-check
+            path: /oxauth/.well-known/openid-configuration
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
           httpGet:
-            path: /oxauth/restv1/health-check
+            path: /oxauth/.well-known/openid-configuration
             port: 8080
           initialDelaySeconds: 25
           periodSeconds: 25

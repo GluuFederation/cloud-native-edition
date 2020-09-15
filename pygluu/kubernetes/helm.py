@@ -104,6 +104,10 @@ class Helm(object):
             if self.settings.get("ENABLE_OXPASSPORT") != "Y" and service_name == "oxpassport":
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings.get("INSTALL_GLUU_GATEWAY") != "Y" and service_name == "gg-kong-ui":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
         ingress_parser.dump_it()
 
     def deploy_alb(self):
