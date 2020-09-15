@@ -16,5 +16,3 @@ spec:
     name: http-oxtrust
   selector:
     app: {{ include "oxtrust.name" . }}
-  clusterIP: {{ .Values.service.clusterIp }}
-    

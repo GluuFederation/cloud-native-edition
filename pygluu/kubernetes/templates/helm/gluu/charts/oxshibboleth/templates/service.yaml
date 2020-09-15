@@ -18,4 +18,3 @@ spec:
   selector:
     app: {{ include "oxshibboleth.name" . }}
     release: {{ .Release.Name }}
-  clusterIP: None

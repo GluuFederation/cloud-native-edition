@@ -280,14 +280,14 @@ class Helm(object):
             values_file_parser["global"]["istio"]["ingress"] = True
             values_file_parser["global"]["istio"]["enabled"] = True
             values_file_parser["global"]["istio"]["namespace"] = self.settings.get("ISTIO_SYSTEM_NAMESPACE")
-        elif self.settings.get("USE_ISTIO") == "Y":
+        elif self.settings.get("AWS_LB_TYPE") == "alb":
+            values_file_parser["global"]["alb"]["ingress"] = True
+        else:
+            values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
+            values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
+        if self.settings.get("USE_ISTIO") == "Y":
             values_file_parser["global"]["istio"]["enabled"] = True
-            if self.settings.get("AWS_LB_TYPE") == "alb":
-                values_file_parser["global"]["alb"]["ingress"]["enabled"] = True
-            else:
-                values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
-                values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
-                values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
 
         values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
