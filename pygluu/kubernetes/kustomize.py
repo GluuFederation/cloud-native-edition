@@ -503,7 +503,7 @@ class Kustomize(object):
         else:
             configmap_parser = Parser(app_file, "ConfigMap")
         if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y" or \
-                self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube", "gke", "aks", "do") :
+                self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube", "gke", "aks", "do"):
             try:
                 del configmap_parser["data"]["LB_ADDR"]
             except KeyError:
@@ -1016,7 +1016,7 @@ class Kustomize(object):
 
             self.wait_for_nginx_add()
 
-        if self.settings.get("DEPLOYMENT_ARCH") in  ("gke", "aks",  "do", "local"):
+        if self.settings.get("DEPLOYMENT_ARCH") in ("gke", "aks", "do", "local"):
             self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("nginx/cloud-generic.yaml"))
             self.wait_for_nginx_add()
         if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):

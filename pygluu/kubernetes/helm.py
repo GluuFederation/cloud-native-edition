@@ -83,6 +83,46 @@ class Helm(object):
                                                             user_name=user_account,
                                                             cluster_role_name="cluster-admin")
 
+    def prepare_alb(self):
+        ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
+        ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
+        ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"] = \
+            self.settings.get("ARN_AWS_IAM")
+        if not self.settings.get("ARN_AWS_IAM"):
+            del ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"]
+
+        for path in ingress_parser["spec"]["rules"][0]["http"]["paths"]:
+            service_name = path["backend"]["serviceName"]
+            if self.settings.get("ENABLE_CASA") != "Y" and service_name == "casa":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings.get("ENABLE_OXSHIBBOLETH") != "Y" and service_name == "oxshibboleth":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings.get("ENABLE_OXPASSPORT") != "Y" and service_name == "oxpassport":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+        ingress_parser.dump_it()
+
+    def deploy_alb(self):
+        alb_ingress = Path("./alb/ingress.yaml")
+        self.kubernetes.create_objects_from_dict(alb_ingress, self.settings.get("GLUU_NAMESPACE"))
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+            prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
+            lb_hostname = prompt
+            while True:
+                try:
+                    if lb_hostname:
+                        break
+                    lb_hostname = self.kubernetes.read_namespaced_ingress(
+                        name="gluu", namespace="gluu").status.load_balancer.ingress[0].hostname
+                except TypeError:
+                    logger.info("Waiting for loadbalancer address..")
+                    time.sleep(10)
+            self.settings.set("LB_ADD", lb_hostname)
+
     def wait_for_nginx_add(self):
         hostname_ip = None
         while True:
@@ -242,6 +282,12 @@ class Helm(object):
             values_file_parser["global"]["istio"]["namespace"] = self.settings.get("ISTIO_SYSTEM_NAMESPACE")
         elif self.settings.get("USE_ISTIO") == "Y":
             values_file_parser["global"]["istio"]["enabled"] = True
+            if self.settings.get("AWS_LB_TYPE") == "alb":
+                values_file_parser["global"]["alb"]["ingress"]["enabled"] = True
+            else:
+                values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
+                values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
+                values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
 
         values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
@@ -314,9 +360,6 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
         values_file_parser["oxpassport"]["resources"] = {}
-        values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
-        values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
-        values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
         values_file_parser["casa"]["image"]["repository"] = self.settings.get("CASA_IMAGE_NAME")
         values_file_parser["casa"]["image"]["tag"] = self.settings.get("CASA_IMAGE_TAG")
         values_file_parser["config"]["image"]["repository"] = self.settings.get("CONFIG_IMAGE_NAME")
@@ -359,7 +402,11 @@ class Helm(object):
             couchbase_app.uninstall()
             couchbase_app = Couchbase()
             couchbase_app.install()
-        self.check_install_nginx_ingress(install_ingress)
+        if self.settings.get("AWS_LB_TYPE") == "alb":
+            self.prepare_alb()
+            self.deploy_alb()
+        if not self.settings.get("AWS_LB_TYPE") == "alb" and not self.settings.get("USE_ISTIO_INGRESS") == "Y":
+            self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
