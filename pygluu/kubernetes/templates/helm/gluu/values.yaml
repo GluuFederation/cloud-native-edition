@@ -6,6 +6,8 @@ global:
     ingress: false
     enabled: false
     namespace: istio-system
+  alb:
+    ingress: false
   cloud:
     testEnviroment: false
   # OpenDJ and Jackrabbit storage class

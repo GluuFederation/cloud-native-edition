@@ -8,6 +8,9 @@ metadata:
   labels:
 {{ include "radius.labels" . | indent 4}}
 spec:
+  {{- if .Values.global.alb.ingress }}
+  type: NodePort
+  {{- end }}
   ports:
     {{- range $key, $value := .Values.service.ports }}
     - port: {{ $value.port }}
