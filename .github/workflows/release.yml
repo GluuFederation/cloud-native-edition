@@ -47,6 +47,8 @@ jobs:
         cp -r . /home/runner/work/test/
         cd /home/runner/work/test/
         make zipapp
+        make guizipapp
+
 
     - name: Get version
       id: get_version
@@ -105,4 +107,15 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
         asset_path: /home/runner/work/test/pygluu-kubernetes.pyz
         asset_name: pygluu-kubernetes-linux.pyz
+        asset_content_type: application/pyz
+
+    - name: Upload GUI Release Asset
+      id: upload-gui-release-asset
+      uses: actions/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: /home/runner/work/test/pygluu-kubernetes-gui.pyz
+        asset_name: pygluu-kubernetes-linux-gui-alpha.pyz
         asset_content_type: application/pyz
