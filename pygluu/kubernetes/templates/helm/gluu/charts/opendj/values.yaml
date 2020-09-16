@@ -10,7 +10,7 @@ service:
   ldapServiceName: opendj
 image:
   repository: gluufederation/wrends
-  tag: 4.2.0_02
+  tag: 4.2.1_01
   pullPolicy: Always
   
 persistence:

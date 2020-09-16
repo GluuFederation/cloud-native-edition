@@ -23,7 +23,7 @@ spec:
       containers:
       - name: oxtrust
         imagePullPolicy: Always
-        image: gluufederation/oxtrust:4.2.0_01
+        image: gluufederation/oxtrust:4.2.1_01
         command:
           - /bin/sh
           - -c

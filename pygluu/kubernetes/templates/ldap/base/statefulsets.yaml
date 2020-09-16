@@ -31,7 +31,7 @@ spec:
       containers:
       - name: opendj
         imagePullPolicy: Always
-        image: gluufederation/wrends:4.2.0_02
+        image: gluufederation/wrends:4.2.1_01
         lifecycle:
           preStop:
             exec:
