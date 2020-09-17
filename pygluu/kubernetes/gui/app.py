@@ -51,6 +51,14 @@ def create_app():
     return app
 
 
+def parse_args(args=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-H", "--host", default="0.0.0.0")
+    parser.add_argument("-p", "--port", type=int, default=5000)
+    parser.add_argument("-d", "--debug", action="store_true", default=False, help="Enable/Disable debug (default: false)")
+    return parser.parse_args(args)
+
+
 def main():
     """
     App initialization with parser to handle argument from CLI
@@ -64,16 +72,9 @@ def main():
         web logs and socketio is disabled to avoid mixing with system logs
         this make easier to read system logs.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-H", "--host", action="store", default="0.0.0.0")
-    parser.add_argument("-p", "--port", action="store", default="5000")
-    parser.add_argument("-d", "--debug", type=bool, action="store",
-                        default=False,
-                        help="Enable/Disable debug (default: false)")
-
-    args = parser.parse_args()
+    args = parse_args()
     host = args.host
-    port = int(args.port)
+    port = args.port
     debug = args.debug
 
     copy_templates()
