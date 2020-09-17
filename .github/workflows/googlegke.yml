@@ -244,8 +244,7 @@ jobs:
           sudo kubectl get po -n gluu
           sudo kubectl delete -f ldap-backup.yaml || echo "Resources not found"
           sudo ./pygluu-kubernetes.pyz uninstall
-          sudo kubectl delete pv jackrabbit-pv --now || echo "Resources not found"
-          sudo kubectl patch pv jackrabbit-pv -p '{"metadata":{"finalizers":null}}' || echo "Resources not found"
+          sudo kubectl delete pvc jackrabbit-pvc-jackrabbit-0 -n gluu --now || echo "Resources not found"
           sleep 20
 
     - name: Test Pygluu ldap helm
@@ -291,8 +290,7 @@ jobs:
         sudo kubectl get po -n gluu
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase
         sudo ./pygluu-kubernetes.pyz uninstall
-        sudo kubectl delete pv jackrabbit-pv --now || echo "Resources not found"
-        sudo kubectl patch pv jackrabbit-pv -p '{"metadata":{"finalizers":null}}' || echo "Resources not found"
+        sudo kubectl delete pvc jackrabbit-pvc-jackrabbit-0 -n gluu --now || echo "Resources not found"
         sleep 20
         sudo kubectl get po -n cbns
         sudo kubectl get po -n gluu
