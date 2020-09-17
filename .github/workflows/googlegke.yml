@@ -1,8 +1,6 @@
 name: googlegke
 # This builds, packages and tests pygluu-kubernetes
-on:
-  schedule:
-    - cron:  '0 0 * * *'
+on: [workflow_dispatch]
 jobs:
   build:
 
@@ -247,8 +245,9 @@ jobs:
           sudo kubectl delete -f ldap-backup.yaml || echo "Resources not found"
 
           sudo ./pygluu-kubernetes.pyz uninstall
-          sudo kubectl delete pv jackrabbit-pv || echo "Resources not found"
-          sleep 20
+          sudo kubectl delete pv jackrabbit-pv --now || echo "Resources not found"
+          sudo kubectl patch pv jackrabbit-pv -p '{"metadata":{"finalizers":null}}' || echo "Resources not found"
+        sleep 20
 
     - name: Test Pygluu ldap helm
       id: test_kubernetes_ldap_helm
@@ -293,7 +292,8 @@ jobs:
         sudo kubectl get po -n gluu
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase
         sudo ./pygluu-kubernetes.pyz uninstall
-        sudo kubectl delete pv jackrabbit-pv || echo "Resources not found"
+        sudo kubectl delete pv jackrabbit-pv --now || echo "Resources not found"
+        sudo kubectl patch pv jackrabbit-pv -p '{"metadata":{"finalizers":null}}' || echo "Resources not found"
         sleep 20
         sudo kubectl get po -n cbns
         sudo kubectl get po -n gluu
