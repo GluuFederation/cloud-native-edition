@@ -32,6 +32,7 @@ class PersistenceBackendForm(FlaskForm):
                                                 ("user", "User"),
                                                 ("site", "Site"),
                                                 ("cache", "Cache"),
-                                                ("token", "Token")],
+                                                ("token", "Token"),
+                                                ("session", "Session")],
                                        default="default",
                                        render_kw={"disabled": "disabled"})

@@ -27,6 +27,7 @@ class PromptLdap:
             3: "site",
             4: "cache",
             5: "token",
+            6: "session",
         }
 
         if self.settings.get("HYBRID_LDAP_HELD_DATA") not in hybrid_ldap_map.values():
@@ -38,6 +39,7 @@ class PromptLdap:
             print("| [3] Site                                                         |")
             print("| [4] Cache                                                        |")
             print("| [5] Token                                                        |")
+            print("| [6] Session                                                      |")
             print("|------------------------------------------------------------------|")
 
             choice = click.prompt("Cache layer", default=1)
