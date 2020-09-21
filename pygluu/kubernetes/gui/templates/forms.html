@@ -179,6 +179,15 @@
   </div>
 {% endmacro %}
 
+{% macro radio_image(field) %}
+  <div class="arch-selector">
+    {% for choice in field %}
+      {{ choice }}
+      <label for="{{choice.id}}" class="arch-label {{ choice.data }}" data-toggle="tooltip" data-placement="bottom" title="{{ choice.label.text }}"></label>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
 {% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install") %}
   <div class="card shadow mb-4 bg-white rounded">
     <div class="card-body">
