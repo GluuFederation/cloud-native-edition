@@ -1,0 +1,7 @@
+{{ forms.text(form.gluu_helm_release_name) }}
+{{ forms.text(form.nginx_ingress_release_name) }}
+{{ forms.text(form.nginx_ingress_namespace) }}
+{% if install_gluu_gateway == 'Y' %}
+    {{ forms.text(form.kong_helm_release_name) }}
+    {{ forms.text(form.gluu_gateway_ui_helm_release_name) }}
+{% endif %}
