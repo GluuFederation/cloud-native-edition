@@ -5,8 +5,10 @@ from pygluu.kubernetes.settings import SettingsHandler
 from ..installer import InstallHandler
 from ..extensions import socketio
 from pygluu.kubernetes.helpers import get_logger
+
 logger = get_logger("gluu-gui        ")
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
+
 settings = SettingsHandler()
 installer = InstallHandler()
 
@@ -34,6 +36,7 @@ def install():
         return redirect(url_for("wizard.license"))
     else:
         return redirect(url_for("wizard.setting_summary"))
+
 
 @main_blueprint.route("/install-no-wait", methods=["GET", "POST"])
 def install_no_wait():
@@ -227,6 +230,7 @@ def upgrade():
     session["finish_endpoint"] = request.endpoint
     return redirect(url_for("wizard.license"))
 
+
 @main_blueprint.route("/restore", methods=["GET", "POST"])
 def restore():
     if request.method == "POST":
@@ -275,6 +279,7 @@ def installer_logs():
 @socketio.on("disconnect", namespace="/logs")
 def installation_finish():
     print("Installation completed")
+
 
 def validating_gg_settings():
     status = True

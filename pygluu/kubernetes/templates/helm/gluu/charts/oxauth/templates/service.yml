@@ -8,6 +8,9 @@ metadata:
   labels:
 {{ include "oxauth.labels" . | indent 4}}
 spec:
+  {{- if .Values.global.alb.ingress }}
+  type: NodePort
+  {{- end }}
   ports:
   - port: {{ .Values.ports.containerPort }}
     name: http-oxauth

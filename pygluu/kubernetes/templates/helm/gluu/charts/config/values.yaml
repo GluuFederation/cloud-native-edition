@@ -81,4 +81,4 @@ fullNameOverride: ""
 
 image:
   repository: gluufederation/config-init
-  tag: 4.2.0_01
+  tag: 4.2.1_01

@@ -8,6 +8,9 @@ metadata:
   labels:
 {{ include "oxshibboleth.labels" . | indent 4}}
 spec:
+  {{- if .Values.global.alb.ingress }}
+  type: NodePort
+  {{- end }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
@@ -15,4 +18,3 @@ spec:
   selector:
     app: {{ include "oxshibboleth.name" . }}
     release: {{ .Release.Name }}
-  clusterIP: None

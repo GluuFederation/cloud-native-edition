@@ -23,7 +23,7 @@ spec:
       containers:
       - name: oxtrust
         imagePullPolicy: Always
-        image: gluufederation/oxtrust:4.2.0_01
+        image: gluufederation/oxtrust:4.2.1_01
         command:
           - /bin/sh
           - -c
@@ -53,13 +53,13 @@ spec:
             name: update-lb-ip
         livenessProbe:
           httpGet:
-            path: /identity/finishlogout.htm
+            path: /identity/restv1/health-check
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
           httpGet:
-            path: /identity/finishlogout.htm
+            path: /identity/restv1/health-check
             port: 8080
           initialDelaySeconds: 25
           periodSeconds: 25

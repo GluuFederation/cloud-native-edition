@@ -1,11 +1,11 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
-appVersion: "4.2.0_01"
-home: https://www.gluu.org/de
+appVersion: "4.2.1_01"
+home: https://gluu.org/docs/gluu-server
 maintainers:
 - name: Gluu
 email: support@gluu.org
 description: A Helm chart for wrends/opendj server
 name: opendj
-version: 1.0.1
+version: 1.2.6

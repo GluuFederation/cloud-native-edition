@@ -8,10 +8,11 @@ metadata:
   labels:
 {{ include "oxtrust.labels" . | indent 4 }}
 spec:
+  {{- if .Values.global.alb.ingress }}
+  type: NodePort
+  {{- end }}
   ports:
   - port: {{ .Values.service.port }}
     name: http-oxtrust
   selector:
     app: {{ include "oxtrust.name" . }}
-  clusterIP: {{ .Values.service.clusterIp }}
-    

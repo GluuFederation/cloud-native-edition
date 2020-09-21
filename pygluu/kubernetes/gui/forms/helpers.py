@@ -76,7 +76,6 @@ def password_requirement_check():
     password required contain at least one digit,
     uppercase letter, lower case and symbol
     """
-
     message = "Password does not meet requirements. "\
               "The password must contain one digit, one uppercase "\
               "letter, one lower case letter and one symbol"

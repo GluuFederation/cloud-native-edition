@@ -3,7 +3,7 @@
 # Default values for cr-rotate.
 image:
   repository: gluufederation/cr-rotate
-  tag: 4.2.0_01
+  tag: 4.2.1_01
   pullPolicy: Always
 
 nameOverride: ""

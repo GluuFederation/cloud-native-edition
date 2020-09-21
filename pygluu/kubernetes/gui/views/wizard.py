@@ -1133,6 +1133,7 @@ def upgrade():
                            prev_step="wizard.replicas",
                            next_step="wizard.setting_summary")
 
+
 @wizard_blueprint.route("/setting-summary", methods=["POST", "GET"])
 def setting_summary():
     """

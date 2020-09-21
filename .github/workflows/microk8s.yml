@@ -1,6 +1,11 @@
 name: microk8s
 # This builds, packages and tests pygluu-kubernetes
-on: [push]
+on:
+  push:
+    paths:
+      - "pygluu/**"
+      - "tests/**"
+      - "setup.py"
 jobs:
   build:
 

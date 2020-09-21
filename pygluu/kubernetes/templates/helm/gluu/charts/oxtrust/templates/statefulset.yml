@@ -72,13 +72,13 @@ spec:
         {{- end }}
         livenessProbe:
           httpGet:
-            path: /identity/finishlogout.htm
+            path: /identity/restv1/health-check
             port: 8080
           initialDelaySeconds: 45
           periodSeconds: 45
         readinessProbe:
           httpGet:
-            path: /identity/finishlogout.htm
+            path: /identity/restv1/health-check
             port: 8080
           initialDelaySeconds: 35
           periodSeconds: 35
