@@ -23,8 +23,8 @@ class PersistenceBackendForm(FlaskForm):
     persistence_backend = RadioField(
         "Persistence layer",
         choices=[("ldap", "WrenDS"),
-                 ("couchbase", "Couchbase [Testing Phase]"),
-                 ("hybrid", "Hybrid(WrenDS + Couchbase)[Testing Phase]")],
+                 ("couchbase", "Couchbase"),
+                 ("hybrid", "Hybrid(WrenDS + Couchbase)")],
         default="ldap",
         validators=[DataRequired()])
     hybrid_ldap_held_data = RadioField("Hybrid [WrendDS + Couchbase]",
