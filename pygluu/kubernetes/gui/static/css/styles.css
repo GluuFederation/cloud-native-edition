@@ -22,9 +22,17 @@
     --color-white-h: 0;
     --color-white-s: 0%;
     --color-white-l: 100%;
+    --microk8s-logo: url('../img/microk8s.svg');
+    --minikube-logo: url('../img/minikube.svg');
+    --eks-logo: url('../img/amazon-eks.svg');
+    --aks-logo: url('../img/azure-aks.svg');
+    --gke-logo: url('../img/google-gke.svg');
+    --digitalocean-logo: url('../img/digital-ocean.svg');
+    --kubernetes-logo: url('../img/kubernetes.svg');
 }
 
 body {
+      background-image:
       background: -moz-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
       background: -webkit-linear-gradient(90deg, rgba(3,169,109,1) 45%, rgba(9,61,86,1) 55%);
       background: linear-gradient(90deg, rgba(3,169,109,1) 0%, rgba(9,61,86,1) 0%);
@@ -408,4 +416,67 @@ img {
     -webkit-transform: translateX(100%);
     -ms-transform: translateX(100%);
     transform: translateX(100%);
+}
+
+/* radio button masked with an image background */
+.arch-selector input{
+    margin:0;padding:0;
+    -webkit-appearance:none;
+       -moz-appearance:none;
+            appearance:none;
+}
+
+.microk8s{
+    background-image: var(--microk8s-logo);
+    background-position: center;
+}
+.minikube{
+    background-image: var(--minikube-logo);
+    background-position: center;
+}
+.eks{
+    background-image: var(--eks-logo);
+    background-position: center;
+}
+.gke{
+    background-image: var(--gke-logo);
+    background-position: center;
+}
+.aks{
+    background-image: var(--aks-logo);
+    background-position: center;
+}
+.do{
+    background-image: var(--digitalocean-logo);
+    background-position: center;
+}
+.local{
+    background-image: var(--kubernetes-logo);
+    background-position: center;
+}
+.arch-selector input:active +.arch-label{opacity: .9;}
+
+.arch-selector input:checked +.arch-label{
+    -webkit-filter: none;
+    -moz-filter: none;
+    filter: none;
+}
+
+.arch-label{
+    cursor:pointer;
+    background-size:contain;
+    background-repeat:no-repeat;
+    display:inline-block;
+    width:140px;height:85px;
+    -webkit-transition: all 100ms ease-in;
+       -moz-transition: all 100ms ease-in;
+            transition: all 100ms ease-in;
+    -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
+       -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
+            filter: brightness(1.8) grayscale(1) opacity(.7);
+}
+.arch-label:hover{
+    -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+       -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            filter: brightness(1.2) grayscale(.5) opacity(.9);
 }

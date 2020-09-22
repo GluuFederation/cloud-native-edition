@@ -1,7 +1,7 @@
 <div class="alert alert-warning" role="alert">
   <p>Jackrabbit must be installed. If the following prompt is answered with No it is assumed the jackrabbit content repository is either installed locally or remotely</p>
 </div>
-{{ forms.radio(form.install_jackrabbit) }}
+{{ forms.radio_toggle(form.install_jackrabbit) }}
 <div id="jackrabbitNoInstall" class="collapse {{ 'show' if form.install_jackrabbit.data == 'N' else ''}}">
     {{ forms.text(form.jackrabbit_url) }}
 </div>
@@ -11,7 +11,7 @@
 {{ forms.text(form.jackrabbit_admin_id) }}
 {{ forms.password(form.jackrabbit_admin_password) }}
 {{ forms.password(form.jackrabbit_admin_password_confirmation) }}
-{{ forms.radio(form.jackrabbit_cluster) }}
+{{ forms.radio_toggle(form.jackrabbit_cluster) }}
 <div id="jackrabbitCluster" class="collapse {{ 'show' if form.jackrabbit_cluster.data == 'Y' else ''}}">
     {{ forms.text(form.postgres.postgres_namespace) }}
     {{ forms.text(form.postgres.postgres_replicas) }}
