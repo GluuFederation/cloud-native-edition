@@ -61,7 +61,7 @@ class ConfigurationForm(FlaskForm):
         "oxTrust Password",
         widget=PasswordInput(hide_value=False),
         validators=[InputRequired(),
-                    password_requirement_check],
+                    password_requirement_check()],
         description="Password is randomly generated with 6 characters contain "
                     "number, uppercase letter, lower case letter and symbol")
     admin_pw_confirm = StringField(
@@ -86,7 +86,7 @@ class ConfigurationForm(FlaskForm):
 
     # override ldap_pw validators
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        ldap_pw.validators = [InputRequired(), password_requirement_check]
+        ldap_pw.validators = [InputRequired(), password_requirement_check()]
     else:
         ldap_pw.validators = [Optional()]
         ldap_pw.render_kw = {"disabled": "disabled"}

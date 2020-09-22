@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="card border-0">
+  <div class="card border-0 shadow p-1 mb-5 bg-white rounded">
     <div class="card-body">
       <h3 class="text-center">Gluu Cloud Native Edition</h3>
       <div class="d-flex align-items-center">
@@ -11,6 +11,9 @@
       </div>
       <p class="text-muted text-monospace m-3"><span id="output"></span></p>
       <ul id="install_logs" class="log-box"></ul>
+    </div>
+    <div id="footer" class="card-footer collapse text-center">
+      <a href="{{ url_for('main.index') }}" class="btn btn-primary">Finish</a>
     </div>
   </div>
 {% endblock %}
@@ -23,8 +26,9 @@
     const progress = document.getElementById('progress');
     const installBtn = document.getElementById('installTrigger');
     const installLogs = document.getElementById('install_logs');
+    const footer = document.getElementById('footer');
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/logs');
 
     window.addEventListener('load', (event) => {
       socket.emit('install')
@@ -33,11 +37,23 @@
     socket.on('response', response => {
       if(response.status == 'COMPLETED'){
         install_status.innerHTML = 'Installation Completed';
-        progress.classList.add('collapse')
-        socket.emit('disconnect')
+        progress.classList.add('collapse');
+        footer.classList.add('show');
+        socket.emit('disconnect');
+      }
+
+      if(response.status == 'ERROR'){
+        install_status.innerHTML = 'Installation Error';
+        progress.classList.add('collapse');
+        footer.classList.add('show');
+        socket.emit('disconnect');
       }
       install_status.innerHTML = response.title;
-      output.innerHTML = response.log;
+
+      if(response.log.length > 0){
+        output.innerHTML = response.log;
+      }
+
       var line = document.createElement('li');
       installLogs.prepend(response.log, line);
     });

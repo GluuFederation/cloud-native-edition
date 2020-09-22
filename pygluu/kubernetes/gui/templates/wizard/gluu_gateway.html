@@ -1,4 +1,4 @@
-{{ forms.radio(form.install_gluu_gateway) }}
+{{ forms.radio_toggle(form.install_gluu_gateway) }}
 
 <div id="oxd-alert" class="alert alert-info collapse {{ 'show' if form.install_gluu_gateway.data == 'Y' else '' }}" role="alert">
   Info : Oxd server will be enabled.

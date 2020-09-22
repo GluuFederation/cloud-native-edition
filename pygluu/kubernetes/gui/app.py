@@ -55,7 +55,8 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", default="0.0.0.0")
     parser.add_argument("-p", "--port", type=int, default=5000)
-    parser.add_argument("-d", "--debug", action="store_true", default=False, help="Enable/Disable debug (default: false)")
+    parser.add_argument("-d", "--debug", action="store_true", default=False,
+                        help="Enable/Disable debug (default: false)")
     return parser.parse_args(args)
 
 

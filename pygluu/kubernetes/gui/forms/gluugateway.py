@@ -58,7 +58,7 @@ class GluuGatewayForm(FlaskForm):
         "Kong Postgress Password",
         widget=PasswordInput(hide_value=False),
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                    password_requirement_check],
+                    password_requirement_check()],
         description="Password is randomly generated with 6 characters contain "
                     "number, uppercase letter, lower case letter and symbol")
     kong_pg_password_confirm = StringField(
@@ -79,7 +79,7 @@ class GluuGatewayForm(FlaskForm):
         "Gluu Gateway UI postgres password",
         widget=PasswordInput(hide_value=False),
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y"),
-                    password_requirement_check],
+                    password_requirement_check()],
         description="Password is randomly generated with 6 characters contain "
                     "number, uppercase letter, lower case letter and symbol")
     gluu_gateway_ui_pg_password_confirm = StringField(

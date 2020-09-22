@@ -17,6 +17,7 @@ from wtforms.widgets import PasswordInput
 from .helpers import password_requirement_check, RequiredIfFieldEqualTo
 from .postgres import PostgresForm
 
+
 class JackrabbitForm(FlaskForm):
     """
     Jackrabbit Form
@@ -54,7 +55,7 @@ class JackrabbitForm(FlaskForm):
         "Jackrabbit Admin Password",
         widget=PasswordInput(hide_value=False),
         validators=[InputRequired(),
-                    password_requirement_check])
+                    password_requirement_check()])
     jackrabbit_admin_password_confirmation = StringField(
         "Jackrabbit Admin Password Confirmation",
         widget=PasswordInput(hide_value=False),
@@ -71,7 +72,7 @@ class JackrabbitForm(FlaskForm):
     jackrabbit_pg_password = StringField("Jackrabbit PG Password",
                                          widget=PasswordInput(hide_value=False),
                                          validators=[RequiredIfFieldEqualTo("jackrabbit_cluster", "Y"),
-                                                     password_requirement_check])
+                                                     password_requirement_check()])
     jackrabbit_pg_password_confirmation = StringField(
         "Jackrabbit PG Password Confirmation",
         widget=PasswordInput(hide_value=False),

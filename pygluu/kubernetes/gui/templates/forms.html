@@ -177,5 +177,33 @@
       {% endfor %}
     </div>
   </div>
+{% endmacro %}
 
+{% macro radio_image(field) %}
+  <div class="arch-selector">
+    {% for choice in field %}
+      {{ choice }}
+      <label for="{{choice.id}}" class="arch-label {{ choice.data }}" data-toggle="tooltip" data-placement="bottom" title="{{ choice.label.text }}"></label>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install") %}
+  <div class="card shadow mb-4 bg-white rounded">
+    <div class="card-body">
+      {% if notes %}
+        <div class="alert alert-danger" role="alert">{{ notes }}</div>
+      {% endif %}
+      <h5 class="card-title text-primary">{{ title }}</h5>
+        <p class="card-text">{{ description }}</p>
+    </div>
+    <div class="card-footer">
+      <div class="float-right">
+        <a id="actionBtn" href="{{ install_url }}" class="btn btn-primary">{{ button_text }}</a>
+        {% if uninstall_target %}
+          <button type="button" class="mx-2 btn btn-danger float-right" data-toggle="modal" data-target="#uninstallModal" data-uninstall="{{ uninstall_target }}">Uninstall</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endmacro %}
