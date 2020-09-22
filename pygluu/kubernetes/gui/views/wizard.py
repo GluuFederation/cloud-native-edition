@@ -107,6 +107,7 @@ def inject_wizard_steps():
 
 
 @wizard_blueprint.route("/license", methods=["GET", "POST"])
+# TODO: This name should be changed to something other than license as it shadows a built in name. Perhaps agreement.
 def license():
     """Input for Accepting license
     """
@@ -327,8 +328,7 @@ def gluu_gateway():
     form = GluuGatewayForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        data = {}
-        data["INSTALL_GLUU_GATEWAY"] = form.install_gluu_gateway.data
+        data = {"INSTALL_GLUU_GATEWAY": form.install_gluu_gateway.data}
 
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
             data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
@@ -403,12 +403,10 @@ def install_jackrabbit():
     form = JackrabbitForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        data = {}
-        data["INSTALL_JACKRABBIT"] = form.install_jackrabbit.data
-        data["JACKRABBIT_URL"] = form.jackrabbit_url.data
-        data["JACKRABBIT_ADMIN_ID"] = form.jackrabbit_admin_id.data
-        data["JACKRABBIT_ADMIN_PASSWORD"] = form.jackrabbit_admin_password.data
-        data["JACKRABBIT_CLUSTER"] = form.jackrabbit_cluster.data
+        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data, "JACKRABBIT_URL": form.jackrabbit_url.data,
+                "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
+                "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
+                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
 
         if data["INSTALL_JACKRABBIT"] == "Y":
             data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
@@ -564,9 +562,8 @@ def persistence_backend():
     form = PersistenceBackendForm()
     if form.validate_on_submit():
         next_step = request.form['next_step']
-        data = {}
+        data = {"PERSISTENCE_BACKEND": form.persistence_backend.data}
 
-        data["PERSISTENCE_BACKEND"] = form.persistence_backend.data
         if data["PERSISTENCE_BACKEND"] == "hybrid":
             data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
@@ -608,8 +605,7 @@ def volumes():
     """
     form = VolumeForm()
     if form.validate_on_submit():
-        data = {}
-        data["APP_VOLUME_TYPE"] = settings.get("APP_VOLUME_TYPE");
+        data = {"APP_VOLUME_TYPE": settings.get("APP_VOLUME_TYPE")}
         if not data["APP_VOLUME_TYPE"]:
             data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
@@ -687,8 +683,7 @@ def couchbase():
 
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        data = {}
-        data["INSTALL_COUCHBASE"] = form.install_couchbase.data
+        data = {"INSTALL_COUCHBASE": form.install_couchbase.data}
         if data["INSTALL_COUCHBASE"] == "N":
             filename = secure_filename(form.couchbase_crt.data.filename)
             form.couchbase_crt.data.save('./' + filename)
@@ -827,8 +822,7 @@ def cache_type():
     """
     form = CacheTypeForm()
     if form.validate_on_submit():
-        data = {}
-        data["GLUU_CACHE_TYPE"] = form.gluu_cache_type.data
+        data = {"GLUU_CACHE_TYPE": form.gluu_cache_type.data}
 
         if data["GLUU_CACHE_TYPE"] == "REDIS":
             data["REDIS_TYPE"] = form.redis.redis_type.data
@@ -915,14 +909,9 @@ def backup():
 def configuration():
     form = ConfigurationForm()
     if form.validate_on_submit():
-        data = {}
-        data["GLUU_FQDN"] = form.gluu_fqdn.data
-        data["COUNTRY_CODE"] = form.country_code.data
-        data["STATE"] = form.state.data
-        data["CITY"] = form.city.data
-        data["EMAIL"] = form.email.data
-        data["ORG_NAME"] = form.org_name.data
-        data["ADMIN_PW"] = form.admin_pw.data
+        data = {"GLUU_FQDN": form.gluu_fqdn.data, "COUNTRY_CODE": form.country_code.data, "STATE": form.state.data,
+                "CITY": form.city.data, "EMAIL": form.email.data, "ORG_NAME": form.org_name.data,
+                "ADMIN_PW": form.admin_pw.data}
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             data["LDAP_PW"] = form.ldap_pw.data
@@ -1084,10 +1073,9 @@ def replicas():
 def helm_config():
     form = HelmForm()
     if form.validate_on_submit():
-        data = {}
-        data["GLUU_HELM_RELEASE_NAME"] = form.gluu_helm_release_name.data
-        data["NGINX_INGRESS_RELEASE_NAME"] = form.nginx_ingress_release_name.data
-        data["NGINX_INGRESS_NAMESPACE"] = form.nginx_ingress_namespace.data
+        data = {"GLUU_HELM_RELEASE_NAME": form.gluu_helm_release_name.data,
+                "NGINX_INGRESS_RELEASE_NAME": form.nginx_ingress_release_name.data,
+                "NGINX_INGRESS_NAMESPACE": form.nginx_ingress_namespace.data}
 
         if settings.get("INSTALL_GLUU_GATEWAY") == "Y":
             data["KONG_HELM_RELEASE_NAME"] = form.kong_helm_release_name.data
@@ -1098,7 +1086,7 @@ def helm_config():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        install_gluu_gateway = settings.get("INSTALL_GLUU_GATEWAY")
+    install_gluu_gateway = settings.get("INSTALL_GLUU_GATEWAY")
     return render_template("wizard/index.html",
                            form=form,
                            current_step=20,
@@ -1112,8 +1100,7 @@ def helm_config():
 def upgrade():
     form = UpgradeForm()
     if form.validate_on_submit():
-        data = {}
-        data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+        data = {"ENABLED_SERVICES_LIST": settings.get("ENABLED_SERVICES_LIST")}
         data["ENABLED_SERVICES_LIST"].append("upgrade")
         data["GLUU_UPGRADE_TARGET_VERSION"] = form.upgrade_target_version.data
         settings.update(data)

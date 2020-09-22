@@ -77,7 +77,6 @@ def install_ldap_backup():
         return redirect(url_for("wizard.setting_summary"))
 
 
-
 @main_blueprint.route("/install-kubedb", methods=["GET", "POST"])
 def install_kubedb():
     if request.method == "POST":

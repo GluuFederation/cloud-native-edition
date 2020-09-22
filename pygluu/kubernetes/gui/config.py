@@ -1,5 +1,5 @@
-import os
 import secrets
+
 
 class Config(object):
     DEBUG = False

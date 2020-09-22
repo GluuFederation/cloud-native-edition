@@ -17,6 +17,7 @@ from wtforms.widgets import PasswordInput
 from .helpers import password_requirement_check, RequiredIfFieldEqualTo
 from .postgres import PostgresForm
 
+
 class JackrabbitForm(FlaskForm):
     """
     Jackrabbit Form

@@ -4,7 +4,6 @@ import time
 import traceback
 from pathlib import Path
 from queue import Queue
-from flask_socketio import emit
 from pygtail import Pygtail
 
 from pygluu.kubernetes.couchbase import Couchbase
@@ -42,7 +41,6 @@ class InstallHandler(object):
         self.thread = threading.Thread(target=self.do_uninstall, args=(self.target,))
         self.thread.daemon = True
         self.thread.start()
-
 
     def do_installation(self, target):
         complete_message = 'Installation Completed'
@@ -118,18 +116,19 @@ class InstallHandler(object):
             elif target == "upgrade":
                 self.queue.put(('Upgrading Gluu', 'ONPROGRESS'))
                 logger.info("Starting upgrade...")
-                kustomize = Kustomize(timeout)
+                kustomize = Kustomize(self.timeout)
                 kustomize.upgrade()
                 complete_message = "Upgrading gluu has been completed"
 
             self.queue.put((complete_message, 'COMPLETED'))
             os.remove('./setup.log.offset')
-        except:
+        except Exception as exc:
             if self.queue:
                 self.queue.put(("ERROR", str(traceback.format_exc()), "ERROR"))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
+                logger.debug(f"Uncaught error={exc}")
 
     def do_uninstall(self, target):
         try:
@@ -191,9 +190,10 @@ class InstallHandler(object):
             log_offset = Path("./setup.log.offset")
             if log_offset.exists():
                 os.unlink("./setup.log.offset")
-        except:
+        except Exception as exc:
             if self.queue:
                 self.queue.put(("ERROR", "", str(traceback.format_exc())))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
+                logger.debug(f"Uncaught error={exc}")
