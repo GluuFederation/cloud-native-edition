@@ -22,7 +22,7 @@ from pygluu.kubernetes.helpers import get_supported_versions, \
     exec_cmd, generate_password
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import SettingsHandler
-
+from pygluu.kubernetes.helpers import get_logger
 from ..forms.architecture import DeploymentArchForm
 from ..forms.backup import CouchbaseBackupForm, LdapBackupForm
 from ..forms.cache import CacheTypeForm
@@ -45,7 +45,7 @@ from ..forms.helm import HelmForm
 from ..forms.upgrade import UpgradeForm
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
-
+logger = get_logger("gluu-gui")
 kubernetes = Kubernetes()
 settings = SettingsHandler()
 
@@ -1208,9 +1208,9 @@ def determine_ip():
                 'ip_address': ip,
                 "message": "Is this the correct external IP address?"}
     except Exception as e:
-        current_app.logger.error(e)
+        logger.error(e)
         # prompt for user-inputted IP address
-        current_app.logger.warning("Cannot determine IP address")
+        logger.warning("Cannot determine IP address")
         data = {"status": False, 'message': "Cannot determine IP address"}
 
     return make_response(jsonify(data), 200)
