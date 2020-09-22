@@ -83,7 +83,7 @@ class CouchbaseForm(FlaskForm):
     couchbase_password = StringField(
         "Couchbase password",
         widget=PasswordInput(hide_value=False),
-        validators=[InputRequired(), password_requirement_check],
+        validators=[InputRequired(), password_requirement_check()],
         description="Password is randomly generated with 6 characters contain "
                     "number, uppercase letter, lower case letter and symbol")
     couchbase_password_confirmation = StringField(
