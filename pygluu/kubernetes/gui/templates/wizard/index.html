@@ -3,7 +3,8 @@
   <div class="card border-0 shadow p-1 mb-5 bg-white rounded">
     <div class="card-body">
       <h3 class="text-center">Gluu Cloud Native Edition</h3>
-        <ul class="wizard wizard-steps-19">
+        {% if is_wizard %}
+        <ul class="wizard wizard-steps-{{ total_steps }}">
           {% for wizard_step in wizard_steps %}
             {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
             <li>
@@ -19,8 +20,8 @@
               </div>
             </li>
           {% endfor %}
-
         </ul>
+        {% endif %}
         <br>
         <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
           {{ form.csrf_token }}

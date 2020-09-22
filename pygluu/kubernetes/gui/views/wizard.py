@@ -41,6 +41,8 @@ from ..forms.persistencebackend import PersistenceBackendForm
 from ..forms.replicas import ReplicasForm
 from ..forms.version import VersionForm
 from ..forms.volumes import VolumeForm
+from ..forms.helm import HelmForm
+from ..forms.upgrade import UpgradeForm
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 
@@ -94,7 +96,14 @@ def inject_wizard_steps():
         {"title": "Images", "url": url_for("wizard.images")},
         {"title": "Replicas", "url": url_for("wizard.replicas")}
     ]
-    return dict(wizard_steps=wizard_steps)
+
+    if session["finish_endpoint"] == "main.helm_install":
+        wizard_steps.append({"title": "Helm Configuration", "url": url_for("wizard.helm_config")})
+
+    if session["finish_endpoint"] == "main.upgrade":
+        wizard_steps.append({"title": "Upgrade Version", "url": url_for("wizard.upgrade")})
+
+    return dict(wizard_steps=wizard_steps, total_steps=len(wizard_steps), is_wizard=True)
 
 
 @wizard_blueprint.route("/license", methods=["GET", "POST"])
@@ -370,12 +379,20 @@ def gluu_gateway():
         else:
             form.gluu_gateway_ui_pg_password_confirm.data = settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
+    next_step = "wizard.install_jackrabbit"
+    is_wizard = True
+    if session["finish_endpoint"] == "main.install_gg_dbmode":
+        next_step = "wizard.setting_summary"
+        is_wizard = False
+        form.install_gluu_gateway.data = "Y"
+
     return render_template("wizard/index.html",
                            form=form,
                            current_step=6,
                            template="gluu_gateway",
                            prev_step="wizard.optional_services",
-                           next_step="wizard.install_jackrabbit")
+                           next_step=next_step,
+                           is_wizard=is_wizard)
 
 
 @wizard_blueprint.route("/install-jackrabbit", methods=["GET", "POST"])
@@ -1049,11 +1066,71 @@ def replicas():
     if request.method == "GET":
         form = populate_form_data(form)
 
+    next_step = "wizard.setting_summary"
+    if session["finish_endpoint"] == "main.helm_install":
+        next_step = "wizard.helm_config"
+    elif session["finish_endpoint"] == "main.upgrade":
+        next_step = "wizard.upgrade"
+
     return render_template("wizard/index.html",
                            form=form,
                            current_step=19,
                            template="replicas",
                            prev_step="wizard.images",
+                           next_step=next_step)
+
+
+@wizard_blueprint.route("/helm-configuration", methods=["POST", "GET"])
+def helm_config():
+    form = HelmForm()
+    if form.validate_on_submit():
+        data = {}
+        data["GLUU_HELM_RELEASE_NAME"] = form.gluu_helm_release_name.data
+        data["NGINX_INGRESS_RELEASE_NAME"] = form.nginx_ingress_release_name.data
+        data["NGINX_INGRESS_NAMESPACE"] = form.nginx_ingress_namespace.data
+
+        if settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            data["KONG_HELM_RELEASE_NAME"] = form.kong_helm_release_name.data
+            data["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = form.gluu_gateway_ui_helm_release_name.data
+
+        settings.update(data)
+        return redirect(url_for(request.form["next_step"]))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        install_gluu_gateway = settings.get("INSTALL_GLUU_GATEWAY")
+    return render_template("wizard/index.html",
+                           form=form,
+                           current_step=20,
+                           template="helm",
+                           install_gluu_gateway=install_gluu_gateway,
+                           prev_step="wizard.replicas",
+                           next_step="wizard.setting_summary")
+
+
+@wizard_blueprint.route("/gluu-upgrade", methods=["POST", "GET"])
+def upgrade():
+    form = UpgradeForm()
+    if form.validate_on_submit():
+        data = {}
+        data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
+        data["ENABLED_SERVICES_LIST"].append("upgrade")
+        data["GLUU_UPGRADE_TARGET_VERSION"] = form.upgrade_target_version.data
+        settings.update(data)
+        # get supported versions image name and tag
+        versions, version_number = get_supported_versions()
+        image_names_and_tags = versions.get(settings.get("GLUU_UPGRADE_TARGET_VERSION"), {})
+        settings.update(image_names_and_tags)
+        return redirect(url_for(request.form["next_step"]))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("wizard/index.html",
+                           form=form,
+                           current_step=20,
+                           template="upgrade",
+                           prev_step="wizard.replicas",
                            next_step="wizard.setting_summary")
 
 
