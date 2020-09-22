@@ -22,11 +22,11 @@ class PostgresForm(FlaskForm):
     postgres_url (string|required|default: postgres.postgres.svc.cluster.local  )
     """
     postgres_namespace = StringField(
-        "Please enter number of replicas for postgres",
+        "Please enter a namespace for postgres",
         default="postgres",
         validators=[InputRequired()])
     postgres_replicas = IntegerField(
-        "Please enter a namespace for postgres",
+        "Please enter number of replicas for postgres",
         default=3,
         validators=[InputRequired()])
     postgres_url = StringField(
