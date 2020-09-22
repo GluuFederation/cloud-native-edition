@@ -287,3 +287,12 @@ class SettingsHandler(object):
         except Exception as exc:
             logger.debug(f"Uncaught error={exc}")
             return False
+
+    def is_exist(self):
+        filename = Path("./settings.json")
+        try:
+            filename.resolve(strict=True)
+        except FileNotFoundError:
+            return False
+        else:
+            return True
