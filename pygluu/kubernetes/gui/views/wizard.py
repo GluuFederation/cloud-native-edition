@@ -849,7 +849,7 @@ def cache_type():
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             return redirect(url_for('wizard.configuration'))
 
-        return redirect(request.form["next_step"])
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         form = populate_form_data(form)
