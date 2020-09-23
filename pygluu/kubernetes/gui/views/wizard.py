@@ -456,6 +456,12 @@ def install_istio():
     use_istio_ingress field will be required except for microk8s and minikube
     """
     form = IstioForm()
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        del form.use_istio_ingress
+        form.lb_add.validators = [Optional()]
+    else:
+        form.use_istio_ingress.validators = [DataRequired()]
+
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         data = {}
@@ -475,11 +481,6 @@ def install_istio():
 
         settings.update(data)
         return redirect(url_for(next_step))
-
-    if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        del form.use_istio_ingress
-    else:
-        form.use_istio_ingress.validators = [DataRequired()]
 
     if request.method == "GET":
         form = populate_form_data(form)
