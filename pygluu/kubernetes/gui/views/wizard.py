@@ -20,7 +20,6 @@ from werkzeug.utils import secure_filename
 
 from pygluu.kubernetes.helpers import get_supported_versions, \
     exec_cmd, generate_password
-from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import SettingsHandler
 from pygluu.kubernetes.helpers import get_logger
 from ..forms.architecture import DeploymentArchForm
@@ -43,10 +42,10 @@ from ..forms.version import VersionForm
 from ..forms.volumes import VolumeForm
 from ..forms.helm import HelmForm
 from ..forms.upgrade import UpgradeForm
+from ..helpers import determine_ip_nodes
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 logger = get_logger("gluu-gui")
-kubernetes = Kubernetes()
 settings = SettingsHandler()
 
 test_arch = ("microk8s", "minikube")
@@ -517,7 +516,14 @@ def environment():
                 settings.get("DEPLOYMENT_ARCH") in local_arch:
             data["NODE_SSH_KEY"] = form.node_ssh_key.data
 
-        data["HOST_EXT_IP"] = form.host_ext_ip.data
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            data["HOST_EXT_IP"] = form.host_ext_ip.data
+        else:
+            data["HOST_EXT_IP"] = environment["ip"]
+
+        data["NODES_NAMES"] = environment["NODES_NAMES"]
+        data["NODES_ZONES"] = environment["NODES_ZONES"]
+        data["NODES_IPS"] = environment["NODES_IPS"]
 
         # prompt AWS
         if settings.get("DEPLOYMENT_ARCH") == "eks":
@@ -545,6 +551,8 @@ def environment():
 
     if request.method == "GET":
         form = populate_form_data(form)
+        if form.host_ext_ip:
+            form.host_ext_ip.data = environment['ip']
 
     return render_template("wizard/index.html",
                            settings=settings.db,
@@ -1163,60 +1171,6 @@ def quit_settings():
         settings.reset_data()
 
     return redirect(url_for('main.index'))
-
-
-@wizard_blueprint.route("/determine_ip", methods=["GET"])
-def determine_ip():
-    """
-    Attempts to detect and return ip automatically.
-    Also set node names, zones, and addresses in a cloud deployment.
-    :return:
-    """
-    ip = ""
-    try:
-        node_ip_list = []
-        node_zone_list = []
-        node_name_list = []
-        node_list = kubernetes.list_nodes().items
-
-        for node in node_list:
-            node_name = node.metadata.name
-            node_addresses = kubernetes.read_node(name=node_name).status.addresses
-            if settings.get("DEPLOYMENT_ARCH") in test_arch:
-                for add in node_addresses:
-                    if add.type == "InternalIP":
-                        ip = add.address
-                        node_ip_list.append(ip)
-            else:
-                for add in node_addresses:
-                    if add.type == "ExternalIP":
-                        ip = add.address
-                        node_ip_list.append(ip)
-
-                # Digital Ocean does not provide zone support yet
-                if settings.get("DEPLOYMENT_ARCH") != "do" or \
-                        settings.get("DEPLOYMENT_ARCH") != "local":
-                    node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
-                    node_zone_list.append(node_zone)
-                node_name_list.append(node_name)
-
-        settings.set("NODES_NAMES", node_name_list)
-        settings.set("NODES_ZONES", node_zone_list)
-        settings.set("NODES_IPS", node_ip_list)
-
-        if settings.get("DEPLOYMENT_ARCH") in ["eks", "gke", "do", "local", "aks"]:
-            #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
-            ip = "22.22.22.22"
-        data = {"status": True,
-                'ip_address': ip,
-                "message": "Is this the correct external IP address?"}
-    except Exception as e:
-        logger.error(e)
-        # prompt for user-inputted IP address
-        logger.warning("Cannot determine IP address")
-        data = {"status": False, 'message': "Cannot determine IP address"}
-
-    return make_response(jsonify(data), 200)
 
 
 def populate_form_data(form):

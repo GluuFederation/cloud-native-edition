@@ -211,22 +211,6 @@
       {% endif %}
 
       {% if template == "environment" %}
-        IpAddress = function(){
-          return Promise.resolve($.get('/determine_ip'));
-        }
-
-        IpAddress().then(function(data){
-          $('#host_ext_ip').val(data.ip_address);
-
-          if(data.status){
-            $('#host_ext_ip').addClass('is-valid');
-            $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('valid-feedback').html(data.message);
-          }else{
-            $('#host_ext_ip').addClass('is-invalid');
-            $('#host_ext_ip').closest('.form-group').find('.feedback').addClass('invalid-feedback').html(data.message);
-          }
-        });
-
         $('input[name="test_environment"]').on('change', function(){
           if($(this).val() == 'Y'){
             $('.alert').collapse('show');
