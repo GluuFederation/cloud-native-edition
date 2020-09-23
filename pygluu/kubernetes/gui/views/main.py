@@ -1,4 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+"""
+pygluu.kubernetes.gui.views.main
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contain gui views as main page of gui installer
+
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
+"""
 from flask_socketio import emit
 from pygtail import Pygtail
 from pygluu.kubernetes.settings import SettingsHandler
