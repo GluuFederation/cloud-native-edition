@@ -104,6 +104,11 @@ def main():
 
         elif args.subparser_name == "upgrade":
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
+            # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
+            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+                helm = Helm()
+                helm.uninstall_kubedb()
+                helm.install_kubedb()
             prompt_upgrade = PromptUpgrade(settings)
             logger.info("Starting upgrade...")
             prompt_upgrade.prompt_upgrade()

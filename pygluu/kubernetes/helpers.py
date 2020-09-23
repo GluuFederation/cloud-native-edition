@@ -29,11 +29,12 @@ def update_settings_json_file(settings):
         json.dump(settings, file, indent=2)
 
 
-def exec_cmd(cmd, output_file=None):
+def exec_cmd(cmd, output_file=None, silent=False):
     """Execute command cmd
 
     :param cmd:
     :param output_file:
+    :param silent:
     :return:
     """
     args = shlex.split(cmd)
@@ -48,7 +49,7 @@ def exec_cmd(cmd, output_file=None):
             file.write(str(stdout, "utf-8"))
     else:
         logger.info(str(stdout, "utf-8"))
-    if retcode != 0:
+    if retcode != 0 and not silent:
         logger.error(str(stderr, "utf-8"))
     return stdout, stderr, retcode
 
