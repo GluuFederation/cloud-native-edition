@@ -498,6 +498,12 @@ def environment():
     Environment Setting
     """
     form = EnvironmentForm()
+    # TODO: find a way to apply dynamic validation
+    if settings.get("DEPLOYMENT_ARCH") == "gke":
+        form.gmail_account.validators.append(InputRequired())
+    else:
+        form.gmail_account.validators.append(Optional())
+
     if form.validate_on_submit():
         data = {}
         next_step = request.form['next_step']
@@ -535,12 +541,6 @@ def environment():
 
         settings.update(data)
         return redirect(url_for(next_step))
-
-    # TODO: find a way to apply dynamic validation
-    if settings.get("DEPLOYMENT_ARCH") == "gke":
-        form.gmail_account.validators.append(InputRequired())
-    else:
-        form.gmail_account.validators.append(Optional())
 
     if request.method == "GET":
         form = populate_form_data(form)
