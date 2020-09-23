@@ -25,7 +25,7 @@ def install():
             installer.target = "install"
             installer.run_install()
 
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -45,7 +45,7 @@ def install_no_wait():
             installer.timeout = 0
             installer.target = "install"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -64,7 +64,7 @@ def install_ldap_backup():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-ldap-backup"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -83,7 +83,7 @@ def install_kubedb():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-kubedb"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -104,7 +104,7 @@ def install_gg_dbmode():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-gg-dbmode"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -128,7 +128,7 @@ def install_couchbase():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-couchbase"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -144,7 +144,7 @@ def install_couchbase_backup():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-couchbase-backup"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -160,7 +160,7 @@ def helm_install_gg_dbmode():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install-gg-dbmode"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -176,7 +176,7 @@ def helm_install():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -192,7 +192,7 @@ def helm_install_gluu():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install-gluu"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -221,7 +221,7 @@ def upgrade():
         if request.form["install_confirm"] == "Y":
             installer.target = "upgrade"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -236,7 +236,7 @@ def restore():
         if request.form["install_confirm"] == "Y":
             installer.target = "restore"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -251,7 +251,7 @@ def uninstall():
         if request.form["uninstall_confirm"] == "Y":
             installer.target = request.form["target"]
             installer.run_uninstall()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
 
 
 @socketio.on("install", namespace="/logs")
