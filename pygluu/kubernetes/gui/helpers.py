@@ -10,7 +10,6 @@ def determine_ip_nodes():
     """
     from pygluu.kubernetes.kubeapi import Kubernetes
     from pygluu.kubernetes.settings import SettingsHandler
-    import ipaddress
     kubernetes = Kubernetes()
     settings = SettingsHandler()
     logger.info("Determining OS type and attempting to gather external IP address")

@@ -29,7 +29,8 @@ class InstallHandler(object):
             os.unlink('./setup.log.offset')
         Pygtail("./setup.log", paranoid=True).readlines()
 
-        self.thread = threading.Thread(target=self.do_installation, args=(self.target,))
+        self.thread = threading.Thread(target=self.do_installation,
+                                       args=(self.target,))
         self.thread.daemon = True
         self.thread.start()
 
@@ -38,7 +39,8 @@ class InstallHandler(object):
         if log_offset.exists():
             os.unlink('./setup.log.offset')
 
-        self.thread = threading.Thread(target=self.do_uninstall, args=(self.target,))
+        self.thread = threading.Thread(target=self.do_uninstall,
+                                       args=(self.target,))
         self.thread.daemon = True
         self.thread.start()
 
@@ -122,13 +124,12 @@ class InstallHandler(object):
 
             self.queue.put((complete_message, 'COMPLETED'))
             os.remove('./setup.log.offset')
-        except Exception as exc:
+        except:
             if self.queue:
                 self.queue.put(("ERROR", str(traceback.format_exc()), "ERROR"))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
-                logger.debug(f"Uncaught error={exc}")
 
     def do_uninstall(self, target):
         try:
@@ -161,7 +162,8 @@ class InstallHandler(object):
                 helm.uninstall_gluu()
                 self.queue.put(('Uninstall nginx ingress', 'ONPROGRESS'))
                 helm.uninstall_nginx_ingress()
-                self.queue.put(('Uninstall gluu gateway db mode', 'ONPROGRESS'))
+                self.queue.put(('Uninstall gluu gateway db mode',
+                                'ONPROGRESS'))
                 helm.uninstall_gluu_gateway_dbmode()
                 self.queue.put(('Uninstall gluu gateway ui', 'ONPROGRESS'))
                 helm.uninstall_gluu_gateway_ui()
@@ -190,10 +192,9 @@ class InstallHandler(object):
             log_offset = Path("./setup.log.offset")
             if log_offset.exists():
                 os.unlink("./setup.log.offset")
-        except Exception as exc:
+        except:
             if self.queue:
                 self.queue.put(("ERROR", "", str(traceback.format_exc())))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
-                logger.debug(f"Uncaught error={exc}")

@@ -7,6 +7,8 @@ This module contain gui views as main page of gui installer
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+from flask import Blueprint, render_template, \
+    redirect, url_for, request, session
 from flask_socketio import emit
 from pygtail import Pygtail
 from pygluu.kubernetes.settings import SettingsHandler
@@ -273,9 +275,13 @@ def installer_logs():
         logs = Pygtail("./setup.log", paranoid=True)
         for log in logs.readlines():
             if data[0] == "ERROR":
-                emit("response", {"title": data[0], "log": data[1], "status": data[0]})
+                emit("response", {"title": data[0],
+                                  "log": data[1],
+                                  "status": data[0]})
             else:
-                emit("response", {"title": data[0], "log": log, "status": data[1]})
+                emit("response", {"title": data[0],
+                                  "log": log,
+                                  "status": data[1]})
 
     if not installer.queue.empty():
         data = installer.queue.get()

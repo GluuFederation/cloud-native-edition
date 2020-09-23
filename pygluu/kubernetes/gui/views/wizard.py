@@ -13,7 +13,7 @@ import base64
 
 from pathlib import Path
 from flask import current_app
-from flask import Blueprint, jsonify, make_response, render_template, \
+from flask import Blueprint, render_template, \
     request, redirect, url_for, session
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
@@ -26,7 +26,8 @@ from ..forms.architecture import DeploymentArchForm
 from ..forms.backup import CouchbaseBackupForm, LdapBackupForm
 from ..forms.cache import CacheTypeForm
 from ..forms.configuration import ConfigurationForm
-from ..forms.couchbase import CouchbaseForm, CouchbaseCalculatorForm, CouchbaseMultiClusterForm
+from ..forms.couchbase import CouchbaseForm, \
+    CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
 from ..forms.gluugateway import GluuGatewayForm
 from ..forms.helpers import volume_types, app_volume_types
@@ -66,7 +67,7 @@ def initialize():
         return redirect(url_for('main.index'))
 
     if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/license":
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
 
 
 @wizard_blueprint.context_processor
@@ -75,32 +76,93 @@ def inject_wizard_steps():
     inject wizard_step variable to Jinja
     """
     wizard_steps = [
-        {"title": "License", "url": url_for("wizard.license")},
-        {"title": "Gluu version", "url": url_for("wizard.gluu_version")},
-        {"title": "Deployment architecture", "url": url_for("wizard.deployment_arch")},
-        {"title": "Gluu namespace", "url": url_for("wizard.gluu_namespace")},
-        {"title": "Optional Services", "url": url_for("wizard.optional_services")},
-        {"title": "Gluu gateway", "url": url_for("wizard.gluu_gateway")},
-        {"title": "Install jackrabbit", "url": url_for("wizard.install_jackrabbit")},
-        {"title": "Install Istio", "url": url_for("wizard.install_istio")},
-        {"title": "Environment Setting", "url": url_for("wizard.environment")},
-        {"title": "Persistence backend", "url": url_for("wizard.persistence_backend")},
-        {"title": "Volumes", "url": url_for("wizard.volumes")},
-        {"title": "Couchbase multi cluster", "url": url_for("wizard.couchbase_multi_cluster")},
-        {"title": "Couchbase", "url": url_for("wizard.couchbase")},
-        {"title": "Couchbase calculator", "url": url_for("wizard.couchbase_calculator")},
-        {"title": "Cache type", "url": url_for("wizard.cache_type")},
-        {"title": "Backup", "url": url_for("wizard.backup")},
-        {"title": "Configuration", "url": url_for("wizard.configuration")},
-        {"title": "Images", "url": url_for("wizard.images")},
-        {"title": "Replicas", "url": url_for("wizard.replicas")}
+        {
+            "title": "License",
+            "url": url_for("wizard.agreement")
+        },
+        {
+            "title": "Gluu version",
+            "url": url_for("wizard.gluu_version")
+        },
+        {
+            "title": "Deployment architecture",
+            "url": url_for("wizard.deployment_arch")
+        },
+        {
+            "title": "Gluu namespace",
+            "url": url_for("wizard.gluu_namespace")
+        },
+        {
+            "title": "Optional Services",
+            "url": url_for("wizard.optional_services")
+        },
+        {
+            "title": "Gluu gateway",
+            "url": url_for("wizard.gluu_gateway")
+        },
+        {
+            "title": "Install jackrabbit",
+            "url": url_for("wizard.install_jackrabbit")
+        },
+        {
+            "title": "Install Istio",
+            "url": url_for("wizard.install_istio")
+        },
+        {
+            "title": "Environment Setting",
+            "url": url_for("wizard.environment")
+        },
+        {
+            "title": "Persistence backend",
+            "url": url_for("wizard.persistence_backend")
+        },
+        {
+            "title": "Volumes",
+            "url": url_for("wizard.volumes")
+        },
+        {
+            "title": "Couchbase multi cluster",
+            "url": url_for("wizard.couchbase_multi_cluster")
+        },
+        {
+            "title": "Couchbase",
+            "url": url_for("wizard.couchbase")
+        },
+        {
+            "title": "Couchbase calculator",
+            "url": url_for("wizard.couchbase_calculator")
+        },
+        {
+            "title": "Cache type",
+            "url": url_for("wizard.cache_type")
+        },
+        {
+            "title": "Backup",
+            "url": url_for("wizard.backup")
+        },
+        {
+            "title": "Configuration",
+            "url": url_for("wizard.configuration")
+        },
+        {
+            "title": "Images",
+            "url": url_for("wizard.images")
+        },
+        {
+            "title": "Replicas",
+            "url": url_for("wizard.replicas")
+        }
     ]
 
     if session["finish_endpoint"] == "main.helm_install":
-        wizard_steps.append({"title": "Helm Configuration", "url": url_for("wizard.helm_config")})
+        wizard_steps.append({
+            "title": "Helm Configuration",
+            "url": url_for("wizard.helm_config")})
 
     if session["finish_endpoint"] == "main.upgrade":
-        wizard_steps.append({"title": "Upgrade Version", "url": url_for("wizard.upgrade")})
+        wizard_steps.append({
+            "title": "Upgrade Version",
+            "url": url_for("wizard.upgrade")})
 
     return dict(wizard_steps=wizard_steps, total_steps=len(wizard_steps), is_wizard=True)
 
@@ -345,11 +407,14 @@ def gluu_gateway():
             data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
             data["ENABLE_OXD"] = "N"
-            if not settings.get("POSTGRES_NAMESPACE") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_NAMESPACE") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_NAMESPACE"] = ""
-            if not settings.get("POSTGRES_REPLICAS") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_REPLICAS") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_REPLICAS"] = ""
-            if not settings.get("POSTGRES_URL") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_URL") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_URL"] = ""
             data["KONG_NAMESPACE"] = ""
             data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
@@ -401,7 +466,8 @@ def install_jackrabbit():
     form = JackrabbitForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data, "JACKRABBIT_URL": form.jackrabbit_url.data,
+        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data,
+                "JACKRABBIT_URL": form.jackrabbit_url.data,
                 "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
                 "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
                 "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
@@ -939,8 +1005,12 @@ def backup():
 def configuration():
     form = ConfigurationForm()
     if form.validate_on_submit():
-        data = {"GLUU_FQDN": form.gluu_fqdn.data, "COUNTRY_CODE": form.country_code.data, "STATE": form.state.data,
-                "CITY": form.city.data, "EMAIL": form.email.data, "ORG_NAME": form.org_name.data,
+        data = {"GLUU_FQDN": form.gluu_fqdn.data,
+                "COUNTRY_CODE": form.country_code.data,
+                "STATE": form.state.data,
+                "CITY": form.city.data,
+                "EMAIL": form.email.data,
+                "ORG_NAME": form.org_name.data,
                 "ADMIN_PW": form.admin_pw.data}
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):

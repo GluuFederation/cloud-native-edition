@@ -38,10 +38,11 @@ def create_app():
         def hashed_url(filepath):
             directory, filename = filepath.rsplit('/')
             name, extension = filename.rsplit(".")
-            folder = os.path.join(os.path.sep, app.root_path, 'static', directory)
+            folder = os.path.join(os.path.sep,
+                                  app.root_path, 'static', directory)
             files = os.listdir(folder)
             for f in files:
-                regex = name + "\.[a-z0-9]+\." + extension
+                regex = name + "\.[a-z0-9]+\." + extension  # noqa: W605
                 if re.match(regex, f):
                     return os.path.join('/static', directory, f)
             return os.path.join('/static', filepath)
