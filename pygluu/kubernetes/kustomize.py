@@ -1290,7 +1290,7 @@ class Kustomize(object):
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
 
-    def deploy_jackrabbit(self):
+    def def_jackrabbit_secret(self):
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
             encoded_jackrabbit_pg_pass_bytes = base64.b64encode(
                 self.settings.get("JACKRABBIT_PG_PASSWORD").encode("utf-8"))
@@ -1310,12 +1310,13 @@ class Kustomize(object):
         encoded_jackrabbit_admin_pass_bytes = base64.b64encode(
             self.settings.get("JACKRABBIT_ADMIN_PASSWORD").encode("utf-8"))
         encoded_jackrabbit_admin_pass_string = str(encoded_jackrabbit_admin_pass_bytes, "utf-8")
-
         self.kubernetes.patch_or_create_namespaced_secret(name="gluu-jackrabbit-admin-pass",
                                                           namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           literal="jackrabbit_admin_password",
                                                           value_of_literal=encoded_jackrabbit_admin_pass_string)
 
+    def deploy_jackrabbit(self):
+        self.def_jackrabbit_secret()
         self.kubernetes.create_objects_from_dict(self.jackrabbit_yaml)
         logger.info("Deploying Jackrabbit content repository.Please wait..")
         time.sleep(10)
@@ -1484,54 +1485,60 @@ class Kustomize(object):
         self.kubernetes.create_objects_from_dict("./ldap-backup.yaml")
 
     def upgrade(self):
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            exec_delete_command = ["/opt/opendj/bin/dsconfig", "delete-backend-index", "--backend-name", "userRoot",
+                                   "--index-name", "oxAuthExpiration", "--hostName", "0.0.0.0", "--port", "4444",
+                                   "--bindDN",
+                                   "'cn=Directory Manager'", "--trustAll", "-f"]
+            manual_exec_delete_command = " ".join(exec_delete_command)
+            logger.warning("Please delete backend index manually by calling\n kubectl exec -ti opendj-0 -n {} "
+                         "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
+            input("Press Enter once index has been deleted...")
+            self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=opendj")
         self.kustomize_gluu_upgrade()
+        self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
+        if not self.settings.get("AWS_LB_TYPE") == "alb":
+            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
+        self.kubernetes = Kubernetes()
+        if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if self.settings.get("INSTALL_GLUU_GATEWAY") == "N":
+                self.deploy_postgres()
+            else:
+                self.create_patch_secret_init_sql()
+                logger.info("Restarting postgres...please wait 2mins..")
+                self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                    replicas=0,
+                                                                    namespace=self.settings.get("POSTGRES_NAMESPACE"))
+                time.sleep(120)
+                self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                    replicas=3,
+                                                                    namespace=self.settings.get("POSTGRES_NAMESPACE"))
+                self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
+                                                    self.timeout)
+            self.def_jackrabbit_secret()
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            self.kubernetes.create_objects_from_dict("ldap/base/101-ox.yaml",
+                                                     self.settings.get("GLUU_NAMESPACE"))
+            ldap_parser = Parser(self.ldap_yaml, "StatefulSet")
+            ldap_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
+                {"mountPath": "/opt/opendj/config/schema/101-ox.ldif",
+                 "name": "ox-ldif-cm", "subPath": "101-ox.ldif"})
+            ldap_parser["spec"]["template"]["spec"]["volumes"].append(
+                {"name": "ox-ldif-cm", "configMap": {"name": "oxldif"}})
+            ldap_parser.dump_it()
+            exec_cmd("kubectl apply -f {} --record".format(self.config_yaml), silent=True)
+            exec_cmd("kubectl apply -f {} --record".format(self.ldap_yaml), silent=True)
+            logger.info("Deploying LDAP.Please wait..")
+            time.sleep(10)
+            if not self.settings.get("AWS_LB_TYPE") == "alb":
+                self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
-        casa_image = self.settings.get("CASA_IMAGE_NAME") + ":" + self.settings.get("CASA_IMAGE_TAG")
-        cr_rotate_image = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME") + ":" + self.settings.get(
-            "CACHE_REFRESH_ROTATE_IMAGE_TAG")
-        cert_manager_image = self.settings.get("CERT_MANAGER_IMAGE_NAME") + ":" + self.settings.get(
-            "CERT_MANAGER_IMAGE_TAG")
-        ldap_image = self.settings.get("LDAP_IMAGE_NAME") + ":" + self.settings.get("LDAP_IMAGE_TAG")
-        oxauth_image = self.settings.get("OXAUTH_IMAGE_NAME") + ":" + self.settings.get("OXAUTH_IMAGE_TAG")
-        fido2_image = self.settings.get("FIDO2_IMAGE_NAME") + ":" + self.settings.get("FIDO2_IMAGE_TAG")
-        scim_image = self.settings.get("SCIM_IMAGE_NAME") + ":" + self.settings.get("SCIM_IMAGE_TAG")
-        oxd_image = self.settings.get("OXD_IMAGE_NAME") + ":" + self.settings.get("OXD_IMAGE_TAG")
-        oxpassport_image = self.settings.get("OXPASSPORT_IMAGE_NAME") + ":" + self.settings.get("OXPASSPORT_IMAGE_TAG")
-        oxshibboleth_image = self.settings.get("OXSHIBBOLETH_IMAGE_NAME") + ":" + self.settings.get(
-            "OXSHIBBOLETH_IMAGE_TAG")
-        oxtrust_image = self.settings.get("OXTRUST_IMAGE_NAME") + ":" + self.settings.get("OXTRUST_IMAGE_TAG")
-        radius_image = self.settings.get("RADIUS_IMAGE_NAME") + ":" + self.settings.get("RADIUS_IMAGE_TAG")
-
-        self.kubernetes.patch_namespaced_deployment(name="casa",
-                                                    image=casa_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_daemonset(name="cr-rotate",
-                                                   image=cr_rotate_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="oxauth-key-rotation",
-                                                    image=cert_manager_image,
-                                                    namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_statefulset(name="opendj",
-                                                     image=ldap_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="oxauth",
-                                                    image=oxauth_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="fido2",
-                                                    image=fido2_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="scim",
-                                                    image=scim_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="oxd-server",
-                                                    image=oxd_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="oxpassport",
-                                                    image=oxpassport_image,
-                                                    namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_statefulset(name="oxshibboleth",
-                                                     image=oxshibboleth_image,
-                                                     namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_statefulset(name="oxtrust",
-                                                     image=oxtrust_image, namespace=self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.patch_namespaced_deployment(name="radius",
-                                                    image=radius_image, namespace=self.settings.get("GLUU_NAMESPACE"))
+        logger.info("Updating manifests and Gluu version...")
+        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record".format(self.output_yaml_directory),
+                                           silent=True)
 
     def install(self, install_couchbase=True, restore=False):
         if not restore:

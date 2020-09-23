@@ -28,6 +28,7 @@ spec:
                     values:
                       - opendj
               topologyKey: "kubernetes.io/hostname"
+      volumes: []
       containers:
       - name: opendj
         imagePullPolicy: Always
