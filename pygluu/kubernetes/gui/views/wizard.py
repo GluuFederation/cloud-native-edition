@@ -30,7 +30,7 @@ from ..forms.configuration import ConfigurationForm
 from ..forms.couchbase import CouchbaseForm, CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
 from ..forms.gluugateway import GluuGatewayForm
-from ..forms.helpers import volume_types
+from ..forms.helpers import volume_types, app_volume_types
 from ..forms.images import ImageNameTagForm
 from ..forms.istio import IstioForm
 from ..forms.jackrabbit import JackrabbitForm
@@ -605,6 +605,21 @@ def volumes():
     App Volume type Setting
     """
     form = VolumeForm()
+
+    if settings.get("DEPLOYMENT_ARCH") and \
+            settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        volume_type = app_volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.app_volume_type.label = volume_type["label"]
+        form.app_volume_type.choices = volume_type["choices"]
+        form.app_volume_type.default = volume_type["default"]
+        form.app_volume_type.validators = [DataRequired()]
+
+    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.ldap_jackrabbit_volume.label = ldap_volume["label"]
+        form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
+        form.ldap_jackrabbit_volume.validators = [DataRequired()]
+
     if form.validate_on_submit():
         data = {"APP_VOLUME_TYPE": settings.get("APP_VOLUME_TYPE")}
         if not data["APP_VOLUME_TYPE"]:
