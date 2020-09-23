@@ -161,8 +161,14 @@ def main():
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             helm = Helm()
-            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            if settings.get("INSTALL_REDIS") == "Y" or \
+                    settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                    settings.get("JACKRABBIT_CLUSTER") == "Y":
+                helm.uninstall_kubedb()
                 helm.install_kubedb()
+            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+                kustomize = Kustomize(timeout)
+                kustomize.deploy_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
                 kustomize = Kustomize(timeout)
                 kustomize.uninstall_redis()
