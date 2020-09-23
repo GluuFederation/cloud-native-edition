@@ -63,8 +63,7 @@ class CouchbaseForm(FlaskForm):
                     "and couchbase-ephemeral-buckets.yaml",
         validators=[RequiredIfFieldEqualTo("couchbase_cluster_file_override", "Y")])
     couchbase_use_low_resources = RadioField(
-        "[Alpha] Setup CB nodes using low resources for demo purposes",
-        description="couchbase calculator is in alpha version",
+        "Setup CB nodes using low resources for demo purposes",
         choices=[("Y", "Yes"), ("N", "No")])
 
     couchbase_namespace = StringField(
