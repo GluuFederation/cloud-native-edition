@@ -41,4 +41,4 @@ class IstioForm(FlaskForm):
     lb_add = StringField("Istio loadbalancer address (eks) or "
                          "ip (gke, aks, digital ocean, local)",
                          default="",
-                         validators=[Optional()])
+                         validators=[RequiredIfFieldEqualTo("use_istio_ingress", "Y")])
