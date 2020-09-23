@@ -106,8 +106,7 @@ def inject_wizard_steps():
 
 
 @wizard_blueprint.route("/license", methods=["GET", "POST"])
-# TODO: This name should be changed to something other than license as it shadows a built in name. Perhaps agreement.
-def license():
+def agreement():
     """Input for Accepting license
     """
     form = LicenseForm()
@@ -154,7 +153,7 @@ def gluu_version():
                            form=form,
                            current_step=2,
                            template="gluu_version",
-                           prev_step="wizard.license",
+                           prev_step="wizard.agreement",
                            next_step="wizard.deployment_arch")
 
 

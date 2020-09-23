@@ -33,7 +33,7 @@ def install():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -53,7 +53,7 @@ def install_no_wait():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -72,7 +72,7 @@ def install_ldap_backup():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -93,7 +93,7 @@ def install_kubedb():
 
     # validating settings.json
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -114,7 +114,7 @@ def install_gg_dbmode():
 
     # validating settings.json
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         if validating_gg_settings():
             return redirect(url_for("wizard.setting_summary"))
@@ -135,7 +135,7 @@ def install_couchbase():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-couchbase-backup", methods=["GET", "POST"])
@@ -151,7 +151,7 @@ def install_couchbase_backup():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install-gg-dbmode", methods=["GET", "POST"])
@@ -167,7 +167,7 @@ def helm_install_gg_dbmode():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install", methods=["GET", "POST"])
@@ -183,7 +183,7 @@ def helm_install():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install-gluu", methods=["GET", "POST"])
@@ -199,7 +199,7 @@ def helm_install_gluu():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/generate-settings", methods=["GET", "POST"])
@@ -212,7 +212,7 @@ def generate_settings():
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/upgrade", methods=["GET", "POST"])
@@ -227,7 +227,7 @@ def upgrade():
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/restore", methods=["GET", "POST"])
@@ -242,7 +242,7 @@ def restore():
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/uninstall", methods=["POST"])
