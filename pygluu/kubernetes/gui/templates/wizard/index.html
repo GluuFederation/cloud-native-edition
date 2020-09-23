@@ -187,6 +187,14 @@
             $('#istioNamespace').collapse('hide');
            }
         });
+
+        $('input[name="use_istio_ingress"').on('change', function(){
+          if($(this).val() == 'Y'){
+           $('#istio_lb').collapse('show');
+          }else{
+           $('#istio_lb').collapse('hide');
+          }
+        });
       {% endif %}
 
 

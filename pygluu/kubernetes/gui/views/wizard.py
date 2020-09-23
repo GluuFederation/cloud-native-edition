@@ -504,6 +504,13 @@ def environment():
     else:
         form.gmail_account.validators.append(Optional())
 
+    environment = determine_ip_nodes()
+
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        form.host_ext_ip.data = environment['ip']
+    else:
+        del form.host_ext_ip
+
     if form.validate_on_submit():
         data = {}
         next_step = request.form['next_step']
