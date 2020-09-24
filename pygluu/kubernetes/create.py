@@ -46,6 +46,7 @@ def create_parser():
                                           "running database and previous configuration")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("upgrade", help="Upgrade Gluu Cloud Native Edition")
+    subparsers.add_parser("upgrade-values-yaml", help="Upgrade Gluu Cloud Native Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("install-couchbase-backup", help="Install Couchbase backup only.")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
@@ -114,6 +115,21 @@ def main():
             prompt_upgrade.prompt_upgrade()
             kustomize = Kustomize(timeout)
             kustomize.upgrade()
+
+        elif args.subparser_name == "upgrade-values-yaml":
+            from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
+            # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
+            helm = Helm()
+            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+                helm.uninstall_kubedb()
+                helm.install_kubedb()
+            prompt_upgrade = PromptUpgrade(settings)
+            prompt_upgrade.prompt_upgrade()
+            helm = Helm()
+            logger.info("Patching values.yaml for helm upgrade...")
+            helm.analyze_global_values()
+            logger.info("Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
+                        "Continue with the steps found at https://gluu.org/docs/gluu-server/4.2/upgrade/#helm")
 
         elif args.subparser_name == "restore":
             kustomize = Kustomize(timeout)
