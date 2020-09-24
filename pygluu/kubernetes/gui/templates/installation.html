@@ -12,9 +12,11 @@
       <p class="text-muted text-monospace m-3"><span id="output"></span></p>
       <ul id="install_logs" class="log-box"></ul>
     </div>
-    <div id="footer" class="card-footer collapse text-center">
-      <a href="{{ url_for('main.index') }}" class="btn btn-primary">Finish</a>
+    <div id="footer" class="card-footer text-center">
+      <a id="finish-button" href="{{ url_for('main.index') }}" class="btn btn-primary collapse">Finish</a>
+      <a id="retry-button" onclick="window.location.reload()" class="btn btn-warning collapse">Try Again</a>
     </div>
+
   </div>
 {% endblock %}
 
@@ -27,6 +29,8 @@
     const installBtn = document.getElementById('installTrigger');
     const installLogs = document.getElementById('install_logs');
     const footer = document.getElementById('footer');
+    const finishBtn = document.getElementById('finish-button');
+    const retryBtn = document.getElementById('retry-button');
 
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/logs');
 
@@ -38,24 +42,24 @@
       if(response.status == 'COMPLETED'){
         install_status.innerHTML = 'Installation Completed';
         progress.classList.add('collapse');
-        footer.classList.add('show');
+        finishBtn.classList.add('show');
         socket.emit('disconnect');
       }
 
-      if(response.status == 'ERROR'){
-        install_status.innerHTML = 'Installation Error';
-        progress.classList.add('collapse');
-        footer.classList.add('show');
-        socket.emit('disconnect');
-      }
       install_status.innerHTML = response.title;
-
       if(response.log.length > 0){
         output.innerHTML = response.log;
       }
 
       var line = document.createElement('li');
       installLogs.prepend(response.log, line);
+
+      if(response.status == 'ERROR'){
+        install_status.innerHTML = 'Installation Error';
+        progress.classList.add('collapse');
+        retryBtn.classList.add('show');
+        socket.emit('disconnect');
+      }
     });
 
 </script>

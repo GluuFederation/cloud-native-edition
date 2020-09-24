@@ -126,7 +126,7 @@ class InstallHandler(object):
             os.remove('./setup.log.offset')
         except:
             if self.queue:
-                self.queue.put(("ERROR", str(traceback.format_exc()), "ERROR"))
+                self.queue.put(("Oops! Something went wrong",  "ERROR"))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
@@ -194,7 +194,7 @@ class InstallHandler(object):
                 os.unlink("./setup.log.offset")
         except:
             if self.queue:
-                self.queue.put(("ERROR", "", str(traceback.format_exc())))
+                self.queue.put(("Oops! Something went wrong",  "ERROR"))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())

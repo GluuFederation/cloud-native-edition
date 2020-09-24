@@ -276,7 +276,7 @@ def installer_logs():
         for log in logs.readlines():
             if data[0] == "ERROR":
                 emit("response", {"title": data[0],
-                                  "log": data[1],
+                                  "log": log,
                                   "status": data[0]})
             else:
                 emit("response", {"title": data[0],
@@ -286,7 +286,9 @@ def installer_logs():
     if not installer.queue.empty():
         data = installer.queue.get()
 
-    emit("response", {"title": data[0], "status": data[1]})
+    logs = Pygtail("./setup.log", paranoid=True)
+    for log in logs.readlines():
+        emit("response", {"title": data[0], "log": log, "status": data[1]})
 
 
 @socketio.on("disconnect", namespace="/logs")
