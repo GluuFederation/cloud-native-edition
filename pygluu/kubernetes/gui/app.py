@@ -1,13 +1,31 @@
 import argparse
 import logging
+import multiprocessing
 import os
 import re
 from flask import Flask
+import gunicorn.app.base
 
 from .extensions import csrf, socketio
 from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
 from pygluu.kubernetes.helpers import copy_templates
+
+
+class GluuApp(gunicorn.app.base.BaseApplication):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.application = app
+        super().__init__()
+
+    def load_config(self):
+        config = {key: value for key, value in self.options.items()
+                  if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return self.application
 
 
 def create_app():
@@ -51,6 +69,8 @@ def create_app():
 
     return app
 
+def number_of_workers():
+    return (multiprocessing.cpu_count() * 2) + 1
 
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
@@ -58,6 +78,9 @@ def parse_args(args=None):
     parser.add_argument("-p", "--port", type=int, default=5000)
     parser.add_argument("-d", "--debug", action="store_true", default=False,
                         help="Enable/Disable debug (default: false)")
+    parser.add_argument("-w", "--workers",
+                        default=number_of_workers(),
+                        help="number of workers")
     return parser.parse_args(args)
 
 
@@ -78,17 +101,25 @@ def main():
     host = args.host
     port = args.port
     debug = args.debug
+    workers = args.workers
 
     copy_templates()
     app = create_app()
-
+    app.config["DEBUG"] = debug
     app.logger.disabled = True
     log = logging.getLogger('werkzeug')
     logging.getLogger('socketio').setLevel(logging.ERROR)
     logging.getLogger('engineio').setLevel(logging.ERROR)
     log.disabled = True
 
-    app.run(host=host, port=port, debug=debug)
+    # app.run(host=host, port=port, debug=debug)
+    options = {
+        'bind': '%s:%s' % (host, port),
+        'workers': workers,
+        'worker_class': 'gthread'
+    }
+
+    GluuApp(app, options).run()
 
 
 if __name__ == "__main__":
