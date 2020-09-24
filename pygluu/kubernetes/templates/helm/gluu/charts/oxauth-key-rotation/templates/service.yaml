@@ -1,6 +1,6 @@
 {{- if .Values.global.istio.enabled }}
 # License terms and conditions:
-# https://www.gluu.org/license/enterprise-edition/
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
 kind: Service
 metadata:

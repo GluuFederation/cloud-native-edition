@@ -1,5 +1,5 @@
 # License terms and conditions:
-# https://www.gluu.org/license/enterprise-edition/
+# https://www.apache.org/licenses/LICENSE-2.0
 # Used with Istio
 apiVersion: v1
 kind: Service

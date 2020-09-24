@@ -31,9 +31,9 @@ def create_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title="Commands", dest="subparser_name")
     subparsers.add_parser("generate-settings", help="Generate settings.json to install "
-                                                    "Gluu Enterprise Edition non-interactively")
-    subparsers.add_parser("install", help="Install Gluu Enterprise Edition")
-    subparsers.add_parser("install-no-wait", help="Install Gluu Enterprise Edition. "
+                                                    "Gluu Cloud Native Edition non-interactively")
+    subparsers.add_parser("install", help="Install Gluu Cloud Native Edition")
+    subparsers.add_parser("install-no-wait", help="Install Gluu Cloud Native Edition. "
                                                   "There will be no wait time between installing services. "
                                                   "Pods may look like they are restarting but they will "
                                                   "be waiting for hierarchy "
@@ -42,23 +42,23 @@ def create_parser():
     subparsers.add_parser("install-kubedb", help="Install KubeDB for redis or postgres")
     subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database")
     subparsers.add_parser("uninstall-gg-dbmode", help="Unnstall Gluu Gateway with Postgres database")
-    subparsers.add_parser("restore", help="Install Gluu Enterprise Edition with a "
+    subparsers.add_parser("restore", help="Install Gluu Cloud Native Edition with a "
                                           "running database and previous configuration")
     subparsers.add_parser("uninstall", help="Uninstall Gluu")
-    subparsers.add_parser("upgrade", help="Upgrade Gluu Enterprise Edition")
+    subparsers.add_parser("upgrade", help="Upgrade Gluu Cloud Native Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("install-couchbase-backup", help="Install Couchbase backup only.")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
-    subparsers.add_parser("helm-install", help="Install Gluu Enterprise Edition using helm. "
+    subparsers.add_parser("helm-install", help="Install Gluu Cloud Native Edition using helm. "
                                                "This also installs the nginx-ingress chart")
-    subparsers.add_parser("helm-uninstall", help="Uninstall Gluu Enterprise Edition using helm. "
+    subparsers.add_parser("helm-uninstall", help="Uninstall Gluu Cloud Native Edition using helm. "
                                                  "This also uninstalls the nginx-ingress chart")
     subparsers.add_parser("helm-install-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
     subparsers.add_parser("helm-uninstall-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
 
-    subparsers.add_parser("helm-install-gluu", help="Install Gluu Enterprise Edition using helm. "
+    subparsers.add_parser("helm-install-gluu", help="Install Gluu Cloud Native Edition using helm. "
                                                     "This assumes nginx-ingress is installed")
-    subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Enterprise Edition using helm. "
+    subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Cloud Native Edition using helm. "
                                                       "This only uninstalls Gluu")
     return parser
 
