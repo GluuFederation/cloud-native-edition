@@ -15,6 +15,9 @@ spec:
           - configMapRef:
               name: gluu-config-cm
           volumeMounts:
+            - name: cb-pass
+              mountPath: "/etc/gluu/conf/couchbase_password"
+              subPath: couchbase_password
             - name: cb-super-pass
               mountPath: "/etc/gluu/conf/couchbase_superuser_password"
               subPath: couchbase_superuser_password
@@ -22,6 +25,9 @@ spec:
               mountPath: "/etc/certs/couchbase.crt"
               subPath: couchbase.crt
       volumes:
+      - name: cb-pass
+        secret:
+          secretName: cb-pass
       - name: cb-super-pass
         secret:
           secretName: cb-super-pass
