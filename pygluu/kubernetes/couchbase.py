@@ -97,6 +97,9 @@ class Couchbase(object):
         self.storage_class_file = Path("./couchbase/storageclasses.yaml")
         self.couchbase_cluster_file = Path("./couchbase/couchbase-cluster.yaml")
         self.couchbase_buckets_file = Path("./couchbase/couchbase-buckets.yaml")
+        self.couchbase_group_file = Path("./couchbase/couchbase-group.yaml")
+        self.couchbase_user_file = Path("./couchbase/couchbase-user.yaml")
+        self.couchbase_rolebinding_file = Path("./couchbase/couchbase-rolebinding.yaml")
         self.couchbase_ephemeral_buckets_file = Path("./couchbase/couchbase-ephemeral-buckets.yaml")
         self.couchbase_source_folder_pattern, self.couchbase_source_file = self.get_couchbase_files
         self.couchbase_custom_resource_definition_file = self.couchbase_source_file.joinpath("crd.yaml")
@@ -121,7 +124,7 @@ class Couchbase(object):
             except IndexError:
                 logger.fatal("Couchbase package not found.")
                 logger.info("Please download the couchbase kubernetes package and place it inside the same directory "
-                            "containing the create.py script.https://www.couchbase.com/downloads")
+                            "containing the pygluu-kuberentes.pyz script.https://www.couchbase.com/downloads")
                 sys.exit()
             extract_couchbase_tar(couchbase_tar_file)
             couchbase_source_folder_pattern = "./couchbase-source-folder/couchbase-autonomous-operator-kubernetes_*"
@@ -131,11 +134,13 @@ class Couchbase(object):
         # Couchbase is installed.
         return Path("."), Path(".")
 
-    def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string):
+    def create_couchbase_gluu_cert_pass_secrets(self, encoded_ca_crt_string, encoded_cb_pass_string,
+                                                encoded_cb_super_pass_string):
         """
         Create cor patch secret containing couchbase certificate authority crt and couchbase admin password
         :param encoded_ca_crt_string:
         :param encoded_cb_pass_string:
+        :param encoded_cb_super_pass_string:
         """
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
@@ -148,6 +153,11 @@ class Couchbase(object):
                                                           namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           literal="couchbase_password",
                                                           value_of_literal=encoded_cb_pass_string)
+
+        self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
+                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          literal="couchbase_superuser_password",
+                                                          value_of_literal=encoded_cb_super_pass_string)
 
     def setup_backup_couchbase(self):
         """
@@ -496,19 +506,39 @@ class Couchbase(object):
                                                           literal=ca_cert_filepath.name,
                                                           value_of_literal=encoded_ca_crt_string)
 
-        encoded_cb_user_bytes = base64.b64encode(self.settings.get("COUCHBASE_USER").encode("utf-8"))
-        encoded_cb_user_string = str(encoded_cb_user_bytes, "utf-8")
+        encoded_cb_super_user_bytes = base64.b64encode(self.settings.get("COUCHBASE_SUPERUSER").encode("utf-8"))
+        encoded_cb_super_user_string = str(encoded_cb_super_user_bytes, "utf-8")
         encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
         encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+        encoded_cb_super_pass_bytes = base64.b64encode(
+            self.settings.get("COUCHBASE_SUPERUSER_PASSWORD").encode("utf-8"))
+        encoded_cb_super_pass_string = str(encoded_cb_super_pass_bytes, "utf-8")
 
-        self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string)
-
+        self.create_couchbase_gluu_cert_pass_secrets(encoded_ca_crt_string, encoded_cb_pass_string,
+                                                     encoded_cb_super_pass_string)
+        self.kubernetes.patch_or_create_namespaced_secret(name="gluu-couchbase-user-password",
+                                                          namespace=self.settings.get("COUCHBASE_NAMESPACE"),
+                                                          literal="password",
+                                                          value_of_literal=encoded_cb_pass_string)
         command = "./{}/bin/cbopcfg -backup=true -namespace={}".format(self.couchbase_source_file,
                                                                        self.settings.get("COUCHBASE_NAMESPACE"))
         exec_cmd(command, output_file=self.couchbase_operator_dac_file)
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
+        try:
+            couchbase_cluster_parser["spec"]["security"]["rbac"]["selector"]["matchLabels"]["cluster"] = \
+                self.settings.get("COUCHBASE_CLUSTER_NAME")
+            couchbase_cluster_parser["spec"]["security"]["rbac"]["managed"] = True
+        except KeyError:
+            logger.error("rbac section is missing or incorrect in couchbase-cluster.yaml."
+                         " Please set spec --> security --> rbac --> managed : true"
+                         " and set spec --> security --> rbac --> selector --> matchLabels --> "
+                         "cluster --> to your cluster name")
+            logger.info("As a result of the above the installation will exit "
+                        "as the gluu user will not be created causing the communication between "
+                        "Gluu server and Couchbase to fail.")
+            sys.exit()
         if self.settings.get("DEPLOYMENT_ARCH") == "local":
             volume_claims = couchbase_cluster_parser["spec"]["volumeClaimTemplates"]
             for i, volume_claim in enumerate(volume_claims):
@@ -527,9 +557,9 @@ class Couchbase(object):
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-auth",
                                                           namespace=cb_namespace,
                                                           literal="username",
-                                                          value_of_literal=encoded_cb_user_string,
+                                                          value_of_literal=encoded_cb_super_user_string,
                                                           second_literal="password",
-                                                          value_of_second_literal=encoded_cb_pass_string)
+                                                          value_of_second_literal=encoded_cb_super_pass_string)
 
         self.kubernetes.create_objects_from_dict(self.storage_class_file, namespace=cb_namespace)
         self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_cluster_file,
@@ -547,7 +577,29 @@ class Couchbase(object):
                                                         version="v2",
                                                         plural="couchbaseephemeralbuckets",
                                                         namespace=cb_namespace)
-
+        coucbase_group_parser = Parser(self.couchbase_group_file, "CouchbaseGroup")
+        coucbase_group_parser["metadata"]["labels"]["cluster"] = \
+            self.settings.get("COUCHBASE_CLUSTER_NAME")
+        coucbase_group_parser.dump_it()
+        coucbase_user_parser = Parser(self.couchbase_user_file, "CouchbaseUser")
+        coucbase_user_parser["metadata"]["labels"]["cluster"] = \
+            self.settings.get("COUCHBASE_CLUSTER_NAME")
+        coucbase_user_parser.dump_it()
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_group_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbasegroups",
+                                                        namespace=cb_namespace)
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_user_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbaseusers",
+                                                        namespace=cb_namespace)
+        self.kubernetes.create_namespaced_custom_object(filepath=self.couchbase_rolebinding_file,
+                                                        group="couchbase.com",
+                                                        version="v2",
+                                                        plural="couchbaserolebindings",
+                                                        namespace=cb_namespace)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_analytics=enabled", 700)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_data=enabled", 700)
         self.kubernetes.check_pods_statuses(cb_namespace, "couchbase_service_eventing=enabled", 700)
@@ -575,6 +627,7 @@ class Couchbase(object):
         self.kubernetes.delete_cluster_role("couchbase-operator-admission")
         self.kubernetes.delete_role("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_secret("cb-auth", self.settings.get("COUCHBASE_NAMESPACE"))
+        self.kubernetes.delete_secret("gluu-couchbase-user-password", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_deployment_using_name("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_role_binding("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_service_account("couchbase-operator", self.settings.get("COUCHBASE_NAMESPACE"))

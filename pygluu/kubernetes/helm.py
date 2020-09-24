@@ -262,8 +262,12 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap" and self.settings.get("INSTALL_COUCHBASE") == "Y":
             values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
+            values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUser"] = \
+                self.settings.get("COUCHBASE_SUPERUSER")
             values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
+            values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
+                self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True

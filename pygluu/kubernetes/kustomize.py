@@ -517,6 +517,7 @@ class Kustomize(object):
         configmap_parser["data"]["DOMAIN"] = self.settings.get("GLUU_FQDN")
         configmap_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
         configmap_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        configmap_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         configmap_parser["data"]["GLUU_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")
         # Persistence keys
         if self.settings.get("GLUU_CACHE_TYPE") == "REDIS":
@@ -1492,7 +1493,7 @@ class Kustomize(object):
                                    "'cn=Directory Manager'", "--trustAll", "-f"]
             manual_exec_delete_command = " ".join(exec_delete_command)
             logger.warning("Please delete backend index manually by calling\n kubectl exec -ti opendj-0 -n {} "
-                         "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
+                           "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
             input("Press Enter once index has been deleted...")
             self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=opendj")
         self.kustomize_gluu_upgrade()
@@ -1558,9 +1559,13 @@ class Kustomize(object):
                 else:
                     encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
                     encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+                    encoded_cb_super_pass_bytes = base64.b64encode(
+                        self.settings.get("COUCHBASE_SUPERUSER_PASSWORD").encode("utf-8"))
+                    encoded_cb_super_pass_string = str(encoded_cb_super_pass_bytes, "utf-8")
                     couchbase_app = Couchbase()
                     couchbase_app.create_couchbase_gluu_cert_pass_secrets(self.settings.get("COUCHBASE_CRT"),
-                                                                          encoded_cb_pass_string)
+                                                                          encoded_cb_pass_string,
+                                                                          encoded_cb_super_pass_string)
         if not restore:
             self.kubernetes = Kubernetes()
             if self.settings.get("AWS_LB_TYPE") == "alb":
@@ -1679,7 +1684,7 @@ class Kustomize(object):
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
         secrets = ["oxdkeystorecm", "gluu", "tls-certificate",
                    "gluu-jackrabbit-admin-pass", "gluu-jackrabbit-postgres-pass"]
-        cb_secrets = ["cb-pass", "cb-crt"]
+        cb_secrets = ["cb-pass", "cb-crt", "cb-super-pass"]
         daemon_set_label = "app=cr-rotate"
         all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label]
         gluu_config_maps_names = ["casacm", "updatelbip", "gluu"]

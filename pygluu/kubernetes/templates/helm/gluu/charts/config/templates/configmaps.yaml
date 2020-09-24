@@ -33,6 +33,8 @@ data:
   GLUU_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
   GLUU_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
   GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
+  GLUU_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}
+  GLUU_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbaseSuperUserPassFile | quote }}
   {{- end }}
   GLUU_KEY_ROTATION_FORCE: "false"
   GLUU_KEY_ROTATION_CHECK: "3600"

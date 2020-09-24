@@ -64,6 +64,8 @@ configMapGenerator:
       # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
       - GLUU_COUCHBASE_URL=COUCHBASEURL
       - GLUU_COUCHBASE_USER=CBUSER
+      - GLUU_COUCHBASE_SUPERUSER=CBSUPER
+      - GLUU_COUCHBASE_SUPERUSER_PASSWORD_FILE="/etc/gluu/conf/couchbase_superuser_password"
       - GLUU_COUCHBASE_CERT_FILE="/etc/certs/couchbase.crt"
       - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"
       - GLUU_OXD_APPLICATION_CERT_CN="oxd-server"

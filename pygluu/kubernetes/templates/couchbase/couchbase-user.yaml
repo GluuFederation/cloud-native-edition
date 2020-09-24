@@ -1,0 +1,10 @@
+apiVersion: couchbase.com/v2
+kind: CouchbaseUser
+metadata:
+  name: gluu
+  labels:
+    cluster: my-cluster
+spec:
+  fullName: "Gluu Cloud Native"
+  authDomain: local
+  authSecret: gluu-couchbase-user-password
