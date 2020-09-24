@@ -693,12 +693,22 @@ def volumes():
         form.app_volume_type.choices = volume_type["choices"]
         form.app_volume_type.default = volume_type["default"]
         form.app_volume_type.validators = [DataRequired()]
+    else:
+        del form.app_volume_type
 
     if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
         ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
         form.ldap_jackrabbit_volume.label = ldap_volume["label"]
         form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
         form.ldap_jackrabbit_volume.validators = [DataRequired()]
+    else:
+        del form.ldap_jackrabbit_volume
+    
+    # TODO: find a way to apply dynamic validation
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        form.ldap_storage_size.validators = [InputRequired()]
+    else:
+        form.ldap_storage_size.validators = [Optional()]
 
     if form.validate_on_submit():
         data = {"APP_VOLUME_TYPE": settings.get("APP_VOLUME_TYPE")}
@@ -726,11 +736,6 @@ def volumes():
 
         return redirect(url_for(next_step))
 
-    # TODO: find a way to apply dynamic validation
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        form.ldap_storage_size.validators = [InputRequired()]
-    else:
-        form.ldap_storage_size.validators = [Optional()]
 
     if request.method == "GET":
         form = populate_form_data(form)
