@@ -132,7 +132,7 @@ class Prompt:
         self.load_settings()
         couchbase = PromptCouchbase(self.settings)
         if not self.settings.get("DEPLOY_MULTI_CLUSTER") and self.settings.get("PERSISTENCE_BACKEND") in (
-                "hybrid", "couchbase"):
+                "hybrid", "couchbase") and self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
             couchbase.prompt_couchbase_multi_cluster()
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
             couchbase.prompt_couchbase()
