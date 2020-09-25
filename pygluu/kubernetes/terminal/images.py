@@ -48,7 +48,7 @@ class PromptImages:
             # LDAP
             if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                     self.settings.get("PERSISTENCE_BACKEND") == "ldap":
-                prompt_and_set_setting("WrenDS", "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
+                prompt_and_set_setting("OpenDJ", "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
             # Jackrabbit
             prompt_and_set_setting("jackrabbit", "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
             # OXAUTH

@@ -14,7 +14,7 @@ secrets:
 
 image:
   repository: gluufederation/jackrabbit
-  tag: 4.2.1_01
+  tag: 4.2.1_02
   pullPolicy: Always
   
 storage:

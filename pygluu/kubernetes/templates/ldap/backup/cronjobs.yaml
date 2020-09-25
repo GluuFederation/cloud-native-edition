@@ -13,7 +13,7 @@ spec:
         spec:
           containers:
             - name: backup
-              image: gluufederation/wrends:4.2.1_01
+              image: gluufederation/opendj:4.2.1_02
               envFrom:
                 - configMapRef:
                     name: opendj-backup-cm

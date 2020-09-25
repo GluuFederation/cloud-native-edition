@@ -5,7 +5,7 @@ replicas: 1
 
 image:
   repository: gluufederation/oxpassport
-  tag: 4.2.1_01
+  tag: 4.2.1_02
   pullPolicy: Always
 
 nameOverride: ""

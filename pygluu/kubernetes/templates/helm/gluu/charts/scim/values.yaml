@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 image:
   repository: gluufederation/scim
-  tag: 4.2.1_01
+  tag: 4.2.1_02
   pullPolicy: Always
 
 #Resources for the deployment

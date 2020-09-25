@@ -21,7 +21,7 @@ spec:
       containers:
       - name: scim
         imagePullPolicy: Always
-        image: gluufederation/scim:4.2.1_01
+        image: gluufederation/scim:4.2.1_02
         command:
           - /bin/sh
           - -c

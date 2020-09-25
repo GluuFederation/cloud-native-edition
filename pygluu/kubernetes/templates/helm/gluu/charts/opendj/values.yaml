@@ -9,8 +9,8 @@ replicas: 1
 service:
   ldapServiceName: opendj
 image:
-  repository: gluufederation/wrends
-  tag: 4.2.1_01
+  repository: gluufederation/opendj
+  tag: 4.2.1_02
   pullPolicy: Always
   
 persistence:

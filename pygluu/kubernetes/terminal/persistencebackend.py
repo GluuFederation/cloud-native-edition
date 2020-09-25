@@ -31,9 +31,9 @@ class PromptPersistenceBackend:
             print("|------------------------------------------------------------------|")
             print("|                     Persistence layer                            |")
             print("|------------------------------------------------------------------|")
-            print("| [1] WrenDS [default]                                             |")
+            print("| [1] OpenDJ [default]                                             |")
             print("| [2] Couchbase                                                    |")
-            print("| [3] Hybrid(WrenDS + Couchbase)                                   |")
+            print("| [3] Hybrid(OpenDJ + Couchbase)                                   |")
             print("|------------------------------------------------------------------|")
 
             choice = click.prompt("Persistence layer", default=1)

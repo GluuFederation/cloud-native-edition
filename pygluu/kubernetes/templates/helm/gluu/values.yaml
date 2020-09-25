@@ -1,6 +1,3 @@
-# License terms and conditions for Gluu Cloud Native Edition:
-# https://www.apache.org/licenses/LICENSE-2.0
-#global values to be used across charts
 global:
   istio:
     ingress: false
@@ -10,8 +7,6 @@ global:
     ingress: false
   cloud:
     testEnviroment: false
-  # OpenDJ and Jackrabbit storage class
-  # microk8s.io/hostpath, k8s.io/minikube-hostpath, kubernetes.io/aws-ebs, dobs.csi.digitalocean.com, openebs.io/local
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4
@@ -19,93 +14,59 @@ global:
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
   reclaimPolicy: Retain
-  # Networking configs
-  lbIp: "" # SHOULD BE CHANGED FOR CLOUD
+  lbIp: ""
   domain: demoexample.gluu.org
-  # specify if the domain above is registered or not.
-  isDomainRegistered: "false" # "true" or "false"
-  #persistence types and options
-  # options: ldap/couchbase/hybrid
+  isDomainRegistered: "false"
   gluuPersistenceType: couchbase
   gluuJackrabbitCluster: "true"
-  # Enable installation of services
   oxauth:
     enabled: true
-
   fido2:
     enabled: false
-
   scim:
     enabled: false
-
   config:
     enabled: true
-
   jackrabbit:
     enabled: true
-
   persistence:
     enabled: true
-
   oxtrust:
     enabled: true
-
   opendj:
     enabled: true
-
   oxshibboleth:
     enabled: false
-
   oxd-server:
-    enabled: false 
-
+    enabled: false
   nginx-ingress:
     enabled: true
-
   oxauth-key-rotation:
     enabled: false
-
   cr-rotate:
-    enabled: false  
-
-# Required environment variables for generating Gluu server initial config
-# values for config-init sub-chart
+    enabled: false
 config:
   orgName: Gluu
-  # email address of the administrator usually. Used for certificate creation
   email: support@gluu.com
-  # adminPass is administrator password for oxTrust
   adminPass: P@ssw0rd
-  # ldapPass is the password for LDAP
   ldapPass: P@ssw0rd
-  #redisPass is the password for redis admin if used
   redisPass: P@assw0rd
-  # organisation location details
   countryCode: US
   state: TX
   city: Austin
   configmap:
     gluuOxdApplicationCertCn: oxd-server
     gluuOxdAdminCertCn: oxd-server
-    # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-    # NOTE: For the CB instalation please check the documentation
     gluuCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     gluuCouchbasePass: P@ssw0rd
     gluuCouchbaseSuperUserPass: P@ssw0rd
     gluuCouchbaseSuperUser: admin
-    # gluuCouchbaseUrl is the couchbase service name
     gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
     gluuCouchbaseUser: gluu
-    # gluuCouchbasePassFile is the location of password file for gluu user.
     gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
     gluuCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password
-
-    # gluuCouchbaseCertFile location of
     gluuCouchbaseCertFile: /etc/certs/couchbase.crt
-    # options: default/user/site/cache/statistic
-    # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
     gluuPersistenceLdapMapping: default
-    # options REDIS/NATIVE_PERSISTENCE
     gluuCacheType: NATIVE_PERSISTENCE
     gluuSyncShibManifests: false
     gluuSyncCasaManifests: false
@@ -113,7 +74,6 @@ config:
     configAdapterName: kubernetes
     containerMetadataName: kubernetes
     configSecretAdapter: kubernetes
-    # If REDIS is the Cache Type or if going to be used with oxd
     gluuRedisUrl: redis:6379
     gluuRedisUseSsl: "false"
     gluuRedisType: STANDALONE
@@ -124,7 +84,6 @@ config:
     gluuOxdServerUrl: oxd-server:8443
     gluuOxdBindIpAddresses: "*"
     gluuLdapUrl: opendj:1636
-    # Jackrabbit content repository
     gluuJackrabbitPostgresUser: jackrabbit
     gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     gluuJackrabbitPostgresDatabaseName: jackrabbit
@@ -135,40 +94,29 @@ config:
     gluuJackrabbitSyncInterval: 300
     gluuJackrabbitUrl: http://jackrabbit:8080
     gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
-    # Options LOCAL / JCA (jackrabbit)
     gluuDocumentStoreType: JCA
-    lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
+    lbAddr: ""
     ldapServiceName: opendj
     gluuOxtrustApiEnabled: false
     gluuOxtrustApiTestMode: false
-    # Auto install other services. If enabled the respective service chart will be installed
     gluuPassportEnabled: false
     gluuCasaEnabled: false
     gluuRadiusEnabled: false
     gluuSamlEnabled: false
-
   image:
     repository: gluufederation/config-init
-    tag: 4.2.1_01
+    tag: 4.2.1_02
   resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 500Mi
-    # requests:
-    #   cpu: 500m
-    #   memory: 500Mi
-
 nginx-ingress:
-  # ingress resources
   ingress:
     enabled: true
     path: /
     hosts:
-      - demoexample.gluu.org
+    - demoexample.gluu.org
     tls:
     - secretName: tls-certificate # DON'T change
       hosts:
-        - demoexample.gluu.org
+      - demoexample.gluu.org
 
 jackrabbit:
   service:
@@ -180,9 +128,8 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 1500m
@@ -190,20 +137,16 @@ jackrabbit:
     requests:
       cpu: 1500m
       memory: 1000Mi
-
 opendj:
-  # options true/false : must be enabled if cache type is REDIS
   service:
     ldapServiceName: opendj
   replicas: 1
   persistence:
     size: 5Gi
-
   image:
-    repository: gluufederation/wrends
-    tag: 4.2.1_01
+    repository: gluufederation/opendj
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 1500m
@@ -211,31 +154,20 @@ opendj:
     requests:
       cpu: 1500m
       memory: 2000Mi
-
-# persistence layer
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 500Mi
-    # requests:
-    #   cpu: 500m
-    #   memory: 500Mi
-
 oxauth:
   service:
     oxAuthServiceName: oxauth
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 2500m
@@ -243,16 +175,14 @@ oxauth:
     requests:
       cpu: 2500m
       memory: 2500Mi
-
 oxtrust:
   service:
     oxTrustServiceName: oxtrust
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 1000m
@@ -260,16 +190,14 @@ oxtrust:
     requests:
       cpu: 1000m
       memory: 1000Mi
-
 fido2:
   service:
     fido2ServiceName: fido2
   replicas: 1
   image:
     repository: gluufederation/fido2
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 500m
@@ -277,15 +205,13 @@ fido2:
     requests:
       cpu: 500m
       memory: 500Mi
-
 scim:
   service:
     scimServiceName: scim
   image:
     repository: gluufederation/scim
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 1000m
@@ -293,17 +219,14 @@ scim:
     requests:
       cpu: 1000m
       memory: 1000Mi
-
 oxd-server:
   service:
-    # This must match config.configMap.gluuOxdApplicationCertCn
     oxdServerServiceName: oxd-server
   replicas: 1
   image:
     repository: gluufederation/oxd-server
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 1000m
@@ -311,15 +234,13 @@ oxd-server:
     requests:
       cpu: 1000m
       memory: 400Mi
-
-# oxd-server has to be enabled to install Casa
 casa:
   service:
     casaServiceName: casa
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     requests:
@@ -328,65 +249,57 @@ casa:
     limits:
       memory: "500Mi"
       cpu: "500m"
-
-# oxpassport service installation is dependant on boolean value dependant set in persistence.configmap.gluuPassportEnabled
 oxpassport:
   service:
     oxPassportServiceName: oxpassport
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 700m
       memory: 900Mi
     requests:
       cpu: 700m
       memory: 900Mi
-
 oxshibboleth:
   service:
     oxShibbolethServiceName: oxshibboleth
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 1000m
       memory: 1000Mi
     requests:
       cpu: 1000m
       memory: 1000Mi
-
 radius:
   service:
     radiusServiceName: radius
   replicas: 1
   image:
     repository: gluufederation/radius
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
-  resources: 
+  resources:
     limits:
       cpu: 700m
       memory: 700Mi
     requests:
       cpu: 700m
       memory: 700Mi
-
 cr-rotate:
   service:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -395,15 +308,12 @@ cr-rotate:
     requests:
       cpu: 200m
       memory: 200Mi
-
 oxauth-key-rotation:
-  # Keys life in hours
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.2.1_01
+    tag: 4.2.1_02
     pullPolicy: Always
-  # default resource limits
   resources:
     limits:
       cpu: 300m

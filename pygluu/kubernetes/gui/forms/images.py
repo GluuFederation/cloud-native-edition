@@ -83,11 +83,11 @@ class ImageNameTagForm(FlaskForm):
         default=settings.get("CERT_MANAGER_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_name = StringField(
-        "WrenDS image name",
+        "OpenDJ image name",
         default=settings.get("LDAP_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_tag = StringField(
-        "WrenDS image tag",
+        "OpenDJ image tag",
         default=settings.get("LDAP_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     jackrabbit_image_name = StringField(

@@ -15,23 +15,33 @@ def determine_final_official_and_dev_version(tag_list):
     @param tag_list:
     @return:
     """
+    # Check for the highest major.minor.patch i.e 4.2.0 vs 4.2.1
+    versions_list = []
+    for tag in tag_list:
+        versions_list.append(int(tag[4:5]))
+    # Remove duplicates
+    versions_list = list(set(versions_list))
+    # Sort
+    versions_list.sort()
+    highest_major_minor_patch_number = str(versions_list[-1])
     versions_list = []
     for tag in tag_list:
         # Exclude any tag with the following
-        if "dev" not in tag:
+        if "dev" not in tag and int(tag[4:5] == highest_major_minor_patch_number):
             versions_list.append(int(tag[6:8]))
     # Remove duplicates
     versions_list = list(set(versions_list))
     # Sort
     versions_list.sort()
     # Return highest patch
-    highest_major_minor_patch = str(versions_list[-1])
-    if len(highest_major_minor_patch) == 1:
-        highest_major_minor_patch = "0" + highest_major_minor_patch
+    highest_major_minor_patch_image_patch = str(versions_list[-1])
+    if len(highest_major_minor_patch_image_patch) == 1:
+        highest_major_minor_patch_image_patch = "0" + highest_major_minor_patch_image_patch
 
     highest_major_minor_patch_image = ""
     for tag in tag_list:
-        if "dev" not in tag and highest_major_minor_patch in tag:
+        if "dev" not in tag and highest_major_minor_patch_image_patch in tag \
+                and int(tag[4:5] == highest_major_minor_patch_number):
             highest_major_minor_patch_image = tag
 
     return highest_major_minor_patch_image, highest_major_minor_patch_image[0:5] + "_dev"
@@ -150,7 +160,7 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             update_dicts_and_yamls("CACHE_REFRESH_ROTATE", repo, tag_list)
         elif repo == "certmanager":
             update_dicts_and_yamls("CERT_MANAGER", repo, tag_list, "oxauth-key-rotation")
-        elif repo == "wrends":
+        elif repo == "opendj":
             update_dicts_and_yamls("LDAP", repo, tag_list, "opendj")
         elif repo == "jackrabbit":
             update_dicts_and_yamls("JACKRABBIT", repo, tag_list)
@@ -182,7 +192,7 @@ def main():
     all_repos_tags = dict()
     org = os.environ.get("ORG_NAME", "gluufederation")
     gluu_docker_repositories_names_used_in_cn = ["casa", "fido2", "scim", "config-init",
-                                                 "cr-rotate", "certmanager", "wrends", "jackrabbit", "oxauth",
+                                                 "cr-rotate", "certmanager", "opendj", "jackrabbit", "oxauth",
                                                  "oxd-server", "oxpassport", "oxshibboleth",
                                                  "oxtrust", "persistence", "radius", "gluu-gateway",
                                                  "gluu-gateway-ui", "upgrade"]
