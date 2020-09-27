@@ -1,6 +1,8 @@
+from gevent import monkey
+monkey.patch_all()
+
 import argparse
 import logging
-import multiprocessing
 import os
 import re
 from flask import Flask
@@ -13,6 +15,9 @@ from pygluu.kubernetes.helpers import copy_templates
 
 
 class GluuApp(gunicorn.app.base.BaseApplication):
+    """
+    Gunicorn app initialization
+    """
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
@@ -69,18 +74,21 @@ def create_app():
 
     return app
 
-def number_of_workers():
-    return (multiprocessing.cpu_count() * 2) + 1
 
 def parse_args(args=None):
+    """
+    Arguments :
+        -H --host : define hostname
+        -p --port : define port
+        -d --debug : override debug value default is False
+    :param args:
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", default="0.0.0.0")
     parser.add_argument("-p", "--port", type=int, default=5000)
     parser.add_argument("-d", "--debug", action="store_true", default=False,
                         help="Enable/Disable debug (default: false)")
-    parser.add_argument("-w", "--workers",
-                        default=number_of_workers(),
-                        help="number of workers")
     return parser.parse_args(args)
 
 
@@ -88,35 +96,23 @@ def main():
     """
     App initialization with parser to handle argument from CLI
 
-    Arguments :
-        -H --host : define hostname
-        -p --port : define port
-        -d --debug : override debug value default is False
-
     Note :
         web logs and socketio is disabled to avoid mixing with system logs
         this make easier to read system logs.
     """
     args = parse_args()
-    host = args.host
-    port = args.port
-    debug = args.debug
-    workers = args.workers
-
     copy_templates()
     app = create_app()
-    app.config["DEBUG"] = debug
+
     app.logger.disabled = True
-    log = logging.getLogger('werkzeug')
+    logging.getLogger('werkzeug').disabled = True
     logging.getLogger('socketio').setLevel(logging.ERROR)
     logging.getLogger('engineio').setLevel(logging.ERROR)
-    log.disabled = True
 
-    # app.run(host=host, port=port, debug=debug)
     options = {
-        'bind': '%s:%s' % (host, port),
-        'workers': workers,
-        'worker_class': 'gthread'
+        'bind': '%s:%s' % (args.host, args.port),
+        'worker_class': 'gevent',
+        "debug": args.debug
     }
 
     GluuApp(app, options).run()
