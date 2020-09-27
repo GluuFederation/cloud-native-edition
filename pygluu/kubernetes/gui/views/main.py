@@ -274,14 +274,9 @@ def installer_logs():
 
         logs = Pygtail("./setup.log", paranoid=True)
         for log in logs.readlines():
-            if data[0] == "ERROR":
-                emit("response", {"title": data[0],
-                                  "log": log,
-                                  "status": data[0]})
-            else:
-                emit("response", {"title": data[0],
-                                  "log": log,
-                                  "status": data[1]})
+            emit("response", {"title": data[0],
+                              "log": log,
+                              "status": data[1]})
 
     if not installer.queue.empty():
         data = installer.queue.get()
