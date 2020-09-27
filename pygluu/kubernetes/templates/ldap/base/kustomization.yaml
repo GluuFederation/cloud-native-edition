@@ -8,5 +8,5 @@ resources:
   - statefulsets.yaml
   - services.yaml
 images:
-  - name: gluufederation/wrends
-    newTag: 4.2.1_01
+  - name: gluufederation/opendj
+    newTag: 4.2.1_02

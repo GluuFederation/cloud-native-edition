@@ -89,11 +89,18 @@ class PromptCouchbase:
                         f".cluster.local",
             ))
 
+        if not self.settings.get("COUCHBASE_SUPERUSER"):
+            self.settings.set("COUCHBASE_SUPERUSER", click.prompt("Please enter couchbase superuser username.",
+                                                                  default="admin"))
+
+        if not self.settings.get("COUCHBASE_SUPERUSER_PASSWORD"):
+            self.settings.set("COUCHBASE_SUPERUSER_PASSWORD", prompt_password("Couchbase superuser"))
+
         if not self.settings.get("COUCHBASE_USER"):
-            self.settings.set("COUCHBASE_USER", click.prompt("Please enter couchbase username.", default="admin"))
+            self.settings.set("COUCHBASE_USER", click.prompt("Please enter gluu couchbase username.", default="gluu"))
 
         if not self.settings.get("COUCHBASE_PASSWORD"):
-            self.settings.set("COUCHBASE_PASSWORD", prompt_password("Couchbase"))
+            self.settings.set("COUCHBASE_PASSWORD", prompt_password("Couchbase Gluu user"))
 
         self.find_couchbase_certs_or_set_san_cn()
 

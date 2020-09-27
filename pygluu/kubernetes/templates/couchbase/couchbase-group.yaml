@@ -1,0 +1,59 @@
+apiVersion: couchbase.com/v2
+kind: CouchbaseGroup
+metadata:
+  name: gluu-group
+  labels:
+    cluster: CLUSTERNAME
+spec:
+  roles:
+  - name: query_select
+    bucket: gluu
+  - name: query_select
+    bucket: gluu_site
+  - name: query_select
+    bucket: gluu_user
+  - name: query_select
+    bucket: gluu_cache
+  - name: query_select
+    bucket: gluu_token
+  - name: query_select
+    bucket: gluu_session
+
+  - name: query_update
+    bucket: gluu
+  - name: query_update
+    bucket: gluu_site
+  - name: query_update
+    bucket: gluu_user
+  - name: query_update
+    bucket: gluu_cache
+  - name: query_update
+    bucket: gluu_token
+  - name: query_update
+    bucket: gluu_session
+
+  - name: query_insert
+    bucket: gluu
+  - name: query_insert
+    bucket: gluu_site
+  - name: query_insert
+    bucket: gluu_user
+  - name: query_insert
+    bucket: gluu_cache
+  - name: query_insert
+    bucket: gluu_token
+  - name: query_insert
+    bucket: gluu_session
+
+  - name: query_delete
+    bucket: gluu
+  - name: query_delete
+    bucket: gluu_site
+  - name: query_delete
+    bucket: gluu_user
+  - name: query_delete
+    bucket: gluu_cache
+  - name: query_delete
+    bucket: gluu_token
+  - name: query_delete
+    bucket: gluu_session

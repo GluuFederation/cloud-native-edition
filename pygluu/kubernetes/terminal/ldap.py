@@ -32,7 +32,7 @@ class PromptLdap:
 
         if self.settings.get("HYBRID_LDAP_HELD_DATA") not in hybrid_ldap_map.values():
             print("|------------------------------------------------------------------|")
-            print("|                     Hybrid [WrendDS + Couchbase]                 |")
+            print("|                     Hybrid [OpenDJ + Couchbase]                 |")
             print("|------------------------------------------------------------------|")
             print("| [1] Default                                                      |")
             print("| [2] User                                                         |")

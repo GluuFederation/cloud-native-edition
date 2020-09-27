@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: kong-migration
-          image: gluufederation/gluu-gateway:4.2.1_01
+          image: gluufederation/gluu-gateway:4.2.1_02
           env:
             - name: KONG_DATABASE
               value: "postgres"

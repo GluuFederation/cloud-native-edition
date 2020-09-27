@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: persistence-load-job
-          image: gluufederation/persistence:4.2.1_01
+          image: gluufederation/persistence:4.2.1_02
           envFrom:
           - configMapRef:
               name: gluu-config-cm
@@ -18,6 +18,9 @@ spec:
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
+            - name: cb-super-pass
+              mountPath: "/etc/gluu/conf/couchbase_superuser_password"
+              subPath: couchbase_superuser_password
             - name: cb-crt
               mountPath: "/etc/certs/couchbase.crt"
               subPath: couchbase.crt
@@ -25,6 +28,9 @@ spec:
       - name: cb-pass
         secret:
           secretName: cb-pass
+      - name: cb-super-pass
+        secret:
+          secretName: cb-super-pass
       - name: cb-crt
         secret:
           secretName: cb-crt

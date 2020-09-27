@@ -1,0 +1,11 @@
+apiVersion: couchbase.com/v2
+kind: CouchbaseRoleBinding
+metadata:
+  name: gluu-role-binding
+spec:
+  subjects:
+  - kind: CouchbaseUser
+    name: gluu
+  roleRef:
+    kind: CouchbaseGroup
+    name: gluu-group

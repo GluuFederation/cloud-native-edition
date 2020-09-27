@@ -25,7 +25,7 @@ spec:
       containers:
       - name: oxshibboleth
         imagePullPolicy: Always
-        image: gluufederation/oxshibboleth:4.2.1_01
+        image: gluufederation/oxshibboleth:4.2.1_02
         command:
           - /bin/sh
           - -c
