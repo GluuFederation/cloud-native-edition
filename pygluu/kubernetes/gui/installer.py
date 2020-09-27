@@ -85,8 +85,14 @@ class InstallHandler(object):
                 helm = Helm()
 
                 if self.settings.get("INSTALL_REDIS") == "Y" or \
-                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                        self.settings.get("JACKRABBIT_CLUSTER") == "Y":
                     helm.install_kubedb()
+                    helm.install_kubedb()
+
+                if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+                    kustomize = Kustomize(self.timeout)
+                    kustomize.deploy_postgres()
 
                 if self.settings.get("INSTALL_REDIS") == "Y":
                     kustomize = Kustomize(self.timeout)
