@@ -66,7 +66,8 @@ def initialize():
     if not session.get('finish_endpoint'):
         return redirect(url_for('main.index'))
 
-    if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/license":
+    if not settings.get("ACCEPT_GLUU_LICENSE") and \
+            request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
         return redirect(url_for("wizard.agreement"))
 
 
