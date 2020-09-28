@@ -1,4 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+"""
+pygluu.kubernetes.gui.views.main
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This module contain gui views as main page of gui installer
+
+License terms and conditions for Gluu Cloud Native Edition:
+https://www.apache.org/licenses/LICENSE-2.0
+"""
+from flask import Blueprint, render_template, \
+    redirect, url_for, request, session
 from flask_socketio import emit
 from pygtail import Pygtail
 from pygluu.kubernetes.settings import SettingsHandler
@@ -25,7 +35,7 @@ def install():
             installer.target = "install"
             installer.run_install()
 
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -33,7 +43,7 @@ def install():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -45,7 +55,7 @@ def install_no_wait():
             installer.timeout = 0
             installer.target = "install"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -53,7 +63,7 @@ def install_no_wait():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -64,7 +74,7 @@ def install_ldap_backup():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-ldap-backup"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -72,7 +82,7 @@ def install_ldap_backup():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -83,7 +93,7 @@ def install_kubedb():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-kubedb"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -93,7 +103,7 @@ def install_kubedb():
 
     # validating settings.json
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         return redirect(url_for("wizard.setting_summary"))
 
@@ -104,7 +114,7 @@ def install_gg_dbmode():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-gg-dbmode"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
@@ -114,7 +124,7 @@ def install_gg_dbmode():
 
     # validating settings.json
     if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.license"))
+        return redirect(url_for("wizard.agreement"))
     else:
         if validating_gg_settings():
             return redirect(url_for("wizard.setting_summary"))
@@ -128,14 +138,14 @@ def install_couchbase():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-couchbase"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-couchbase-backup", methods=["GET", "POST"])
@@ -144,14 +154,14 @@ def install_couchbase_backup():
         if request.form["install_confirm"] == "Y":
             installer.target = "install-couchbase-backup"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install-gg-dbmode", methods=["GET", "POST"])
@@ -160,14 +170,14 @@ def helm_install_gg_dbmode():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install-gg-dbmode"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install", methods=["GET", "POST"])
@@ -176,14 +186,14 @@ def helm_install():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/helm-install-gluu", methods=["GET", "POST"])
@@ -192,14 +202,14 @@ def helm_install_gluu():
         if request.form["install_confirm"] == "Y":
             installer.target = "helm-install-gluu"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "helm"
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/generate-settings", methods=["GET", "POST"])
@@ -212,7 +222,7 @@ def generate_settings():
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/upgrade", methods=["GET", "POST"])
@@ -221,13 +231,13 @@ def upgrade():
         if request.form["install_confirm"] == "Y":
             installer.target = "upgrade"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/restore", methods=["GET", "POST"])
@@ -236,13 +246,13 @@ def restore():
         if request.form["install_confirm"] == "Y":
             installer.target = "restore"
             installer.run_install()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
         else:
             settings.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    return redirect(url_for("wizard.license"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/uninstall", methods=["POST"])
@@ -251,7 +261,7 @@ def uninstall():
         if request.form["uninstall_confirm"] == "Y":
             installer.target = request.form["target"]
             installer.run_uninstall()
-            return render_template("install/kustomize.html")
+            return render_template("installation.html")
 
 
 @socketio.on("install", namespace="/logs")
@@ -264,15 +274,16 @@ def installer_logs():
 
         logs = Pygtail("./setup.log", paranoid=True)
         for log in logs.readlines():
-            if data[0] == "ERROR":
-                emit("response", {"title": data[0], "log": data[1], "status": data[0]})
-            else:
-                emit("response", {"title": data[0], "log": log, "status": data[1]})
+            emit("response", {"title": data[0],
+                              "log": log,
+                              "status": data[1]})
 
     if not installer.queue.empty():
         data = installer.queue.get()
 
-    emit("response", {"title": data[0], "status": data[1]})
+    logs = Pygtail("./setup.log", paranoid=True)
+    for log in logs.readlines():
+        emit("response", {"title": data[0], "log": log, "status": data[1]})
 
 
 @socketio.on("disconnect", namespace="/logs")

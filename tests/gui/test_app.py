@@ -32,15 +32,3 @@ def test_parse_args_port(mock_kube_load, given, expected):
 
     args = parse_args(given)
     assert args.port == expected
-
-
-@pytest.mark.parametrize("given, expected", [
-    ([], False),
-    (["-d"], True),
-    (["--debug"], True),
-])
-def test_parse_args_debug(mock_kube_load, given, expected):
-    from pygluu.kubernetes.gui.app import parse_args
-
-    args = parse_args(given)
-    assert args.debug is expected
