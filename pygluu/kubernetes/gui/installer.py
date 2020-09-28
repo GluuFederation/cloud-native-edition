@@ -29,7 +29,8 @@ class InstallHandler(object):
             os.unlink('./setup.log.offset')
         Pygtail("./setup.log", paranoid=True).readlines()
 
-        self.thread = threading.Thread(target=self.do_installation, args=(self.target,))
+        self.thread = threading.Thread(target=self.do_installation,
+                                       args=(self.target,))
         self.thread.daemon = True
         self.thread.start()
 
@@ -38,7 +39,8 @@ class InstallHandler(object):
         if log_offset.exists():
             os.unlink('./setup.log.offset')
 
-        self.thread = threading.Thread(target=self.do_uninstall, args=(self.target,))
+        self.thread = threading.Thread(target=self.do_uninstall,
+                                       args=(self.target,))
         self.thread.daemon = True
         self.thread.start()
 
@@ -83,8 +85,14 @@ class InstallHandler(object):
                 helm = Helm()
 
                 if self.settings.get("INSTALL_REDIS") == "Y" or \
-                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                        self.settings.get("JACKRABBIT_CLUSTER") == "Y":
                     helm.install_kubedb()
+                    helm.install_kubedb()
+
+                if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+                    kustomize = Kustomize(self.timeout)
+                    kustomize.deploy_postgres()
 
                 if self.settings.get("INSTALL_REDIS") == "Y":
                     kustomize = Kustomize(self.timeout)
@@ -122,78 +130,71 @@ class InstallHandler(object):
 
             self.queue.put((complete_message, 'COMPLETED'))
             os.remove('./setup.log.offset')
-        except Exception as exc:
+        except:
             if self.queue:
-                self.queue.put(("ERROR", str(traceback.format_exc()), "ERROR"))
+                self.queue.put(("Oops! Something went wrong",  "ERROR"))
             else:
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
-                logger.debug(f"Uncaught error={exc}")
 
     def do_uninstall(self, target):
-        try:
-            if target == "uninstall":
-                logger.info("Removing all Gluu resources...")
-                self.queue.put(('Uninstall in progress', 'ONPROGRESS'))
-                kustomize = Kustomize(self.timeout)
-                kustomize.uninstall()
-                if self.settings.get("INSTALL_REDIS") == "Y" or \
-                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-                    self.queue.put(('Uninstall kube-db', 'ONPROGRESS'))
-                    helm = Helm()
-                    helm.uninstall_kubedb()
-
-            elif target == "uninstall-gg-dbmode":
-                self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
-                kustomize = Kustomize(self.timeout)
-                kustomize.uninstall_kong()
-                kustomize.uninstall_gluu_gateway_ui()
-
-            elif target == "uninstall-couchbase":
-                self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
-                couchbase = Couchbase()
-                couchbase.uninstall()
-
-            elif target == "helm-uninstall":
-                kustomize = Kustomize(self.timeout)
-                helm = Helm()
-                self.queue.put(('Uninstall gluu', 'ONPROGRESS'))
-                helm.uninstall_gluu()
-                self.queue.put(('Uninstall nginx ingress', 'ONPROGRESS'))
-                helm.uninstall_nginx_ingress()
-                self.queue.put(('Uninstall gluu gateway db mode', 'ONPROGRESS'))
-                helm.uninstall_gluu_gateway_dbmode()
-                self.queue.put(('Uninstall gluu gateway ui', 'ONPROGRESS'))
-                helm.uninstall_gluu_gateway_ui()
-                logger.info("Please wait...")
-                time.sleep(30)
-                self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
-                kustomize.uninstall()
+        if target == "uninstall":
+            logger.info("Removing all Gluu resources...")
+            self.queue.put(('Uninstall in progress', 'ONPROGRESS'))
+            kustomize = Kustomize(self.timeout)
+            kustomize.uninstall()
+            if self.settings.get("INSTALL_REDIS") == "Y" or \
+                    self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
                 self.queue.put(('Uninstall kube-db', 'ONPROGRESS'))
+                helm = Helm()
                 helm.uninstall_kubedb()
 
-            elif target == "helm-uninstall-gg-dbmode":
-                self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
-                kustomize = Kustomize(self.timeout)
-                kustomize.uninstall_postgres()
-                helm = Helm()
-                helm.uninstall_gluu_gateway_dbmode()
-                helm.uninstall_gluu_gateway_ui()
+        elif target == "uninstall-gg-dbmode":
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
+            kustomize = Kustomize(self.timeout)
+            kustomize.uninstall_kong()
+            kustomize.uninstall_gluu_gateway_ui()
 
-            elif target == "helm-uninstall-gluu":
-                helm = Helm()
-                self.queue.put(('Uninstall in progress', 'ONPROGRESS'))
-                helm.uninstall_gluu()
+        elif target == "uninstall-couchbase":
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
+            couchbase = Couchbase()
+            couchbase.uninstall()
 
-            self.queue.put(('Uninstall Completed', 'COMPLETED'))
+        elif target == "helm-uninstall":
+            kustomize = Kustomize(self.timeout)
+            helm = Helm()
+            self.queue.put(('Uninstall gluu', 'ONPROGRESS'))
+            helm.uninstall_gluu()
+            self.queue.put(('Uninstall nginx ingress', 'ONPROGRESS'))
+            helm.uninstall_nginx_ingress()
+            self.queue.put(('Uninstall gluu gateway db mode',
+                            'ONPROGRESS'))
+            helm.uninstall_gluu_gateway_dbmode()
+            self.queue.put(('Uninstall gluu gateway ui', 'ONPROGRESS'))
+            helm.uninstall_gluu_gateway_ui()
+            logger.info("Please wait...")
+            time.sleep(30)
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
+            kustomize.uninstall()
+            self.queue.put(('Uninstall kube-db', 'ONPROGRESS'))
+            helm.uninstall_kubedb()
 
-            log_offset = Path("./setup.log.offset")
-            if log_offset.exists():
-                os.unlink("./setup.log.offset")
-        except Exception as exc:
-            if self.queue:
-                self.queue.put(("ERROR", "", str(traceback.format_exc())))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-                logger.debug(f"Uncaught error={exc}")
+        elif target == "helm-uninstall-gg-dbmode":
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
+            kustomize = Kustomize(self.timeout)
+            kustomize.uninstall_postgres()
+            helm = Helm()
+            helm.uninstall_gluu_gateway_dbmode()
+            helm.uninstall_gluu_gateway_ui()
+
+        elif target == "helm-uninstall-gluu":
+            helm = Helm()
+            self.queue.put(('Uninstall in progress', 'ONPROGRESS'))
+            helm.uninstall_gluu()
+
+        self.queue.put(('Uninstall Completed', 'COMPLETED'))
+
+        log_offset = Path("./setup.log.offset")
+        if log_offset.exists():
+            os.unlink("./setup.log.offset")
+

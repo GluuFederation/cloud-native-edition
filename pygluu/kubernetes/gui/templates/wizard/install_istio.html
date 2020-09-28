@@ -10,5 +10,7 @@
 </div>
 
 {% if form.use_istio_ingress %}
+  <div id="istio_lb" class="collapse {{ 'show' if form.use_istio_ingress.data == 'Y' else '' }}">
     {{ forms.text(form.lb_add) }}
+  </div>
 {% endif %}

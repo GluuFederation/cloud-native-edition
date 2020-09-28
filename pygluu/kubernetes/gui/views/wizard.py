@@ -13,24 +13,24 @@ import base64
 
 from pathlib import Path
 from flask import current_app
-from flask import Blueprint, jsonify, make_response, render_template, \
+from flask import Blueprint, render_template, \
     request, redirect, url_for, session
 from wtforms.validators import InputRequired, Optional, DataRequired
 from werkzeug.utils import secure_filename
 
 from pygluu.kubernetes.helpers import get_supported_versions, \
     exec_cmd, generate_password
-from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import SettingsHandler
 from pygluu.kubernetes.helpers import get_logger
 from ..forms.architecture import DeploymentArchForm
 from ..forms.backup import CouchbaseBackupForm, LdapBackupForm
 from ..forms.cache import CacheTypeForm
 from ..forms.configuration import ConfigurationForm
-from ..forms.couchbase import CouchbaseForm, CouchbaseCalculatorForm, CouchbaseMultiClusterForm
+from ..forms.couchbase import CouchbaseForm, \
+    CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
 from ..forms.gluugateway import GluuGatewayForm
-from ..forms.helpers import volume_types
+from ..forms.helpers import volume_types, app_volume_types
 from ..forms.images import ImageNameTagForm
 from ..forms.istio import IstioForm
 from ..forms.jackrabbit import JackrabbitForm
@@ -43,10 +43,10 @@ from ..forms.version import VersionForm
 from ..forms.volumes import VolumeForm
 from ..forms.helm import HelmForm
 from ..forms.upgrade import UpgradeForm
+from ..helpers import determine_ip_nodes
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 logger = get_logger("gluu-gui")
-kubernetes = Kubernetes()
 settings = SettingsHandler()
 
 test_arch = ("microk8s", "minikube")
@@ -66,8 +66,9 @@ def initialize():
     if not session.get('finish_endpoint'):
         return redirect(url_for('main.index'))
 
-    if not settings.get("ACCEPT_GLUU_LICENSE") and request.path != "/license":
-        return redirect(url_for("wizard.license"))
+    if not settings.get("ACCEPT_GLUU_LICENSE") and \
+            request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
+        return redirect(url_for("wizard.agreement"))
 
 
 @wizard_blueprint.context_processor
@@ -76,39 +77,99 @@ def inject_wizard_steps():
     inject wizard_step variable to Jinja
     """
     wizard_steps = [
-        {"title": "License", "url": url_for("wizard.license")},
-        {"title": "Gluu version", "url": url_for("wizard.gluu_version")},
-        {"title": "Deployment architecture", "url": url_for("wizard.deployment_arch")},
-        {"title": "Gluu namespace", "url": url_for("wizard.gluu_namespace")},
-        {"title": "Optional Services", "url": url_for("wizard.optional_services")},
-        {"title": "Gluu gateway", "url": url_for("wizard.gluu_gateway")},
-        {"title": "Install jackrabbit", "url": url_for("wizard.install_jackrabbit")},
-        {"title": "Install Istio", "url": url_for("wizard.install_istio")},
-        {"title": "Environment Setting", "url": url_for("wizard.environment")},
-        {"title": "Persistence backend", "url": url_for("wizard.persistence_backend")},
-        {"title": "Volumes", "url": url_for("wizard.volumes")},
-        {"title": "Couchbase multi cluster", "url": url_for("wizard.couchbase_multi_cluster")},
-        {"title": "Couchbase", "url": url_for("wizard.couchbase")},
-        {"title": "Couchbase calculator", "url": url_for("wizard.couchbase_calculator")},
-        {"title": "Cache type", "url": url_for("wizard.cache_type")},
-        {"title": "Backup", "url": url_for("wizard.backup")},
-        {"title": "Configuration", "url": url_for("wizard.configuration")},
-        {"title": "Images", "url": url_for("wizard.images")},
-        {"title": "Replicas", "url": url_for("wizard.replicas")}
+        {
+            "title": "License",
+            "url": url_for("wizard.agreement")
+        },
+        {
+            "title": "Gluu version",
+            "url": url_for("wizard.gluu_version")
+        },
+        {
+            "title": "Deployment architecture",
+            "url": url_for("wizard.deployment_arch")
+        },
+        {
+            "title": "Gluu namespace",
+            "url": url_for("wizard.gluu_namespace")
+        },
+        {
+            "title": "Optional Services",
+            "url": url_for("wizard.optional_services")
+        },
+        {
+            "title": "Gluu gateway",
+            "url": url_for("wizard.gluu_gateway")
+        },
+        {
+            "title": "Install jackrabbit",
+            "url": url_for("wizard.install_jackrabbit")
+        },
+        {
+            "title": "Install Istio",
+            "url": url_for("wizard.install_istio")
+        },
+        {
+            "title": "Environment Setting",
+            "url": url_for("wizard.environment")
+        },
+        {
+            "title": "Persistence backend",
+            "url": url_for("wizard.persistence_backend")
+        },
+        {
+            "title": "Volumes",
+            "url": url_for("wizard.volumes")
+        },
+        {
+            "title": "Couchbase multi cluster",
+            "url": url_for("wizard.couchbase_multi_cluster")
+        },
+        {
+            "title": "Couchbase",
+            "url": url_for("wizard.couchbase")
+        },
+        {
+            "title": "Couchbase calculator",
+            "url": url_for("wizard.couchbase_calculator")
+        },
+        {
+            "title": "Cache type",
+            "url": url_for("wizard.cache_type")
+        },
+        {
+            "title": "Backup",
+            "url": url_for("wizard.backup")
+        },
+        {
+            "title": "Configuration",
+            "url": url_for("wizard.configuration")
+        },
+        {
+            "title": "Images",
+            "url": url_for("wizard.images")
+        },
+        {
+            "title": "Replicas",
+            "url": url_for("wizard.replicas")
+        }
     ]
 
     if session["finish_endpoint"] == "main.helm_install":
-        wizard_steps.append({"title": "Helm Configuration", "url": url_for("wizard.helm_config")})
+        wizard_steps.append({
+            "title": "Helm Configuration",
+            "url": url_for("wizard.helm_config")})
 
     if session["finish_endpoint"] == "main.upgrade":
-        wizard_steps.append({"title": "Upgrade Version", "url": url_for("wizard.upgrade")})
+        wizard_steps.append({
+            "title": "Upgrade Version",
+            "url": url_for("wizard.upgrade")})
 
     return dict(wizard_steps=wizard_steps, total_steps=len(wizard_steps), is_wizard=True)
 
 
 @wizard_blueprint.route("/license", methods=["GET", "POST"])
-# TODO: This name should be changed to something other than license as it shadows a built in name. Perhaps agreement.
-def license():
+def agreement():
     """Input for Accepting license
     """
     form = LicenseForm()
@@ -155,7 +216,7 @@ def gluu_version():
                            form=form,
                            current_step=2,
                            template="gluu_version",
-                           prev_step="wizard.license",
+                           prev_step="wizard.agreement",
                            next_step="wizard.deployment_arch")
 
 
@@ -347,11 +408,14 @@ def gluu_gateway():
             data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
             data["ENABLE_OXD"] = "N"
-            if not settings.get("POSTGRES_NAMESPACE") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_NAMESPACE") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_NAMESPACE"] = ""
-            if not settings.get("POSTGRES_REPLICAS") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_REPLICAS") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_REPLICAS"] = ""
-            if not settings.get("POSTGRES_URL") and not settings.get("JACKRABBIT_CLUSTER"):
+            if not settings.get("POSTGRES_URL") and \
+                    not settings.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_URL"] = ""
             data["KONG_NAMESPACE"] = ""
             data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
@@ -403,7 +467,8 @@ def install_jackrabbit():
     form = JackrabbitForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data, "JACKRABBIT_URL": form.jackrabbit_url.data,
+        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data,
+                "JACKRABBIT_URL": form.jackrabbit_url.data,
                 "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
                 "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
                 "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
@@ -456,6 +521,12 @@ def install_istio():
     use_istio_ingress field will be required except for microk8s and minikube
     """
     form = IstioForm()
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        del form.use_istio_ingress
+        form.lb_add.validators = [Optional()]
+    else:
+        form.use_istio_ingress.validators = [DataRequired()]
+
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         data = {}
@@ -476,11 +547,6 @@ def install_istio():
         settings.update(data)
         return redirect(url_for(next_step))
 
-    if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        del form.use_istio_ingress
-    else:
-        form.use_istio_ingress.validators = [DataRequired()]
-
     if request.method == "GET":
         form = populate_form_data(form)
 
@@ -498,6 +564,19 @@ def environment():
     Environment Setting
     """
     form = EnvironmentForm()
+    # TODO: find a way to apply dynamic validation
+    if settings.get("DEPLOYMENT_ARCH") == "gke":
+        form.gmail_account.validators.append(InputRequired())
+    else:
+        form.gmail_account.validators.append(Optional())
+
+    environment = determine_ip_nodes()
+
+    if settings.get("DEPLOYMENT_ARCH") in test_arch:
+        form.host_ext_ip.data = environment['ip']
+    else:
+        del form.host_ext_ip
+
     if form.validate_on_submit():
         data = {}
         next_step = request.form['next_step']
@@ -510,7 +589,14 @@ def environment():
                 settings.get("DEPLOYMENT_ARCH") in local_arch:
             data["NODE_SSH_KEY"] = form.node_ssh_key.data
 
-        data["HOST_EXT_IP"] = form.host_ext_ip.data
+        if settings.get("DEPLOYMENT_ARCH") in test_arch:
+            data["HOST_EXT_IP"] = form.host_ext_ip.data
+        else:
+            data["HOST_EXT_IP"] = environment["ip"]
+
+        data["NODES_NAMES"] = environment["NODES_NAMES"]
+        data["NODES_ZONES"] = environment["NODES_ZONES"]
+        data["NODES_IPS"] = environment["NODES_IPS"]
 
         # prompt AWS
         if settings.get("DEPLOYMENT_ARCH") == "eks":
@@ -536,14 +622,10 @@ def environment():
         settings.update(data)
         return redirect(url_for(next_step))
 
-    # TODO: find a way to apply dynamic validation
-    if settings.get("DEPLOYMENT_ARCH") == "gke":
-        form.gmail_account.validators.append(InputRequired())
-    else:
-        form.gmail_account.validators.append(Optional())
-
     if request.method == "GET":
         form = populate_form_data(form)
+        if form.host_ext_ip:
+            form.host_ext_ip.data = environment['ip']
 
     return render_template("wizard/index.html",
                            settings=settings.db,
@@ -580,9 +662,9 @@ def persistence_backend():
             elif settings.get("DEPLOYMENT_ARCH") == "minikube":
                 settings.set("APP_VOLUME_TYPE", 2)
 
-        if not settings.get("DEPLOY_MULTI_CLUSTER") and \
-                settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            next_step = 'wizard.couchbase_multi_cluster'
+        if settings.get("DEPLOYMENT_ARCH") in test_arch and \
+                settings.get("PERSISTENCE_BACKEND") == "couchbase":
+            next_step = 'wizard.couchbase'
 
         return redirect(url_for(next_step))
 
@@ -604,6 +686,31 @@ def volumes():
     App Volume type Setting
     """
     form = VolumeForm()
+
+    if settings.get("DEPLOYMENT_ARCH") and \
+            settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        volume_type = app_volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.app_volume_type.label = volume_type["label"]
+        form.app_volume_type.choices = volume_type["choices"]
+        form.app_volume_type.default = volume_type["default"]
+        form.app_volume_type.validators = [DataRequired()]
+    else:
+        del form.app_volume_type
+
+    if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
+        form.ldap_jackrabbit_volume.label = ldap_volume["label"]
+        form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
+        form.ldap_jackrabbit_volume.validators = [DataRequired()]
+    else:
+        del form.ldap_jackrabbit_volume
+    
+    # TODO: find a way to apply dynamic validation
+    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        form.ldap_storage_size.validators = [InputRequired()]
+    else:
+        form.ldap_storage_size.validators = [Optional()]
+
     if form.validate_on_submit():
         data = {"APP_VOLUME_TYPE": settings.get("APP_VOLUME_TYPE")}
         if not data["APP_VOLUME_TYPE"]:
@@ -630,11 +737,6 @@ def volumes():
 
         return redirect(url_for(next_step))
 
-    # TODO: find a way to apply dynamic validation
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        form.ldap_storage_size.validators = [InputRequired()]
-    else:
-        form.ldap_storage_size.validators = [Optional()]
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -848,7 +950,7 @@ def cache_type():
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             return redirect(url_for('wizard.configuration'))
 
-        return redirect(request.form["next_step"])
+        return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -909,8 +1011,12 @@ def backup():
 def configuration():
     form = ConfigurationForm()
     if form.validate_on_submit():
-        data = {"GLUU_FQDN": form.gluu_fqdn.data, "COUNTRY_CODE": form.country_code.data, "STATE": form.state.data,
-                "CITY": form.city.data, "EMAIL": form.email.data, "ORG_NAME": form.org_name.data,
+        data = {"GLUU_FQDN": form.gluu_fqdn.data,
+                "COUNTRY_CODE": form.country_code.data,
+                "STATE": form.state.data,
+                "CITY": form.city.data,
+                "EMAIL": form.email.data,
+                "ORG_NAME": form.org_name.data,
                 "ADMIN_PW": form.admin_pw.data}
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
@@ -1147,60 +1253,6 @@ def quit_settings():
         settings.reset_data()
 
     return redirect(url_for('main.index'))
-
-
-@wizard_blueprint.route("/determine_ip", methods=["GET"])
-def determine_ip():
-    """
-    Attempts to detect and return ip automatically.
-    Also set node names, zones, and addresses in a cloud deployment.
-    :return:
-    """
-    ip = ""
-    try:
-        node_ip_list = []
-        node_zone_list = []
-        node_name_list = []
-        node_list = kubernetes.list_nodes().items
-
-        for node in node_list:
-            node_name = node.metadata.name
-            node_addresses = kubernetes.read_node(name=node_name).status.addresses
-            if settings.get("DEPLOYMENT_ARCH") in test_arch:
-                for add in node_addresses:
-                    if add.type == "InternalIP":
-                        ip = add.address
-                        node_ip_list.append(ip)
-            else:
-                for add in node_addresses:
-                    if add.type == "ExternalIP":
-                        ip = add.address
-                        node_ip_list.append(ip)
-
-                # Digital Ocean does not provide zone support yet
-                if settings.get("DEPLOYMENT_ARCH") != "do" or \
-                        settings.get("DEPLOYMENT_ARCH") != "local":
-                    node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
-                    node_zone_list.append(node_zone)
-                node_name_list.append(node_name)
-
-        settings.set("NODES_NAMES", node_name_list)
-        settings.set("NODES_ZONES", node_zone_list)
-        settings.set("NODES_IPS", node_ip_list)
-
-        if settings.get("DEPLOYMENT_ARCH") in ["eks", "gke", "do", "local", "aks"]:
-            #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
-            ip = "22.22.22.22"
-        data = {"status": True,
-                'ip_address': ip,
-                "message": "Is this the correct external IP address?"}
-    except Exception as e:
-        logger.error(e)
-        # prompt for user-inputted IP address
-        logger.warning("Cannot determine IP address")
-        data = {"status": False, 'message': "Cannot determine IP address"}
-
-    return make_response(jsonify(data), 200)
 
 
 def populate_form_data(form):
