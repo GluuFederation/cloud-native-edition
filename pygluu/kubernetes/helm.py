@@ -284,6 +284,8 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings.get("JACKRABBIT_URL")
             values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitAdminPass"] = \
                 self.settings.get("JACKRABBIT_ADMIN_PASSWORD")
+            values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitPostgresPass"] = \
+                self.settings.get("JACKRABBIT_PG_PASSWORD")
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
             values_file_parser["global"]["istio"]["ingress"] = True
             values_file_parser["global"]["istio"]["enabled"] = True
@@ -305,9 +307,9 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = \
                 self.settings.get("JACKRABBIT_PG_USER")
             values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresDatabaseName"] = \
-                self.settings.get("POSTGRES_URL")
-            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresHost"] = \
                 self.settings.get("JACKRABBIT_DATABASE")
+            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresHost"] = \
+                self.settings.get("POSTGRES_URL")
             values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = \
                 self.settings.get("JACKRABBIT_PG_USER")
 

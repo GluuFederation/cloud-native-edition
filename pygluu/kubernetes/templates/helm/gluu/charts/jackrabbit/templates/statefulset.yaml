@@ -27,6 +27,9 @@ spec:
         - name: gluu-jackrabbit-admin-pass
           secret:
             secretName: gluu-jackrabbit-admin-pass
+        - name: gluu-jackrabbit-postgres-pass
+          secret:
+            secretName: gluu-jackrabbit-postgres-pass
       {{- end }}
       containers:
       - name: {{ include "jackrabbit.fullname" . }}
@@ -44,6 +47,9 @@ spec:
           - name: gluu-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
+          - name: gluu-jackrabbit-postgres-pass
+            mountPath: /etc/gluu/conf/postgres_password
+            subPath: postgres_password
         {{- end }}
         {{- range $key, $values := .Values.volumeMounts }}
           - mountPath: {{$values.mountPath}}
