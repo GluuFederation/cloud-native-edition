@@ -1,4 +1,4 @@
-{% if settings["DEPLOYMENT_ARCH"] in ["microk8s", "minikube"] %}
+{% if settings["DEPLOYMENT_ARCH"] not in ["microk8s", "minikube"] %}
   {{ forms.radio(form.test_environment) }}
   <div class="alert alert-warning collapse {{ 'show' if form.test_environment.data == 'Y' else ''}}" role="alert">
     <p>A test environment means that the installer will strip all resource requirements, and hence will use as much as needed only. The pods are subject to eviction. Please use at least 8GB Ram , 4 CPU, and 50 GB disk.</p>

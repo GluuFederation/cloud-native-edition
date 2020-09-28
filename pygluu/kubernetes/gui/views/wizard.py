@@ -582,7 +582,7 @@ def environment():
         next_step = request.form['next_step']
 
         if not settings.get("TEST_ENVIRONMENT") and \
-                settings.get("DEPLOYMENT_ARCH") in test_arch:
+                settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["TEST_ENVIRONMENT"] = form.test_environment.data
 
         if settings.get("DEPLOYMENT_ARCH") in cloud_arch or \
