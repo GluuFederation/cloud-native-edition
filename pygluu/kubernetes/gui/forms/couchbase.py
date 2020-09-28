@@ -76,6 +76,19 @@ class CouchbaseForm(FlaskForm):
         "Please enter  couchbase (remote or local) URL base name",
         default="cbgluu.cbns.svc.cluster.local",
         validators=[InputRequired()])
+    couchbase_superuser = StringField("Please enter couchbase superuser username",
+                                      default="admin",
+                                      validators=[InputRequired()])
+    couchbase_superuser_password = StringField(
+        "Couchbase superuser password",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(), password_requirement_check()],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
+    couchbase_superuser_password_confirmation = StringField(
+        "Couchbase superuser password confirm",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(), EqualTo("couchbase_superuser_password")])
     couchbase_user = StringField("Please enter couchbase username",
                                  default="admin",
                                  validators=[InputRequired()])

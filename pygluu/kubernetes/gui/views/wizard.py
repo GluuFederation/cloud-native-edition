@@ -824,6 +824,8 @@ def couchbase():
         data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
         data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
         data["COUCHBASE_URL"] = form.couchbase_url.data
+        data["COUCHBASE_SUPERUSER"] = form.couchbase_superuser.data
+        data["COUCHBASE_SUPERUSER_PASSWORD"] = form.couchbase_superuser_password.data
         data["COUCHBASE_USER"] = form.couchbase_user.data
         data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
 
@@ -861,6 +863,12 @@ def couchbase():
                 form.couchbase_password_confirmation.data = generate_password()
         else:
             form.couchbase_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
+
+        if not settings.get("COUCHBASE_SUPERUSER_PASSWORD"):
+            form.couchbase_superuser_password.data = \
+                form.couchbase_superuser_password_confirmation.data = generate_password()
+        else:
+            form.couchbase_superuser_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
 
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             form.couchbase_use_low_resources.validators = [Optional()]
