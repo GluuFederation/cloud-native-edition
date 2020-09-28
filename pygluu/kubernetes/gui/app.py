@@ -80,15 +80,12 @@ def parse_args(args=None):
     Arguments :
         -H --host : define hostname
         -p --port : define port
-        -d --debug : override debug value default is False
     :param args:
     :return:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", default="0.0.0.0")
     parser.add_argument("-p", "--port", type=int, default=5000)
-    parser.add_argument("-d", "--debug", action="store_true", default=False,
-                        help="Enable/Disable debug (default: false)")
     return parser.parse_args(args)
 
 
@@ -111,8 +108,7 @@ def main():
 
     options = {
         'bind': '%s:%s' % (args.host, args.port),
-        'worker_class': 'gevent',
-        "debug": args.debug
+        'worker_class': 'gevent'
     }
 
     GluuApp(app, options).run()
