@@ -150,13 +150,13 @@ class InstallHandler(object):
                 helm.uninstall_kubedb()
 
         elif target == "uninstall-gg-dbmode":
-            self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             kustomize = Kustomize(self.timeout)
             kustomize.uninstall_kong()
             kustomize.uninstall_gluu_gateway_ui()
 
         elif target == "uninstall-couchbase":
-            self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             couchbase = Couchbase()
             couchbase.uninstall()
 
@@ -174,13 +174,13 @@ class InstallHandler(object):
             helm.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
-            self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             kustomize.uninstall()
             self.queue.put(('Uninstall kube-db', 'ONPROGRESS'))
             helm.uninstall_kubedb()
 
         elif target == "helm-uninstall-gg-dbmode":
-            self.queue.put(('Uninstallation in progress', 'ONPROGRESS'))
+            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             kustomize = Kustomize(self.timeout)
             kustomize.uninstall_postgres()
             helm = Helm()

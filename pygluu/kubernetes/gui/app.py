@@ -18,6 +18,7 @@ class GluuApp(gunicorn.app.base.BaseApplication):
     """
     Gunicorn app initialization
     """
+
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
