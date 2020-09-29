@@ -33,13 +33,11 @@ class VolumeForm(FlaskForm):
         "Please enter Persistent Disk Name or EBS Volume ID for LDAP",
         description="EBS Volume ID example: vol-049df61146c4d7901 "
                     "Persistent Disk Name example: "
-                    "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd",
-        render_kw={"disabled": "disabled"})
+                    "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
     ldap_static_disk_uri = StringField(
         "Please enter the disk uri for LDAP",
         description="DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
-                    "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk",
-        render_kw={"disabled": "disabled"})
+                    "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
     ldap_jackrabbit_volume = RadioField("", choices=[])
     ldap_storage_size = StringField("Size of ldap volume storage",
                                     default="4Gi")

@@ -257,15 +257,15 @@
       {% endif %}
 
       {% if template == "app_volume_type" %}
-        $('input[name="app_volume_type"]').on('change', function(){
-          if($(this).val() == 8 || $(this).val() == 13){
+        volumeShowHide = function(app_volume){
+          if(app_volume == 8 || app_volume == 13){
             $('#ldap_static_volume_id').prop("disabled", false);
             $('#ldap_static_volume_id').parents('.form-group').collapse("show");
             $('#ldap_static_disk_uri').prop("disabled", true);
             $('#ldap_static_disk_uri').parents('.form-group').collapse("hide");
-          }else if($(this).val() == 18){
+          }else if(app_volume == 18){
             $('#ldap_static_volume_id').prop("disabled", true);
-            $('#ldap_static_volume_id').parents('.form-group').collapse("false");
+            $('#ldap_static_volume_id').parents('.form-group').collapse("hide");
             $('#ldap_static_disk_uri').prop("disabled", false);
             $('#ldap_static_disk_uri').parents('.form-group').collapse("show");
           }else{
@@ -274,6 +274,22 @@
             $('#ldap_static_disk_uri').prop("disabled", true);
             $('#ldap_static_disk_uri').parents('.form-group').collapse("hide");
           }
+
+          if([7, 12, 17].includes(parseInt(app_volume))){
+            $("#ldapVolume").show()
+          }else{
+            $("#ldapVolume").hide()
+          }
+        }
+
+        var app_volume = $('input[name="app_volume_type"]:checked').val()
+        if(app_volume){
+          volumeShowHide(app_volume)
+        }
+
+        $('input[name="app_volume_type"]').on('change', function(){
+          var app_volume = $(this).val()
+          volumeShowHide(app_volume)
         });
       {% endif %}
 

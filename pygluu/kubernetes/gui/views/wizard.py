@@ -30,7 +30,8 @@ from ..forms.couchbase import CouchbaseForm, \
     CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
 from ..forms.gluugateway import GluuGatewayForm
-from ..forms.helpers import volume_types, app_volume_types
+from ..forms.helpers import volume_types, app_volume_types, \
+    RequiredIfFieldIn, RequiredIfFieldEqualTo
 from ..forms.images import ImageNameTagForm
 from ..forms.istio import IstioForm
 from ..forms.jackrabbit import JackrabbitForm
@@ -701,29 +702,42 @@ def volumes():
         ldap_volume = volume_types[settings.get("DEPLOYMENT_ARCH")]
         form.ldap_jackrabbit_volume.label = ldap_volume["label"]
         form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
-        form.ldap_jackrabbit_volume.validators = [DataRequired()]
+        form.ldap_jackrabbit_volume.validators = [RequiredIfFieldIn('app_volume_type', [7, 12, 17])]
     else:
         del form.ldap_jackrabbit_volume
     
     # TODO: find a way to apply dynamic validation
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+            form.ldap_static_volume_id.validators = [RequiredIfFieldIn("app_volume_type", [8, 13])]
+            form.ldap_static_disk_uri.validators = [RequiredIfFieldIn("app_volume_type", [18])]
         form.ldap_storage_size.validators = [InputRequired()]
     else:
         form.ldap_storage_size.validators = [Optional()]
+        if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+            del form.ldap_static_volume_id
+            del form.ldap_static_disk_uri
 
     if form.validate_on_submit():
         data = {"APP_VOLUME_TYPE": settings.get("APP_VOLUME_TYPE")}
-        if not data["APP_VOLUME_TYPE"]:
+        if form.app_volume_type:
             data["APP_VOLUME_TYPE"] = form.app_volume_type.data
 
         if data["APP_VOLUME_TYPE"] in (8, 13):
             data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
+        else:
+            data["LDAP_STATIC_VOLUME_ID"] = ""
 
         if data["APP_VOLUME_TYPE"] == 18:
             data["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
+        else:
+            data["LDAP_STATIC_DISK_URI"] = ""
 
-        if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+                form.ldap_jackrabbit_volume.data and data["APP_VOLUME_TYPE"] in [7, 12, 17]:
             data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
+        else:
+            data["LDAP_JACKRABBIT_VOLUME"] = ""
 
         if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             data["LDAP_STORAGE_SIZE"] = form.ldap_storage_size.data
