@@ -109,3 +109,27 @@ class RequiredIfFieldEqualTo(DataRequired):
         if other_field.data == self.value:
             super(RequiredIfFieldEqualTo, self).__call__(form, field)
         Optional()(form, field)
+
+
+class RequiredIfFieldIn(DataRequired):
+    """
+    A validator which makes a field optional if
+    another field has a desired value
+    """
+
+    def __init__(self, other_field_name, values, *args, **kwargs):
+        self.other_field_name = other_field_name
+        self.values = values
+        super(RequiredIfFieldIn, self).__init__(*args, **kwargs)
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.other_field_name)
+        if other_field is None:
+            raise Exception('no field named "%s" in form' % self.other_field_name)
+
+        if type(self.values) is not list:
+            raise Exception('object values is not an array')
+
+        if other_field.data in self.values:
+            super(RequiredIfFieldIn, self).__call__(form, field)
+        Optional()(form, field)

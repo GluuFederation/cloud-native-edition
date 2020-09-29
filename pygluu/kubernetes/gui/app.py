@@ -7,6 +7,7 @@ import os
 import re
 from flask import Flask
 import gunicorn.app.base
+from werkzeug.debug import DebuggedApplication
 
 from .extensions import csrf, socketio
 from pygluu.kubernetes.gui.views.main import main_blueprint
@@ -81,12 +82,15 @@ def parse_args(args=None):
     Arguments :
         -H --host : define hostname
         -p --port : define port
+        -d --debug : override debug value default is False
     :param args:
     :return:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", default="0.0.0.0")
     parser.add_argument("-p", "--port", type=int, default=5000)
+    parser.add_argument("-d", "--debug", action="store_true", default=False,
+                        help="Enable/Disable debug (default: false)")
     return parser.parse_args(args)
 
 
@@ -107,9 +111,14 @@ def main():
     logging.getLogger('socketio').setLevel(logging.ERROR)
     logging.getLogger('engineio').setLevel(logging.ERROR)
 
+    if args.debug:
+        app.config.update(DEBUG=args.debug)
+        app = DebuggedApplication(app, evalex=False)
+
     options = {
         'bind': '%s:%s' % (args.host, args.port),
-        'worker_class': 'gevent'
+        'worker_class': 'gevent',
+        'reload': args.debug
     }
 
     GluuApp(app, options).run()
