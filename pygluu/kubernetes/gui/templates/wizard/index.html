@@ -180,7 +180,7 @@
       {% endif %}
 
       {% if template == "install_istio" %}
-        $('input[name="use_istio"').on('change', function(){
+        $('input[name="use_istio"]').on('change', function(){
           if($(this).val() == 'Y'){
             $('#istioNamespace').collapse('show');
            }else{
@@ -188,11 +188,16 @@
            }
         });
 
-        $('input[name="use_istio_ingress"').on('change', function(){
+        $('input[name="use_istio_ingress"]').on('change', function(){
           if($(this).val() == 'Y'){
            $('#istio_lb').collapse('show');
+           $('#istio').collapse('hide');
+           $('#use_istio-0').prop("checked", true).trigger("change");
+
           }else{
            $('#istio_lb').collapse('hide');
+           $('#istio').collapse('show');
+           $('#use_istio-1').prop("checked", true).trigger("change");
           }
         });
       {% endif %}
