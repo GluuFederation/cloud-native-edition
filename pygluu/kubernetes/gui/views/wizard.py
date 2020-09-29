@@ -517,7 +517,6 @@ def install_jackrabbit():
 def install_istio():
     """
     Setup Istio
-
     Note:
     use_istio_ingress field will be required except for microk8s and minikube
     """
@@ -533,30 +532,24 @@ def install_istio():
         data = {}
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
+            data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
             if data["USE_ISTIO_INGRESS"] == "Y":
-                data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
                 data["ENABLED_SERVICES_LIST"].append('gluu-istio-ingress')
                 data["LB_ADD"] = form.lb_add.data
+                data["USE_ISTIO"] = "Y"
+            else:
+                data["USE_ISTIO"] = form.use_istio.data
+                if 'gluu-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
+                    data["ENABLED_SERVICES_LIST"].remove('gluu-istio-ingress')
+                data["LB_ADD"] = ""
 
-        data["USE_ISTIO"] = form.use_istio.data
-        if data["USE_ISTIO"] == "N":
-            del form.istio_system_namespace
-            data["ISTIO_SYSTEM_NAMESPACE"] = ""
-        else:
+        if data["USE_ISTIO"] == "Y":
             data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
+        else:
+            data["ISTIO_SYSTEM_NAMESPACE"] = ""
 
         settings.update(data)
         return redirect(url_for(next_step))
-
-    if request.method == "GET":
-        form = populate_form_data(form)
-
-    return render_template("wizard/index.html",
-                           form=form,
-                           current_step=8,
-                           template="install_istio",
-                           prev_step="wizard.install_jackrabbit",
-                           next_step="wizard.environment")
 
 
 @wizard_blueprint.route("/environment", methods=["GET", "POST"])
