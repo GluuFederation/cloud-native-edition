@@ -551,6 +551,16 @@ def install_istio():
         settings.update(data)
         return redirect(url_for(next_step))
 
+    if request.method == "GET":
+        form = populate_form_data(form)
+
+    return render_template("wizard/index.html",
+                           form=form,
+                           current_step=8,
+                           template="install_istio",
+                           prev_step="wizard.install_jackrabbit",
+                           next_step="wizard.environment")
+
 
 @wizard_blueprint.route("/environment", methods=["GET", "POST"])
 def environment():
