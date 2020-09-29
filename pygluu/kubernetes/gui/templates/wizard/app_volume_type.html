@@ -6,11 +6,14 @@
   {% endfor %}
 </fieldset>
 {% endif %}
-
-{{ forms.text(form.ldap_static_volume_id, true) }}
-{{ forms.text(form.ldap_static_disk_uri, true) }}
+{% if form.ldap_static_volume_id %}
+  {{ forms.text(form.ldap_static_volume_id, true) }}
+{% endif %}
+{% if form.ldap_static_disk_uri %}
+  {{ forms.text(form.ldap_static_disk_uri, true) }}
+{% endif %}
 {% if settings["DEPLOYMENT_ARCH"] in ("eks", "gke", "aks") %}
-  <fieldset id="ldapVolume" class="form-group">
+  <fieldset id="ldapVolume" class="form-group collapse">
     <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.ldap_jackrabbit_volume.label }}</h6>
     {% for choice in form.ldap_jackrabbit_volume %}
       {{ forms.single_radio(choice) }}
