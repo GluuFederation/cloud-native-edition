@@ -76,17 +76,30 @@ class CouchbaseForm(FlaskForm):
         "Please enter  couchbase (remote or local) URL base name",
         default="cbgluu.cbns.svc.cluster.local",
         validators=[InputRequired()])
-    couchbase_user = StringField("Please enter couchbase username",
-                                 default="admin",
+    couchbase_superuser = StringField("Please enter couchbase superuser username",
+                                      default="admin",
+                                      validators=[InputRequired()])
+    couchbase_superuser_password = StringField(
+        "Couchbase superuser password",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(), password_requirement_check()],
+        description="Password is randomly generated with 6 characters contain "
+                    "number, uppercase letter, lower case letter and symbol")
+    couchbase_superuser_password_confirmation = StringField(
+        "Couchbase superuser password confirm",
+        widget=PasswordInput(hide_value=False),
+        validators=[InputRequired(), EqualTo("couchbase_superuser_password")])
+    couchbase_user = StringField("Please enter gluu couchbase username",
+                                 default="gluu",
                                  validators=[InputRequired()])
     couchbase_password = StringField(
-        "Couchbase password",
+        "Couchbase gluu user password",
         widget=PasswordInput(hide_value=False),
         validators=[InputRequired(), password_requirement_check()],
         description="Password is randomly generated with 6 characters contain "
                     "number, uppercase letter, lower case letter and symbol")
     couchbase_password_confirmation = StringField(
-        "Couchbase password confirm",
+        "Couchbase gluu user password confirm",
         widget=PasswordInput(hide_value=False),
         validators=[InputRequired(), EqualTo("couchbase_password")])
     couchbase_cn = StringField("Enter Couchbase certificate common name.",

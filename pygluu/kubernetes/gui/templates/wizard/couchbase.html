@@ -6,6 +6,9 @@
 {{ forms.text(form.couchbase_namespace) }}
 {{ forms.text(form.couchbase_cluster_name) }}
 {{ forms.text(form.couchbase_url) }}
+{{ forms.text(form.couchbase_superuser) }}
+{{ forms.password(form.couchbase_superuser_password) }}
+{{ forms.password(form.couchbase_superuser_password_confirmation) }}
 {{ forms.text(form.couchbase_user) }}
 {{ forms.password(form.couchbase_password) }}
 {{ forms.password(form.couchbase_password_confirmation) }}
