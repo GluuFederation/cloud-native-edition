@@ -16,19 +16,34 @@ def determine_final_official_and_dev_version(tag_list):
     @return:
     """
     # Check for the highest major.minor.patch i.e 4.2.0 vs 4.2.1
-    versions_list = []
+    dev_image = ""
+    patch_list = []
     for tag in tag_list:
-        versions_list.append(int(tag[4:5]))
+        patch_list.append(int(tag[4:5]))
     # Remove duplicates
-    versions_list = list(set(versions_list))
+    patch_list = list(set(patch_list))
     # Sort
-    versions_list.sort()
-    highest_major_minor_patch_number = str(versions_list[-1])
+    patch_list.sort()
+    highest_major_minor_patch_number = str(patch_list[-1])
     versions_list = []
     for tag in tag_list:
+        if "dev" in tag and tag[4:5] == highest_major_minor_patch_number:
+            dev_image = tag[0:5] + "_dev"
         # Exclude any tag with the following
-        if "dev" not in tag and int(tag[4:5] == highest_major_minor_patch_number):
+        if "dev" not in tag and tag[4:5] == highest_major_minor_patch_number:
             versions_list.append(int(tag[6:8]))
+    # A case were only a dev version of a new patch is avaiable then a lower stable patch should be checked.
+    # i.e there is no 4.2.2_01 but there is 4.2.2_dev
+    if not versions_list:
+        highest_major_minor_patch_number = str(int(highest_major_minor_patch_number) - 1)
+        for tag in tag_list:
+            if not dev_image and "dev" in tag and tag[4:5] == highest_major_minor_patch_number:
+                dev_image = tag[0:5] + "_dev"
+            # Exclude any tag with the following
+            if "dev" not in tag and tag[4:5] == highest_major_minor_patch_number:
+                versions_list.append(int(tag[6:8]))
+
+
     # Remove duplicates
     versions_list = list(set(versions_list))
     # Sort
@@ -41,15 +56,15 @@ def determine_final_official_and_dev_version(tag_list):
     highest_major_minor_patch_image = ""
     for tag in tag_list:
         if "dev" not in tag and highest_major_minor_patch_image_patch in tag \
-                and int(tag[4:5] == highest_major_minor_patch_number):
+                and tag[4:5] == highest_major_minor_patch_number:
             highest_major_minor_patch_image = tag
 
-    return highest_major_minor_patch_image, highest_major_minor_patch_image[0:5] + "_dev"
+    return highest_major_minor_patch_image, dev_image
 
 
 def determine_major_version(all_repos_tags):
     """
-    Determin official major version i.e 4.1 , 4.2..etc using oxauths repo
+    Determine official major version i.e 4.1 , 4.2..etc using oxauths repo
     @param all_repos_tags:
     @return:
     """
@@ -150,6 +165,8 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
         official_version, dev_version = determine_final_official_and_dev_version(tag_list)
         if repo == "casa":
             update_dicts_and_yamls("CASA", repo, tag_list)
+        elif repo == "oxd-server":
+            update_dicts_and_yamls("OXD", repo, tag_list)
         elif repo == "fido2":
             update_dicts_and_yamls("FIDO2", repo, tag_list)
         elif repo == "scim":
