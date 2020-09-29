@@ -27,9 +27,7 @@ spec:
         command:
           - /bin/sh
           - -c
-          - |
-              /usr/bin/python3 /scripts/updatelbip.py &
-              /app/scripts/entrypoint.sh
+          - "/usr/bin/python3 /scripts/update-lb-ip.py \n./entrypoint.sh              \n"
         {{- end}}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}

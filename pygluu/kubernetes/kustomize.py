@@ -81,8 +81,8 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
 
     exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
                          "{}/register-site".format(oxd_url), "--header",
-                         "Content-Type: application/json", "--data-raw",
-                         data]
+                         "'Content-Type: application/json'", "--data-raw",
+                         "'" + data + "'"]
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
@@ -1086,14 +1086,17 @@ class Kustomize(object):
         self.uninstall_postgres()
         self.kubernetes.create_namespace(name=self.settings.get("POSTGRES_NAMESPACE"), labels={"app": "postgres"})
         self.create_patch_secret_init_sql()
-        postgres_storage_class = Path("./postgres/storageclasses.yaml")
-        self.analyze_storage_class(postgres_storage_class)
-        self.kubernetes.create_objects_from_dict(postgres_storage_class)
+        if self.settings.get("DEPLOYMENT_ARCH") != "local":
+            postgres_storage_class = Path("./postgres/storageclasses.yaml")
+            self.analyze_storage_class(postgres_storage_class)
+            self.kubernetes.create_objects_from_dict(postgres_storage_class)
 
         postgres_yaml = Path("./postgres/postgres.yaml")
         postgres_parser = Parser(postgres_yaml, "Postgres")
         postgres_parser["spec"]["replicas"] = self.settings.get("POSTGRES_REPLICAS")
         postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            postgres_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
         postgres_parser["metadata"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") or \
                 self.settings.get("TEST_ENVIRONMENT") == "Y":
@@ -1250,9 +1253,10 @@ class Kustomize(object):
     def deploy_redis(self):
         self.uninstall_redis()
         self.kubernetes.create_namespace(name=self.settings.get("REDIS_NAMESPACE"), labels={"app": "redis"})
-        redis_storage_class = Path("./redis/storageclasses.yaml")
-        self.analyze_storage_class(redis_storage_class)
-        self.kubernetes.create_objects_from_dict(redis_storage_class)
+        if self.settings.get("DEPLOYMENT_ARCH") != "local":
+            redis_storage_class = Path("./redis/storageclasses.yaml")
+            self.analyze_storage_class(redis_storage_class)
+            self.kubernetes.create_objects_from_dict(redis_storage_class)
 
         redis_configmap = Path("./redis/configmaps.yaml")
         redis_conf_parser = Parser(redis_configmap, "ConfigMap")
@@ -1265,6 +1269,8 @@ class Kustomize(object):
         redis_parser["spec"]["cluster"]["master"] = self.settings.get("REDIS_MASTER_NODES")
         redis_parser["spec"]["cluster"]["replicas"] = self.settings.get("REDIS_NODES_PER_MASTER")
         redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            redis_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
         redis_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
             del redis_parser["spec"]["podTemplate"]["spec"]["resources"]

@@ -41,8 +41,8 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
 
     exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
                          "{}/register-site".format(oxd_url), "--header",
-                         "Content-Type: application/json", "--data-raw",
-                         data]
+                         "'Content-Type: application/json'", "--data-raw",
+                         "'" + data + "'"]
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
