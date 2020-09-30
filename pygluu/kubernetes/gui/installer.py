@@ -130,7 +130,7 @@ class InstallHandler(object):
 
             self.queue.put((complete_message, 'COMPLETED'))
             os.remove('./setup.log.offset')
-        except:
+        except Exception:
             if self.queue:
                 self.queue.put(("Oops! Something went wrong",  "ERROR"))
             else:
@@ -197,4 +197,3 @@ class InstallHandler(object):
         log_offset = Path("./setup.log.offset")
         if log_offset.exists():
             os.unlink("./setup.log.offset")
-
