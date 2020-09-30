@@ -117,8 +117,7 @@ def main():
 
     options = {
         'bind': '%s:%s' % (args.host, args.port),
-        'worker_class': 'gevent',
-        'reload': args.debug
+        'worker_class': 'gevent'
     }
 
     GluuApp(app, options).run()
