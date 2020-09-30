@@ -574,10 +574,10 @@ def environment():
     else:
         form.gmail_account.validators.append(Optional())
 
-    environment = determine_ip_nodes()
+    ip_node_data = determine_ip_nodes()
 
     if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        form.host_ext_ip.data = environment['ip']
+        form.host_ext_ip.data = ip_node_data['ip']
     else:
         del form.host_ext_ip
 
@@ -596,11 +596,11 @@ def environment():
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             data["HOST_EXT_IP"] = form.host_ext_ip.data
         else:
-            data["HOST_EXT_IP"] = environment["ip"]
+            data["HOST_EXT_IP"] = ip_node_data["ip"]
 
-        data["NODES_NAMES"] = environment["NODES_NAMES"]
-        data["NODES_ZONES"] = environment["NODES_ZONES"]
-        data["NODES_IPS"] = environment["NODES_IPS"]
+        data["NODES_NAMES"] = ip_node_data["NODES_NAMES"]
+        data["NODES_ZONES"] = ip_node_data["NODES_ZONES"]
+        data["NODES_IPS"] = ip_node_data["NODES_IPS"]
 
         # prompt AWS
         if settings.get("DEPLOYMENT_ARCH") == "eks":
@@ -629,7 +629,7 @@ def environment():
     if request.method == "GET":
         form = populate_form_data(form)
         if form.host_ext_ip:
-            form.host_ext_ip.data = environment['ip']
+            form.host_ext_ip.data = ip_node_data['ip']
 
     return render_template("wizard/index.html",
                            settings=settings.db,
