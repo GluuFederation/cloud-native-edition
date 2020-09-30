@@ -135,7 +135,7 @@ class Helm(object):
                     break
                 if self.settings.get("DEPLOYMENT_ARCH") == "eks":
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-nginx-ingress-controller",
+                        name=self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-ingress-nginx-controller",
                         namespace=self.settings.get("NGINX_INGRESS_NAMESPACE")).status.load_balancer.ingress[0].hostname
                     self.settings.set("LB_ADD", hostname_ip)
                     if self.settings.get("AWS_LB_TYPE") == "nlb":
@@ -149,7 +149,7 @@ class Helm(object):
                     break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-nginx-ingress-controller",
+                        name=self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-ingress-nginx-controller",
                         namespace=self.settings.get("NGINX_INGRESS_NAMESPACE")).status.load_balancer.ingress[0].ip
                     self.settings.set("HOST_EXT_IP", hostname_ip)
             except (TypeError, AttributeError):
@@ -173,37 +173,32 @@ class Helm(object):
             self.kubernetes.delete_cluster_role_binding(
                 self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-nginx-ingress-controller")
             try:
-                exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com")
+                exec_cmd("helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx")
+                exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com/")
                 exec_cmd("helm repo update")
             except FileNotFoundError:
                 logger.error("Helm v3 is not installed. Please install it to continue "
                              "https://helm.sh/docs/intro/install/")
                 raise SystemExit(1)
-        command = "helm install {} stable/nginx-ingress --namespace={}".format(
+        command = "helm install {} ingress-nginx/ingress-nginx --namespace={} ".format(
             self.settings.get('NGINX_INGRESS_RELEASE_NAME'), self.settings.get("NGINX_INGRESS_NAMESPACE"))
         if self.settings.get("DEPLOYMENT_ARCH") == "minikube":
             exec_cmd("minikube addons enable ingress")
         if self.settings.get("DEPLOYMENT_ARCH") == "eks":
             if self.settings.get("AWS_LB_TYPE") == "nlb":
                 if install_ingress:
-                    nlb_annotation = "--set controller.service.annotations={" \
-                                     "'service.beta.kubernetes.io/aws-load-balancer-type':'nlb'} "
+                    nlb_annotation = " --set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-type'=nlb"
                     exec_cmd(command + nlb_annotation)
             else:
                 if self.settings.get("USE_ARN") == "Y":
                     if install_ingress:
-                        arn_annotation = "'service.beta.kubernetes.io/aws-load-balancer-ssl-cert':'{}'" \
+                        arn_annotation = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert'='{}' " \
                             .format(self.settings.get("ARN_AWS_IAM"))
-                        l7_annotation = "{" + \
-                                        arn_annotation + \
-                                        ", 'service.beta.kubernetes.io/aws-load-balancer-backend" \
-                                        "-protocol':'http', " \
-                                        "'service.beta.kubernetes.io/aws-load-balancer-ssl-ports" \
-                                        "':'https', " \
-                                        "'service.beta.kubernetes.io/aws-load-balancer-connection" \
-                                        "-idle-timeout':'3600'} "
-                        exec_cmd(command + "--set controller.service.annotations=" +
-                                 l7_annotation)
+                        backend_protocol = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol'=http "
+                        ssl_ports = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports'=https "
+                        #l7_annotation = "{" + arn_annotation + "," + backend_protocol \
+                        #               + "," + ssl_ports + "," + idle_timeout + "}"
+                        exec_cmd(command + arn_annotation + backend_protocol + ssl_ports)
                 else:
                     if install_ingress:
                         exec_cmd(command)
