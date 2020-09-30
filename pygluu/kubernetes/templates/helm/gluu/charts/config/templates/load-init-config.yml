@@ -1,3 +1,4 @@
+{{- if not .Values.global.upgrade.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: batch/v1
@@ -49,4 +50,4 @@ spec:
               curl -X POST http://localhost:15020/quitquitquit
               {{- end }}
       restartPolicy: Never
-          
+{{- end }}

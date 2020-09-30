@@ -1,3 +1,4 @@
+{{- if not .Values.global.upgrade.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
@@ -40,4 +41,5 @@ reclaimPolicy: {{ .Values.global.reclaimPolicy }}
 mountOptions:
   - debug
 
+{{- end }}
 {{- end }}

@@ -7,6 +7,8 @@ global:
     ingress: false
   cloud:
     testEnviroment: false
+  upgrade:
+    enabled: false
   provisioner: k8s.io/minikube-hostpath
   pool: default
   fsType: ext4

@@ -10,6 +10,8 @@ metadata:
 spec:
   {{- if .Values.global.alb.ingress }}
   type: NodePort
+  {{- else }}
+  clusterIP: None
   {{- end }}
   ports:
   - port: {{ .Values.service.port }}
