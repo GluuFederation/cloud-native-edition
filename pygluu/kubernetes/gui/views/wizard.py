@@ -517,7 +517,6 @@ def install_jackrabbit():
 def install_istio():
     """
     Setup Istio
-
     Note:
     use_istio_ingress field will be required except for microk8s and minikube
     """
@@ -533,17 +532,21 @@ def install_istio():
         data = {}
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
+            data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
             if data["USE_ISTIO_INGRESS"] == "Y":
-                data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
                 data["ENABLED_SERVICES_LIST"].append('gluu-istio-ingress')
                 data["LB_ADD"] = form.lb_add.data
+                data["USE_ISTIO"] = "Y"
+            else:
+                data["USE_ISTIO"] = form.use_istio.data
+                if 'gluu-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
+                    data["ENABLED_SERVICES_LIST"].remove('gluu-istio-ingress')
+                data["LB_ADD"] = ""
 
-        data["USE_ISTIO"] = form.use_istio.data
-        if data["USE_ISTIO"] == "N":
-            del form.istio_system_namespace
-            data["ISTIO_SYSTEM_NAMESPACE"] = ""
-        else:
+        if data["USE_ISTIO"] == "Y":
             data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
+        else:
+            data["ISTIO_SYSTEM_NAMESPACE"] = ""
 
         settings.update(data)
         return redirect(url_for(next_step))
@@ -571,10 +574,10 @@ def environment():
     else:
         form.gmail_account.validators.append(Optional())
 
-    environment = determine_ip_nodes()
+    ip_node_data = determine_ip_nodes()
 
     if settings.get("DEPLOYMENT_ARCH") in test_arch:
-        form.host_ext_ip.data = environment['ip']
+        form.host_ext_ip.data = ip_node_data['ip']
     else:
         del form.host_ext_ip
 
@@ -593,11 +596,11 @@ def environment():
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             data["HOST_EXT_IP"] = form.host_ext_ip.data
         else:
-            data["HOST_EXT_IP"] = environment["ip"]
+            data["HOST_EXT_IP"] = ip_node_data["ip"]
 
-        data["NODES_NAMES"] = environment["NODES_NAMES"]
-        data["NODES_ZONES"] = environment["NODES_ZONES"]
-        data["NODES_IPS"] = environment["NODES_IPS"]
+        data["NODES_NAMES"] = ip_node_data["NODES_NAMES"]
+        data["NODES_ZONES"] = ip_node_data["NODES_ZONES"]
+        data["NODES_IPS"] = ip_node_data["NODES_IPS"]
 
         # prompt AWS
         if settings.get("DEPLOYMENT_ARCH") == "eks":
@@ -626,7 +629,7 @@ def environment():
     if request.method == "GET":
         form = populate_form_data(form)
         if form.host_ext_ip:
-            form.host_ext_ip.data = environment['ip']
+            form.host_ext_ip.data = ip_node_data['ip']
 
     return render_template("wizard/index.html",
                            settings=settings.db,
