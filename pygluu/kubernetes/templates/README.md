@@ -738,7 +738,7 @@ Please calculate the minimum required resources as per services deployed. The fo
     
         ```bash
         cat <<EOF | kubectl apply -f -
-        apiVersion: apps/v1
+        apiVersion: batch/v1
         kind: Job
         metadata:
           name: cloud-native-installer
