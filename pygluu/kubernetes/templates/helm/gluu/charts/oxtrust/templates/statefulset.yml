@@ -71,17 +71,19 @@ spec:
             subPath: couchbase.crt
         {{- end }}
         livenessProbe:
-          httpGet:
-            path: /identity/restv1/health-check
-            port: 8080
-          initialDelaySeconds: 45
-          periodSeconds: 45
+          exec:
+            command:
+              - python3
+              - /app/scripts/healthcheck.py
+          initialDelaySeconds: 30
+          periodSeconds: 30
         readinessProbe:
-          httpGet:
-            path: /identity/restv1/health-check
-            port: 8080
-          initialDelaySeconds: 35
-          periodSeconds: 35
+          exec:
+            command:
+              - python3
+              - /app/scripts/healthcheck.py
+          initialDelaySeconds: 25
+          periodSeconds: 25
       volumes:
       {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
         - name: gluu-jackrabbit-admin-pass
