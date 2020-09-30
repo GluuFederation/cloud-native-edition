@@ -3,5 +3,5 @@
  https://www.apache.org/licenses/LICENSE-2.0
 """
 
-__version__ = "1.2.9"
-__previous_version__ = "1.2.8"
+__version__ = "1.2.10"
+__previous_version__ = "1.2.9"

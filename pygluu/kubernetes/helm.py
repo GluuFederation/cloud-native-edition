@@ -202,6 +202,8 @@ class Helm(object):
                 else:
                     if install_ingress:
                         exec_cmd(command)
+            logger.info("Waiting for nginx to be prepared...")
+            time.sleep(60)
             self.wait_for_nginx_add()
 
         if self.settings.get("DEPLOYMENT_ARCH") == "gke" or \
@@ -210,6 +212,8 @@ class Helm(object):
                 self.settings.get("DEPLOYMENT_ARCH") == "local":
             if install_ingress:
                 exec_cmd(command)
+            logger.info("Waiting for nginx to be prepared...")
+            time.sleep(60)
             self.wait_for_nginx_add()
 
     def analyze_global_values(self):
