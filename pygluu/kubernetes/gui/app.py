@@ -67,7 +67,7 @@ def create_app():
                                   app.root_path, 'static', directory)
             files = os.listdir(folder)
             for f in files:
-                regex = name + "\.[a-z0-9]+\." + extension  # noqa: W605
+                regex = name + r"\.[a-z0-9]+\." + extension
                 if re.match(regex, f):
                     return os.path.join('/static', directory, f)
             return os.path.join('/static', filepath)

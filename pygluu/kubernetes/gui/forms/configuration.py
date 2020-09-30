@@ -96,9 +96,7 @@ class ConfigurationForm(FlaskForm):
         FQDN validation format
         """
         regex_bool = re.match(
-            '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*['
-            'A-Za-z0-9]){2,}$',
-            # noqa: W605
+            r'^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
             self.gluu_fqdn.data)
 
         if not regex_bool:

@@ -82,7 +82,7 @@ def password_requirement_check():
 
     def _password_requirement_check(form, field):
         regex_bool = re.match(
-            '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
+            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
             field.data)
         if not regex_bool:
             raise ValidationError(message)
