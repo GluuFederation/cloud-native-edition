@@ -3,7 +3,7 @@
 {{ if .Values.ingress.enabled -}}
 {{- $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-base
@@ -33,6 +33,7 @@ spec:
       http:
         paths:
           - path: {{ $ingressPath }}
+            pathType: Prefix
             backend:
               serviceName: oxtrust
               servicePort: 8080
@@ -41,7 +42,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-openid-config
@@ -70,6 +71,7 @@ spec:
       http:
         paths:
           - path: /.well-known/openid-configuration
+            pathType: Exact
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -79,7 +81,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-uma2-config
@@ -108,6 +110,7 @@ spec:
       http:
         paths:
           - path: /.well-known/uma2-configuration
+            pathType: Exact
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -117,7 +120,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webfinger
@@ -146,6 +149,7 @@ spec:
       http:
         paths:
           - path: /.well-known/webfinger
+            pathType: Exact
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -156,7 +160,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webdiscovery
@@ -185,6 +189,7 @@ spec:
       http:
         paths:
           - path: /.well-known/simple-web-discovery
+            pathType: Exact
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -195,7 +200,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-scim-config
@@ -224,6 +229,7 @@ spec:
       http:
         paths:
           - path: /.well-known/scim-configuration
+            pathType: Exact
             backend:
               serviceName: scim
               servicePort: 8080
@@ -234,7 +240,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-u2f-config
@@ -263,6 +269,7 @@ spec:
       http:
         paths:
           - path: /.well-known/fido-configuration
+            pathType: Exact
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -273,7 +280,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-fido2-configuration
@@ -302,6 +309,7 @@ spec:
       http:
         paths:
           - path: /.well-known/fido2-configuration
+            pathType: Exact
             backend:
               serviceName: fido2
               servicePort: 8080
@@ -311,7 +319,7 @@ spec:
 ---
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu
@@ -338,6 +346,7 @@ spec:
       http:
         paths:
           - path: /oxauth
+            pathType: Prefix
             backend:
               serviceName: oxauth
               servicePort: 8080
@@ -348,7 +357,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
@@ -379,14 +388,17 @@ spec:
       http:
         paths:
           - path: /identity
+            pathType: Prefix
             backend:
               serviceName: oxtrust
               servicePort: 8080
           - path: /idp
+            pathType: Prefix
             backend:
               serviceName: oxshibboleth
               servicePort: 8080
           - path: /passport
+            pathType: Prefix
             backend:
               serviceName: oxpassport
               servicePort: 8090
@@ -397,7 +409,7 @@ spec:
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
@@ -423,6 +435,7 @@ spec:
       http:
         paths:
           - path: /casa
+            pathType: Prefix
             backend:
               serviceName: casa
               servicePort: 8080
