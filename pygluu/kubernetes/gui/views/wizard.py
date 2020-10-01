@@ -197,15 +197,19 @@ def agreement():
 def gluu_version():
     """Input for Gluu versions
     """
+    versions, version_number = get_supported_versions()
+    supported_versions = [(k, k) for k in versions.keys()]
+
     form = VersionForm()
+    form.gluu_version.choices = supported_versions
+    form.gluu_version.default = version_number
+
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         settings.set("GLUU_VERSION", form.gluu_version.data)
 
         # get supported versions image name and tag
-        versions, version_number = get_supported_versions()
-        image_names_and_tags = versions.get(settings.get("GLUU_VERSION"), {})
-
+        image_names_and_tags = versions.get(form.gluu_version.data, {})
         settings.update(image_names_and_tags)
         return redirect(url_for(next_step))
 

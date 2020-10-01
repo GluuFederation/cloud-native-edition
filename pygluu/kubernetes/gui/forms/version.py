@@ -11,8 +11,6 @@ from flask_wtf import FlaskForm
 from wtforms import RadioField
 from wtforms.validators import DataRequired
 
-from pygluu.kubernetes.helpers import get_supported_versions
-
 
 class VersionForm(FlaskForm):
     """
@@ -21,14 +19,8 @@ class VersionForm(FlaskForm):
     Fields :
         gluu_version (string|required)
     """
-    versions, version_number = get_supported_versions()
-    supported_versions = []
-
-    for k, _ in versions.items():
-        supported_versions.append((k, k))
-
     gluu_version = RadioField(
         "Please select the current version of Gluu or the version to be installed",
-        choices=supported_versions,
-        default=version_number,
+        choices=[],
+        default="",
         validators=[DataRequired(message="Please select version")])
