@@ -174,8 +174,9 @@ def get_supported_versions():
         if not version_number:
             # No stable version exists
             version_number = dev_version
-        version_number = str(version_number)
-        return versions, version_number
+
+    version_number = str(version_number)
+    return versions, version_number
 
 
 def generate_password(length=6):
