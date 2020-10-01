@@ -42,10 +42,7 @@ def install():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.agreement"))
-    else:
-        return redirect(url_for("wizard.setting_summary"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-no-wait", methods=["GET", "POST"])
@@ -62,10 +59,7 @@ def install_no_wait():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.agreement"))
-    else:
-        return redirect(url_for("wizard.setting_summary"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-ldap-backup", methods=["GET", "POST"])
@@ -81,10 +75,7 @@ def install_ldap_backup():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-    if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.agreement"))
-    else:
-        return redirect(url_for("wizard.setting_summary"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-kubedb", methods=["GET", "POST"])
@@ -100,12 +91,7 @@ def install_kubedb():
 
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
-
-    # validating settings.json
-    if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
-        return redirect(url_for("wizard.agreement"))
-    else:
-        return redirect(url_for("wizard.setting_summary"))
+    return redirect(url_for("wizard.agreement"))
 
 
 @main_blueprint.route("/install-gg-dbmode", methods=["GET", "POST"])
@@ -122,14 +108,10 @@ def install_gg_dbmode():
     session["finish_endpoint"] = request.endpoint
     session["install_method"] = "kustomize"
 
-    # validating settings.json
-    if settings.is_exist() and not settings.get('ACCEPT_GLUU_LICENSE'):
+    if validating_gg_settings():
         return redirect(url_for("wizard.agreement"))
     else:
-        if validating_gg_settings():
-            return redirect(url_for("wizard.setting_summary"))
-        else:
-            return redirect(url_for("wizard.gluu_gateway"))
+        return redirect(url_for("wizard.gluu_gateway"))
 
 
 @main_blueprint.route("/install-couchbase", methods=["GET", "POST"])
