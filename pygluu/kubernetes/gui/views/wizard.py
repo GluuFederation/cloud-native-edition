@@ -530,6 +530,7 @@ def install_istio():
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         data = {}
+        data["USE_ISTIO"] = form.use_istio.data
         if settings.get("DEPLOYMENT_ARCH") not in test_arch:
             data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
             data["ENABLED_SERVICES_LIST"] = settings.get("ENABLED_SERVICES_LIST")
@@ -538,7 +539,6 @@ def install_istio():
                 data["LB_ADD"] = form.lb_add.data
                 data["USE_ISTIO"] = "Y"
             else:
-                data["USE_ISTIO"] = form.use_istio.data
                 if 'gluu-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
                     data["ENABLED_SERVICES_LIST"].remove('gluu-istio-ingress')
                 data["LB_ADD"] = ""
