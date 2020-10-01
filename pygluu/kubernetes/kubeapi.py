@@ -503,8 +503,9 @@ class Kubernetes(object):
             else:
                 logger.error(e)
 
-    def create_namespace(self, name, labels={}):
+    def create_namespace(self, name, labels=None):
         """Create namespace using name"""
+        labels = labels or {}
         body = client.V1Secret()
         metadata = client.V1ObjectMeta()
         metadata.name = name
