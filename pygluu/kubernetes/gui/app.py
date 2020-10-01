@@ -67,7 +67,7 @@ def create_app():
                                   app.root_path, 'static', directory)
             files = os.listdir(folder)
             for f in files:
-                regex = name + "\.[a-z0-9]+\." + extension  # noqa: W605
+                regex = name + r"\.[a-z0-9]+\." + extension
                 if re.match(regex, f):
                     return os.path.join('/static', directory, f)
             return os.path.join('/static', filepath)
@@ -78,19 +78,23 @@ def create_app():
 
 
 def parse_args(args=None):
-    """
+    """Parse arguments.
+
     Arguments :
         -H --host : define hostname
         -p --port : define port
         -d --debug : override debug value default is False
+
     :param args:
     :return:
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-H", "--host", default="0.0.0.0")
-    parser.add_argument("-p", "--port", type=int, default=5000)
+    parser.add_argument("-H", "--host", default="0.0.0.0",
+                        help="The interface to bind to (default to %(default)s)")
+    parser.add_argument("-p", "--port", type=int, default=5000,
+                        help="The port to bind to (default to %(default)d)")
     parser.add_argument("-d", "--debug", action="store_true", default=False,
-                        help="Enable/Disable debug (default: false)")
+                        help="Enable debug mode")
     return parser.parse_args(args)
 
 
@@ -117,8 +121,7 @@ def main():
 
     options = {
         'bind': '%s:%s' % (args.host, args.port),
-        'worker_class': 'gevent',
-        'reload': args.debug
+        'worker_class': 'gevent'
     }
 
     GluuApp(app, options).run()
