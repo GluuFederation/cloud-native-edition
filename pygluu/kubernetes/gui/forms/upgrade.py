@@ -9,7 +9,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 """
 from flask_wtf import FlaskForm
 from wtforms import RadioField
-from wtforms.validators import  DataRequired
+from wtforms.validators import DataRequired
 
 from pygluu.kubernetes.helpers import get_supported_versions
 
@@ -24,7 +24,7 @@ class UpgradeForm(FlaskForm):
     versions, version_number = get_supported_versions()
     supported_versions = []
 
-    for k, v in versions.items():
+    for k, _ in versions.items():
         supported_versions.append((k, k))
 
     upgrade_target_version = RadioField(

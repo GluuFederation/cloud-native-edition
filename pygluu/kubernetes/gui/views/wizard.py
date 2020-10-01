@@ -31,7 +31,7 @@ from ..forms.couchbase import CouchbaseForm, \
 from ..forms.environment import EnvironmentForm
 from ..forms.gluugateway import GluuGatewayForm
 from ..forms.helpers import volume_types, app_volume_types, \
-    RequiredIfFieldIn, RequiredIfFieldEqualTo
+    RequiredIfFieldIn
 from ..forms.images import ImageNameTagForm
 from ..forms.istio import IstioForm
 from ..forms.jackrabbit import JackrabbitForm
@@ -708,7 +708,7 @@ def volumes():
         form.ldap_jackrabbit_volume.validators = [RequiredIfFieldIn('app_volume_type', [7, 12, 17])]
     else:
         del form.ldap_jackrabbit_volume
-    
+
     # TODO: find a way to apply dynamic validation
     if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         if settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
@@ -753,7 +753,6 @@ def volumes():
             next_step = 'wizard.cache_type'
 
         return redirect(url_for(next_step))
-
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -1284,7 +1283,7 @@ def populate_form_data(form):
     """
     populate form data from settings
     """
-    for k, v in form.data.items():
+    for k, _ in form.data.items():
         if k == "csrf_token":
             continue
 

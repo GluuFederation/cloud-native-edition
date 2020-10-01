@@ -8,8 +8,8 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, RadioField, StringField, BooleanField
-from wtforms.validators import DataRequired, Optional
+from wtforms import IntegerField, RadioField, StringField
+from wtforms.validators import DataRequired
 from .helpers import RequiredIfFieldEqualTo
 
 
