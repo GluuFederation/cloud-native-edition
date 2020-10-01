@@ -15,7 +15,7 @@
 {% macro radio(field) %}
 
   {% set validation = "is-invalid" if field.errors else "" %}
-  
+
   <div class="form-group">
     <label class="col-form-label">{{ field.label }}</label>
     <div class="col-sm-9 {{ validation }}">
@@ -195,11 +195,11 @@
   </div>
 {% endmacro %}
 
-{% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install") %}
+{% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install", notes_type="info") %}
   <div class="card shadow mb-4 bg-white rounded">
     <div class="card-body">
       {% if notes %}
-        <div class="alert alert-danger" role="alert">{{ notes }}</div>
+          <div class="alert alert-{{ notes_type }}" role="alert">{{ notes }}</div>
       {% endif %}
       <h5 class="card-title text-primary">{{ title }}</h5>
         <p class="card-text">{{ description }}</p>
