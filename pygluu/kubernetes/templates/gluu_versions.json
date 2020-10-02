@@ -35,7 +35,7 @@
     "GLUU_GATEWAY_UI_IMAGE_NAME": "gluufederation/gluu-gateway-ui",
     "GLUU_GATEWAY_UI_IMAGE_TAG": "4.2.1_02",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.2.1_02"
+    "UPGRADE_IMAGE_TAG": "4.2.1_04"
   },
   "4.2.2_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
