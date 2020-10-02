@@ -254,6 +254,7 @@ jobs:
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
           sudo kubectl get po -n gluu
           sudo kubectl delete -f ldap-backup.yaml || echo "Resources not found"
+          sudo kubectl delete -f gluu_eks_yamls/nginx/
           sudo ./pygluu-kubernetes.pyz uninstall
           sleep 20
 
@@ -294,6 +295,7 @@ jobs:
         kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
         kubectl get po -n cbns
         kubectl get po -n gluu
+        sudo kubectl delete -f gluu_eks_yamls/nginx/
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase
         sudo ./pygluu-kubernetes.pyz uninstall
         kubectl delete -f couchbase-backup.yaml || echo "Resources not found"
