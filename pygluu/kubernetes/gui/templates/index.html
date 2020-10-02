@@ -69,8 +69,8 @@
         </div>
         <div class="tab-pane" id="utilities" role="tabpanel" aria-labelledby="utilities-tab">
           {{ forms.generate_upload_card(
-                title="Generate Settings",
-                description="Generate settings.json to install Gluu Cloud Native Edition non-interactively",
+                title="Generate or upload settings",
+                description="Generate new or upload existing settings.json to install Gluu Cloud Native Edition non-interactively",
                 generate_url=url_for('main.generate_settings')) }}
 
           {{ forms.install_card(
