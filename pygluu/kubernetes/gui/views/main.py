@@ -7,8 +7,11 @@ This module contain gui views as main page of gui installer
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+import os
 from flask import Blueprint, render_template, \
-    redirect, url_for, request, session
+    redirect, url_for, request, session, \
+    current_app, jsonify
+from werkzeug.utils import secure_filename
 from flask_socketio import emit
 from pygtail import Pygtail
 from pygluu.kubernetes.settings import SettingsHandler
@@ -245,6 +248,25 @@ def uninstall():
             installer.run_uninstall()
             return render_template("installation.html")
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+@main_blueprint.route('/upload-settings', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return jsonify({"success": False, 'message': 'No file uploaded'})
+        file = request.files['file']
+
+        if file.filename == '':
+            return jsonify({"success": False, 'message': 'No file uploaded'})
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join('./', filename))
+            return jsonify({"success": True, 'message': 'File settings has been uploaded'})
+        else:
+            return jsonify({"success": False, 'message': 'File type not supported'})
 
 @socketio.on("install", namespace="/logs")
 def installer_logs():
