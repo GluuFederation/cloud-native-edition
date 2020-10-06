@@ -86,7 +86,7 @@ jobs:
         EKS_NAME=automation-test-"$RAND_STR"
         echo "$EKS_NAME" > eks_cluster_name
         cat eks_cluster_name
-        eksctl create cluster $EKS_NAME --version 1.15 --nodegroup-name standard-workers --node-type t2.xlarge --zones ${{ secrets.aws_region }}a,${{ secrets.aws_region }}b,${{ secrets.aws_region }}c --nodes 2 --region ${{ secrets.aws_region }} --node-ami auto --ssh-public-key "~/.ssh/id_rsa.pub"
+        eksctl create cluster $EKS_NAME --version 1.17 --nodegroup-name standard-workers --node-type t2.xlarge --zones ${{ secrets.aws_region }}a,${{ secrets.aws_region }}b,${{ secrets.aws_region }}c --nodes 2 --region ${{ secrets.aws_region }} --node-ami auto --ssh-public-key "~/.ssh/id_rsa.pub"
 
     #- name: Install Istio
     #  run: |
