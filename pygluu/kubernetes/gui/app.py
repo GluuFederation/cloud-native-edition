@@ -1,11 +1,28 @@
+import contextlib
 import os
 import re
+import secrets
+import shutil
+from pathlib import Path
 
 from flask import Flask
 
 from pygluu.kubernetes.gui.extensions import csrf, socketio
 from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
+
+
+def resolve_secret_key(path):
+    key = ""
+    with contextlib.suppress(FileNotFoundError):
+        with open(path) as f:
+            key = f.read().strip()
+
+    if not key:
+        key = secrets.token_urlsafe(32)
+        with open(path, "w") as f:
+            f.write(key)
+    return key
 
 
 def create_app(debug=False):
@@ -23,6 +40,16 @@ def create_app(debug=False):
     cfg = "pygluu.kubernetes.gui.config.ProductionConfig"
     app.config.from_object(cfg)
     app.config["DEBUG"] = debug
+
+    # resolve persistent secret key for production
+    secret_key_file = Path("./secret-key.txt").resolve()
+    with contextlib.suppress(FileNotFoundError):
+        # if running inside container, copy mounted file (if any)
+        shutil.copy(
+            Path("./installer-secret-key.txt").resolve(),
+            secret_key_file,
+        )
+    app.config["SECRET_KEY"] = resolve_secret_key(secret_key_file)
 
     # init csrf
     csrf.init_app(app)
