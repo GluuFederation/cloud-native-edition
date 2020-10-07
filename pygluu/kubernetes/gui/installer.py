@@ -87,7 +87,7 @@ class InstallHandler(object):
                 if self.settings.get("INSTALL_REDIS") == "Y" or \
                         self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                         self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-                    helm.install_kubedb()
+                    helm.uninstall_kubedb()
                     helm.install_kubedb()
 
                 if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
