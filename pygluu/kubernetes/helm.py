@@ -205,17 +205,11 @@ class Helm(object):
                     if install_ingress:
                         exec_cmd(command)
 
-        if self.settings.get("DEPLOYMENT_ARCH") == "gke" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "aks":
+        if self.settings.get("DEPLOYMENT_ARCH") in ("gke", "aks", "do"):
             if install_ingress:
                 cloud_override_values_file = Path("./nginx/cloud/cloud-override-values.yaml").resolve()
                 cloud_values = " --values {}".format(cloud_override_values_file)
                 exec_cmd(command + cloud_values)
-        if self.settings.get("DEPLOYMENT_ARCH") == "do":
-            if install_ingress:
-                do_override_values_file = Path("./nginx/digitalocean/do-override-values.yaml").resolve()
-                do_values = " --values {}".format(do_override_values_file)
-                exec_cmd(command + do_values)
         if self.settings.get("DEPLOYMENT_ARCH") == "local":
             if install_ingress:
                 baremetal_override_values_file = Path("./nginx/baremetal/baremetal-override-values.yaml").resolve()
