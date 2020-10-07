@@ -63,8 +63,10 @@ class GluuApp(BaseApplication):
 
 
 def run():
-    copy_templates()
     args = parse_args()
+
+    # copy required templates to current directory
+    copy_templates()
 
     options = {
         "bind": f"{args.host}:{args.port}",
