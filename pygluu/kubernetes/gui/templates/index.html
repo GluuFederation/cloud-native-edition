@@ -68,11 +68,11 @@
                 uninstall_target="helm-uninstall-gg-dbmode") }}
         </div>
         <div class="tab-pane" id="utilities" role="tabpanel" aria-labelledby="utilities-tab">
-          {{ forms.generate_upload_card(
-                title="Generate or upload settings",
-                description="Generate new or upload existing settings.json to install Gluu Cloud Native Edition non-interactively",
-                generate_url=url_for('main.generate_settings')) }}
-
+          {{ forms.install_card(
+                title="Generate settings",
+                description="Generate new settings.json to install Gluu Cloud Native Edition non-interactively",
+                install_url=url_for('main.generate_settings'),
+                button_text="Run") }}
           {{ forms.install_card(
                 title="Upgrade",
                 description="Upgrade Gluu Cloud Native Edition",
@@ -123,41 +123,6 @@
       var modal = $(this)
       modal.find('#target').val(uninstall)
     });
-
-    uploadFile = function(){
-        let file = document.getElementById("uploadSetting").files[0];
-        let formData = new FormData();
-        let csrf_token = "{{ csrf_token() }}";
-        formData.append("file", file);
-        fetch('/upload-settings', {
-            method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': csrf_token
-            },
-            body: formData
-        }).then(response => response.json())
-        .then(data => {
-            var className = "success"
-            if(!data.success){
-                className = "error"
-            }
-            $("#formUpload").notify(
-              data.message,
-              {
-                position:"right",
-                className: className
-              }
-            );
-        })
-        .catch((error) => {
-            console.log("error happened")
-        });
-    };
-
-    document.getElementById("uploadSetting").addEventListener("change", uploadFile);
-
-
-
   });
   </script>
 {% endblock %}
