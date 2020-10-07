@@ -20,7 +20,7 @@ from werkzeug.utils import secure_filename
 
 from pygluu.kubernetes.helpers import get_supported_versions, \
     exec_cmd, generate_password
-from pygluu.kubernetes.settings import SettingsHandler
+from pygluu.kubernetes.settings import SettingsHandler, unlink_settings_json
 from pygluu.kubernetes.helpers import get_logger
 from ..forms.architecture import DeploymentArchForm
 from ..forms.backup import CouchbaseBackupForm, LdapBackupForm
@@ -1278,7 +1278,7 @@ def quit_settings():
     Quit installation wizard and discard settings.json
     """
     if request.form["quit_confirm"] == "yes":
-        settings.reset_data()
+        unlink_settings_json()
 
     return redirect(url_for('main.index'))
 
