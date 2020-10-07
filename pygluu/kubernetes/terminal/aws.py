@@ -49,6 +49,11 @@ class PromptAws:
             self.settings.set("USE_ARN", confirm_yesno(
                 "Are you terminating SSL traffic at LB and using certificate from AWS"))
 
+        if not self.settings.get("VPC_CIDR") and self.settings.get("USE_ARN") == "Y":
+            self.settings.set("AWS_VPC_CIDR", click.prompt(
+                "Enter VPC CIDR in use for the Kubernetes cluster i.e 192.168.1.1/16", default="0.0.0.0/0"
+            ))
+
         if not self.settings.get("ARN_AWS_IAM") and self.settings.get("USE_ARN") == "Y":
             # no default means it will try to prompt in loop until user inputs
             self.settings.set("ARN_AWS_IAM", click.prompt(

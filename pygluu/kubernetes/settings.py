@@ -63,6 +63,7 @@ class SettingsHandler(object):
                                 VERIFY_EXT_IP="",
                                 AWS_LB_TYPE="",
                                 USE_ARN="",
+                                VPC_CIDR="",
                                 ARN_AWS_IAM="",
                                 LB_ADD="",
                                 REDIS_URL="",
@@ -223,7 +224,7 @@ class SettingsHandler(object):
         except FileNotFoundError:
             # No installation settings mounted as /installer-settings.json. Checking settings.json.
             pass
-        
+
         filename = Path("./settings.json")
         try:
             with open(filename) as f:
