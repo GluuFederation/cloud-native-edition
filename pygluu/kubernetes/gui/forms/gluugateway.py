@@ -25,7 +25,7 @@ class GluuGatewayForm(FlaskForm):
         kong_namespace (string|required_if install_gluu_gateway = Y|default: gluu-gateway)
         gluu_gateway_ui_namesapce (string|required_if install_gluu_gateway = Y|default: gg-ui)
         kong_database (string|required_if install_gluu_gateway = Y|default: kong)
-        kong_pg_user (string|required_if install_gluu_gateway = Y|default: konga)
+        kong_pg_user (string|required_if install_gluu_gateway = Y|default: kong)
         kong_pg_password (string|required_if install_gluu_gateway = Y|default: auto generated)
         kong_pg_password_confirmation (string|required_if install_gluu_gateway = Y|default: auto generated)
         gluu_gateway_ui_database (string|required_if install_gluu_gateway = Y|default: kong)
@@ -52,7 +52,7 @@ class GluuGatewayForm(FlaskForm):
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_pg_user = StringField(
         "Please enter a user for gluu-gateway postgres database",
-        default="konga",
+        default="kong",
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     kong_pg_password = StringField(
         "Kong Postgress Password",
