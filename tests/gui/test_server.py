@@ -7,7 +7,7 @@ import pytest
     (["--host", "localhost"], "localhost"),
 ])
 def test_parse_args_host(given, expected):
-    from pygluu.kubernetes.gui.app import parse_args
+    from pygluu.kubernetes.gui.server import parse_args
 
     args = parse_args(given)
     assert args.host == expected
@@ -19,7 +19,7 @@ def test_parse_args_host(given, expected):
     (["--port", "3000"], 3000),
 ])
 def test_parse_args_port(given, expected):
-    from pygluu.kubernetes.gui.app import parse_args
+    from pygluu.kubernetes.gui.server import parse_args
 
     args = parse_args(given)
     assert args.port == expected
@@ -31,7 +31,7 @@ def test_parse_args_port(given, expected):
     (["--debug"], True),
 ])
 def test_parse_args_debug(given, expected):
-    from pygluu.kubernetes.gui.app import parse_args
+    from pygluu.kubernetes.gui.server import parse_args
 
     args = parse_args(given)
     assert args.debug is expected

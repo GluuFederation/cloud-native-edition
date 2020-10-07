@@ -85,7 +85,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pygluu-kubernetes=pygluu.kubernetes.create:main",
-            "pygluu-kubernetes-gui=pygluu.kubernetes.gui.app:main",
+            "pygluu-kubernetes-gui=pygluu.kubernetes.gui.server:run",
         ],
     },
 )

@@ -187,31 +187,35 @@ class Helm(object):
         if self.settings.get("DEPLOYMENT_ARCH") == "eks":
             if self.settings.get("AWS_LB_TYPE") == "nlb":
                 if install_ingress:
-                    nlb_annotation = " --set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-type'=nlb"
-                    exec_cmd(command + nlb_annotation)
+                    nlb_override_values_file = Path("./nginx/aws/aws-nlb-override-values.yaml").resolve()
+                    nlb_values = " --values {}".format(nlb_override_values_file)
+                    exec_cmd(command + nlb_values)
             else:
                 if self.settings.get("USE_ARN") == "Y":
                     if install_ingress:
-                        arn_annotation = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert'='{}' " \
-                            .format(self.settings.get("ARN_AWS_IAM"))
-                        backend_protocol = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol'=http "
-                        ssl_ports = "--set controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports'=https "
-                        #l7_annotation = "{" + arn_annotation + "," + backend_protocol \
-                        #               + "," + ssl_ports + "," + idle_timeout + "}"
-                        exec_cmd(command + arn_annotation + backend_protocol + ssl_ports)
+                        elb_override_values_file = Path("./nginx/aws/aws-elb-override-values.yaml").resolve()
+                        elb_file_parser = Parser(elb_override_values_file, True)
+                        elb_file_parser["controller"]["service"]["annotations"].update(
+                            {"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings.get("ARN_AWS_IAM")})
+                        elb_file_parser["controller"]["config"]["proxy-real-ip-cidr"] = self.settings.get("VPC_CIDR")
+                        elb_file_parser.dump_it()
+                        elb_values = " --values {}".format(elb_override_values_file)
+                        exec_cmd(command + elb_values)
                 else:
                     if install_ingress:
                         exec_cmd(command)
-            logger.info("Waiting for nginx to be prepared...")
-            time.sleep(60)
-            self.wait_for_nginx_add()
 
-        if self.settings.get("DEPLOYMENT_ARCH") == "gke" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "aks" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "do" or \
-                self.settings.get("DEPLOYMENT_ARCH") == "local":
+        if self.settings.get("DEPLOYMENT_ARCH") in ("gke", "aks", "do"):
             if install_ingress:
-                exec_cmd(command)
+                cloud_override_values_file = Path("./nginx/cloud/cloud-override-values.yaml").resolve()
+                cloud_values = " --values {}".format(cloud_override_values_file)
+                exec_cmd(command + cloud_values)
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            if install_ingress:
+                baremetal_override_values_file = Path("./nginx/baremetal/baremetal-override-values.yaml").resolve()
+                baremetal_values = " --values {}".format(baremetal_override_values_file)
+                exec_cmd(command + baremetal_values)
+        if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
             logger.info("Waiting for nginx to be prepared...")
             time.sleep(60)
             self.wait_for_nginx_add()

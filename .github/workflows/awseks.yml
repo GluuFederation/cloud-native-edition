@@ -86,7 +86,7 @@ jobs:
         EKS_NAME=automation-test-"$RAND_STR"
         echo "$EKS_NAME" > eks_cluster_name
         cat eks_cluster_name
-        eksctl create cluster $EKS_NAME --version 1.15 --nodegroup-name standard-workers --node-type t2.xlarge --zones ${{ secrets.aws_region }}a,${{ secrets.aws_region }}b,${{ secrets.aws_region }}c --nodes 2 --region ${{ secrets.aws_region }} --node-ami auto --ssh-public-key "~/.ssh/id_rsa.pub"
+        eksctl create cluster $EKS_NAME --version 1.17 --nodegroup-name standard-workers --node-type t2.xlarge --zones ${{ secrets.aws_region }}a,${{ secrets.aws_region }}b,${{ secrets.aws_region }}c --nodes 2 --region ${{ secrets.aws_region }} --node-ami auto --ssh-public-key "~/.ssh/id_rsa.pub"
 
     #- name: Install Istio
     #  run: |
@@ -254,7 +254,7 @@ jobs:
           kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
           sudo kubectl get po -n gluu
           sudo kubectl delete -f ldap-backup.yaml || echo "Resources not found"
-          sudo kubectl delete -f gluu_eks_yamls/nginx/
+          sudo kubectl delete -f gluu_eks_yamls/nginx/ || echo "Resources not found"
           sudo ./pygluu-kubernetes.pyz uninstall
           sleep 20
 
@@ -295,7 +295,7 @@ jobs:
         kubectl -n gluu wait --for=condition=available --timeout=300s deploy/radius || kubectl logs -l app=radius -c radius -n gluu
         kubectl get po -n cbns
         kubectl get po -n gluu
-        sudo kubectl delete -f gluu_eks_yamls/nginx/
+        sudo kubectl delete -f gluu_eks_yamls/nginx/ || echo "Resources not found"
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase
         sudo ./pygluu-kubernetes.pyz uninstall
         kubectl delete -f couchbase-backup.yaml || echo "Resources not found"

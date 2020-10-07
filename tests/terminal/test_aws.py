@@ -24,7 +24,7 @@ def test_aws_arn(monkeypatch, settings):
 
     fake_arn = "arn:aws:acm:random"
     monkeypatch.setattr("click.prompt", lambda x: fake_arn)
-
+    settings.set("VPC_CIDR", "192.168.0.0/16")
     settings.set("AWS_LB_TYPE", "alb")
     PromptAws(settings).prompt_aws_lb()
     assert settings.get("USE_ARN") == "Y"
