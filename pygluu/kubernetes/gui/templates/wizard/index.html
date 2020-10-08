@@ -33,8 +33,11 @@
             <a href="{{ url_for(prev_step) }}" class="btn btn-info">Prev</a>
           {% endif %}
           <div class="float-right">
-            <button type="submit" class="btn btn-primary">Next</button>
-          <button type="button" class="mx-2 btn btn-danger" data-toggle="modal" data-target="#quitModal">Quit</button>
+            <button id="nextBtn" type="submit" class="btn btn-primary">
+              <span id="spinner" class="spinner-border spinner-border-sm collapse" role="status" aria-hidden="true"></span>
+              <span id="text">Next</span>
+            </button>
+            <button type="button" class="mx-2 btn btn-danger" data-toggle="modal" data-target="#quitModal">Quit</button>
           </div>
 
         </form>
@@ -94,6 +97,18 @@
           input.attr('type', 'text');
           btn.html( "Hide" );
         }
+      });
+
+
+      $('#formInstaller').submit(function(e){
+        console.log('dasdasd')
+        $('#nextBtn').find('#spinner').collapse('show');
+        $('#nextBtn').attr('disabled', true);
+        $('#nextBtn').find('#text').text('Please wait...');
+        setTimeout( function () {
+            $(this).submit();
+        }, 1000);
+        return true
       });
 
       $('.cron-input').on('click', function(){
@@ -339,12 +354,20 @@
       {% endif %}
 
       {% if template == "couchbase" %}
-         $('input[name="install_couchbase"]').on('change', function(){
-            if($(this).val() == "N"){
+         cbShowHide = function(val){
+
+            if(val == "N"){
               $('#couchbase_crt').parents('.form-group').collapse('show');
+              $('#package_url').parents('.form-group').collapse('hide');
             }else{
               $('#couchbase_crt').parents('.form-group').collapse('hide');
+              $('#package_url').parents('.form-group').collapse('show');
             }
+         }
+
+         cbShowHide($('input[name="install_couchbase"]:checked').val())
+         $('input[name="install_couchbase"]').on('change', function(){
+            cbShowHide($(this).val());
          });
 
          $('input[name="couchbase_cluster_file_override"]').on('change', function(){
