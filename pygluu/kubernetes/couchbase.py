@@ -79,12 +79,10 @@ def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_serv
             name = ["pvc-" + cb_service_name]
         spec = {"name": cb_service_name + "-" + node_zone, "size": v, "serverGroups": [node_zone],
                 "services": [cb_service_name],
-                "pod": {
-                    "volumeMounts": {"default": "pvc-general", cb_service_name: name},
-                    "resources": {"limits": {"cpu": str(cpu_limit) + "m", "memory": str(mem_limit) + "Mi"},
-                                  "requests": {"cpu": str(cpu_req) + "m", "memory": str(mem_req) + "Mi"}}
-
-                }}
+                "resources": {"limits": {"cpu": str(cpu_limit) + "m", "memory": str(mem_limit) + "Mi"},
+                              "requests": {"cpu": str(cpu_req) + "m", "memory": str(mem_req) + "Mi"}},
+                "volumeMounts": {"default": "pvc-general", cb_service_name: name}
+                }
         server_spec.append(spec)
 
     return server_spec
