@@ -897,7 +897,7 @@ def couchbase():
             form.couchbase_superuser_password.data = \
                 form.couchbase_superuser_password_confirmation.data = generate_password()
         else:
-            form.couchbase_superuser_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
+            form.couchbase_superuser_password_confirmation.data = settings.get("COUCHBASE_SUPERUSER_PASSWORD")
 
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             form.couchbase_use_low_resources.validators = [Optional()]
