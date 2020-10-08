@@ -44,7 +44,8 @@ from ..forms.version import VersionForm
 from ..forms.volumes import VolumeForm
 from ..forms.helm import HelmForm
 from ..forms.upgrade import UpgradeForm
-from ..helpers import determine_ip_nodes
+from ..helpers import determine_ip_nodes, download_couchbase_pkg, \
+    is_couchbase_pkg_exist
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 logger = get_logger("gluu-gui")
@@ -799,6 +800,10 @@ def couchbase_multi_cluster():
 @wizard_blueprint.route("/couchbase", methods=["GET", "POST"])
 def couchbase():
     form = CouchbaseForm()
+
+    if is_couchbase_pkg_exist():
+        del form.package_url
+
     custom_cb_ca_crt = Path("./couchbase_crts_keys/ca.crt")
     custom_cb_crt = Path("./couchbase_crts_keys/chain.pem")
     custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
@@ -873,6 +878,10 @@ def couchbase():
                 settings.get("INSTALL_COUCHBASE") == "Y":
             return redirect(url_for("wizard.couchbase_calculator"))
 
+        # download couchbase
+        if settings.get("INSTALL_COUCHBASE") == "Y" and not is_couchbase_pkg_exist():
+            download_couchbase_pkg(form.package_url.data)
+
         return redirect(url_for(next_step))
 
     if request.method == "GET":
@@ -888,7 +897,7 @@ def couchbase():
             form.couchbase_superuser_password.data = \
                 form.couchbase_superuser_password_confirmation.data = generate_password()
         else:
-            form.couchbase_superuser_password_confirmation.data = settings.get("COUCHBASE_PASSWORD")
+            form.couchbase_superuser_password_confirmation.data = settings.get("COUCHBASE_SUPERUSER_PASSWORD")
 
         if settings.get("DEPLOYMENT_ARCH") in test_arch:
             form.couchbase_use_low_resources.validators = [Optional()]

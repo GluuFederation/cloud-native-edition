@@ -1,5 +1,10 @@
 {{ forms.radio(form.install_couchbase) }}
-{{ forms.fileinput(form.couchbase_crt, hidden=True) }}
+{% set hide_element = False if form.install_couchbase.data == 'Y' else True %}
+{% if form.package_url %}
+	{{ forms.text(form.package_url) }}
+{% endif %}
+
+{{ forms.fileinput(form.couchbase_crt) }}
 {{ forms.radio(form.couchbase_cluster_file_override) }}
 {{ forms.fileinput(form.couchbase_cluster_files, hidden=True) }}
 {{ forms.radio(form.couchbase_use_low_resources) }}

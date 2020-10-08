@@ -1,3 +1,6 @@
+import os
+import requests
+from pathlib import Path
 from pygluu.kubernetes.helpers import get_logger
 logger = get_logger("gluu-gui")
 
@@ -61,3 +64,34 @@ def determine_ip_nodes():
             "NODES_ZONES": [],
             "NODES_IPS": []
         }
+
+
+def is_couchbase_pkg_exist():
+    couchbase_tar_pattern = "couchbase-autonomous-operator-kubernetes_*.tar.gz"
+    directory = Path('.')
+    try:
+        couchbase_tar_file = list(directory.glob(couchbase_tar_pattern))[0]
+        if "_1." in str(couchbase_tar_file.resolve()):
+            # Package found but incorrect and should appear as incorrect in the GUI. Option to add url and push download and track that download before moving to next step.
+            False
+
+    except IndexError:
+        # Package is not  found.
+        return False
+    else:
+        return True
+
+
+def download_couchbase_pkg(url):
+    dest_folder = Path('./')
+    filename = url.split('/')[-1]
+    file_path = os.path.join(dest_folder, filename)
+    # NOTE the stream=True parameter below
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(file_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=None):
+                f.write(chunk)
+        r.close()
+    return filename
+

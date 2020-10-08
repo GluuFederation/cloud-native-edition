@@ -3,7 +3,7 @@
   <div class="form-group {{ 'collapse' if hidden else '' }}">
     {{ field.label(class_="col-form-label") }}
     {{ field(class_="form-control col-sm-5 " + validation) }}
-    <small class="form-text text-muted">{{ field.description }}</small>
+    <small class="form-text text-muted">{{ field.description |safe }}</small>
     <div class="feedback invalid-feedback">
       {% for error in field.errors %}
         <p>{{ error }}</p>
@@ -111,10 +111,16 @@
 {% endmacro %}
 
 {% macro fileinput(field, hidden=False) %}
-<div class="form-group {{ 'collapse' if hidden else '' }}">
+{% set validation = "is-invalid" if field.errors else "" %}
+<div class="form-group collapse {{ 'hide' if hidden else 'show' }}">
   <div class="custom-file col-sm-5">
-    {{ field(class_="custom-file-input") }}
+    {{ field(class_="custom-file-input " + validation) }}
     {{ field.label(class_="custom-file-label") }}
+    <div class="invalid-feedback">
+      {% for error in field.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
     <small class="form-text text-muted">{{ field.description }}</small>
   </div>
 </div>

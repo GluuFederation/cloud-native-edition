@@ -3,7 +3,7 @@ from wtforms import RadioField, StringField, FileField, \
     IntegerField, MultipleFileField
 from wtforms.widgets import PasswordInput
 from wtforms.validators import DataRequired, InputRequired, \
-    EqualTo, Optional
+    EqualTo, Optional, ValidationError, URL
 from .helpers import password_requirement_check, RequiredIfFieldEqualTo
 
 
@@ -48,6 +48,13 @@ class CouchbaseForm(FlaskForm):
         description="For the following prompt if placed [N] the couchbase "
                     "is assumed to be installed or remotely provisioned",
         validators=[DataRequired()])
+    package_url = StringField(
+        "Couchbase Kubernetes Package URL",
+        validators=[RequiredIfFieldEqualTo("install_couchbase", "Y"),
+                    URL(require_tld=False, message="Url format is wrong")],
+        description="Please place a downloadable link containing the couchbase linux autonomous operator kubernetes package,"
+                    "go to <a target='_blank' href='https://www.couchbase.com/downloads'>https://www.couchbase.com/downloads</a>")
+
     couchbase_crt = FileField(
         "Couchbase certificate",
         description="Place the Couchbase certificate authority certificate in a file called couchbase.crt "
@@ -104,6 +111,16 @@ class CouchbaseForm(FlaskForm):
         validators=[InputRequired(), EqualTo("couchbase_password")])
     couchbase_cn = StringField("Enter Couchbase certificate common name.",
                                default="Couchbase CA")
+
+    def validate_package_url(self, field):
+        """
+        validate field package_url, checking pattern
+        """
+        if "couchbase-autonomous-operator-kubernetes" not in field.data:
+            raise ValidationError("The uploaded package is not the Couchbase Autonomous Operator linux package")
+
+        if "_1." in field.data:
+            raise ValidationError("The uploaded package must be version 2 or above")
 
 
 class CouchbaseCalculatorForm(FlaskForm):
