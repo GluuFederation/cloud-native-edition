@@ -28,7 +28,7 @@ class GluuGatewayForm(FlaskForm):
         kong_pg_user (string|required_if install_gluu_gateway = Y|default: kong)
         kong_pg_password (string|required_if install_gluu_gateway = Y|default: auto generated)
         kong_pg_password_confirmation (string|required_if install_gluu_gateway = Y|default: auto generated)
-        gluu_gateway_ui_database (string|required_if install_gluu_gateway = Y|default: kong)
+        gluu_gateway_ui_database (string|required_if install_gluu_gateway = Y|default: konga)
         gluu_gateway_ui_user (string|required_if install_gluu_gateway = Y|default: konga)
         gluu_gateway_ui_pg_password (string|required_if install_gluu_gateway = Y|default: auto generated)
         gluu_gateway_ui_pg_password_confirmation (string|required_if install_gluu_gateway = Y|default: auto generated)
@@ -69,7 +69,7 @@ class GluuGatewayForm(FlaskForm):
                             message='Passwords do not match')])
     gluu_gateway_ui_database = StringField(
         "Please enter gluu-gateway-ui postgres database name",
-        default="kong",
+        default="konga",
         validators=[RequiredIfFieldEqualTo("install_gluu_gateway", "Y")])
     gluu_gateway_ui_pg_user = StringField(
         "Please enter a user for gluu-gateway-ui postgres database",
