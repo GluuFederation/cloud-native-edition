@@ -52,7 +52,7 @@ class CouchbaseForm(FlaskForm):
         "Couchbase Kubernetes Package URL",
         validators=[RequiredIfFieldEqualTo("install_couchbase", "Y"),
                     URL(require_tld=False, message="Url format is wrong")],
-        description="Put downloadable link of couchbase autonomous operator kubernetes,"
+        description="Please place a downloadable link containing the couchbase linux autonomous operator kubernetes package,"
                     "go to <a target='_blank' href='https://www.couchbase.com/downloads'>https://www.couchbase.com/downloads</a>")
 
     couchbase_crt = FileField(
@@ -117,10 +117,11 @@ class CouchbaseForm(FlaskForm):
         validate field package_url, checking pattern
         """
         if "couchbase-autonomous-operator-kubernetes" not in field.data:
-            raise ValidationError("the package is not Couchbase Autonomous Operator")
+            raise ValidationError("The uploaded package is not the Couchbase Autonomous Operator linux package")
 
         if "_1." in field.data:
-            raise ValidationError("the package must be version 2 or above")
+            raise ValidationError("The uploaded package must be version 2 or above")
+
 
 class CouchbaseCalculatorForm(FlaskForm):
     """
