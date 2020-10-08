@@ -8,4 +8,4 @@ maintainers:
 email: support@gluu.org
 description: Helm chart for gluu-gateway-ui service
 name: gluu-gateway-ui
-version: 1.2.12
+version: 1.2.13
