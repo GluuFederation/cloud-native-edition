@@ -15,9 +15,6 @@ from wtforms.widgets import PasswordInput
 from wtforms.validators import InputRequired, Email, EqualTo, \
     Optional, ValidationError
 from .helpers import password_requirement_check
-from pygluu.kubernetes.settings import SettingsHandler
-
-settings = SettingsHandler()
 
 
 class ConfigurationForm(FlaskForm):
@@ -84,12 +81,6 @@ class ConfigurationForm(FlaskForm):
                     "at the same location pygluu-kuberentest.pyz is at.",
         render_kw={"disabled": "disabled"})
 
-    # override ldap_pw validators
-    if settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        ldap_pw.validators = [InputRequired(), password_requirement_check()]
-    else:
-        ldap_pw.validators = [Optional()]
-        ldap_pw.render_kw = {"disabled": "disabled"}
 
     def validate_gluu_fqdn(self, field):
         """

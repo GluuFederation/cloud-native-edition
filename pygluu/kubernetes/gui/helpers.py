@@ -12,11 +12,10 @@ def determine_ip_nodes():
     :return:
     """
     from pygluu.kubernetes.kubeapi import Kubernetes
-    from pygluu.kubernetes.settings import SettingsHandler
+    from .extensions import gluu_settings
     kubernetes = Kubernetes()
-    settings = SettingsHandler()
     logger.info("Determining OS type and attempting to gather external IP address")
-    ip = ""
+
     data = {}
     # detect IP address automatically (if possible)
     try:
@@ -28,7 +27,7 @@ def determine_ip_nodes():
         for node in node_list:
             node_name = node.metadata.name
             node_addresses = kubernetes.read_node(name=node_name).status.addresses
-            if settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
+            if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
                 for add in node_addresses:
                     if add.type == "InternalIP":
                         data["ip"] = ip = add.address
@@ -39,7 +38,7 @@ def determine_ip_nodes():
                         data["ip"] = ip = add.address
                         node_ip_list.append(ip)
                 # Digital Ocean does not provide zone support yet
-                if settings.get("DEPLOYMENT_ARCH") not in ("do", "local"):
+                if gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("do", "local"):
                     node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
@@ -48,7 +47,7 @@ def determine_ip_nodes():
         data["NODES_ZONES"] = node_zone_list
         data["NODES_IPS"] = node_ip_list
 
-        if settings.get("DEPLOYMENT_ARCH") in ("eks", "gke", "do", "local", "aks"):
+        if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("eks", "gke", "do", "local", "aks"):
             #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
             data["ip"] = "22.22.22.22"
         return data
