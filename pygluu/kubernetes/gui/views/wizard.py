@@ -636,7 +636,7 @@ def environment():
             form.host_ext_ip.data = ip_node_data['ip']
 
     return render_template("wizard/index.html",
-                           settings=settings.db,
+                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
                            form=form,
                            current_step=9,
                            template="environment",
@@ -680,7 +680,6 @@ def persistence_backend():
         form = populate_form_data(form)
 
     return render_template("wizard/index.html",
-                           settings=settings.db,
                            form=form,
                            current_step=10,
                            template="persistence_backend",
@@ -762,7 +761,8 @@ def volumes():
         form = populate_form_data(form)
 
     return render_template("wizard/index.html",
-                           settings=settings.db,
+                           deployment_arch=gluu_settings.db.get('DEPLOYMENT_ARCH'),
+                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=11,
                            template="app_volume_type",
@@ -942,7 +942,7 @@ def couchbase_calculator():
                 continue
             data[field.name.upper()] = field.data
 
-        settings.update(data)
+        gluu_settings.db.update(data)
         return redirect(url_for(request.form["next_step"]))
 
     return render_template("wizard/index.html",
@@ -1105,7 +1105,8 @@ def configuration():
         prev_step = "wizard.cache_type"
 
     return render_template("wizard/index.html",
-                           settings=settings.db,
+                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
+                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=17,
                            template="config",
@@ -1285,7 +1286,7 @@ def setting_summary():
 
     return render_template("wizard/setting_summary.html",
                            hidden_settings=hidden_settings,
-                           settings=settings.db)
+                           settings=gluu_settings.db.get_all())
 
 
 @wizard_blueprint.route("/quit", methods=["POST"])
