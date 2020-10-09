@@ -6,7 +6,7 @@ class Config(object):
     TESTING = False
     SECRET_KEY = "supersecret"
     UPLOAD_FOLDER = "/"
-    ALLOWED_EXTENSIONS = {"crt", "yaml"}
+    ALLOWED_EXTENSIONS = {"crt", "yaml", "json"}
 
 
 class DevelopmentConfig(Config):

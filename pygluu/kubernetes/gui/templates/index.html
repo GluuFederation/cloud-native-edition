@@ -69,8 +69,8 @@
         </div>
         <div class="tab-pane" id="utilities" role="tabpanel" aria-labelledby="utilities-tab">
           {{ forms.install_card(
-                title="Generate Settings",
-                description="Generate settings.json to install Gluu Cloud Native Edition non-interactively",
+                title="Generate settings",
+                description="Generate new settings.json to install Gluu Cloud Native Edition non-interactively",
                 install_url=url_for('main.generate_settings'),
                 button_text="Run") }}
           {{ forms.install_card(
@@ -123,7 +123,6 @@
       var modal = $(this)
       modal.find('#target').val(uninstall)
     });
-
   });
   </script>
 {% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+	<div class="card border-0 shadow p-1 mb-5 bg-white rounded">
+	    <div class="card-body">
+	        <h3 class="text-center">Gluu Cloud Native Edition</h3>
+		    <div class="alert" role="alert">
+		        <h4 class="alert-heading">Setup Gluu installation</h4>
+			    <p class="mb-0">Get started with new settings or upload existing settings.</p>
+			    <hr>
+			    {% if setting_exist %}
+					<p class="mb-0 font-weight-lighter text-danger">Attention! Existing installation settings are detected, do backup if you plan to create / upload settings, it overwrites current settings</p>
+				{% endif %}
+		    </div>
+		    <div class="text-center">
+			    <a href="{{ url_for('wizard.new') }}" class="btn btn-primary">Start with new settings</a>
+				<div id="formUpload" class="d-inline-block">
+					<input id="uploadSetting" type="file" class="btn btn-success" name="upload-settings" style="position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap;">
+					<label class="btn btn-info mb-0" for="uploadSetting">Upload existing settings</label>
+		        </div>
+			    {% if setting_exist %}
+			        <a href="{{ url_for('wizard.agreement') }}" class="btn btn-light">Continue with current settings</a>
+			    {% endif %}
+		    </div>
+
+	    </div>
+	</div>
+{% endblock %}
+{% block custom_script %}
+<script>
+  $(document).ready(function () {
+	uploadFile = function(){
+	    let file = document.getElementById("uploadSetting").files[0];
+	    let formData = new FormData();
+	    let csrf_token = "{{ csrf_token() }}";
+	    formData.append("file", file);
+	    fetch('/upload-settings', {
+	        method: "POST",
+	        headers: {
+	            'X-CSRF-TOKEN': csrf_token
+	        },
+	        body: formData
+	    }).then(response => response.json())
+	    .then(data => {
+	        console.log(data)
+	        var className = "success"
+	        if(!data.success){
+	            className = "error"
+	        }
+	        $("#formUpload").notify(
+	          data.message,
+	          {
+	            position:"top",
+	            className: className
+	          }
+	        );
+
+	        if(data.success){
+	            window.location.href = data.redirect_url
+	        }
+	    })
+	    .catch((error) => {
+	        console.log("error happened")
+	    });
+	};
+
+    document.getElementById("uploadSetting").addEventListener("change", uploadFile);
+  });
+</script>
+{% endblock %}
