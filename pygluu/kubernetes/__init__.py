@@ -3,6 +3,6 @@
  https://www.apache.org/licenses/LICENSE-2.0
 """
 
-__version__ = "1.2.14"
-__previous_version__ = "1.2.13"
+__version__ = "1.2.15"
+__previous_version__ = "1.2.14"
 
