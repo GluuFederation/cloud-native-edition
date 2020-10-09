@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "4.2.1"
 description: oxpassport Helm chart
 name: oxpassport
-version: 1.2.14
+version: 1.2.15
 maintainers:
 - name: Gluu
 email: support@gluu.org
