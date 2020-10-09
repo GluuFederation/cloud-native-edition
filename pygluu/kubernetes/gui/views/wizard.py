@@ -207,10 +207,6 @@ def gluu_version():
     if form.validate_on_submit():
         next_step = request.form["next_step"]
         gluu_settings.db.set("GLUU_VERSION", form.gluu_version.data)
-
-        # get supported versions image name and tag
-        image_names_and_tags = versions.get(form.gluu_version.data, {})
-        gluu_settings.db.update(image_names_and_tags)
         return redirect(url_for(next_step))
 
     if request.method == "GET":
@@ -1117,37 +1113,77 @@ def configuration():
 @wizard_blueprint.route("/images", methods=["POST", "GET"])
 def images():
     form = ImageNameTagForm()
+    collapsed_ids = []
 
-    # modify form, remove the form if the services is not enabled
+    # hide the fields if the services is not enabled; note that we still
+    # need the data left intact
     if gluu_settings.db.get("ENABLE_CASA") == "N":
-        del form.casa_image_name
-        del form.casa_image_tag
+        collapsed_ids += [
+            form.casa_image_name.id,
+            form.casa_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_CACHE_REFRESH") == "N":
-        del form.cache_refresh_rotate_image_name
-        del form.cache_refresh_rotate_image_tag
+        collapsed_ids += [
+            form.cache_refresh_rotate_image_name.id,
+            form.cache_refresh_rotate_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
-        del form.cert_manager_image_name
-        del form.cert_manager_image_tag
+        collapsed_ids += [
+            form.cert_manager_image_name.id,
+            form.cert_manager_image_tag.id,
+        ]
+
     if gluu_settings.db.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
-        del form.ldap_image_name
-        del form.ldap_image_tag
+        collapsed_ids += [
+            form.ldap_image_name.id,
+            form.ldap_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_OXD") == "N":
-        del form.oxd_image_name
-        del form.oxd_image_tag
+        collapsed_ids += [
+            form.oxd_image_name.id,
+            form.oxd_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_OXPASSPORT") == "N":
-        del form.oxpassport_image_name
-        del form.oxpassport_image_tag
+        collapsed_ids += [
+            form.oxpassport_image_name.id,
+            form.oxpassport_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_OXSHIBBOLETH") == "N":
-        del form.oxshibboleth_image_name
-        del form.oxshibboleth_image_tag
+        collapsed_ids += [
+            form.oxshibboleth_image_name.id,
+            form.oxshibboleth_image_tag.id,
+        ]
+
     if gluu_settings.db.get("ENABLE_RADIUS") == "N":
-        del form.radius_image_name
-        del form.radius_image_tag
+        collapsed_ids += [
+            form.radius_image_name.id,
+            form.radius_image_tag.id,
+        ]
+
     if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
-        del form.gluu_gateway_image_name
-        del form.gluu_gateway_image_tag
-        del form.gluu_gateway_ui_image_name
-        del form.gluu_gateway_ui_image_tag
+        collapsed_ids += [
+            form.gluu_gateway_image_name.id,
+            form.gluu_gateway_image_tag.id,
+            form.gluu_gateway_ui_image_name.id,
+            form.gluu_gateway_ui_image_tag.id,
+        ]
+
+    if gluu_settings.db.get("ENABLE_FIDO2") == "N":
+        collapsed_ids += [
+            form.fido2_image_name.id,
+            form.fido2_image_tag.id,
+        ]
+
+    if gluu_settings.db.get("ENABLE_SCIM") == "N":
+        collapsed_ids += [
+            form.scim_image_name.id,
+            form.scim_image_tag.id,
+        ]
 
     if form.validate_on_submit():
         data = {}
@@ -1157,10 +1193,18 @@ def images():
             data[field.name.upper()] = field.data
         data["EDIT_IMAGE_NAMES_TAGS"] = "N"
         gluu_settings.db.update(data)
-
         return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
+        # get default images
+        versions, _ = get_supported_versions()
+        image_names_tags = versions.get(gluu_settings.db.get("GLUU_VERSION"), {})
+
+        for k, v in image_names_tags.items():
+            field = getattr(form, k.lower(), None)
+            if not field:
+                continue
+            field.data = v
         form = populate_form_data(form)
 
     return render_template("wizard/index.html",
@@ -1168,7 +1212,8 @@ def images():
                            current_step=18,
                            template="image_name_tag",
                            prev_step="wizard.configuration",
-                           next_step="wizard.replicas")
+                           next_step="wizard.replicas",
+                           collapsed_ids=collapsed_ids)
 
 
 @wizard_blueprint.route("/replicas", methods=["POST", "GET"])
