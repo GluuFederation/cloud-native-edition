@@ -220,21 +220,3 @@
     </div>
   </div>
 {% endmacro %}
-
-{% macro generate_upload_card(title, description, generate_url, upload_url=None) %}
-  <div class="card shadow mb-4 bg-white rounded">
-    <div class="card-body">
-      <h5 class="card-title text-primary">{{ title }}</h5>
-        <p class="card-text">{{ description }}</p>
-    </div>
-    <div class="card-footer">
-      <div class="float-right">
-        <a id="actionBtn" href="{{ generate_url }}" class="btn btn-primary d-inline-block">Generate</a>
-        <div id="formUpload" class="d-inline-block">
-          <input id="uploadSetting" type="file" class="btn btn-success" name="upload-settings" style="position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap;">
-          <label class="btn btn-primary mb-0" for="uploadSetting">Upload File</label>
-        </div>
-      </div>
-    </div>
-  </div>
-{% endmacro %}
