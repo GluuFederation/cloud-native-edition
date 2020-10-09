@@ -32,7 +32,7 @@ def index():
 @main_blueprint.route("/install", methods=["GET", "POST"])
 def install():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install"
             installer.run_install()
@@ -50,7 +50,7 @@ def install():
 @main_blueprint.route("/install-no-wait", methods=["GET", "POST"])
 def install_no_wait():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.timeout = 0
             installer.target = "install"
             installer.run_install()
@@ -67,7 +67,7 @@ def install_no_wait():
 @main_blueprint.route("/install-ldap-backup", methods=["GET", "POST"])
 def install_ldap_backup():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "install-ldap-backup"
             installer.run_install()
             return render_template("installation.html")
@@ -83,7 +83,7 @@ def install_ldap_backup():
 @main_blueprint.route("/install-kubedb", methods=["GET", "POST"])
 def install_kubedb():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "install-kubedb"
             installer.run_install()
             return render_template("installation.html")
@@ -99,7 +99,7 @@ def install_kubedb():
 @main_blueprint.route("/install-gg-dbmode", methods=["GET", "POST"])
 def install_gg_dbmode():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "install-gg-dbmode"
             installer.run_install()
             return render_template("installation.html")
@@ -119,7 +119,7 @@ def install_gg_dbmode():
 @main_blueprint.route("/install-couchbase", methods=["GET", "POST"])
 def install_couchbase():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "install-couchbase"
             installer.run_install()
             return render_template("installation.html")
@@ -135,7 +135,7 @@ def install_couchbase():
 @main_blueprint.route("/install-couchbase-backup", methods=["GET", "POST"])
 def install_couchbase_backup():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "install-couchbase-backup"
             installer.run_install()
             return render_template("installation.html")
@@ -151,7 +151,7 @@ def install_couchbase_backup():
 @main_blueprint.route("/helm-install-gg-dbmode", methods=["GET", "POST"])
 def helm_install_gg_dbmode():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "helm-install-gg-dbmode"
             installer.run_install()
             return render_template("installation.html")
@@ -167,7 +167,7 @@ def helm_install_gg_dbmode():
 @main_blueprint.route("/helm-install", methods=["GET", "POST"])
 def helm_install():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "helm-install"
             installer.run_install()
             return render_template("installation.html")
@@ -183,7 +183,7 @@ def helm_install():
 @main_blueprint.route("/helm-install-gluu", methods=["GET", "POST"])
 def helm_install_gluu():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "helm-install-gluu"
             installer.run_install()
             return render_template("installation.html")
@@ -199,7 +199,7 @@ def helm_install_gluu():
 @main_blueprint.route("/generate-settings", methods=["GET", "POST"])
 def generate_settings():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             return redirect(url_for("main.index"))
         else:
             gluu_settings.db.reset_data()
@@ -212,7 +212,7 @@ def generate_settings():
 @main_blueprint.route("/upgrade", methods=["GET", "POST"])
 def upgrade():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "upgrade"
             installer.run_install()
             return render_template("installation.html")
@@ -227,7 +227,7 @@ def upgrade():
 @main_blueprint.route("/restore", methods=["GET", "POST"])
 def restore():
     if request.method == "POST":
-        if request.form["install_confirm"] == "Y":
+        if request.form["confirm_params"] == "Y":
             installer.target = "restore"
             installer.run_install()
             return render_template("installation.html")
@@ -242,8 +242,23 @@ def restore():
 @main_blueprint.route("/uninstall", methods=["POST"])
 def uninstall():
     if request.method == "POST":
-        if request.form["uninstall_confirm"] == "Y":
-            installer.target = request.form["target"]
+        uninstall_confirm = request.form.get("uninstall_confirm", None)
+
+        if uninstall_confirm == "Y":
+            session["installer_target"] = request.form.get("target", None)
+            session["finish_endpoint"] = request.endpoint
+            settings_exist = gluu_settings.db.is_exist()
+            if settings_exist:
+                redirect_url = get_wizard_step()
+                return redirect(redirect_url)
+            else:
+                return render_template("preinstall.html",
+                                       title="Setup Uninstall Settings",
+                                       setting_exist=settings_exist)
+
+        if request.form["confirm_params"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
+            installer.target = session["installer_target"]
             installer.run_uninstall()
             return render_template("installation.html")
 

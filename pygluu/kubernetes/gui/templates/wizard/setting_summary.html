@@ -27,7 +27,7 @@
 
       <form class="d-flex justify-content-center" action="{{ url_for(session['finish_endpoint']) }}" method="post" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="mx-2 btn btn-primary" name="install_confirm" value="Y">Confirm settings</button>
+        <button type="submit" class="mx-2 btn btn-primary" name="confirm_params" value="Y">Confirm settings</button>
         <button type="button" class="mx-2 btn btn-danger" data-toggle="modal" data-target="#cancelModal">Discard settings</button>
       </form>
 
@@ -49,7 +49,7 @@
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-                <button type="submit" name="install_confirm" class="btn btn-secondary" value="N">Yes</button>
+                <button type="submit" name="confirm_params" class="btn btn-secondary" value="N">Yes</button>
               </div>
             </form>
           </div>
