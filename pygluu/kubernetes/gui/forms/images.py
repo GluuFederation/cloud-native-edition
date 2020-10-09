@@ -2,9 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import RadioField, StringField
 from wtforms.validators import DataRequired
 from .helpers import RequiredIfFieldEqualTo
-from pygluu.kubernetes.settings import SettingsHandler
-
-settings = SettingsHandler()
+from ..extensions import gluu_settings
 
 
 class ImageNameTagForm(FlaskForm):
@@ -52,121 +50,121 @@ class ImageNameTagForm(FlaskForm):
         validators=[DataRequired()])
     casa_image_name = StringField(
         "Casa image name",
-        default=settings.get("CASA_IMAGE_NAME"),
+        default=gluu_settings.db.get("CASA_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     casa_image_tag = StringField(
         "Casa image tag",
-        default=settings.get("CASA_IMAGE_TAG"),
+        default=gluu_settings.db.get("CASA_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     config_image_name = StringField(
         "Config image name",
-        default=settings.get("CONFIG_IMAGE_NAME"),
+        default=gluu_settings.db.get("CONFIG_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     config_image_tag = StringField(
         "Config image tag",
-        default=settings.get("CONFIG_IMAGE_TAG"),
+        default=gluu_settings.db.get("CONFIG_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cache_refresh_rotate_image_name = StringField(
         "CR-rotate image name",
-        default=settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME"),
+        default=gluu_settings.db.get("CACHE_REFRESH_ROTATE_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cache_refresh_rotate_image_tag = StringField(
         "CR-rotate image tag",
-        default=settings.get("CACHE_REFRESH_ROTATE_IMAGE_TAG"),
+        default=gluu_settings.db.get("CACHE_REFRESH_ROTATE_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cert_manager_image_name = StringField(
         "Key rotate image name",
-        default=settings.get("CERT_MANAGER_IMAGE_NAME"),
+        default=gluu_settings.db.get("CERT_MANAGER_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     cert_manager_image_tag = StringField(
         "Key rotate image tag",
-        default=settings.get("CERT_MANAGER_IMAGE_TAG"),
+        default=gluu_settings.db.get("CERT_MANAGER_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_name = StringField(
         "OpenDJ image name",
-        default=settings.get("LDAP_IMAGE_NAME"),
+        default=gluu_settings.db.get("LDAP_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     ldap_image_tag = StringField(
         "OpenDJ image tag",
-        default=settings.get("LDAP_IMAGE_TAG"),
+        default=gluu_settings.db.get("LDAP_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     jackrabbit_image_name = StringField(
         "Jackrabbit image name",
-        default=settings.get("JACKRABBIT_IMAGE_NAME"),
+        default=gluu_settings.db.get("JACKRABBIT_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     jackrabbit_image_tag = StringField(
         "Jackrabbit image tag",
-        default=settings.get("JACKRABBIT_IMAGE_TAG"),
+        default=gluu_settings.db.get("JACKRABBIT_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxauth_image_name = StringField(
         "Oxauth image name",
-        default=settings.get("OXAUTH_IMAGE_NAME"),
+        default=gluu_settings.db.get("OXAUTH_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxauth_image_tag = StringField(
         "Oxauth image tag",
-        default=settings.get("OXAUTH_IMAGE_TAG"),
+        default=gluu_settings.db.get("OXAUTH_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxd_image_name = StringField(
         "Oxd Server image name",
-        default=settings.get("OXD_IMAGE_NAME"),
+        default=gluu_settings.db.get("OXD_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxd_image_tag = StringField(
         "Oxd Server image tag",
-        default=settings.get("OXD_IMAGE_TAG"),
+        default=gluu_settings.db.get("OXD_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxpassport_image_name = StringField(
         "oxPassport image name",
-        default=settings.get("OXPASSPORT_IMAGE_NAME"),
+        default=gluu_settings.db.get("OXPASSPORT_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxpassport_image_tag = StringField(
         "oxPassport image tag",
-        default=settings.get("OXPASSPORT_IMAGE_TAG"),
+        default=gluu_settings.db.get("OXPASSPORT_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxshibboleth_image_name = StringField(
         "oxShibboleth image name",
-        default=settings.get("OXSHIBBOLETH_IMAGE_NAME"),
+        default=gluu_settings.db.get("OXSHIBBOLETH_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxshibboleth_image_tag = StringField(
         "oxShibboleth image tag",
-        default=settings.get("OXSHIBBOLETH_IMAGE_TAG"),
+        default=gluu_settings.db.get("OXSHIBBOLETH_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxtrust_image_name = StringField(
         "oxTrust image name",
-        default=settings.get("OXTRUST_IMAGE_NAME"),
+        default=gluu_settings.db.get("OXTRUST_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     oxtrust_image_tag = StringField(
         "oxTrust image tag",
-        default=settings.get("OXTRUST_IMAGE_TAG"),
+        default=gluu_settings.db.get("OXTRUST_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     persistence_image_name = StringField(
         "Persistence image name",
-        default=settings.get("PERSISTENCE_IMAGE_NAME"),
+        default=gluu_settings.db.get("PERSISTENCE_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     persistence_image_tag = StringField(
         "Persistence image tag",
-        default=settings.get("PERSISTENCE_IMAGE_TAG"),
+        default=gluu_settings.db.get("PERSISTENCE_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     radius_image_name = StringField(
         "Radius image name",
-        default=settings.get("RADIUS_IMAGE_NAME"),
+        default=gluu_settings.db.get("RADIUS_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     radius_image_tag = StringField(
         "Radius image tag",
-        default=settings.get("RADIUS_IMAGE_TAG"),
+        default=gluu_settings.db.get("RADIUS_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_image_name = StringField(
         "Gluu-Gateway image name",
-        default=settings.get("GLUU_GATEWAY_IMAGE_NAME"),
+        default=gluu_settings.db.get("GLUU_GATEWAY_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_image_tag = StringField(
         "Gluu-Gateway image tag",
-        default=settings.get("GLUU_GATEWAY_IMAGE_TAG"),
+        default=gluu_settings.db.get("GLUU_GATEWAY_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_ui_image_name = StringField(
         "Gluu-Gateway-UI image name",
-        default=settings.get("GLUU_GATEWAY_IMAGE_NAME"),
+        default=gluu_settings.db.get("GLUU_GATEWAY_IMAGE_NAME"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     gluu_gateway_ui_image_tag = StringField(
         "Gluu-Gateway-UI image tag",
-        default=settings.get("GLUU_GATEWAY_IMAGE_TAG"),
+        default=gluu_settings.db.get("GLUU_GATEWAY_IMAGE_TAG"),
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])

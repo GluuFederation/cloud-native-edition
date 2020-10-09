@@ -6,10 +6,10 @@
 {{ forms.text(form.org_name) }}
 {{ forms.password(form.admin_pw) }}
 {{ forms.password(form.admin_pw_confirm) }}
-{% if settings["PERSISTENCE_BACKEND"] in ("hybrid", "ldap") %}
+{% if persistence_backend in ("hybrid", "ldap") %}
   {{ forms.password(form.ldap_pw) }}
   {{ forms.password(form.ldap_pw_confirm) }}
 {% endif %}
-<div id="fqdnRegistered" class="collapse {{ 'show' if settings['DEPLOYMENT_ARCH']  not in ('microk8s', 'minikube') else '' }}">
+<div id="fqdnRegistered" class="collapse {{ 'show' if deployment_arch  not in ('microk8s', 'minikube') else '' }}">
 {{ forms.radio(form.is_gluu_fqdn_registered) }}
 </div>

@@ -268,6 +268,9 @@ class SettingsHandler(object):
             logger.info("No Value Can Be Found for " + str(key))
             return False
 
+    def get_all(self):
+        return self.db
+
     def update(self, collection):
         """
         mass update

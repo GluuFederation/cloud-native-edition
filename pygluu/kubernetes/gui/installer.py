@@ -10,7 +10,7 @@ from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.helm import Helm
 from pygluu.kubernetes.helpers import get_logger
 from pygluu.kubernetes.kustomize import Kustomize
-from pygluu.kubernetes.settings import SettingsHandler
+from .extensions import gluu_settings
 
 logger = get_logger("gluu-gui        ")
 
@@ -20,7 +20,6 @@ class InstallHandler(object):
         self.target = None
         self.timeout = 120
         self.queue = Queue()
-        self.settings = SettingsHandler()
         self.thread = None
 
     def run_install(self):
@@ -51,9 +50,9 @@ class InstallHandler(object):
                 self.queue.put(('Preparing Installation', 'ONPROGRESS'))
                 kustomize = Kustomize(self.timeout)
                 kustomize.uninstall()
-                if self.settings.get("INSTALL_REDIS") == "Y" or \
-                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                        self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+                if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
+                        gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                        gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
                     self.queue.put(('Install Kube-DB', 'ONPROGRESS'))
                     helm = Helm()
                     helm.uninstall_kubedb()
@@ -84,17 +83,17 @@ class InstallHandler(object):
             elif target == "helm-install":
                 helm = Helm()
 
-                if self.settings.get("INSTALL_REDIS") == "Y" or \
-                        self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                        self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+                if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
+                        gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
+                        gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
                     helm.uninstall_kubedb()
                     helm.install_kubedb()
 
-                if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+                if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
                     kustomize = Kustomize(self.timeout)
                     kustomize.deploy_postgres()
 
-                if self.settings.get("INSTALL_REDIS") == "Y":
+                if gluu_settings.db.get("INSTALL_REDIS") == "Y":
                     kustomize = Kustomize(self.timeout)
                     kustomize.uninstall_redis()
                     kustomize.deploy_redis()
@@ -143,8 +142,8 @@ class InstallHandler(object):
             self.queue.put(('Uninstall in progress', 'ONPROGRESS'))
             kustomize = Kustomize(self.timeout)
             kustomize.uninstall()
-            if self.settings.get("INSTALL_REDIS") == "Y" or \
-                    self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
+                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
                 self.queue.put(('Uninstall kube-db', 'ONPROGRESS'))
                 helm = Helm()
                 helm.uninstall_kubedb()

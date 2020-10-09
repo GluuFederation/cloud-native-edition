@@ -14,15 +14,13 @@ from flask import Blueprint, render_template, \
 from werkzeug.utils import secure_filename
 from flask_socketio import emit
 from pygtail import Pygtail
-from pygluu.kubernetes.settings import SettingsHandler
 from ..installer import InstallHandler
 from ..extensions import socketio
+from ..extensions import gluu_settings
 from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-gui        ")
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
-
-settings = SettingsHandler()
 installer = InstallHandler()
 
 
@@ -35,12 +33,13 @@ def index():
 def install():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install"
             installer.run_install()
 
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -57,7 +56,7 @@ def install_no_wait():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -73,7 +72,7 @@ def install_ldap_backup():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -89,7 +88,7 @@ def install_kubedb():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -105,7 +104,7 @@ def install_gg_dbmode():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -125,7 +124,7 @@ def install_couchbase():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -141,7 +140,7 @@ def install_couchbase_backup():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -157,7 +156,7 @@ def helm_install_gg_dbmode():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -173,7 +172,7 @@ def helm_install():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -189,7 +188,7 @@ def helm_install_gluu():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -203,7 +202,7 @@ def generate_settings():
         if request.form["install_confirm"] == "Y":
             return redirect(url_for("main.index"))
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -218,7 +217,7 @@ def upgrade():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -233,7 +232,7 @@ def restore():
             installer.run_install()
             return render_template("installation.html")
         else:
-            settings.reset_data()
+            gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
@@ -327,23 +326,23 @@ def validating_gg_settings():
 
     for key in keys:
         if key == "INSTALL_GLUU_GATEWAY":
-            if not settings.get("INSTALL_GLUU_GATEWAY") or \
-                    settings.get("INSTALL_GLUU_GATEWAY") == "N":
+            if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY") or \
+                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
                 status = False
                 break
 
-        if settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+        if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
             if key == "ENABLED_SERVICES_LIST":
-                enable_services = settings.get("ENABLED_SERVICES_LIST")
+                enable_services = gluu_settings.db.get("ENABLED_SERVICES_LIST")
                 if "gluu-gateway-ui" not in enable_services:
                     status = False
                     break
 
-            if key == "ENABLE_OXD" and settings.get("ENABLE_OXD") == "N":
+            if key == "ENABLE_OXD" and gluu_settings.db.get("ENABLE_OXD") == "N":
                 status = False
                 break
 
-            if not settings.get(key):
+            if not gluu_settings.db.get(key):
                 status = False
                 break
     return status

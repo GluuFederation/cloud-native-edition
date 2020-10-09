@@ -3,9 +3,8 @@ import re
 
 from flask import Flask
 
-from pygluu.kubernetes.gui.extensions import csrf, socketio
-from pygluu.kubernetes.gui.views.main import main_blueprint
-from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
+from pygluu.kubernetes.gui.extensions import csrf, socketio, gluu_settings
+
 
 
 def create_app(debug=False):
@@ -27,8 +26,12 @@ def create_app(debug=False):
     # init csrf
     csrf.init_app(app)
     socketio.init_app(app)
+    gluu_settings.init_app(app)
 
     # register blueprint
+    # TODO: find better way blueprint registration
+    from pygluu.kubernetes.gui.views.main import main_blueprint
+    from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
     app.register_blueprint(main_blueprint)
     app.register_blueprint(wizard_blueprint)
 

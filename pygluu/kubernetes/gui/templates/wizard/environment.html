@@ -1,11 +1,11 @@
-{% if settings["DEPLOYMENT_ARCH"] not in ["microk8s", "minikube"] %}
+{% if deployment_arch not in ["microk8s", "minikube"] %}
   {{ forms.radio(form.test_environment) }}
   <div class="alert alert-warning collapse {{ 'show' if form.test_environment.data == 'Y' else ''}}" role="alert">
     <p>A test environment means that the installer will strip all resource requirements, and hence will use as much as needed only. The pods are subject to eviction. Please use at least 8GB Ram , 4 CPU, and 50 GB disk.</p>
   </div>
 {% endif %}
 
-{% if settings["DEPLOYMENT_ARCH"] in ["eks", "gke", "do", "local", "aks"] %}
+{% if deployment_arch in ["eks", "gke", "do", "local", "aks"] %}
   {{ forms.text(form.node_ssh_key) }}
 {% endif %}
 
@@ -13,7 +13,7 @@
   {{ forms.text(form.host_ext_ip) }}
 {% endif %}
 
-{% if settings["DEPLOYMENT_ARCH"] == "eks" %}
+{% if deployment_arch == "eks" %}
   <fieldset class="form-group">
     <h6 class="border-bottom border-gray pb-2 mt-2">{{ form.aws_lb_type.label }}</h6>
     {% for choice in form.aws_lb_type %}
@@ -26,6 +26,6 @@
 
 {% endif %}
 
-{% if settings["DEPLOYMENT_ARCH"] == "gke" %}
+{% if deployment_arch == "gke" %}
   {{ forms.email(form.gmail_account) }}
 {% endif %}

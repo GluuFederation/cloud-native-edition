@@ -9,9 +9,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 """
 from flask_wtf import FlaskForm
 from wtforms import RadioField, StringField
-from pygluu.kubernetes.settings import SettingsHandler
-
-settings = SettingsHandler()
 
 
 class VolumeForm(FlaskForm):
