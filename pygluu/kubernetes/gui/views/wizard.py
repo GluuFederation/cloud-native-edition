@@ -1298,13 +1298,15 @@ def quit_settings():
         gluu_settings.db.reset_data()
     return redirect(url_for('main.index'))
 
+
 @wizard_blueprint.route("/new")
 def new():
     """
     New installation wizard and discard current settings.json
     """
-    settings.reset_data()
+    gluu_settings.db.reset_data()
     return redirect(url_for('wizard.agreement'))
+
 
 def populate_form_data(form):
     """
