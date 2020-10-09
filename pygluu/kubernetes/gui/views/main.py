@@ -51,6 +51,7 @@ def install():
 def install_no_wait():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.timeout = 0
             installer.target = "install"
             installer.run_install()
@@ -68,6 +69,7 @@ def install_no_wait():
 def install_ldap_backup():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install-ldap-backup"
             installer.run_install()
             return render_template("installation.html")
@@ -84,6 +86,7 @@ def install_ldap_backup():
 def install_kubedb():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install-kubedb"
             installer.run_install()
             return render_template("installation.html")
@@ -100,6 +103,7 @@ def install_kubedb():
 def install_gg_dbmode():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install-gg-dbmode"
             installer.run_install()
             return render_template("installation.html")
@@ -120,6 +124,7 @@ def install_gg_dbmode():
 def install_couchbase():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install-couchbase"
             installer.run_install()
             return render_template("installation.html")
@@ -136,6 +141,7 @@ def install_couchbase():
 def install_couchbase_backup():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "install-couchbase-backup"
             installer.run_install()
             return render_template("installation.html")
@@ -152,6 +158,7 @@ def install_couchbase_backup():
 def helm_install_gg_dbmode():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "helm-install-gg-dbmode"
             installer.run_install()
             return render_template("installation.html")
@@ -168,6 +175,7 @@ def helm_install_gg_dbmode():
 def helm_install():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "helm-install"
             installer.run_install()
             return render_template("installation.html")
@@ -184,6 +192,7 @@ def helm_install():
 def helm_install_gluu():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "helm-install-gluu"
             installer.run_install()
             return render_template("installation.html")
@@ -200,6 +209,7 @@ def helm_install_gluu():
 def generate_settings():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             return redirect(url_for("main.index"))
         else:
             gluu_settings.db.reset_data()
@@ -213,6 +223,7 @@ def generate_settings():
 def upgrade():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "upgrade"
             installer.run_install()
             return render_template("installation.html")
@@ -228,6 +239,7 @@ def upgrade():
 def restore():
     if request.method == "POST":
         if request.form["install_confirm"] == "Y":
+            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             installer.target = "restore"
             installer.run_install()
             return render_template("installation.html")
