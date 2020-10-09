@@ -7,10 +7,11 @@ class GluuSettings(object):
     def __init__(self, app=None):
         if app is not None:
             self.init_app(app)
+        self.db = SettingsHandler()
 
     def init_app(self, app):
-        self.db = SettingsHandler()
-        app.gluu_settings = self
+        app.extensions = getattr(app, "extensions", {})
+        app.extensions["gluu_settings"] = self
 
 
 csrf = CSRFProtect()

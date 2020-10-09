@@ -8,7 +8,8 @@ from pathlib import Path
 from flask import Flask
 
 from pygluu.kubernetes.gui.extensions import csrf, socketio, gluu_settings
-
+from pygluu.kubernetes.gui.views.main import main_blueprint
+from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
 
 
 def resolve_secret_key(path):
@@ -56,9 +57,6 @@ def create_app(debug=False):
     gluu_settings.init_app(app)
 
     # register blueprint
-    # TODO: find better way blueprint registration
-    from pygluu.kubernetes.gui.views.main import main_blueprint
-    from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
     app.register_blueprint(main_blueprint)
     app.register_blueprint(wizard_blueprint)
 
