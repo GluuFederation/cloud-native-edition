@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "4.2.1"
 description: nginx-ingress chart
 name: nginx-ingress
-version: 1.2.13
+version: 1.2.14
 maintainers:
 - name: Gluu
 email: support@gluu.org

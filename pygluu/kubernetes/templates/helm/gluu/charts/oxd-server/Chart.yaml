@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "4.2.1"
 description: oxd-server chart
 name: oxd-server
-version: 1.2.13
+version: 1.2.14
 maintainers:
 - name: Gluu
 email: support@gluu.org
