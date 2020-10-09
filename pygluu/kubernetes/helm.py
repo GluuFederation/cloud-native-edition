@@ -22,8 +22,8 @@ logger = get_logger("gluu-helm          ")
 
 
 def register_op_client(namespace, client_name, op_host, oxd_url):
-    """
-    Registers an op client using oxd.
+    """Registers an op client using oxd.
+
     :param namespace:
     :param client_name:
     :param op_host:
@@ -41,8 +41,8 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
 
     exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
                          "{}/register-site".format(oxd_url), "--header",
-                         "'Content-Type: application/json'", "--data-raw",
-                         "'" + data + "'"]
+                         "Content-Type: application/json", "--data-raw",
+                         data]
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
@@ -56,8 +56,12 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_id = client_registration_response_dict["client_id"]
         client_secret = client_registration_response_dict["client_secret"]
     except (IndexError, Exception):
+        exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
+                             "{}/register-site".format(oxd_url), "--header",
+                             "'Content-Type: application/json'", "--data-raw",
+                             "'" + data + "'"]
         manual_curl_command = " ".join(exec_curl_command)
-        logger.error("Registeration of client : {} failed. Please do so manually by calling\n{}".format(
+        logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
     return oxd_id, client_id, client_secret
 
