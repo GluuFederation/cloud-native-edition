@@ -250,13 +250,14 @@ def uninstall():
 
 @main_blueprint.route("/pre-installation", methods=["GET", "POST"])
 def preinstall():
-    is_exist = settings.is_exist()
+    is_exist = gluu_settings.db.is_exist()
     return render_template("preinstall.html", setting_exist=is_exist)
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
 
 @main_blueprint.route('/upload-settings', methods=['POST'])
 def upload_file():
@@ -277,6 +278,7 @@ def upload_file():
                             "redirect_url": redirect_url})
         else:
             return jsonify({"success": False, 'message': 'File type not supported'})
+
 
 @socketio.on("install", namespace="/logs")
 def installer_logs():
@@ -353,67 +355,66 @@ def get_wizard_step():
     Define wizard step based on settings value
     :return:
     """
-    setting = SettingsHandler()
-    if not setting.get("ACCEPT_GLUU_LICENSE"):
+    if not gluu_settings.db.get("ACCEPT_GLUU_LICENSE"):
         return url_for("wizard.agreement")
 
-    if not setting.get("GLUU_VERSION"):
+    if not gluu_settings.db.get("GLUU_VERSION"):
         return url_for("wizard.gluu_version")
 
-    if not setting.get("DEPLOYMENT_ARCH"):
+    if not gluu_settings.db.get("DEPLOYMENT_ARCH"):
         return url_for("wizard.deployment_arch")
 
-    if not setting.get("GLUU_NAMESPACE"):
+    if not gluu_settings.db.get("GLUU_NAMESPACE"):
         return url_for("wizard.gluu_namespace")
 
-    if not setting.get("ENABLE_CACHE_REFRESH"):
+    if not gluu_settings.db.get("ENABLE_CACHE_REFRESH"):
         return url_for("wizard.optional_services")
 
-    if not setting.get("INSTALL_GLUU_GATEWAY"):
+    if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY"):
         return url_for("wizard.gluu_gateway")
 
-    if setting.get("INSTALL_GLUU_GATEWAY") == "Y" and \
-            setting.get("KONG_PG_PASSWORD"):
+    if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" and \
+            gluu_settings.db.get("KONG_PG_PASSWORD"):
         return url_for("wizard.gluu_gateway")
 
-    if not setting.get("INSTALL_JACKRABBIT"):
+    if not gluu_settings.db.get("INSTALL_JACKRABBIT"):
         return url_for("wizard.install_jackrabbit")
 
-    if not setting.get("USE_ISTIO"):
+    if not gluu_settings.db.get("USE_ISTIO"):
         return url_for("wizard.install_istio")
 
-    if not setting.get("HOST_EXT_IP"):
+    if not gluu_settings.db.get("HOST_EXT_IP"):
         return url_for("wizard.environment")
 
-    if not setting.get("PERSISTENCE_BACKEND"):
+    if not gluu_settings.db.get("PERSISTENCE_BACKEND"):
         return url_for("wizard.persistence_backend")
 
-    if not setting.get("APP_VOLUME_TYPE"):
+    if not gluu_settings.db.get("APP_VOLUME_TYPE"):
         return url_for("wizard.volumes")
 
-    if not setting.get("INSTALL_COUCHBASE") and \
-            setting.get("PERSISTENCE_BACKEND") == "couchbase":
+    if not gluu_settings.db.get("INSTALL_COUCHBASE") and \
+            gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
         return url_for("wizard.couchbase")
 
-    if not setting.get("GLUU_CACHE_TYPE"):
+    if not gluu_settings.db.get("GLUU_CACHE_TYPE"):
         return url_for("wizard.cache_type")
 
-    if setting.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
-            setting.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase") and \
-            not setting.get("COUCHBASE_INCR_BACKUP_SCHEDULE"):
+    if gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
+            gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase") and \
+            not gluu_settings.db.get("COUCHBASE_INCR_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
-    elif setting.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
-            setting.get("PERSISTENCE_BACKEND") == "ldap" and \
-            not setting.get("LDAP_BACKUP_SCHEDULE"):
+    elif gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
+            gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap" and \
+            not gluu_settings.db.get("LDAP_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
 
-    if not setting.get("GLUU_FQDN"):
+    if not gluu_settings.db.get("GLUU_FQDN"):
         return url_for("wizard.configuration")
 
-    if not setting.get("EDIT_IMAGE_NAMES_TAGS"):
+    if not gluu_settings.db.get("EDIT_IMAGE_NAMES_TAGS"):
         return url_for("wizard.images")
 
-    if not setting.get("OXAUTH_REPLICAS"):
+    if not gluu_settings.db.get("OXAUTH_REPLICAS"):
         return url_for("wizard.replicas")
 
     return url_for("wizard.setting_summary")
