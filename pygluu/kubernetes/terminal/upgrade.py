@@ -11,6 +11,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 import click
 
 from pygluu.kubernetes.helpers import get_supported_versions
+from pygluu.kubernetes.terminal.images import PromptImages
 
 
 class PromptUpgrade:
@@ -35,4 +36,7 @@ class PromptUpgrade:
 
         image_names_and_tags = versions.get(self.settings.get("GLUU_UPGRADE_TARGET_VERSION"), {})
         self.settings.update(image_names_and_tags)
-        self.settings.store_data()
+
+        # reset this config to force image prompt
+        self.settings.set("EDIT_IMAGE_NAMES_TAGS", "")
+        PromptImages(self.settings).prompt_image_name_tag()
