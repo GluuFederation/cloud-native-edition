@@ -122,6 +122,12 @@ class InstallHandler(object):
 
             elif target == "upgrade":
                 self.queue.put(('Upgrading Gluu', 'ONPROGRESS'))
+                # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
+                if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
+                    helm = Helm()
+                    helm.uninstall_kubedb()
+                    helm.install_kubedb()
+
                 logger.info("Starting upgrade...")
                 kustomize = Kustomize(self.timeout)
                 kustomize.upgrade()
