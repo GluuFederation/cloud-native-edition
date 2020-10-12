@@ -84,7 +84,7 @@ class PromptConfiguration:
             self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
 
         logger.info("You can mount your FQDN certification and key by placing them inside "
-                    "gluu.crt and gluu.key respectivley at the same location pygluu-kuberentes.pyz is at.")
+                    "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
         self.generate_main_config()
 
     def generate_main_config(self):

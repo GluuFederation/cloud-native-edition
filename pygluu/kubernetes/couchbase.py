@@ -122,7 +122,7 @@ class Couchbase(object):
             except IndexError:
                 logger.fatal("Couchbase package not found.")
                 logger.info("Please download the couchbase kubernetes package and place it inside the same directory "
-                            "containing the pygluu-kuberentes.pyz script.https://www.couchbase.com/downloads")
+                            "containing the pygluu-kubernetes.pyz script.https://www.couchbase.com/downloads")
                 sys.exit()
             extract_couchbase_tar(couchbase_tar_file)
             couchbase_source_folder_pattern = "./couchbase-source-folder/couchbase-autonomous-operator-kubernetes_*"

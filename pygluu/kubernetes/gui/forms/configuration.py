@@ -78,7 +78,7 @@ class ConfigurationForm(FlaskForm):
         choices=[("Y", "Yes"), ("N", "No")],
         description="You can mount your FQDN certification and key by placing "
                     "them inside gluu.crt and gluu.key respectivley "
-                    "at the same location pygluu-kuberentest.pyz is at.",
+                    "at the same location pygluu-kubernetes.pyz is at.",
         render_kw={"disabled": "disabled"})
 
 

@@ -20,7 +20,7 @@ logger = get_logger("gluu-kubernetes-api")
 
 def load_kubernetes_config(mute=True):
     """
-    Loads kuberentes in cluster or from file configuration
+    Loads kubernetes in cluster or from file configuration
     :param mute:
     """
     config_loaded = False
