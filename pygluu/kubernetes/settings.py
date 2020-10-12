@@ -244,7 +244,7 @@ class SettingsHandler(object):
             # json.dump(self.db, open(self.path, "w+"))
             return True
         except Exception as exc:
-            logger.debug(f"Uncaught error={exc}")
+            logger.info(f"Uncaught error={exc}")
             return False
 
     def set(self, key, value):
@@ -258,7 +258,7 @@ class SettingsHandler(object):
             self.db[str(key)] = value
             self.store_data()
         except Exception as exc:
-            logger.debug(f"Uncaught error={exc}")
+            logger.info(f"Uncaught error={exc}")
             return False
 
     def get(self, key):
@@ -278,8 +278,9 @@ class SettingsHandler(object):
         try:
             self.db.update(collection)
             self.store_data()
+            return True
         except Exception as exc:
-            logger.debug(f"Uncaught error={exc}")
+            logger.info(f"Uncaught error={exc}")
             return False
 
     def reset_data(self):
@@ -291,7 +292,7 @@ class SettingsHandler(object):
             self.store_data()
             return True
         except Exception as exc:
-            logger.debug(f"Uncaught error={exc}")
+            logger.info(f"Uncaught error={exc}")
             return False
 
     def is_exist(self):
