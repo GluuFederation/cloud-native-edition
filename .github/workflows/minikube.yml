@@ -51,10 +51,11 @@ jobs:
         sudo make zipapp
 
     - name: Install Minikube
-      uses: manusa/actions-setup-minikube@v1.0.0
+      uses: manusa/actions-setup-minikube@v2.0.1
       with:
         minikube version: 'v1.7.3'
         kubernetes version: 'v1.16.0'
+        github token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Istio
       run: |
