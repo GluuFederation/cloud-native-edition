@@ -1303,7 +1303,11 @@ def upgrade():
         # get supported versions image name and tag
         versions, version_number = get_supported_versions()
         image_names_and_tags = versions.get(gluu_settings.db.get("GLUU_UPGRADE_TARGET_VERSION"), {})
-        gluu_settings.db.update(image_names_and_tags)
+        for k, v in image_names_and_tags.items():
+            if "IMAGE_NAME" in k and gluu_settings.db.get(k) != v:
+                continue
+            gluu_settings.db.set(k, v)
+            
         return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
