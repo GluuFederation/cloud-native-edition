@@ -37,6 +37,7 @@ spec:
               serviceName: oxtrust
               servicePort: 8080
   {{- end }}
+
 ---
 
 {{ $fullName := include "nginx-ingress.fullname" . -}}
@@ -150,7 +151,7 @@ spec:
               serviceName: oxauth
               servicePort: 8080
 
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -188,8 +189,7 @@ spec:
             backend:
               serviceName: oxauth
               servicePort: 8080
-
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -227,8 +227,7 @@ spec:
             backend:
               serviceName: scim
               servicePort: 8080
-
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -266,8 +265,7 @@ spec:
             backend:
               serviceName: oxauth
               servicePort: 8080
-
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -305,10 +303,10 @@ spec:
             backend:
               serviceName: fido2
               servicePort: 8080
-
-{{- end }}
+  {{- end }}
 
 ---
+
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
@@ -342,7 +340,7 @@ spec:
               serviceName: oxauth
               servicePort: 8080
 
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -391,7 +389,7 @@ spec:
               serviceName: oxpassport
               servicePort: 8090
 
-{{- end }}
+  {{- end }}
 
 ---
 
@@ -426,5 +424,5 @@ spec:
             backend:
               serviceName: casa
               servicePort: 8080
-{{- end }}
+  {{- end }}
 {{- end -}}
