@@ -21,13 +21,14 @@ import base64
 logger = get_logger("gluu-helm          ")
 
 
-def register_op_client(namespace, client_name, op_host, oxd_url):
+def register_op_client(namespace, client_name, op_host, oxd_url, release_name):
     """Registers an op client using oxd.
 
     :param namespace:
     :param client_name:
     :param op_host:
     :param oxd_url:
+    :param release_name:
     :return:
     """
     kubernetes = Kubernetes()
@@ -47,7 +48,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
                                                        app_label="app=oxauth",
-                                                       container="oxauth",
+                                                       container=release_name + "-oxauth",
                                                        namespace=namespace,
                                                        stdout=False)
 
@@ -484,6 +485,11 @@ class Helm(object):
         values_file_parser["oxdServerUrl"] = oxd_server_url
         values_file_parser["image"]["repository"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_NAME")
         values_file_parser["image"]["tag"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_TAG")
+        values_file_parser["loadBalancerIp"] = self.settings.get("HOST_EXT_IP")
+        values_file_parser["dbPassword"] = self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
+        values_file_parser["opServerUrl"] = "https://" + self.settings.get("GLUU_FQDN")
+        values_file_parser["ggHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
+        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
         # Register new client if one was not provided
         if not values_file_parser["oxdId"] or \
                 not values_file_parser["clientId"] or \
@@ -491,15 +497,23 @@ class Helm(object):
             oxd_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
                                                                   "konga-client",
                                                                   self.settings.get("GLUU_FQDN"),
-                                                                  oxd_server_url)
+                                                                  oxd_server_url,
+                                                                  self.settings.get('GLUU_HELM_RELEASE_NAME'))
+            if not oxd_id:
+                values_file_parser.dump_it()
+                logger.error("Due to a failure in konga client registration the installation has stopped."
+                             " Please register as suggested above manually and enter the values returned"
+                             " for oxdId, clientId, "
+                             "and clientSecret inside ./helm/gluu-gateway-ui/values.yaml then run "
+                             "helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui "
+                             "--namespace={}".format(
+                                                self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
+                                                self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
+                raise SystemExit(1)
             values_file_parser["oxdId"] = oxd_id
             values_file_parser["clientId"] = client_id
             values_file_parser["clientSecret"] = client_secret
-        values_file_parser["loadBalancerIp"] = self.settings.get("HOST_EXT_IP")
-        values_file_parser["dbPassword"] = self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
-        values_file_parser["opServerUrl"] = "https://" + self.settings.get("GLUU_FQDN")
-        values_file_parser["ggHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
+
         values_file_parser.dump_it()
         exec_cmd("helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui --namespace={}".format(
             self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'), self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))

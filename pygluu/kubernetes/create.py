@@ -224,7 +224,7 @@ def main():
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             kustomize = Kustomize(timeout)
-            kustomize.deploy_postgres()
+            kustomize.patch_or_deploy_postgres()
             helm = Helm()
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()

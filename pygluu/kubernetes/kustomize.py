@@ -667,12 +667,12 @@ class Kustomize(object):
                     cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["volumes"] = \
                         [{"name": "cb-pass", "secret": {"secretName": "cb-pass"}},
                          {"name": "cb-crt", "secret": {"secretName": "cb-crt"}}]
-                    cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]\
+                    cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["volumeMounts"] \
                         = [{"name": "cb-pass", "mountPath":
-                            "/etc/gluu/conf/couchbase_password",
+                        "/etc/gluu/conf/couchbase_password",
                             "subPath": "couchbase_password"},
                            {"name": "cb-crt", "mountPath":
-                            "/etc/certs/couchbase.crt",
+                               "/etc/certs/couchbase.crt",
                             "subPath": "couchbase.crt"}]
                 if self.settings.get("USE_ISTIO") == "Y":
                     if "service.yaml" not in list_of_config_resource_files:
@@ -1086,6 +1086,23 @@ class Kustomize(object):
                                                           literal="data.sql",
                                                           value_of_literal=encoded_postgers_init_string)
 
+    def patch_or_deploy_postgres(self):
+
+        # Jackrabbit Cluster would have installed postgres
+        if self.settings.get("JACKRABBIT_CLUSTER") == "N":
+            self.deploy_postgres()
+        else:
+            self.create_patch_secret_init_sql()
+            logger.info("Restarting postgres...please wait 2mins..")
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=0,
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+            time.sleep(120)
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=3,
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
+
     def deploy_postgres(self):
         self.uninstall_postgres()
         self.kubernetes.create_namespace(name=self.settings.get("POSTGRES_NAMESPACE"), labels={"app": "postgres"})
@@ -1235,20 +1252,7 @@ class Kustomize(object):
         self.kubernetes.delete_ingress("gluu-gg-ui", self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
 
     def install_gluu_gateway_dbmode(self):
-        # Jackrabbit Cluster would have installed postgres
-        if self.settings.get("JACKRABBIT_CLUSTER") == "N":
-            self.deploy_postgres()
-        else:
-            self.create_patch_secret_init_sql()
-            logger.info("Restarting postgres...please wait 2mins..")
-            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                replicas=0,
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-            time.sleep(120)
-            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                replicas=3,
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
+        self.patch_or_deploy_postgres()
         self.deploy_kong()
         self.kustomize_gluu_gateway_ui()
         self.adjust_fqdn_yaml_entries()
