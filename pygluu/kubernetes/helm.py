@@ -266,7 +266,7 @@ class Helm(object):
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
         values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = \
             self.settings.get("HYBRID_LDAP_HELD_DATA")
-        if self.settings.get("PERSISTENCE_BACKEND") != "ldap" and self.settings.get("INSTALL_COUCHBASE") == "Y":
+        if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
             values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUser"] = \
