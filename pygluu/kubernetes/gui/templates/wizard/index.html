@@ -5,13 +5,14 @@
       <h3 class="text-center">Gluu Cloud Native Edition</h3>
         {% if is_wizard %}
         <ul class="wizard wizard-steps-{{ total_steps }}">
-          {% for wizard_step in wizard_steps %}
+          {% for k, wizard_step in wizard_steps.items() %}
             {% set step_status = 'active' if loop.index == current_step else ('complete' if loop.index < current_step else '') %}
             <li>
               <div class="step {{ step_status }}">
                 <span data-toggle="tooltip" data-placement="top" title="{{ wizard_step['title'] }}">
                   {% if step_status %}
-                    <a href="{{ wizard_step['url'] }}" class="text-decoration-none text-reset">{{ loop.index }}</a>
+                    <a href="{{ url_for(wizard_step['endpoint']) }}"
+                       class="text-decoration-none text-reset">{{ loop.index }}</a>
                   {% else %}
                     {{ loop.index }}
                   {% endif %}
@@ -26,9 +27,6 @@
         <form id="formInstaller" method="post" enctype="multipart/form-data" novalidate>
           {{ form.csrf_token }}
           {% include 'wizard/%s.html' % template %}
-          {% if(next_step) %}
-            {{ forms.hidden('next_step', next_step) }}
-          {% endif %}
           {% if(prev_step) %}
             <a href="{{ url_for(prev_step) }}" class="btn btn-info">Prev</a>
           {% endif %}

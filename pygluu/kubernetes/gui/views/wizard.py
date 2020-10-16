@@ -45,7 +45,7 @@ from ..forms.volumes import VolumeForm
 from ..forms.helm import HelmForm
 from ..forms.upgrade import UpgradeForm
 from ..helpers import determine_ip_nodes, download_couchbase_pkg, \
-    is_couchbase_pkg_exist
+    is_couchbase_pkg_exist, WizardHandler
 
 wizard_blueprint = Blueprint('wizard', __name__, template_folder="templates")
 logger = get_logger("gluu-gui")
@@ -58,6 +58,8 @@ config_settings = {"hostname": "", "country_code": "", "state": "", "city": "",
                    "admin_pw": "", "ldap_pw": "", "email": "", "org_name": "",
                    "redis_pw": ""}
 
+wizard_steps = WizardHandler()
+
 
 @wizard_blueprint.before_request
 def initialize():
@@ -66,6 +68,13 @@ def initialize():
     """
     if not session.get('finish_endpoint'):
         return redirect(url_for('main.index'))
+
+    if session["finish_endpoint"] == "main.helm_install":
+        wizard_steps.helm_steps()
+    elif session["finish_endpoint"] == "main.upgrade":
+        wizard_steps.upgrade_steps()
+    else:
+        wizard_steps.normal_steps()
 
     if not gluu_settings.db.get("ACCEPT_GLUU_LICENSE") and \
             request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
@@ -77,96 +86,10 @@ def inject_wizard_steps():
     """
     inject wizard_step variable to Jinja
     """
-    wizard_steps = [
-        {
-            "title": "License",
-            "url": url_for("wizard.agreement")
-        },
-        {
-            "title": "Gluu version",
-            "url": url_for("wizard.gluu_version")
-        },
-        {
-            "title": "Deployment architecture",
-            "url": url_for("wizard.deployment_arch")
-        },
-        {
-            "title": "Gluu namespace",
-            "url": url_for("wizard.gluu_namespace")
-        },
-        {
-            "title": "Optional Services",
-            "url": url_for("wizard.optional_services")
-        },
-        {
-            "title": "Gluu gateway",
-            "url": url_for("wizard.gluu_gateway")
-        },
-        {
-            "title": "Install jackrabbit",
-            "url": url_for("wizard.install_jackrabbit")
-        },
-        {
-            "title": "Install Istio",
-            "url": url_for("wizard.install_istio")
-        },
-        {
-            "title": "Environment Setting",
-            "url": url_for("wizard.environment")
-        },
-        {
-            "title": "Persistence backend",
-            "url": url_for("wizard.persistence_backend")
-        },
-        {
-            "title": "Volumes",
-            "url": url_for("wizard.volumes")
-        },
-        {
-            "title": "Couchbase multi cluster",
-            "url": url_for("wizard.couchbase_multi_cluster")
-        },
-        {
-            "title": "Couchbase",
-            "url": url_for("wizard.couchbase")
-        },
-        {
-            "title": "Couchbase calculator",
-            "url": url_for("wizard.couchbase_calculator")
-        },
-        {
-            "title": "Cache type",
-            "url": url_for("wizard.cache_type")
-        },
-        {
-            "title": "Backup",
-            "url": url_for("wizard.backup")
-        },
-        {
-            "title": "Configuration",
-            "url": url_for("wizard.configuration")
-        },
-        {
-            "title": "Images",
-            "url": url_for("wizard.images")
-        },
-        {
-            "title": "Replicas",
-            "url": url_for("wizard.replicas")
-        }
-    ]
-
-    if session["finish_endpoint"] == "main.helm_install":
-        wizard_steps.append({
-            "title": "Helm Configuration",
-            "url": url_for("wizard.helm_config")})
-
-    if session["finish_endpoint"] == "main.upgrade":
-        wizard_steps.append({
-            "title": "Upgrade Version",
-            "url": url_for("wizard.upgrade")})
-
-    return dict(wizard_steps=wizard_steps, total_steps=len(wizard_steps), is_wizard=True)
+    steps = wizard_steps.steps
+    return dict(wizard_steps=steps,
+                total_steps=len(steps),
+                is_wizard=True)
 
 
 @wizard_blueprint.route("/license", methods=["GET", "POST"])
@@ -176,7 +99,7 @@ def agreement():
     form = LicenseForm()
     if form.validate_on_submit():
         gluu_settings.db.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     with open("./LICENSE", "r") as f:
         agreement_file = f.read()
@@ -184,13 +107,12 @@ def agreement():
     if request.method == "GET":
         # populate form data from settings
         form.accept_gluu_license.data = gluu_settings.db.get("ACCEPT_GLUU_LICENSE")
-
+    wizard_steps.current_step = 'license'
     return render_template("wizard/index.html",
                            license=agreement_file,
                            form=form,
-                           current_step=1,
-                           template="license",
-                           next_step="wizard.gluu_version")
+                           current_step=wizard_steps.step_number(),
+                           template="license")
 
 
 @wizard_blueprint.route("/gluu-version", methods=["GET", "POST"])
@@ -199,26 +121,23 @@ def gluu_version():
     """
     versions, version_number = get_supported_versions()
     supported_versions = [(k, k) for k in versions.keys()]
-
     form = VersionForm()
     form.gluu_version.choices = supported_versions
     form.gluu_version.default = version_number
 
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         gluu_settings.db.set("GLUU_VERSION", form.gluu_version.data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         # populate form data from settings
         form.gluu_version.data = gluu_settings.db.get("GLUU_VERSION")
-
+    wizard_steps.current_step = 'version'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=2,
+                           current_step=wizard_steps.step_number(),
                            template="gluu_version",
-                           prev_step="wizard.agreement",
-                           next_step="wizard.deployment_arch")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/deployment-arch", methods=["GET", "POST"])
@@ -229,20 +148,18 @@ def deployment_arch():
     form = DeploymentArchForm()
 
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         gluu_settings.db.set("DEPLOYMENT_ARCH", form.deployment_arch.data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         # populate form settings
         form.deployment_arch.data = gluu_settings.db.get("DEPLOYMENT_ARCH")
-
+    wizard_steps.current_step = 'deployment'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=3,
+                           current_step=wizard_steps.step_number(),
                            template="deployment_arch",
-                           prev_step="wizard.gluu_version",
-                           next_step="wizard.gluu_namespace")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/gluu-namespace", methods=["GET", "POST"])
@@ -252,21 +169,19 @@ def gluu_namespace():
     """
     form = NamespaceForm()
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         gluu_settings.db.set("GLUU_NAMESPACE", form.gluu_namespace.data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         # populate form
         if gluu_settings.db.get("GLUU_NAMESPACE"):
             form.gluu_namespace.data = gluu_settings.db.get("GLUU_NAMESPACE")
-
+    wizard_steps.current_step = 'namespace'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=4,
+                           current_step=wizard_steps.step_number(),
                            template="gluu_namespace",
-                           prev_step="wizard.deployment_arch",
-                           next_step="wizard.optional_services")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/optional-services", methods=["GET", "POST"])
@@ -277,7 +192,6 @@ def optional_services():
     form = OptionalServiceForm()
     if form.validate_on_submit():
         data = {}
-        next_step = request.form["next_step"]
         service_list = {
             'cr-rotate': False,
             'oxauth-key-rotation': False,
@@ -369,17 +283,16 @@ def optional_services():
                     data["ENABLED_SERVICES_LIST"].remove(service)
 
         gluu_settings.db.update(data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-
+    wizard_steps.current_step = 'services'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=5,
+                           current_step=wizard_steps.step_number(),
                            template="optional_services",
-                           prev_step="wizard.gluu_namespace",
-                           next_step="wizard.gluu_gateway")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/gluu-gateway", methods=["GET", "POST"])
@@ -389,7 +302,6 @@ def gluu_gateway():
     """
     form = GluuGatewayForm()
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         data = {"INSTALL_GLUU_GATEWAY": form.install_gluu_gateway.data}
 
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
@@ -427,7 +339,7 @@ def gluu_gateway():
             data["GLUU_GATEWAY_UI_PG_USER"] = ""
             data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
         gluu_settings.db.update(data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -444,20 +356,12 @@ def gluu_gateway():
         else:
             form.gluu_gateway_ui_pg_password_confirm.data = gluu_settings.db.get("GLUU_GATEWAY_UI_PG_PASSWORD")
 
-    next_step = "wizard.install_jackrabbit"
-    is_wizard = True
-    if session["finish_endpoint"] == "main.install_gg_dbmode":
-        next_step = "wizard.setting_summary"
-        is_wizard = False
-        form.install_gluu_gateway.data = "Y"
-
+    wizard_steps.current_step = 'gluu_gateway'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=6,
+                           current_step=wizard_steps.step_number(),
                            template="gluu_gateway",
-                           prev_step="wizard.optional_services",
-                           next_step=next_step,
-                           is_wizard=is_wizard)
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/install-jackrabbit", methods=["GET", "POST"])
@@ -467,7 +371,6 @@ def install_jackrabbit():
     """
     form = JackrabbitForm()
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data,
                 "JACKRABBIT_URL": form.jackrabbit_url.data,
                 "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
@@ -486,7 +389,7 @@ def install_jackrabbit():
             data["JACKRABBIT_DATABASE"] = form.jackrabbit_database.data
 
         gluu_settings.db.update(data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -505,12 +408,12 @@ def install_jackrabbit():
             form.jackrabbit_pg_password.data = \
                 form.jackrabbit_pg_password_confirmation.data = gluu_settings.db.get("JACKRABBIT_PG_PASSWORD")
 
+    wizard_steps.current_step = 'jackrabbit'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=7,
+                           current_step=wizard_steps.step_number(),
                            template="install_jackrabbit",
-                           prev_step="wizard.gluu_gateway",
-                           next_step="wizard.install_istio")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/install-istio", methods=["GET", "POST"])
@@ -528,7 +431,6 @@ def install_istio():
         form.use_istio_ingress.validators = [DataRequired()]
 
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         data = {}
         data["USE_ISTIO"] = form.use_istio.data
         if gluu_settings.db.get("DEPLOYMENT_ARCH") not in test_arch:
@@ -549,17 +451,16 @@ def install_istio():
             data["ISTIO_SYSTEM_NAMESPACE"] = ""
 
         gluu_settings.db.update(data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-
+    wizard_steps.current_step = 'istio'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=8,
+                           current_step=wizard_steps.step_number(),
                            template="install_istio",
-                           prev_step="wizard.install_jackrabbit",
-                           next_step="wizard.environment")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/environment", methods=["GET", "POST"])
@@ -583,8 +484,6 @@ def environment():
 
     if form.validate_on_submit():
         data = {}
-        next_step = request.form['next_step']
-
         if not gluu_settings.db.get("TEST_ENVIRONMENT") and \
                 gluu_settings.db.get("DEPLOYMENT_ARCH") not in test_arch:
             data["TEST_ENVIRONMENT"] = form.test_environment.data
@@ -624,20 +523,20 @@ def environment():
                         break
 
         gluu_settings.db.update(data)
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
         if form.host_ext_ip:
             form.host_ext_ip.data = ip_node_data['ip']
 
+    wizard_steps.current_step = 'environment'
     return render_template("wizard/index.html",
                            deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
                            form=form,
-                           current_step=9,
+                           current_step=wizard_steps.step_number(),
                            template="environment",
-                           prev_step="wizard.install_istio",
-                           next_step="wizard.persistence_backend")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/persistence-backend", methods=["GET", "POST"])
@@ -647,7 +546,6 @@ def persistence_backend():
     """
     form = PersistenceBackendForm()
     if form.validate_on_submit():
-        next_step = request.form['next_step']
         data = {"PERSISTENCE_BACKEND": form.persistence_backend.data}
 
         if data["PERSISTENCE_BACKEND"] == "hybrid":
@@ -668,19 +566,19 @@ def persistence_backend():
 
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch and \
                 gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
-            next_step = 'wizard.couchbase'
-
-        return redirect(url_for(next_step))
+            #skip volumes step
+            wizard_steps.current_step = 'couchbase_multicluster'
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
 
+    wizard_steps.current_step = 'persistence_backend'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=10,
+                           current_step=wizard_steps.step_number(),
                            template="persistence_backend",
-                           prev_step="wizard.environment",
-                           next_step="wizard.volumes")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/volumes", methods=["GET", "POST"])
@@ -745,25 +643,22 @@ def volumes():
             data["LDAP_STORAGE_SIZE"] = form.ldap_storage_size.data
 
         gluu_settings.db.update(data)
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
+            # skip couchbase and jump to cache step
+            wizard_steps.current_step = 'couchbase_calculator'
 
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            next_step = request.form['next_step']
-        else:
-            next_step = 'wizard.cache_type'
-
-        return redirect(url_for(next_step))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-
+    wizard_steps.current_step = 'volumes'
     return render_template("wizard/index.html",
                            deployment_arch=gluu_settings.db.get('DEPLOYMENT_ARCH'),
                            persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           current_step=11,
+                           current_step=wizard_steps.step_number(),
                            template="app_volume_type",
-                           prev_step="wizard.persistence_backend",
-                           next_step="wizard.couchbase_multi_cluster")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/couchbase-multi-cluster", methods=["GET", "POST"])
@@ -774,22 +669,23 @@ def couchbase_multi_cluster():
     form = CouchbaseMultiClusterForm()
     if form.validate_on_submit():
         gluu_settings.db.set("DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
-        return redirect(url_for(request.form['next_step']))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
 
+    wizard_steps.current_step = 'couchbase_multicluster'
+
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "wizard.persistence_backend"
     if gluu_settings.db.get("APP_VOLUME_TYPE") not in (1, 2):
-        prev_step = "wizard.volumes"
+        prev_step = wizard_steps.prev_step()
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=12,
+                           current_step=wizard_steps.step_number(),
                            template="couchbase_multi_cluster",
-                           prev_step=prev_step,
-                           next_step="wizard.couchbase")
+                           prev_step=prev_step)
 
 
 @wizard_blueprint.route("/couchbase", methods=["GET", "POST"])
@@ -804,7 +700,6 @@ def couchbase():
     custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
 
     if form.validate_on_submit():
-        next_step = request.form["next_step"]
         data = {"INSTALL_COUCHBASE": form.install_couchbase.data}
         if data["INSTALL_COUCHBASE"] == "N":
             filename = secure_filename(form.couchbase_crt.data.filename)
@@ -868,16 +763,20 @@ def couchbase():
 
         gluu_settings.db.update(data)
 
+        # download couchbase
+        if gluu_settings.db.get("INSTALL_COUCHBASE") == "Y" and \
+                not is_couchbase_pkg_exist():
+            download_couchbase_pkg(form.package_url.data)
+
+        # redirect to couchbase_calculator
         if gluu_settings.db.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
                 gluu_settings.db.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
                 gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
-            return redirect(url_for("wizard.couchbase_calculator"))
+            return redirect(url_for(wizard_steps.next_step()))
 
-        # download couchbase
-        if gluu_settings.db.get("INSTALL_COUCHBASE") == "Y" and not is_couchbase_pkg_exist():
-            download_couchbase_pkg(form.package_url.data)
-
-        return redirect(url_for(next_step))
+        #skip couchbase calculator
+        wizard_steps.current_step = 'couchbase_calculator'
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -907,12 +806,12 @@ def couchbase():
             form.couchbase_cn.validators = [Optional()]
             form.couchbase_cn.render_kw = {"disabled": "disabled"}
 
+    wizard_steps.current_step = 'couchbase'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=13,
+                           current_step=wizard_steps.step_number(),
                            template="couchbase",
-                           prev_step="wizard.couchbase_multi_cluster",
-                           next_step="wizard.cache_type")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/couchbase-calculator", methods=["GET", "POST"])
@@ -939,14 +838,14 @@ def couchbase_calculator():
             data[field.name.upper()] = field.data
 
         gluu_settings.db.update(data)
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
+    wizard_steps.current_step = 'couchbase_calculator'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=14,
+                           current_step=wizard_steps.step_number(),
                            template="couchbase_calculator",
-                           prev_step="wizard.couchbase",
-                           next_step="wizard.cache_type")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/cache-type", methods=["GET", "POST"])
@@ -980,28 +879,30 @@ def cache_type():
 
         # skip backup form if deployment_arch is microk8s or minikube
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
-            return redirect(url_for('wizard.configuration'))
+            wizard_steps.current_step = 'backup'
 
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
         form.redis = populate_form_data(form.redis)
         form.redis.redis_pw_confirm.data = gluu_settings.db.get("REDIS_PW")
 
+    wizard_steps.current_step = 'cache'
+
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.volumes"
-    if gluu_settings.db.get("DEPLOY_MULTI_CLUSTER"):
-        prev_step = "wizard.couchbase_multi_cluster"
-    elif gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
-        prev_step = "wizard.couchbase"
+    prev_step = wizard_steps.prev_step()
+    if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
+        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+            prev_step = "wizard.couchbase"
+        else:
+            prev_step = "wizard.couchbase_multi_cluster"
 
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=15,
+                           current_step=wizard_steps.step_number(),
                            template="cache_type",
-                           prev_step=prev_step,
-                           next_step="wizard.backup")
+                           prev_step=prev_step)
 
 
 @wizard_blueprint.route("/backup", methods=["GET", "POST"])
@@ -1025,18 +926,18 @@ def backup():
             data["LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
 
         gluu_settings.db.update(data)
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
 
+    wizard_steps.current_step = 'backup'
     return render_template("wizard/index.html",
                            persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           current_step=16,
+                           current_step=wizard_steps.step_number(),
                            template="backup",
-                           prev_step="wizard.cache_type",
-                           next_step="wizard.configuration")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/configuration", methods=["GET", "POST"])
@@ -1074,8 +975,7 @@ def configuration():
             data["ENABLED_SERVICES_LIST"].append("update-lb-ip")
         gluu_settings.db.update(data)
         generate_main_config()
-
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
@@ -1095,19 +995,19 @@ def configuration():
         else:
             form.is_gluu_fqdn_registered.validators = [DataRequired()]
 
+    wizard_steps.current_step = 'configuration'
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = "wizard.backup"
-    if gluu_settings.db.get("APP_VOLUME_TYPE") in (1, 2):
+    prev_step = wizard_steps.prev_step()
+    if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
         prev_step = "wizard.cache_type"
 
     return render_template("wizard/index.html",
                            deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
                            persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
-                           current_step=17,
+                           current_step=wizard_steps.step_number(),
                            template="config",
-                           prev_step=prev_step,
-                           next_step="wizard.images")
+                           prev_step=prev_step)
 
 
 @wizard_blueprint.route("/images", methods=["POST", "GET"])
@@ -1187,13 +1087,15 @@ def images():
 
     if form.validate_on_submit():
         data = {}
+        data["EDIT_IMAGE_NAMES_TAGS"] = form.edit_image_names_tags.data
         for field in form:
             if field.name == "csrf_token":
                 continue
             data[field.name.upper()] = field.data
-        data["EDIT_IMAGE_NAMES_TAGS"] = "N"
+
         gluu_settings.db.update(data)
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
+        # return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
         # get default images
@@ -1207,12 +1109,12 @@ def images():
             field.data = v
         form = populate_form_data(form)
 
+    wizard_steps.current_step = 'images'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=18,
+                           current_step=wizard_steps.step_number(),
                            template="image_name_tag",
-                           prev_step="wizard.configuration",
-                           next_step="wizard.replicas",
+                           prev_step=wizard_steps.prev_step(),
                            collapsed_ids=collapsed_ids)
 
 
@@ -1246,23 +1148,17 @@ def replicas():
             data[field.name.upper()] = field.data
 
         gluu_settings.db.update(data)
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
 
-    next_step = "wizard.setting_summary"
-    if session["finish_endpoint"] == "main.helm_install":
-        next_step = "wizard.helm_config"
-    elif session["finish_endpoint"] == "main.upgrade":
-        next_step = "wizard.upgrade"
-
+    wizard_steps.current_step = 'replicas'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=19,
+                           current_step=wizard_steps.step_number(),
                            template="replicas",
-                           prev_step="wizard.images",
-                           next_step=next_step)
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/helm-configuration", methods=["POST", "GET"])
@@ -1278,18 +1174,18 @@ def helm_config():
             data["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = form.gluu_gateway_ui_helm_release_name.data
 
         gluu_settings.db.update(data)
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
     install_gluu_gateway = gluu_settings.db.get("INSTALL_GLUU_GATEWAY")
+    wizard_steps.current_step = 'helm_config'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=20,
+                           current_step=wizard_steps.step_number(),
                            template="helm",
                            install_gluu_gateway=install_gluu_gateway,
-                           prev_step="wizard.replicas",
-                           next_step="wizard.setting_summary")
+                           prev_step=wizard_steps.next_step())
 
 
 @wizard_blueprint.route("/gluu-upgrade", methods=["POST", "GET"])
@@ -1314,17 +1210,16 @@ def upgrade():
             if k not in custom_images:
                 gluu_settings.db.set(k, v)
 
-        return redirect(url_for(request.form["next_step"]))
+        return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-
+    wizard_steps.current_step = 'upgrade'
     return render_template("wizard/index.html",
                            form=form,
-                           current_step=20,
+                           current_step=wizard_steps.step_number(),
                            template="upgrade",
-                           prev_step="wizard.replicas",
-                           next_step="wizard.setting_summary")
+                           prev_step=wizard_steps.prev_step())
 
 
 @wizard_blueprint.route("/setting-summary", methods=["POST", "GET"])
