@@ -4,13 +4,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: configuration-manager-load-job
+    name: config-init-load-job
 spec:
     ports:
         - name: http
           port: 80
           targetPort: 8080
     selector:
-        app: configuration-manager-load
+        app: config-init-load
     type: ClusterIP
     

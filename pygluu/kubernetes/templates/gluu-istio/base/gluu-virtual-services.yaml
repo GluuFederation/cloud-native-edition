@@ -52,7 +52,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: gluu-istio-auth-server
+  name: gluu-istio-oxauth
 spec:
   hosts:
   - demoexample.gluu.org
@@ -64,10 +64,10 @@ spec:
     - uri:
         prefix: "/.well-known/openid-configuration"
     rewrite:
-      uri: "/auth-server/.well-known/openid-configuration"
+      uri: "/oxauth/.well-known/openid-configuration"
     route:
       - destination:
-          host: auth-server.gluu.svc.cluster.local
+          host: oxauth.gluu.svc.cluster.local
           port:
             number: 8080
         weight: 100
@@ -76,10 +76,10 @@ spec:
     - uri:
         prefix: "/.well-known/uma2-configuration"
     rewrite:
-      uri: "/auth-server/restv1/uma2-configuration"
+      uri: "/oxauth/restv1/uma2-configuration"
     route:
       - destination:
-          host: auth-server.gluu.svc.cluster.local
+          host: oxauth.gluu.svc.cluster.local
           port:
             number: 8080
         weight: 100
@@ -88,20 +88,20 @@ spec:
     - uri:
         prefix: "/.well-known/simple-web-discovery"
     rewrite:
-      uri: "/auth-server/.well-known/simple-web-discovery"
+      uri: "/oxauth/.well-known/simple-web-discovery"
     route:
     - destination:
-        host: auth-server.gluu.svc.cluster.local
+        host: oxauth.gluu.svc.cluster.local
         port:
           number: 8080
       weight: 100
   - name: "gluu-istio-gluu"
     match:
     - uri:
-        prefix: "/auth-server"
+        prefix: "/oxauth"
     route:
     - destination:
-        host: auth-server.gluu.svc.cluster.local
+        host: oxauth.gluu.svc.cluster.local
         port:
           number: 8080
   - name: "gluu-istio-webfinger"
@@ -109,10 +109,10 @@ spec:
     - uri:
         prefix: "/.well-known/webfinger"
     rewrite:
-      uri: "/auth-server/.well-known/webfinger"
+      uri: "/oxauth/.well-known/webfinger"
     route:
     - destination:
-        host: auth-server.gluu.svc.cluster.local
+        host: oxauth.gluu.svc.cluster.local
         port:
           number: 8080
       weight: 100
@@ -121,10 +121,10 @@ spec:
     - uri:
         prefix: "/.well-known/fido-configuration"
     rewrite:
-      uri: "/auth-server/restv1/fido-configuration"
+      uri: "/oxauth/restv1/fido-configuration"
     route:
     - destination:
-        host: auth-server.gluu.svc.cluster.local
+        host: oxauth.gluu.svc.cluster.local
         port:
           number: 8080
       weight: 100

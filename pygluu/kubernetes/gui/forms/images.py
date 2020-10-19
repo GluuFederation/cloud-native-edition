@@ -22,8 +22,8 @@ class ImageNameTagForm(FlaskForm):
         ldap_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
         jackrabbit_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
         jackrabbit_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
-        auth_server_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
-        auth_server_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxauth_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
+        oxauth_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
         client_api_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
         client_api_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
         oxpassport_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
@@ -83,11 +83,11 @@ class ImageNameTagForm(FlaskForm):
     jackrabbit_image_tag = StringField(
         "Jackrabbit image tag",
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    auth_server_image_name = StringField(
-        "Auth-Server image name",
+    oxauth_image_name = StringField(
+        "Oxauth image name",
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    auth_server_image_tag = StringField(
-        "Auth-Server image tag",
+    oxauth_image_tag = StringField(
+        "Oxauth image tag",
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     client_api_image_name = StringField(
         "Client API Server image name",

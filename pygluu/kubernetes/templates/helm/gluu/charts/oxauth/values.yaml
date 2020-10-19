@@ -18,4 +18,4 @@ ports:
 
 # service
 service:
-  authServerServiceName: auth-server
+  oxAuthServiceName: oxauth

@@ -3,7 +3,7 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 commonLabels:
-  app: auth-server
+  app: oxauth
 resources:
   - services.yaml
   - deployments.yaml

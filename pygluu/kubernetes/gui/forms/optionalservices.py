@@ -19,8 +19,8 @@ class OptionalServiceForm(FlaskForm):
 
     Fields :
         enable_cache_refresh (string|required|default: N)
-        enable_auth_server_key_rotate (string|required|default: N)
-        auth_server_keys_life (string|required|default: N)
+        enable_oxauth_key_rotate (string|required|default: N)
+        oxauth_keys_life (string|required|default: N)
         enable_radius (string|required|default: N)
         enable_oxpassport (string|required|default: N)
         enable_oxshibboleth (string|required|default: N)
@@ -37,14 +37,14 @@ class OptionalServiceForm(FlaskForm):
                                       choices=[("Y", "Yes"), ("N", "No")],
                                       default="N",
                                       validators=[DataRequired()])
-    enable_auth_server_key_rotate = RadioField("Deploy Key-Rotation",
+    enable_oxauth_key_rotate = RadioField("Deploy Key-Rotation",
                                           choices=[("Y", "Yes"), ("N", "No")],
                                           default="N",
                                           validators=[DataRequired()])
-    auth_server_keys_life = IntegerField(
-        "Auth-Server keys life in hours",
+    oxauth_keys_life = IntegerField(
+        "oxAuth keys life in hours",
         default=48,
-        validators=[RequiredIfFieldEqualTo("enable_auth_server_key_rotate", "Y")])
+        validators=[RequiredIfFieldEqualTo("enable_oxauth_key_rotate", "Y")])
     enable_radius = RadioField("Deploy Radius?",
                                choices=[("Y", "Yes"), ("N", "No")],
                                default="N",

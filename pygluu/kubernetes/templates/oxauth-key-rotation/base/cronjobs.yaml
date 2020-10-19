@@ -3,7 +3,7 @@
 kind: CronJob
 apiVersion: batch/v1beta1
 metadata:
-  name: auth-server-key-rotation
+  name: oxauth-key-rotation
 spec:
   schedule: "0 */48 * * *"
   concurrencyPolicy: Forbid
@@ -12,7 +12,7 @@ spec:
       template:
         spec:
           containers:
-            - name: auth-server-key-rotation
+            - name: oxauth-key-rotation
               image: janssenproject/certmanager:5.0.0_dev
               resources:
                 requests:
@@ -24,5 +24,5 @@ spec:
               envFrom:
                 - configMapRef:
                     name: gluu-config-cm
-              args: ["patch", "auth-server", "--opts", "interval:48"]
+              args: ["patch", "oxauth", "--opts", "interval:48"]
           restartPolicy: Never

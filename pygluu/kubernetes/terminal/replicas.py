@@ -20,8 +20,8 @@ class PromptReplicas:
     def prompt_replicas(self):
         """Prompt number of replicas for Gluu apps
         """
-        if not self.settings.get("AUTH_SERVER_REPLICAS"):
-            self.settings.set("AUTH_SERVER_REPLICAS", click.prompt("Number of Auth-Server replicas", default=1))
+        if not self.settings.get("OXAUTH_REPLICAS"):
+            self.settings.set("OXAUTH_REPLICAS", click.prompt("Number of oxAuth replicas", default=1))
 
         if self.settings.get("ENABLE_FIDO2") == "Y" and not self.settings.get("FIDO2_REPLICAS"):
             self.settings.set("FIDO2_REPLICAS", click.prompt("Number of fido2 replicas", default=1))

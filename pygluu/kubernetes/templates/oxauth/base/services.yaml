@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-server
+  name: oxauth
 spec:
   ports:
   - port: 8080
-    name: http-auth-server
+    name: http-oxauth
   selector:
-    app: auth-server
+    app: oxauth

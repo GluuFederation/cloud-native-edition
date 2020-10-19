@@ -164,7 +164,7 @@ jobs:
           "CLIENT_API_ADMIN_KEYSTORE_CN": "client-api",
           "CLIENT_API_STORAGE": "h2",
           "LDAP_STORAGE_SIZE": "4Gi",
-          "AUTH_SERVER_REPLICAS": 1,
+          "OXAUTH_REPLICAS": 1,
           "OXTRUST_REPLICAS": 1,
           "LDAP_REPLICAS": 1,
           "FIDO2_REPLICAS": 1,
@@ -184,8 +184,8 @@ jobs:
           "ENABLE_FIDO2": "Y",
           "ENABLE_SCIM": "Y",
           "ENABLE_CASA": "Y",
-          "AUTH_SERVER_KEYS_LIFE": 48,
-          "ENABLE_AUTH_SERVER_KEY_ROTATE": "Y",
+          "OXAUTH_KEYS_LIFE": 48,
+          "ENABLE_OXAUTH_KEY_ROTATE": "Y",
           "ENABLE_OXTRUST_API_BOOLEAN": "true",
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
           "ENABLE_RADIUS_BOOLEAN": "true",
@@ -229,7 +229,7 @@ jobs:
           sudo microk8s.kubectl get po -n cbns
           sudo microk8s.kubectl get po -n gluu
           cat /home/runner/work/test/settings.json
-          sudo kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server || sudo kubectl logs -l app=auth-server -c auth-server -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-oxauth || sudo kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
           sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"

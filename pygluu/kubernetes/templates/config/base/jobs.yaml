@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: configuration-manager-load-job
+  name: config-init-load-job
 spec:
   template:
     spec:
@@ -13,10 +13,10 @@ spec:
           configMap:
             name: config-generate-params
       containers:
-        - name: configuration-manager-load
+        - name: config-init-load
           image: janssenproject/configuration-manager:5.0.0_dev
           volumeMounts:
-            - mountPath: /opt/configuration-manager/db/generate.json
+            - mountPath: /opt/config-init/db/generate.json
               name: config-generate-params
               subPath: generate.json
           envFrom:

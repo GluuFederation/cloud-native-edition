@@ -1,6 +1,6 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for auth-server-key-rotation.
+# Default values for oxauth-key-rotation.
 image:
   repository: janssenproject/certmanager
   tag: 5.0.0_dev

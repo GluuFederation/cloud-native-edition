@@ -86,8 +86,8 @@ def register_op_client(namespace, client_name, op_host, client_api_url):
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                       app_label="app=auth-server",
-                                                       container="auth-server",
+                                                       app_label="app=oxauth",
+                                                       container="oxauth",
                                                        namespace=namespace,
                                                        stdout=False)
 
@@ -120,14 +120,14 @@ class Kustomize(object):
         self.ldap_yaml = str(self.output_yaml_directory.joinpath("ldap.yaml").resolve())
         self.jackrabbit_yaml = str(self.output_yaml_directory.joinpath("jackrabbit.yaml").resolve())
         self.persistence_yaml = str(self.output_yaml_directory.joinpath("persistence.yaml").resolve())
-        self.auth_server_yaml = str(self.output_yaml_directory.joinpath("auth_server.yaml").resolve())
+        self.oxauth_yaml = str(self.output_yaml_directory.joinpath("oxauth.yaml").resolve())
         self.fido2_yaml = str(self.output_yaml_directory.joinpath("fido2.yaml").resolve())
         self.scim_yaml = str(self.output_yaml_directory.joinpath("scim.yaml").resolve())
         self.oxtrust_yaml = str(self.output_yaml_directory.joinpath("oxtrust.yaml").resolve())
         self.gluu_upgrade_yaml = str(self.output_yaml_directory.joinpath("upgrade.yaml").resolve())
         self.oxshibboleth_yaml = str(self.output_yaml_directory.joinpath("oxshibboleth.yaml").resolve())
         self.oxpassport_yaml = str(self.output_yaml_directory.joinpath("oxpassport.yaml").resolve())
-        self.auth_server_key_rotate_yaml = str(self.output_yaml_directory.joinpath("auth-server-key-rotation.yaml").resolve())
+        self.oxauth_key_rotate_yaml = str(self.output_yaml_directory.joinpath("oxauth-key-rotation.yaml").resolve())
         self.cr_rotate_yaml = str(self.output_yaml_directory.joinpath("cr-rotate.yaml").resolve())
         self.client_api_server_yaml = str(self.output_yaml_directory.joinpath("client-api.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
@@ -545,7 +545,7 @@ class Kustomize(object):
             configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_PORT"] = "5432"
             configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_DATABASE"] = self.settings.get("JACKRABBIT_DATABASE")
 
-        # Auth-Server
+        # oxAuth
         if self.settings.get("ENABLE_CASA_BOOLEAN") == "true":
             configmap_parser["data"]["GLUU_SYNC_CASA_MANIFESTS"] = "true"
         # oxTrust
@@ -611,10 +611,10 @@ class Kustomize(object):
                     del persistence_job_parser["spec"]["template"]["spec"]["volumes"]
                     persistence_job_parser.dump_it()
 
-            if app == "auth-server":
-                self.adjust_istio_virtual_services_destination_rules(app, "gluu-istio-auth-server")
+            if app == "oxauth":
+                self.adjust_istio_virtual_services_destination_rules(app, "gluu-istio-oxauth")
                 self.build_manifest(app, kustomization_file, command,
-                                    "AUTH_SERVER_IMAGE_NAME", "AUTH_SERVER_IMAGE_TAG", app_file)
+                                    "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG", app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.setup_jackrabbit_volumes(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
@@ -656,13 +656,13 @@ class Kustomize(object):
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
-            if app == "auth-server-key-rotation" and self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
+            if app == "oxauth-key-rotation" and self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
                 parser = Parser(kustomization_file, "Kustomization")
                 list_of_config_resource_files = parser["resources"]
-                cron_job_parser = Parser("./auth-server-key-rotation/base/cronjobs.yaml", "CronJob")
-                cron_job_parser["spec"]["schedule"] = "0 */{} * * *".format(self.settings.get("AUTH_SERVER_KEYS_LIFE"))
+                cron_job_parser = Parser("./oxauth-key-rotation/base/cronjobs.yaml", "CronJob")
+                cron_job_parser["spec"]["schedule"] = "0 */{} * * *".format(self.settings.get("OXAUTH_KEYS_LIFE"))
                 cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["args"] = \
-                    ["patch", "auth-server", "--opts", "interval:{}".format(self.settings.get("AUTH_SERVER_KEYS_LIFE"))]
+                    ["patch", "oxauth", "--opts", "interval:{}".format(self.settings.get("OXAUTH_KEYS_LIFE"))]
                 if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
                     cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["volumes"] = \
                         [{"name": "cb-pass", "secret": {"secretName": "cb-pass"}},
@@ -678,10 +678,10 @@ class Kustomize(object):
                     if "service.yaml" not in list_of_config_resource_files:
                         list_of_config_resource_files.append("service.yaml")
                     cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["command"] = \
-                        ["tini", "-g", "--", "/bin/sh", "-c", "\n/app/scripts/entrypoint.sh patch auth-server --opts "
+                        ["tini", "-g", "--", "/bin/sh", "-c", "\n/app/scripts/entrypoint.sh patch oxauth --opts "
                                                               "interval:{}\ncurl -X POST "
                                                               "http://localhost:15020/quitquitquit"
-                            .format(self.settings.get("AUTH_SERVER_KEYS_LIFE"))]
+                            .format(self.settings.get("OXAUTH_KEYS_LIFE"))]
                     try:
                         del cron_job_parser["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["args"]
                     except KeyError:
@@ -810,7 +810,7 @@ class Kustomize(object):
             self.adjust_yamls_for_fqdn_status[self.gg_ui_yaml] = "Deployment"
 
     def prepare_alb(self):
-        services = [self.auth_server_yaml, self.oxtrust_yaml, self.casa_yaml,
+        services = [self.oxauth_yaml, self.oxtrust_yaml, self.casa_yaml,
                     self.oxpassport_yaml, self.oxshibboleth_yaml, self.fido2_yaml, self.scim_yaml]
         for service in services:
             if Path(service).is_file():
@@ -1295,7 +1295,7 @@ class Kustomize(object):
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=configuration-manager-load",
+            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=config-init-load",
                                                 self.timeout)
 
     def deploy_ldap(self):
@@ -1354,11 +1354,11 @@ class Kustomize(object):
     def deploy_update_lb_ip(self):
         self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml)
 
-    def deploy_auth_server(self):
-        self.kubernetes.create_objects_from_dict(self.auth_server_yaml)
+    def deploy_oxauth(self):
+        self.kubernetes.create_objects_from_dict(self.oxauth_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=auth-server", self.timeout)
-        self.kubernetes.patch_namespaced_deployment_scale(name="auth-server", replicas=self.settings.get("AUTH_SERVER_REPLICAS"),
+            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=oxauth", self.timeout)
+        self.kubernetes.patch_namespaced_deployment_scale(name="oxauth", replicas=self.settings.get("OXAUTH_REPLICAS"),
                                                           namespace=self.settings.get("GLUU_NAMESPACE"))
 
     def deploy_fido2(self):
@@ -1415,8 +1415,8 @@ class Kustomize(object):
                                                           replicas=self.settings.get("OXPASSPORT_REPLICAS"),
                                                           namespace=self.settings.get("GLUU_NAMESPACE"))
 
-    def deploy_auth_server_key_rotation(self):
-        self.kubernetes.create_objects_from_dict(self.auth_server_key_rotate_yaml)
+    def deploy_oxauth_key_rotation(self):
+        self.kubernetes.create_objects_from_dict(self.oxauth_key_rotate_yaml)
 
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
@@ -1502,7 +1502,7 @@ class Kustomize(object):
     def upgrade(self):
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             exec_delete_command = ["/opt/opendj/bin/dsconfig", "delete-backend-index", "--backend-name", "userRoot",
-                                   "--index-name", "jansExpiration", "--hostName", "0.0.0.0", "--port", "4444",
+                                   "--index-name", "oxAuthExpiration", "--hostName", "0.0.0.0", "--port", "4444",
                                    "--bindDN",
                                    "'cn=Directory Manager'", "--trustAll", "-f"]
             manual_exec_delete_command = " ".join(exec_delete_command)
@@ -1638,7 +1638,7 @@ class Kustomize(object):
                 self.deploy_update_lb_ip()
 
         self.kubernetes = Kubernetes()
-        self.deploy_auth_server()
+        self.deploy_oxauth()
 
         if self.settings.get("ENABLE_FIDO2") == "Y":
             self.kubernetes = Kubernetes()
@@ -1672,9 +1672,9 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_cr_rotate()
 
-        if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
+        if self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
             self.kubernetes = Kubernetes()
-            self.deploy_auth_server_key_rotation()
+            self.deploy_oxauth_key_rotation()
             if restore:
                 self.mount_config()
 
@@ -1686,16 +1686,16 @@ class Kustomize(object):
             self.install_gluu_gateway_dbmode()
 
     def uninstall(self, restore=False):
-        gluu_service_names = ["casa", "cr-rotate", "opendj", "auth-server", "oxpassport",
+        gluu_service_names = ["casa", "cr-rotate", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "client-api",
-                              "jackrabbit", "fido2", "scim", "configuration-manager-load-job"]
+                              "jackrabbit", "fido2", "scim", "config-init-load-job"]
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
-        gluu_deployment_app_labels = ["app=casa", "app=auth-server", "app=fido2", "app=scim", "app=client-api",
-                                      "app=oxpassport", "app=radius", "app=auth-server-key-rotation", "app=jackrabbit"]
+        gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=client-api",
+                                      "app=oxpassport", "app=radius", "app=oxauth-key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
-        jobs_labels = ["app=configuration-manager-load", "app=persistence-load", "app=gluu-upgrade"]
+        jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
         secrets = ["clientApikeystorecm", "gluu", "tls-certificate",
                    "gluu-jackrabbit-admin-pass", "gluu-jackrabbit-postgres-pass"]
         cb_secrets = ["cb-pass", "cb-crt", "cb-super-pass"]
@@ -1740,7 +1740,7 @@ class Kustomize(object):
                 self.uninstall_postgres()
 
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
-        self.kubernetes.delete_cronjob(self.settings.get("GLUU_NAMESPACE"), "app=auth-server-key-rotation")
+        self.kubernetes.delete_cronjob(self.settings.get("GLUU_NAMESPACE"), "app=oxauth-key-rotation")
         for deployment in gluu_deployment_app_labels:
             self.kubernetes.delete_deployment_using_label(self.settings.get("GLUU_NAMESPACE"), deployment)
         if not restore:

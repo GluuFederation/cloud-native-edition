@@ -26,7 +26,7 @@ spec:
       - name: {{ include "config.name" . }}-load
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         volumeMounts:
-          - mountPath: /opt/configuration-manager/db/generate.json
+          - mountPath: /opt/config-init/db/generate.json
             name: {{ include "config.fullname" . }}-mount-gen-file
             subPath: generate.json
           - mountPath: /scripts/tls_generator.py

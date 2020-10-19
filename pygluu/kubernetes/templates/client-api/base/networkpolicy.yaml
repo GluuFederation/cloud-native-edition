@@ -19,7 +19,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          app: auth-server
+          app: oxauth
     ports:
     - protocol: TCP
       port: 8443

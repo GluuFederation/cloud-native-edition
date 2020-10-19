@@ -50,7 +50,7 @@ configmap:
   gluuRedisSslTruststore: ""
   gluuRedisSentinelGroup: ""
   gluuOxtrustBackend: oxtrust:8080
-  gluuAuthServerBackend: auth-server:8080
+  gluuOxauthBackend: oxauth:8080
   jansClientApiServerUrl: client-api:8443
   jansClientApiBindIpAddresses: "*"
   gluuLdapUrl: opendj:1636

@@ -9,7 +9,7 @@ Please calculate the minimum required resources as per services deployed. The fo
 
 |Service           | CPU Unit   |    RAM      |   Disk Space     | Processor Type | Required                           |
 |------------------|------------|-------------|------------------|----------------|------------------------------------|
-|Auth-Server            | 2.5        |    2.5GB    |   N/A            |  64 Bit        | Yes                                |
+|oxAuth            | 2.5        |    2.5GB    |   N/A            |  64 Bit        | Yes                                |
 |LDAP              | 1.5        |    2GB      |   10GB           |  64 Bit        | Only if couchbase is not installed |
 |fido2             | 0.5        |    0.5GB    |   N/A            |  64 Bit        | No                                 |
 |scim              | 1.0        |    1.0GB    |   N/A            |  64 Bit        | No                                 |
@@ -420,7 +420,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `global.domain`                                    | DNS domain name                                                                                                                  | `demoexample.gluu.org`              |
         | `global.isDomainRegistered`                        | Whether the domain to be used is registered or not                                                                               | `false`                             |
         | `global.gluuPersistenceType`                       | Which database backend to use                                                                                                    | `ldap`                              |
-        | `global.auth-server.enabled`                            | Enable Auth-Server                                                                                                                    | `true`                              |
+        | `global.oxauth.enabled`                            | Enable oxAuth                                                                                                                    | `true`                              |
         | `global.fido2.enabled`                             | Enable Fido2                                                                                                                     | `false`                             |
         | `global.scim.enabled`                              | Enable SCIM                                                                                                                      | `false`                             |
         | `global.config.enabled`                            | Enable Config                                                                                                                    | `true`                              |
@@ -431,7 +431,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `global.oxshibboleth.enabled`                      | Enable oxShibboleth                                                                                                              | `false`                             |
         | `global.client-api.enabled`                        | Enable client_api                                                                                                                       | `false`                             |
         | `global.nginx-ingress.enabled`                     | Enable Ingress nginx                                                                                                             | `true`                              |
-        | `global.auth-server-key-rotation.enabled`               | Enable Auth-Server Key Rotation                                                                                                       | `false`                             |
+        | `global.oxauth-key-rotation.enabled`               | Enable oxAuth Key Rotation                                                                                                       | `false`                             |
         | `global.cr-rotate.enabled`                         | Enable Cache Rotate                                                                                                              | `false`                             |
         
     === "config"   
@@ -471,7 +471,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `config.configmap.gluuRedisSslTruststore`             | Redis SSL truststore. If using cloud provider services this is left empty.                                                       | ``                                                          |
         | `config.configmap.gluuRedisSentinelGroup`             | Redis Sentinel group                                                                                                             | ``                                                          |
         | `config.configmap.gluuOxtrustBackend`                 | oxTrust backend address                                                                                                          | `oxtrust:8080`                                              |
-        | `config.configmap.gluuAuthServerBackend`                  | Auth-Server backend address                                                                                                           | `auth-server:8080`                                               |
+        | `config.configmap.gluuOxauthBackend`                  | oxAuth backend address                                                                                                           | `oxauth:8080`                                               |
         | `config.configmap.jansClientApiServerUrl`                   | client_api Oauth client address                                                                                                         | `client-api:8443`                                           |
         | `config.configmap.gluuLdapUrl`                        | opendj server url. Port and service name of opendj server - should not be changed                                           |  `opendj:1636`                                              |
         | `config.configmap.gluuJackrabbitSyncInterval`         | Jackrabbit sync interval                                                                                                         |  `300`                                                      |
@@ -544,19 +544,19 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `persistence.image.tag`                            | Persistence image tag repository                                                                                                 | `5.0.0_dev`                          |
         | `persistence.image.pullPolicy`                     | Persistence image pull policy                                                                                                    | `Always`                            |
         
-    === "auth-server"
+    === "oxauth"
     
         | Parameter                                          | Description                                                                                                                      | Default                             |
         | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |          
-        | `auth-server.service.authServerServiceName`                 | Name of Auth-Server service                                                                                                           | `auth-server`                            |
-        | `auth-server.replicas`                                  | Auth-Server replicas                                                                                                                  | `1`                                 |
-        | `auth-server.image.repository`                          | Auth-Server image repository                                                                                                          | `janssenproject/auth-server`             |
-        | `auth-server.image.tag`                                 | Auth-Server image tag repository                                                                                                      | `5.0.0_dev`                          |
-        | `auth-server.image.pullPolicy`                          | Auth-Server image pull policy                                                                                                         | `Always`                            |
-        | `auth-server.resources.limits.cpu`                      | Auth-Server memory limit                                                                                                              | `2500Mi`                            |
-        | `auth-server.resources.limits.memory`                   | Auth-Server cpu limit                                                                                                                 | `2500m`                             |
-        | `auth-server.resources.requests.cpu`                    | Auth-Server memory request                                                                                                            | `2500Mi`                            |
-        | `auth-server.resources.requests.memory`                 | Auth-Server cpu request                                                                                                               | `2500m`                             |
+        | `oxauth.service.oxAuthServiceName`                 | Name of oxAuth service                                                                                                           | `oxauth`                            |
+        | `oxauth.replicas`                                  | oxAuth replicas                                                                                                                  | `1`                                 |
+        | `oxauth.image.repository`                          | oxAuth image repository                                                                                                          | `janssenproject/auth-server`             |
+        | `oxauth.image.tag`                                 | oxAuth image tag repository                                                                                                      | `5.0.0_dev`                          |
+        | `oxauth.image.pullPolicy`                          | oxAuth image pull policy                                                                                                         | `Always`                            |
+        | `oxauth.resources.limits.cpu`                      | oxAuth memory limit                                                                                                              | `2500Mi`                            |
+        | `oxauth.resources.limits.memory`                   | oxAuth cpu limit                                                                                                                 | `2500m`                             |
+        | `oxauth.resources.requests.cpu`                    | oxAuth memory request                                                                                                            | `2500Mi`                            |
+        | `oxauth.resources.requests.memory`                 | oxAuth cpu request                                                                                                               | `2500m`                             |
         
     === "oxtrust"
     
@@ -684,18 +684,18 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `cr-rotate.resources.requests.cpu`                 | Cache Refresh memory request                                                                                                     | `200Mi`                             |
         | `cr-rotate.resources.requests.memory`              | Cache Refresh cpu request                                                                                                        | `200m`                              |     
        
-    === "auth-server-key-rotation"
+    === "oxauth-key-rotation"
     
         | Parameter                                          | Description                                                                                                                      | Default                             |
         | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |              
-        | `auth-server-key-rotation.keysLife`                          | Auth-Server Key Rotation Keys life in hours                                                                                      | `48`                                |
-        | `auth-server-key-rotation.image.repository`                  | Auth-Server Key Rotation image repository                                                                                        | `janssenproject/certmanager`        |
-        | `auth-server-key-rotation.image.tag`                         | Auth-Server Key Rotation image tag repository                                                                                    | `5.0.0_01`                          |
-        | `auth-server-key-rotation.image.pullPolicy`                  | Auth-Server Key Rotation image pull policy                                                                                       | `Always`                            |
-        | `auth-server-key-rotation.resources.requests.limits.cpu`     | Auth-Server Key Rotation memory limit                                                                                            | `300Mi`                             |
-        | `auth-server-key-rotation.resources.requests.limits.memory`  | Auth-Server Key Rotation cpu limit                                                                                               | `300m`                              |
-        | `auth-server-key-rotation.resources.requests.cpu`            | Auth-Server Key Rotation memory request                                                                                          | `300Mi`                             |
-        | `auth-server-key-rotation.resources.requests.memory`         | Auth-Server Key Rotation cpu request                                                                                             | `300m`                              |     
+        | `oxauth-key-rotation.keysLife`                          | oxAuth Key Rotation Keys life in hours                                                                                      | `48`                                |
+        | `oxauth-key-rotation.image.repository`                  | oxAuth Key Rotation image repository                                                                                        | `janssenproject/certmanager`        |
+        | `oxauth-key-rotation.image.tag`                         | oxAuth Key Rotation image tag repository                                                                                    | `5.0.0_01`                          |
+        | `oxauth-key-rotation.image.pullPolicy`                  | oxAuth Key Rotation image pull policy                                                                                       | `Always`                            |
+        | `oxauth-key-rotation.resources.requests.limits.cpu`     | oxAuth Key Rotation memory limit                                                                                            | `300Mi`                             |
+        | `oxauth-key-rotation.resources.requests.limits.memory`  | oxAuth Key Rotation cpu limit                                                                                               | `300m`                              |
+        | `oxauth-key-rotation.resources.requests.cpu`            | oxAuth Key Rotation memory request                                                                                          | `300Mi`                             |
+        | `oxauth-key-rotation.resources.requests.memory`         | oxAuth Key Rotation cpu request                                                                                             | `300m`                              |     
 
     
     ### Instructions on how to install different services
@@ -944,10 +944,10 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `CLIENT_API_APPLICATION_KEYSTORE_CN`            | Client API application keystore common name                                      | `"<name>"` i.e `"client_api"`                                                               |
 | `CLIENT_API_ADMIN_KEYSTORE_CN`                  | Client API admin keystore common name                                            | `"<name>"` i.e `"client_api"`                                                               |
 | `LDAP_STORAGE_SIZE`                             | LDAP volume storage size                                                         | `""` i.e `"4Gi"`                                                                            |
-| `AUTH_SERVER_KEYS_LIFE`                              | Auth-Server Key life span in hours                                                    | `48`                                                               |
+| `OXAUTH_KEYS_LIFE`                              | oxAuth Key life span in hours                                                    | `48`                                                               |
 | `FIDO2_REPLICAS`                                | Number of FIDO2 replicas                                                         | min `"1"`                                                                                   |
 | `SCIM_REPLICAS`                                 | Number of SCIM replicas                                                          | min `"1"`                                                                                   |
-| `AUTH_SERVER_REPLICAS`                               | Number of Auth-Server replicas                                                        | min `"1"`                                                                                   |
+| `OXAUTH_REPLICAS`                               | Number of oxAuth replicas                                                        | min `"1"`                                                                                   |
 | `OXTRUST_REPLICAS`                              | Number of oxTrust replicas                                                       | min `"1"`                                                                                   |
 | `LDAP_REPLICAS`                                 | Number of LDAP replicas                                                          | min `"1"`                                                                                   |
 | `OXSHIBBOLETH_REPLICAS`                         | Number of oxShibboleth replicas                                                  | min `"1"`                                                                                   |
@@ -965,7 +965,7 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `ENABLE_CASA`                                   | Enable Casa installation                                                         | `"Y"` or `"N"`                                                                              |
 | `ENABLE_FIDO2`                                  | Enable Fido2 installation                                                        | `"Y"` or `"N"`                                                                              |
 | `ENABLE_SCIM`                                   | Enable SCIM installation                                                         | `"Y"` or `"N"`                                                                              |
-| `ENABLE_AUTH_SERVER_KEY_ROTATE`                      | Enable key rotate installation                                                   | `"Y"` or `"N"`                                                                              |
+| `ENABLE_OXAUTH_KEY_ROTATE`                      | Enable key rotate installation                                                   | `"Y"` or `"N"`                                                                              |
 | `ENABLE_OXTRUST_API_BOOLEAN`                    | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_OXTRUST_TEST_MODE_BOOLEAN`              | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
 | `ENABLE_RADIUS_BOOLEAN`                         | Used by `pygluu-kubernetes`                                                      | `"false"`                                                                                   |
@@ -986,8 +986,8 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `CERT_MANAGER_IMAGE_TAG`                        | Gluus Certificate management image tag                                           | i.e `"5.0.0_01"`                                                                            |
 | `LDAP_IMAGE_NAME`                               | LDAP image repository name                                                       | i.e `"gluufederation/opendj"`                                                               |
 | `LDAP_IMAGE_TAG`                                | LDAP image tag                                                                   | i.e `"5.0.0_01"`                                                                            |
-| `AUTH_SERVER_IMAGE_NAME`                             | Auth-Server image repository name                                                     | i.e `"janssenproject/auth-server"`                                                               |
-| `AUTH_SERVER_IMAGE_TAG`                              | Auth-Server image tag                                                                 | i.e `"5.0.0_01"`                                                                            |
+| `OXAUTH_IMAGE_NAME`                             | oxAuth image repository name                                                     | i.e `"janssenproject/auth-server"`                                                               |
+| `OXAUTH_IMAGE_TAG`                              | oxAuth image tag                                                                 | i.e `"5.0.0_01"`                                                                            |
 | `CLIENT_API_IMAGE_NAME`                         | Client API image repository name                                                        | i.e `"janssenproject/client-api"`                                                           |
 | `CLIENT_API_IMAGE_TAG`                          | Client API image tag                                                                    | i.e `"5.0.0_01"`                                                                            |
 | `OXPASSPORT_IMAGE_NAME`                         | oxPassport image repository name                                                 | i.e `"gluufederation/oxpassport"`                                                           |
@@ -1089,10 +1089,10 @@ In this case, `<resource>` could be Deployment or Statefulset and `<name>` is th
 
 Examples:
 
--   Scaling Auth-Server:
+-   Scaling oxAuth:
 
     ```
-    kubectl scale --replicas=2 deployment auth-server
+    kubectl scale --replicas=2 deployment oxauth
     ```
 
 -   Scaling oxTrust:
@@ -1105,11 +1105,11 @@ Examples:
 
 | Services         | Folder  / File                      |  Jackrabbit Repository                                  | Method                 |
 | ---------------- | ----------------------------------- | ------------------------------------------------------- | ---------------------- |
-| `Auth-Server`         | `/opt/gluu/jetty/auth-server/custom`     | `/repository/default/opt/gluu/jetty/auth-server/custom`      | `PULL` from Jackrabbit |
+| `oxAuth`         | `/opt/gluu/jetty/oxauth/custom`     | `/repository/default/opt/gluu/jetty/oxauth/custom`      | `PULL` from Jackrabbit |
 | `oxTrust`        | `/opt/gluu/jetty/identity/custom`   |  `/repository/default/opt/gluu/jetty/identity/custom`   | `PULL` from Jackrabbit |
 | `Casa`           | `/opt/gluu/jetty/casa`              | `/repository/default/opt/gluu/jetty/casa`               | `PULL` from Jackrabbit |
 
-The above means that Jackrabbit will maintain the source folder on all replicas of a service. If one pushed a custom file to `/opt/gluu/jetty/auth-server/custom` at one replica all other replicas would have this file.
+The above means that Jackrabbit will maintain the source folder on all replicas of a service. If one pushed a custom file to `/opt/gluu/jetty/oxauth/custom` at one replica all other replicas would have this file.
 
 #### oxTrust --> Jackrabbit --> oxShibboleth
 
@@ -1118,12 +1118,12 @@ The above means that Jackrabbit will maintain the source folder on all replicas 
 | `oxTrust`        | `/opt/shibboleth-idp`               |  `/repository/default/opt/shibboleth-idp`               | `PUSH` to Jackrabbit   |
 | `oxShibboleth`   | `/opt/shibboleth-idp`               | `/repository/default/opt/shibboleth-idp`                | `PULL` from Jackrabbit |
 
-#### Auth-Server --> Jackrabbit --> Casa
+#### oxAuth --> Jackrabbit --> Casa
 
 | Services         | Folder  / File                      |  Jackrabbit Repository                                  | Method                 |
 | ---------------- | ----------------------------------- | ------------------------------------------------------- | ---------------------- |
-| `Auth-Server `        | `/etc/certs/otp_configuration.json` |  `/repository/etc/certs/otp_configuration.json`         | `PUSH` to Jackrabbit   |
-| `Auth-Server `        | `/etc/certs/super_gluu_creds.json`  |  `/repository/default/etc/certs/super_gluu_creds.json`  | `PUSH` to Jackrabbit   |
+| `oxAuth `        | `/etc/certs/otp_configuration.json` |  `/repository/etc/certs/otp_configuration.json`         | `PUSH` to Jackrabbit   |
+| `oxAuth `        | `/etc/certs/super_gluu_creds.json`  |  `/repository/default/etc/certs/super_gluu_creds.json`  | `PUSH` to Jackrabbit   |
 | `Casa`           | `/etc/certs/otp_configuration.json` | `/repository/etc/certs/otp_configuration.json`          | `PULL` from Jackrabbit |
 | `Casa`           | `/etc/certs/super_gluu_creds.json`  | `/repository/default/etc/certs/super_gluu_creds.json`   | `PULL` from Jackrabbit |
 

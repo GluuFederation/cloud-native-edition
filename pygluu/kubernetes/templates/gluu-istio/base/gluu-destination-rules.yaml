@@ -21,9 +21,9 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: gluu-auth-server-mtls
+  name: gluu-oxauth-mtls
 spec:
-  host: auth-server.gluu.svc.cluster.local
+  host: oxauth.gluu.svc.cluster.local
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL

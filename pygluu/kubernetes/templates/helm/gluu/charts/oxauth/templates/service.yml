@@ -3,17 +3,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.service.authServerServiceName }}
+  name: {{ .Values.service.oxAuthServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "auth-server.labels" . | indent 4}}
+{{ include "oxauth.labels" . | indent 4}}
 spec:
   {{- if .Values.global.alb.ingress }}
   type: NodePort
   {{- end }}
   ports:
   - port: {{ .Values.ports.containerPort }}
-    name: http-auth-server
+    name: http-oxauth
   selector:
-    app: {{ include "auth-server.name" . }} #auth-server
+    app: {{ include "oxauth.name" . }} #oxauth
     
