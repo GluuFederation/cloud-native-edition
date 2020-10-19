@@ -1,7 +1,7 @@
 {{ forms.radio_toggle(form.enable_cache_refresh) }}
-{{ forms.radio_toggle(form.enable_oxauth_key_rotate) }}
-<div id="oxauthKeyLife" class="collapse {{ 'show' if form.enable_oxauth_key_rotate.data == 'Y' else '' }}">
-  {{ forms.text(form.oxauth_keys_life) }}
+{{ forms.radio_toggle(form.enable_auth_server_key_rotate) }}
+<div id="authServerKeyLife" class="collapse {{ 'show' if form.enable_auth_server_key_rotate.data == 'Y' else '' }}">
+  {{ forms.text(form.auth_server_keys_life) }}
 </div>
 
 {{ forms.radio_toggle(form.enable_radius) }}
@@ -10,10 +10,10 @@
 {{ forms.radio_toggle(form.enable_casa) }}
 {{ forms.radio_toggle(form.enable_fido2) }}
 {{ forms.radio_toggle(form.enable_scim) }}
-{{ forms.radio_toggle(form.enable_oxd) }}
-<div id="oxdSetup" class="collapse {{ 'show' if form.enable_oxd.data == 'Y' else '' }}">
-  {{ forms.text(form.oxd_application_keystore_cn) }}
-  {{ forms.text(form.oxd_admin_keystore_cn) }}
+{{ forms.radio_toggle(form.enable_client_api) }}
+<div id="clientApiSetup" class="collapse {{ 'show' if form.enable_client_api.data == 'Y' else '' }}">
+  {{ forms.text(form.client_api_application_keystore_cn) }}
+  {{ forms.text(form.client_api_admin_keystore_cn) }}
 </div>
 {{ forms.radio_toggle(form.enable_oxtrust_api) }}
 <div id="oxtrustTestMode" class="collapse">

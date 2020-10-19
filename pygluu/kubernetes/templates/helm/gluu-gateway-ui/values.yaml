@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: gluufederation/gluu-gateway-ui
-  tag: 4.2.1_02
+  tag: 5.0.0_dev
   pullPolicy: Always
 cloud:
   enabled: true
@@ -29,16 +29,16 @@ sslKeyPath: "/etc/certs/tls.key"
 sslCertPath: "/etc/certs/tls.crt"
 dbDatabase: "konga"
 nodeEnv: "production"
-oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
+clientApiServerUrl: "https://client-api.gluu.svc.cluster.local:8443"
 opServerUrl: "demoexample.gluu.org"
-oxdId:
+clientApiId:
 clientId:
 clientSecret:
-oxdServerVersion: "4.2"
+clientApiServerVersion: "5.0"
 ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"
-ggVersion: "4.2"
+ggVersion: "5.0"
 nameOverride: ""
 fullnameOverride: ""
 service:

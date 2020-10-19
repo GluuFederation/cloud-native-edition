@@ -32,7 +32,7 @@ spec:
       containers:
       - name: jackrabbit
         imagePullPolicy: Always
-        image: gluufederation/jackrabbit:4.2.1_02
+        image: gluufederation/jackrabbit:5.0.0_dev
         envFrom:
         - configMapRef:
             name: gluu-config-cm

@@ -34,8 +34,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/openid-configuration /oxauth/.well-known/openid-configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/openid-configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/openid-configuration /auth-server/.well-known/openid-configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth-server/.well-known/openid-configuration
 spec:
   tls:
     - hosts:
@@ -47,7 +47,7 @@ spec:
       paths:
       - path: /.well-known/openid-configuration
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---
@@ -60,8 +60,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/uma2-configuration /oxauth/restv1/uma2-configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/uma2-configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/uma2-configuration /auth-server/restv1/uma2-configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth-server/restv1/uma2-configuration
 spec:
   tls:
     - hosts:
@@ -73,7 +73,7 @@ spec:
       paths:
       - path: /.well-known/uma2-configuration
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---
@@ -86,8 +86,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/webfinger /oxauth/.well-known/webfinger$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/webfinger
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/webfinger /auth-server/.well-known/webfinger$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth-server/.well-known/webfinger
 spec:
   tls:
     - hosts:
@@ -99,7 +99,7 @@ spec:
       paths:
       - path: /.well-known/webfinger
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---
@@ -112,8 +112,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/simple-web-discovery /oxauth/.well-known/simple-web-discovery$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/simple-web-discovery
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/simple-web-discovery /auth-server/.well-known/simple-web-discovery$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth-server/.well-known/simple-web-discovery
 spec:
   tls:
     - hosts:
@@ -125,7 +125,7 @@ spec:
       paths:
       - path: /.well-known/simple-web-discovery
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---
@@ -164,8 +164,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido-configuration /oxauth/restv1/fido-configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/fido-configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido-configuration /auth-server/restv1/fido-configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth-server/restv1/fido-configuration
 spec:
   tls:
     - hosts:
@@ -177,7 +177,7 @@ spec:
       paths:
       - path: /.well-known/fido-configuration
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---
@@ -214,7 +214,7 @@ metadata:
   name: gluu-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.org/ssl-services: "oxauth"
+    nginx.org/ssl-services: "auth-server"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 spec:
   tls:
@@ -225,9 +225,9 @@ spec:
   - host: FQDN
     http:
       paths:
-      - path: /oxauth
+      - path: /auth-server
         backend:
-          serviceName: oxauth
+          serviceName: auth-server
           servicePort: 8080
 
 ---

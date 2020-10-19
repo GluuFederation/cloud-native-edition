@@ -3,7 +3,7 @@ gluuReleaseName: cv # CHANGE
 
 image:
   repository: gluufederation/upgrade
-  tag: 4.2.1_02
+  tag: 5.0.0_dev
 
 resources: {}
   # requests:
@@ -25,7 +25,7 @@ domain: demoexample.gluu.org
 # options: ldap/couchbase/hybrid
 gluuPersistenceType: ldap
 # options: default/user/site/cache/statistic
-# used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+# used only if JANS_PERSISTENCE_TYPE is ldap or hybrid
 gluuPersistenceLdapMapping: default 
 gluuLdapUrl: opendj:1636
 # gluuCouchbaseUrl is the couchbase service name

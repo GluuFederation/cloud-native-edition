@@ -357,7 +357,7 @@ def validating_gg_settings():
     keys = [
         "INSTALL_GLUU_GATEWAY",
         "ENABLED_SERVICES_LIST",
-        "ENABLE_OXD",
+        "ENABLE_CLIENT_API",
         "POSTGRES_NAMESPACE",
         "POSTGRES_REPLICAS",
         "POSTGRES_URL",
@@ -385,7 +385,7 @@ def validating_gg_settings():
                     status = False
                     break
 
-            if key == "ENABLE_OXD" and gluu_settings.db.get("ENABLE_OXD") == "N":
+            if key == "ENABLE_CLIENT_API" and gluu_settings.db.get("ENABLE_CLIENT_API") == "N":
                 status = False
                 break
 
@@ -459,7 +459,7 @@ def get_wizard_step():
     if not gluu_settings.db.get("EDIT_IMAGE_NAMES_TAGS"):
         return url_for("wizard.images")
 
-    if not gluu_settings.db.get("OXAUTH_REPLICAS"):
+    if not gluu_settings.db.get("AUTH_SERVER_REPLICAS"):
         return url_for("wizard.replicas")
 
     return url_for("wizard.setting_summary")

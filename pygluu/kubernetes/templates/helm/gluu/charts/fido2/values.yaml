@@ -2,8 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 
 image:
-  repository: gluufederation/fido2
-  tag: 4.2.1_02
+  repository: janssenproject/fido2
+  tag: 5.0.0_dev
   pullPolicy: Always
 replicas: 1
 #Resources for the deployment

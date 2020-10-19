@@ -280,25 +280,25 @@ def optional_services():
         next_step = request.form["next_step"]
         service_list = {
             'cr-rotate': False,
-            'oxauth-key-rotation': False,
+            'auth-server-key-rotation': False,
             'radius': False,
             'oxpassport': False,
             'oxshibboleth': False,
             'casa': False,
             'fido2': False,
             'scim': False,
-            'oxd-server': False
+            'client-api': False
         }
         data["ENABLE_CACHE_REFRESH"] = form.enable_cache_refresh.data
         if data["ENABLE_CACHE_REFRESH"] == "Y":
             service_list['cr-rotate'] = True
 
-        data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
-        if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
-            data["OXAUTH_KEYS_LIFE"] = form.oxauth_keys_life.data
-            service_list['oxauth-key-rotation'] = True
+        data["ENABLE_AUTH_SERVER_KEY_ROTATE"] = form.enable_auth_server_key_rotate.data
+        if data["ENABLE_AUTH_SERVER_KEY_ROTATE"] == "Y":
+            data["AUTH_SERVER_KEYS_LIFE"] = form.auth_server_keys_life.data
+            service_list['auth_server-key-rotation'] = True
         else:
-            data["OXAUTH_KEYS_LIFE"] = ""
+            data["AUTH_SERVER_KEYS_LIFE"] = ""
 
         data["ENABLE_RADIUS"] = form.enable_radius.data
         if data["ENABLE_RADIUS"] == "Y":
@@ -336,15 +336,15 @@ def optional_services():
         if data["ENABLE_SCIM"] == "Y":
             service_list['scim'] = True
 
-        data["ENABLE_OXD"] = form.enable_oxd.data
+        data["ENABLE_CLIENT_API"] = form.enable_client_api.data
 
-        if data["ENABLE_OXD"] == "Y":
-            data["OXD_APPLICATION_KEYSTORE_CN"] = form.oxd_application_keystore_cn.data
-            data["OXD_ADMIN_KEYSTORE_CN"] = form.oxd_admin_keystore_cn.data
-            service_list['oxd-server'] = True
+        if data["ENABLE_CLIENT_API"] == "Y":
+            data["CLIENT_API_APPLICATION_KEYSTORE_CN"] = form.client_api_application_keystore_cn.data
+            data["CLIENT_API_ADMIN_KEYSTORE_CN"] = form.client_api_admin_keystore_cn.data
+            service_list['client-api'] = True
         else:
-            data["OXD_APPLICATION_KEYSTORE_CN"] = ""
-            data["OXD_ADMIN_KEYSTORE_CN"] = ""
+            data["CLIENT_API_APPLICATION_KEYSTORE_CN"] = ""
+            data["CLIENT_API_ADMIN_KEYSTORE_CN"] = ""
 
         data["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
         if data["ENABLE_OXTRUST_API"] == "Y":
@@ -395,7 +395,7 @@ def gluu_gateway():
         if data["INSTALL_GLUU_GATEWAY"] == "Y":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("gluu-gateway-ui")
-            data["ENABLE_OXD"] = "Y"
+            data["ENABLE_CLIENT_API"] = "Y"
             data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
             data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
             data["POSTGRES_URL"] = form.postgres.postgres_url.data
@@ -408,7 +408,7 @@ def gluu_gateway():
             data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
             data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
-            data["ENABLE_OXD"] = "N"
+            data["ENABLE_CLIENT_API"] = "N"
             if not gluu_settings.db.get("POSTGRES_NAMESPACE") and \
                     not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
                 data["POSTGRES_NAMESPACE"] = ""
@@ -1129,7 +1129,7 @@ def images():
             form.cache_refresh_rotate_image_tag.id,
         ]
 
-    if gluu_settings.db.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
+    if gluu_settings.db.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "N":
         collapsed_ids += [
             form.cert_manager_image_name.id,
             form.cert_manager_image_tag.id,
@@ -1141,10 +1141,10 @@ def images():
             form.ldap_image_tag.id,
         ]
 
-    if gluu_settings.db.get("ENABLE_OXD") == "N":
+    if gluu_settings.db.get("ENABLE_CLIENT_API") == "N":
         collapsed_ids += [
-            form.oxd_image_name.id,
-            form.oxd_image_tag.id,
+            form.client_api_image_name.id,
+            form.client_api_image_tag.id,
         ]
 
     if gluu_settings.db.get("ENABLE_OXPASSPORT") == "N":
@@ -1231,8 +1231,8 @@ def replicas():
         del form.oxshibboleth_replicas
     if gluu_settings.db.get("ENABLE_OXPASSPORT") == "N":
         del form.oxpassport_replicas
-    if gluu_settings.db.get("ENABLE_OXD") == "N":
-        del form.oxd_server_replicas
+    if gluu_settings.db.get("ENABLE_CLIENT_API") == "N":
+        del form.client_api_server_replicas
     if gluu_settings.db.get("ENABLE_CASA") == "N":
         del form.casa_replicas
     if gluu_settings.db.get("ENABLE_RADIUS") == "N":

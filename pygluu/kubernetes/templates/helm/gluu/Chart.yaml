@@ -1,7 +1,7 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
-appVersion: "4.2.1"
+appVersion: "5.0.0"
 home: https://www.gluu.org
 maintainers:
 - name: Gluu
@@ -22,8 +22,8 @@ dependencies:
       condition: global.jackrabbit.enabled
       version: 1.2.16
 
-    - name: oxauth
-      condition: global.oxauth.enabled
+    - name: auth-server
+      condition: global.auth-server.enabled
       version: 1.2.16
 
     - name: fido2
@@ -54,8 +54,8 @@ dependencies:
       version: 1.2.16
       condition: config.configmap.gluuCasaEnabled
   
-    - name: oxauth-key-rotation
-      condition: global.oxauth-key-rotation.enabled
+    - name: auth-server-key-rotation
+      condition: global.auth-server-key-rotation.enabled
       version: 1.2.16
   
     - name: cr-rotate
@@ -66,8 +66,8 @@ dependencies:
       condition: config.configmap.gluuRadiusEnabled
       version: 1.2.16
 
-    - name: oxd-server
-      condition: global.oxd-server.enabled
+    - name: client-api
+      condition: global.client-api.enabled
       version: 1.2.16
   
     - name: persistence

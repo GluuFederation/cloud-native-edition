@@ -26,13 +26,13 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
             self.enabled_services.append("cr-rotate")
 
-        if not self.settings.get("ENABLE_OXAUTH_KEY_ROTATE"):
-            self.settings.set("ENABLE_OXAUTH_KEY_ROTATE", confirm_yesno("Deploy Key-Rotation"))
+        if not self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE"):
+            self.settings.set("ENABLE_AUTH_SERVER_KEY_ROTATE", confirm_yesno("Deploy Key-Rotation"))
 
-        if self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
-            self.enabled_services.append("oxauth-key-rotation")
-            if not self.settings.get("OXAUTH_KEYS_LIFE"):
-                self.settings.set("OXAUTH_KEYS_LIFE", click.prompt("oxAuth keys life in hours", default=48))
+        if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
+            self.enabled_services.append("auth-server-key-rotation")
+            if not self.settings.get("AUTH_SERVER_KEYS_LIFE"):
+                self.settings.set("AUTH_SERVER_KEYS_LIFE", click.prompt("Auth-Server keys life in hours", default=48))
 
         if not self.settings.get("ENABLE_RADIUS"):
             self.settings.set("ENABLE_RADIUS", confirm_yesno("Deploy Radius"))
@@ -57,7 +57,7 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_CASA") == "Y":
             self.enabled_services.append("casa")
             self.settings.set("ENABLE_CASA_BOOLEAN", "true")
-            self.settings.set("ENABLE_OXD", "Y")
+            self.settings.set("ENABLE_CLIENT_API", "Y")
 
         if not self.settings.get("ENABLE_FIDO2"):
             self.settings.set("ENABLE_FIDO2", confirm_yesno("Deploy fido2"))
@@ -69,17 +69,17 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_SCIM") == "Y":
             self.enabled_services.append("scim")
 
-        if not self.settings.get("ENABLE_OXD"):
-            self.settings.set("ENABLE_OXD", confirm_yesno("Deploy oxd server"))
+        if not self.settings.get("ENABLE_CLIENT_API"):
+            self.settings.set("ENABLE_CLIENT_API", confirm_yesno("Deploy Client API"))
 
-        if self.settings.get("ENABLE_OXD") == "Y":
-            self.enabled_services.append("oxd-server")
-            if not self.settings.get("OXD_APPLICATION_KEYSTORE_CN"):
-                self.settings.set("OXD_APPLICATION_KEYSTORE_CN", click.prompt("oxd server application keystore name",
-                                                                              default="oxd-server"))
-            if not self.settings.get("OXD_ADMIN_KEYSTORE_CN"):
-                self.settings.set("OXD_ADMIN_KEYSTORE_CN", click.prompt("oxd server admin keystore name",
-                                                                        default="oxd-server"))
+        if self.settings.get("ENABLE_CLIENT_API") == "Y":
+            self.enabled_services.append("client-api")
+            if not self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"):
+                self.settings.set("CLIENT_API_APPLICATION_KEYSTORE_CN", click.prompt("Client API application keystore name",
+                                                                              default="client-api"))
+            if not self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN"):
+                self.settings.set("CLIENT_API_ADMIN_KEYSTORE_CN", click.prompt("Client API admin keystore name",
+                                                                        default="client-api"))
 
         if not self.settings.get("ENABLE_OXTRUST_API"):
             self.settings.set("ENABLE_OXTRUST_API", confirm_yesno("Enable oxTrust API"))

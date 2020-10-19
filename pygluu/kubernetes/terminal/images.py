@@ -43,7 +43,7 @@ class PromptImages:
             if self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
                 prompt_and_set_setting("CR-rotate", "CACHE_REFRESH_ROTATE_IMAGE_NAME", "CACHE_REFRESH_ROTATE_IMAGE_TAG")
             # KEY_ROTATE
-            if self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
+            if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
                 prompt_and_set_setting("Key rotate", "CERT_MANAGER_IMAGE_NAME", "CERT_MANAGER_IMAGE_TAG")
             # LDAP
             if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
@@ -51,11 +51,11 @@ class PromptImages:
                 prompt_and_set_setting("OpenDJ", "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG")
             # Jackrabbit
             prompt_and_set_setting("jackrabbit", "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
-            # OXAUTH
-            prompt_and_set_setting("oxAuth", "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
-            # OXD
-            if self.settings.get("ENABLE_OXD") == "Y":
-                prompt_and_set_setting("OXD server", "OXD_IMAGE_NAME", "OXD_IMAGE_TAG")
+            # AUTH_SERVER
+            prompt_and_set_setting("Auth-Server", "AUTH_SERVER_IMAGE_NAME", "AUTH_SERVER_IMAGE_TAG")
+            # CLIENT_API
+            if self.settings.get("ENABLE_CLIENT_API") == "Y":
+                prompt_and_set_setting("CLIENT_API server", "CLIENT_API_IMAGE_NAME", "CLIENT_API_IMAGE_TAG")
             # OXPASSPORT
             if self.settings.get("ENABLE_OXPASSPORT") == "Y":
                 prompt_and_set_setting("oxPassport", "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG")

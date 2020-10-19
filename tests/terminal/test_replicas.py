@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_prompt_replicas_oxauth(monkeypatch, settings):
+def test_prompt_replicas_auth_server(monkeypatch, settings):
     from pygluu.kubernetes.terminal.replicas import PromptReplicas
 
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
@@ -10,7 +10,7 @@ def test_prompt_replicas_oxauth(monkeypatch, settings):
     settings.set("OXTRUST_REPLICAS", 1)
 
     PromptReplicas(settings).prompt_replicas()
-    assert settings.get("OXAUTH_REPLICAS") == 1
+    assert settings.get("AUTH_SERVER_REPLICAS") == 1
 
 
 def test_prompt_replicas_oxtrust(monkeypatch, settings):
@@ -19,7 +19,7 @@ def test_prompt_replicas_oxtrust(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
 
     PromptReplicas(settings).prompt_replicas()
     assert settings.get("OXTRUST_REPLICAS") == 1
@@ -31,7 +31,7 @@ def test_prompt_replicas_fido2(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_FIDO2", "Y")
@@ -45,7 +45,7 @@ def test_prompt_replicas_scim(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_SCIM", "Y")
@@ -60,7 +60,7 @@ def test_prompt_replicas_persistence(monkeypatch, settings, type_):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("PERSISTENCE_BACKEND", type_)
@@ -74,7 +74,7 @@ def test_prompt_replicas_oxshibboleth(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_OXSHIBBOLETH", "Y")
@@ -88,7 +88,7 @@ def test_prompt_replicas_oxpassport(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_OXPASSPORT", "Y")
@@ -96,18 +96,18 @@ def test_prompt_replicas_oxpassport(monkeypatch, settings):
     assert settings.get("OXPASSPORT_REPLICAS") == 1
 
 
-def test_prompt_replicas_oxd(monkeypatch, settings):
+def test_prompt_replicas_client_api(monkeypatch, settings):
     from pygluu.kubernetes.terminal.replicas import PromptReplicas
 
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
-    settings.set("ENABLE_OXD", "Y")
+    settings.set("ENABLE_CLIENT_API", "Y")
     PromptReplicas(settings).prompt_replicas()
-    assert settings.get("OXD_SERVER_REPLICAS") == 1
+    assert settings.get("CLIENT_API_REPLICAS") == 1
 
 
 def test_prompt_replicas_casa(monkeypatch, settings):
@@ -116,7 +116,7 @@ def test_prompt_replicas_casa(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_CASA", "Y")
@@ -130,7 +130,7 @@ def test_prompt_replicas_radius(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 1)
 
     # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
+    settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
     settings.set("ENABLE_RADIUS", "Y")

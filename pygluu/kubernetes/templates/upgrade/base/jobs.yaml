@@ -10,11 +10,11 @@ spec:
       restartPolicy: Never
       containers:
         - name: gluu-upgrade-job
-          image: gluufederation/upgrade:4.2.1_04
+          image: gluufederation/upgrade:5.0.0_dev
           envFrom:
           - configMapRef:
               name: upgrade-cm
-          args: ["--source", "4.1", "--target", "4.2"]
+          args: ["--source", "4.2", "--target", "5.0"]
           volumeMounts:
             - name: cb-super-pass
               mountPath: "/etc/gluu/conf/couchbase_superuser_password"
