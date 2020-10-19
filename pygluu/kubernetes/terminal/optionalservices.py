@@ -26,13 +26,13 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
             self.enabled_services.append("cr-rotate")
 
-        if not self.settings.get("ENABLE_OXAUTH_KEY_ROTATE"):
-            self.settings.set("ENABLE_OXAUTH_KEY_ROTATE", confirm_yesno("Deploy Key-Rotation"))
+        if not self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE"):
+            self.settings.set("ENABLE_AUTH_SERVER_KEY_ROTATE", confirm_yesno("Deploy Key-Rotation"))
 
-        if self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
-            self.enabled_services.append("oxauth-key-rotation")
-            if not self.settings.get("OXAUTH_KEYS_LIFE"):
-                self.settings.set("OXAUTH_KEYS_LIFE", click.prompt("oxAuth keys life in hours", default=48))
+        if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
+            self.enabled_services.append("auth-server-key-rotation")
+            if not self.settings.get("AUTH_SERVER_KEYS_LIFE"):
+                self.settings.set("AUTH_SERVER_KEYS_LIFE", click.prompt("Auth-Server keys life in hours", default=48))
 
         if not self.settings.get("ENABLE_RADIUS"):
             self.settings.set("ENABLE_RADIUS", confirm_yesno("Deploy Radius"))

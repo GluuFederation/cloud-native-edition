@@ -1,7 +1,7 @@
 {{ forms.radio_toggle(form.enable_cache_refresh) }}
-{{ forms.radio_toggle(form.enable_oxauth_key_rotate) }}
-<div id="oxauthKeyLife" class="collapse {{ 'show' if form.enable_oxauth_key_rotate.data == 'Y' else '' }}">
-  {{ forms.text(form.oxauth_keys_life) }}
+{{ forms.radio_toggle(form.enable_auth_server_key_rotate) }}
+<div id="authServerKeyLife" class="collapse {{ 'show' if form.enable_auth_server_key_rotate.data == 'Y' else '' }}">
+  {{ forms.text(form.auth_server_keys_life) }}
 </div>
 
 {{ forms.radio_toggle(form.enable_radius) }}

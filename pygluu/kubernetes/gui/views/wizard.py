@@ -280,7 +280,7 @@ def optional_services():
         next_step = request.form["next_step"]
         service_list = {
             'cr-rotate': False,
-            'oxauth-key-rotation': False,
+            'auth-server-key-rotation': False,
             'radius': False,
             'oxpassport': False,
             'oxshibboleth': False,
@@ -293,12 +293,12 @@ def optional_services():
         if data["ENABLE_CACHE_REFRESH"] == "Y":
             service_list['cr-rotate'] = True
 
-        data["ENABLE_OXAUTH_KEY_ROTATE"] = form.enable_oxauth_key_rotate.data
-        if data["ENABLE_OXAUTH_KEY_ROTATE"] == "Y":
-            data["OXAUTH_KEYS_LIFE"] = form.oxauth_keys_life.data
-            service_list['oxauth-key-rotation'] = True
+        data["ENABLE_AUTH_SERVER_KEY_ROTATE"] = form.enable_auth_server_key_rotate.data
+        if data["ENABLE_AUTH_SERVER_KEY_ROTATE"] == "Y":
+            data["AUTH_SERVER_KEYS_LIFE"] = form.auth_server_keys_life.data
+            service_list['auth_server-key-rotation'] = True
         else:
-            data["OXAUTH_KEYS_LIFE"] = ""
+            data["AUTH_SERVER_KEYS_LIFE"] = ""
 
         data["ENABLE_RADIUS"] = form.enable_radius.data
         if data["ENABLE_RADIUS"] == "Y":
@@ -1129,7 +1129,7 @@ def images():
             form.cache_refresh_rotate_image_tag.id,
         ]
 
-    if gluu_settings.db.get("ENABLE_OXAUTH_KEY_ROTATE") == "N":
+    if gluu_settings.db.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "N":
         collapsed_ids += [
             form.cert_manager_image_name.id,
             form.cert_manager_image_tag.id,

@@ -3,21 +3,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "oxauth.fullname" . }}
+  name: {{ include "auth-server.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    APP_NAME: oxauth
-{{ include "oxauth.labels" . | indent 4}}
+    APP_NAME: auth-server
+{{ include "auth-server.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "oxauth.name" . }}
+      app: {{ include "auth-server.name" . }}
   template:
     metadata:
       labels:
-        APP_NAME: oxauth
-        app: {{ include "oxauth.name" . }}
+        APP_NAME: auth-server
+        app: {{ include "auth-server.name" . }}
       {{- if .Values.global.istio.ingress }}
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
@@ -47,7 +47,7 @@ spec:
             subPath: jackrabbit_admin_password
         {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
-          - name: {{ include "oxauth.fullname" .}}-updatelbip
+          - name: {{ include "auth-server.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
         {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
@@ -101,7 +101,7 @@ spec:
             secretName: {{ .Release.Name }}-cb-crt 
       {{- end }}
       {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
-        - name: {{ include "oxauth.fullname" . }}-updatelbip
+        - name: {{ include "auth-server.fullname" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
       {{- end }}

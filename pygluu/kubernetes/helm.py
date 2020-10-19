@@ -47,8 +47,8 @@ def register_op_client(namespace, client_name, op_host, client_api_url, release_
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                       app_label="app=oxauth",
-                                                       container=release_name + "-oxauth",
+                                                       app_label="app=auth-server",
+                                                       container=release_name + "-auth-server",
                                                        namespace=namespace,
                                                        stdout=False)
 
@@ -276,7 +276,7 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
-        values_file_parser["global"]["oxauth"]["enabled"] = True
+        values_file_parser["global"]["auth-server"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True
         values_file_parser["global"]["config"]["enabled"] = True
@@ -348,10 +348,10 @@ class Helm(object):
         if self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
             values_file_parser["global"]["cr-rotate"]["enabled"] = True
 
-        values_file_parser["global"]["oxauth-key-rotation"]["enabled"] = False
-        if self.settings.get("ENABLE_OXAUTH_KEY_ROTATE") == "Y":
-            values_file_parser["global"]["oxauth-key-rotation"]["enabled"] = True
-            values_file_parser["oxauth-key-rotation"]["keysLife"] = self.settings.get("OXAUTH_KEYS_LIFE")
+        values_file_parser["global"]["auth-server-key-rotation"]["enabled"] = False
+        if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
+            values_file_parser["global"]["auth-server-key-rotation"]["enabled"] = True
+            values_file_parser["auth-server-key-rotation"]["keysLife"] = self.settings.get("AUTH_SERVER_KEYS_LIFE")
 
         values_file_parser["config"]["orgName"] = self.settings.get("ORG_NAME")
         values_file_parser["config"]["email"] = self.settings.get("EMAIL")
@@ -385,14 +385,14 @@ class Helm(object):
         values_file_parser["config"]["image"]["tag"] = self.settings.get("CONFIG_IMAGE_TAG")
         values_file_parser["cr-rotate"]["image"]["repository"] = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME")
         values_file_parser["cr-rotate"]["image"]["tag"] = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_TAG")
-        values_file_parser["oxauth-key-rotation"]["image"]["repository"] = self.settings.get("CERT_MANAGER_IMAGE_NAME")
-        values_file_parser["oxauth-key-rotation"]["image"]["tag"] = self.settings.get("CERT_MANAGER_IMAGE_TAG")
+        values_file_parser["auth-server-key-rotation"]["image"]["repository"] = self.settings.get("CERT_MANAGER_IMAGE_NAME")
+        values_file_parser["auth-server-key-rotation"]["image"]["tag"] = self.settings.get("CERT_MANAGER_IMAGE_TAG")
         values_file_parser["opendj"]["image"]["repository"] = self.settings.get("LDAP_IMAGE_NAME")
         values_file_parser["opendj"]["image"]["tag"] = self.settings.get("LDAP_IMAGE_TAG")
         values_file_parser["persistence"]["image"]["repository"] = self.settings.get("PERSISTENCE_IMAGE_NAME")
         values_file_parser["persistence"]["image"]["tag"] = self.settings.get("PERSISTENCE_IMAGE_TAG")
-        values_file_parser["oxauth"]["image"]["repository"] = self.settings.get("OXAUTH_IMAGE_NAME")
-        values_file_parser["oxauth"]["image"]["tag"] = self.settings.get("OXAUTH_IMAGE_TAG")
+        values_file_parser["auth-server"]["image"]["repository"] = self.settings.get("AUTH_SERVER_IMAGE_NAME")
+        values_file_parser["auth-server"]["image"]["tag"] = self.settings.get("AUTH_SERVER_IMAGE_TAG")
         values_file_parser["client-api"]["image"]["repository"] = self.settings.get("CLIENT_API_IMAGE_NAME")
         values_file_parser["client-api"]["image"]["tag"] = self.settings.get("CLIENT_API_IMAGE_TAG")
         values_file_parser["oxpassport"]["image"]["repository"] = self.settings.get("OXPASSPORT_IMAGE_NAME")

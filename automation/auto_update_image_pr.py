@@ -11,7 +11,7 @@ logger = get_logger("update-image")
 
 def determine_final_official_and_dev_version(tag_list):
     """
-    Determine official version i.e 4.1.0 , 4.2.1..etc using oxauths repo
+    Determine official version i.e 4.1.0 , 4.2.1..etc using auth-servers repo
     @param tag_list:
     @return:
     """
@@ -64,12 +64,12 @@ def determine_final_official_and_dev_version(tag_list):
 
 def determine_major_version(all_repos_tags):
     """
-    Determine official major version i.e 4.1 , 4.2..etc using oxauths repo
+    Determine official major version i.e 4.1 , 4.2..etc using auth-servers repo
     @param all_repos_tags:
     @return:
     """
     versions_list = []
-    for tag in all_repos_tags["oxauth"]:
+    for tag in all_repos_tags["auth-server"]:
         # Exclude any tag with the following
         if "dev" not in tag \
                 and "latest" not in tag \
@@ -143,10 +143,14 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
     gluu_gateway_values_file_parser = Parser(gluu_gateway_values_file, True)
     dev_version = ""
 
-    def update_dicts_and_yamls(name, rep, tags_list, helm_name=None):
+    def update_dicts_and_yamls(name, rep, tags_list, helm_name=None, janssen_repo=False):
         final_tag, final_dev_tag = determine_final_official_and_dev_version(tags_list)
         final_official_version_dict[name + "_IMAGE_NAME"] = "gluufederation/" + rep
         final_dev_version_dict[name + "_IMAGE_NAME"] = "gluufederation/" + rep
+        if janssen_repo:
+            final_official_version_dict[name + "_IMAGE_NAME"] = "janssenproject/" + rep
+            final_dev_version_dict[name + "_IMAGE_NAME"] = "janssenproject/" + rep
+
         final_official_version_dict[name + "_IMAGE_TAG"], final_dev_version_dict[name + "_IMAGE_TAG"] \
             = final_tag, final_dev_tag
         if rep == "gluu-gateway-ui":
@@ -168,21 +172,21 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
         elif repo == "client-api":
             update_dicts_and_yamls("CLIENT_API", repo, tag_list)
         elif repo == "fido2":
-            update_dicts_and_yamls("FIDO2", repo, tag_list)
+            update_dicts_and_yamls("FIDO2", repo, tag_list, janssen_repo=True)
         elif repo == "scim":
-            update_dicts_and_yamls("SCIM", repo, tag_list)
-        elif repo == "config-init":
-            update_dicts_and_yamls("CONFIG", repo, tag_list, "config")
+            update_dicts_and_yamls("SCIM", repo, tag_list, janssen_repo=True)
+        elif repo == "configuration-manager":
+            update_dicts_and_yamls("CONFIG", repo, tag_list, "config", janssen_repo=True)
         elif repo == "cr-rotate":
             update_dicts_and_yamls("CACHE_REFRESH_ROTATE", repo, tag_list)
         elif repo == "certmanager":
-            update_dicts_and_yamls("CERT_MANAGER", repo, tag_list, "oxauth-key-rotation")
+            update_dicts_and_yamls("CERT_MANAGER", repo, tag_list, "auth-server-key-rotation", janssen_repo=True)
         elif repo == "opendj":
             update_dicts_and_yamls("LDAP", repo, tag_list, "opendj")
         elif repo == "jackrabbit":
             update_dicts_and_yamls("JACKRABBIT", repo, tag_list)
-        elif repo == "oxauth":
-            update_dicts_and_yamls("OXAUTH", repo, tag_list)
+        elif repo == "auth-server":
+            update_dicts_and_yamls("AUTH_SERVER", repo, tag_list, janssen_repo=True)
         elif repo == "oxpassport":
             update_dicts_and_yamls("OXPASSPORT", repo, tag_list)
         elif repo == "oxshibboleth":
@@ -190,7 +194,7 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
         elif repo == "oxtrust":
             update_dicts_and_yamls("OXTRUST", repo, tag_list)
         elif repo == "persistence":
-            update_dicts_and_yamls("PERSISTENCE", repo, tag_list)
+            update_dicts_and_yamls("PERSISTENCE", repo, tag_list, janssen_repo=True)
         elif repo == "radius":
             update_dicts_and_yamls("RADIUS", repo, tag_list)
         elif repo == "gluu-gateway":
@@ -208,13 +212,19 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
 def main():
     all_repos_tags = dict()
     org = os.environ.get("ORG_NAME", "gluufederation")
-    gluu_docker_repositories_names_used_in_cn = ["casa", "fido2", "scim", "config-init",
-                                                 "cr-rotate", "certmanager", "opendj", "jackrabbit", "oxauth",
-                                                 "client-api", "oxpassport", "oxshibboleth",
-                                                 "oxtrust", "persistence", "radius", "gluu-gateway",
+    gluu_docker_repositories_names_used_in_cn = ["casa",
+                                                 "cr-rotate", "opendj", "jackrabbit", "oxpassport", "oxshibboleth",
+                                                 "oxtrust", "radius", "gluu-gateway",
                                                  "gluu-gateway-ui", "upgrade"]
+    jans_docker_repositories_names_used_in_cn = ["fido2", "scim", "configuration-manager",
+                                                 "certmanager", "auth-server",
+                                                 "client-api", "persistence"]
 
     for repo in gluu_docker_repositories_names_used_in_cn:
+        all_repos_tags.update(get_docker_repo_tag(org, repo))
+
+    for repo in jans_docker_repositories_names_used_in_cn:
+        org = "janssenproject"
         all_repos_tags.update(get_docker_repo_tag(org, repo))
 
     major_official_version = str(determine_major_version(all_repos_tags))

@@ -22,8 +22,8 @@ dependencies:
       condition: global.jackrabbit.enabled
       version: 1.2.16
 
-    - name: oxauth
-      condition: global.oxauth.enabled
+    - name: auth-server
+      condition: global.auth-server.enabled
       version: 1.2.16
 
     - name: fido2
@@ -54,8 +54,8 @@ dependencies:
       version: 1.2.16
       condition: config.configmap.gluuCasaEnabled
   
-    - name: oxauth-key-rotation
-      condition: global.oxauth-key-rotation.enabled
+    - name: auth-server-key-rotation
+      condition: global.auth-server-key-rotation.enabled
       version: 1.2.16
   
     - name: cr-rotate

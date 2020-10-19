@@ -168,8 +168,8 @@
         /* load function on load */
         casaOption($('input[name="enable_casa"]:checked'));
 
-        $('input[name="enable_oxauth_key_rotate"]').on('change', function(){
-          showHideOption($('#oxauthKeyLife'), $(this).val());
+        $('input[name="enable_auth_server_key_rotate"]').on('change', function(){
+          showHideOption($('#authServerKeyLife'), $(this).val());
         });
 
         $('input[name="enable_casa"]').on('change', function(){

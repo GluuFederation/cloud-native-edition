@@ -21,7 +21,7 @@ global:
   isDomainRegistered: "false"
   gluuPersistenceType: couchbase
   gluuJackrabbitCluster: "true"
-  oxauth:
+  auth-server:
     enabled: true
   fido2:
     enabled: false
@@ -43,7 +43,7 @@ global:
     enabled: false
   nginx-ingress:
     enabled: true
-  oxauth-key-rotation:
+  auth-server-key-rotation:
     enabled: false
   cr-rotate:
     enabled: false
@@ -82,7 +82,7 @@ config:
     gluuRedisSslTruststore: ""
     gluuRedisSentinelGroup: ""
     gluuOxtrustBackend: oxtrust:8080
-    gluuOxauthBackend: oxauth:8080
+    gluuAuthServerBackend: auth-server:8080
     jansClientApiServerUrl: client-api:8443
     jansClientApiBindIpAddresses: "*"
     gluuLdapUrl: opendj:1636
@@ -163,9 +163,9 @@ persistence:
     tag: 5.0.0_dev
     pullPolicy: Always
   resources: {}
-oxauth:
+auth-server:
   service:
-    oxAuthServiceName: oxauth
+    authServerServiceName: auth-server
   replicas: 1
   image:
     repository: janssenproject/auth-server
@@ -311,7 +311,7 @@ cr-rotate:
     requests:
       cpu: 200m
       memory: 200Mi
-oxauth-key-rotation:
+auth-server-key-rotation:
   keysLife: 48
   image:
     repository: janssenproject/certmanager

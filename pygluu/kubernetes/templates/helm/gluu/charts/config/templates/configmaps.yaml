@@ -17,7 +17,7 @@ data:
   JANS_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
   JANS_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
-  JANS_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
+  JANS_AUTH_SERVER_BACKEND: {{ .Values.configmap.gluuAuthServerBackend | quote }}
   JANS_CLIENT_API_SERVER_URL: {{ .Values.configmap.jansClientApiServerUrl | quote }}
   JANS_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.jansClientApiBindIpAddresses | quote }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}

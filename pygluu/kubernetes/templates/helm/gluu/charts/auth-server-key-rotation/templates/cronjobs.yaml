@@ -3,12 +3,12 @@
 kind: CronJob
 apiVersion: batch/v1beta1
 metadata:
-  name: {{ include "oxauth-key-rotation.fullname" . }}
+  name: {{ include "auth-server-key-rotation.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "oxauth-key-rotation.name" . }}
+    app: {{ include "auth-server-key-rotation.name" . }}
     release: {{ .Release.Name }}
-{{ include "oxauth-key-rotation.labels" . | indent 4 }}
+{{ include "auth-server-key-rotation.labels" . | indent 4 }}
 
 spec:
   schedule: "0 */{{ .Values.keysLife }} * * *"
@@ -49,10 +49,10 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  /app/scripts/entrypoint.sh patch oxauth --opts interval:{{ .Values.keysLife }}
+                  /app/scripts/entrypoint.sh patch auth-server --opts interval:{{ .Values.keysLife }}
                   curl -X POST http://localhost:15020/quitquitquit
               {{- else }}
-              args: ["patch", "oxauth", "--opts", "interval:{{ .Values.keysLife }}"]
+              args: ["patch", "auth-server", "--opts", "interval:{{ .Values.keysLife }}"]
               {{- end }}
           {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumes:

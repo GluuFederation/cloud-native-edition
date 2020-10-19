@@ -459,7 +459,7 @@ def get_wizard_step():
     if not gluu_settings.db.get("EDIT_IMAGE_NAMES_TAGS"):
         return url_for("wizard.images")
 
-    if not gluu_settings.db.get("OXAUTH_REPLICAS"):
+    if not gluu_settings.db.get("AUTH_SERVER_REPLICAS"):
         return url_for("wizard.replicas")
 
     return url_for("wizard.setting_summary")

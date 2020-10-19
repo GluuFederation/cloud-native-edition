@@ -3,23 +3,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oxauth
+  name: auth-server
   labels:
-    APP_NAME: oxauth
+    APP_NAME: auth-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oxauth
+      app: auth-server
   template:
     metadata:
       labels:
-        APP_NAME: oxauth
+        APP_NAME: auth-server
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
-      - name: oxauth
+      - name: auth-server
         imagePullPolicy: Always
         image: janssenproject/auth-server:5.0.0_dev
         command:
