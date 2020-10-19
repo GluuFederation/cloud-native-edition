@@ -8,5 +8,5 @@ resources:
   - services.yaml
   - deployments.yaml
 images:
-  - name: gluufederation/fido2
-    newTag: 4.2.1_02
+  - name: janssenproject/fido2
+    newTag: 5.0.0_dev

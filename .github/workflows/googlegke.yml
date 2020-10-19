@@ -92,7 +92,7 @@ jobs:
         {
           "ACCEPT_GLUU_LICENSE": "Y",
           "TEST_ENVIRONMENT": "Y",
-          "GLUU_VERSION": "4.2",
+          "GLUU_VERSION": "5.0.0_dev",
           "GLUU_UPGRADE_TARGET_VERSION": "",
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "GLUU_HELM_RELEASE_NAME": "helm",

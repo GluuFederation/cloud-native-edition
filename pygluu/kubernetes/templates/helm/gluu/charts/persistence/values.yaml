@@ -4,8 +4,8 @@
 replicaCount: 1
 
 image:
-  repository: gluufederation/persistence
-  tag: 4.2.1_02
+  repository: janssenproject/persistence-loader
+  tag: 5.0.0_dev
   pullPolicy: Always
 
 imagePullSecrets: []

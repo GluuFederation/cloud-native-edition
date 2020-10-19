@@ -14,7 +14,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7]
-        gluu-version: ['"4.2"']
+        gluu-version: ['"5.0.0_dev"']
         test-cases: ["install", "helm-install-gluu"]
         persistence-backends: ['"ldap"','"couchbase"']
 

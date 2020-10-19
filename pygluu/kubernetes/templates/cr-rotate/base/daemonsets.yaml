@@ -18,7 +18,7 @@ spec:
       containers:
       - name: cr-rotate
         imagePullPolicy: Always
-        image: gluufederation/cr-rotate:4.2.1_02
+        image: gluufederation/cr-rotate:5.0.0_dev
         envFrom:
         - configMapRef:
             name: gluu-config-cm

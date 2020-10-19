@@ -6,81 +6,81 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
-  GLUU_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
-  GLUU_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
-  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  GLUU_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
-  GLUU_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
-  GLUU_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
-  GLUU_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
-  GLUU_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
-  GLUU_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
+  JANS_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
+  JANS_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
+  JANS_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  JANS_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  JANS_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
+  JANS_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
+  JANS_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
+  JANS_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
+  JANS_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
+  JANS_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
-  GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
+  JANS_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
   JANS_CLIENT_API_SERVER_URL: {{ .Values.configmap.jansClientApiServerUrl | quote }}
   JANS_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.jansClientApiBindIpAddresses | quote }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
-  GLUU_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
+  JANS_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
   {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid")  }}
-  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
-  GLUU_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
+  # used only if JANS_PERSISTENCE_TYPE is ldap or hybrid
+  JANS_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
-  #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  GLUU_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
-  GLUU_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
-  GLUU_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
-  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
-  GLUU_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}
-  GLUU_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbaseSuperUserPassFile | quote }}
+  #  used only if JANS_PERSISTENCE_TYPE is couchbase or hybrid
+  JANS_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
+  JANS_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
+  JANS_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
+  JANS_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
+  JANS_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}
+  JANS_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbaseSuperUserPassFile | quote }}
   {{- end }}
-  GLUU_KEY_ROTATION_FORCE: "false"
-  GLUU_KEY_ROTATION_CHECK: "3600"
-  GLUU_KEY_ROTATION_INTERVAL: "48"
-  GLUU_SSL_CERT_FROM_SECRETS: "true"
-  # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid or hybrid
+  JANS_KEY_ROTATION_FORCE: "false"
+  JANS_KEY_ROTATION_CHECK: "3600"
+  JANS_KEY_ROTATION_INTERVAL: "48"
+  JANS_SSL_CERT_FROM_SECRETS: "true"
+  # options: default/user/site/cache/statistic used only if JANS_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
-  GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
+  JANS_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
   {{- end }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
-  GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
-  GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
+  JANS_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  JANS_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
+  JANS_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
+  JANS_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  GLUU_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  GLUU_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
-  GLUU_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
-  GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
-  GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
-  GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
+  JANS_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  JANS_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
+  JANS_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
+  JANS_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
+  JANS_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
+  JANS_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
   {{ if eq .Values.global.gluuJackrabbitCluster "true" }}
-  GLUU_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
-  GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
-  GLUU_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
-  GLUU_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
-  GLUU_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
-  GLUU_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
-  GLUU_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
-  GLUU_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
-  # GLUU_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
+  JANS_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
+  JANS_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
+  JANS_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
+  JANS_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
+  JANS_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
+  JANS_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
+  JANS_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
+  JANS_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
+  # JANS_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
   {{- end }}
   # Auto enable installation of some services
-  GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
-  GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
-  GLUU_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
+  JANS_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
+  JANS_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
+  JANS_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
-  GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
+  JANS_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
   JANS_CLIENT_API_APPLICATION_CERT_CN: {{ .Values.configmap.jansClientApiApplicationCertCn | quote }}
   JANS_CLIENT_API_ADMIN_CERT_CN: {{ .Values.configmap.jansClientApiAdminCertCn | quote }}
   {{ if eq .Values.configmap.gluuCacheType "REDIS" }}
-  GLUU_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
-  GLUU_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
-  GLUU_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}
-  GLUU_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
-  GLUU_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
+  JANS_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
+  JANS_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
+  JANS_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}
+  JANS_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
+  JANS_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
   {{- end }}
 
 ---

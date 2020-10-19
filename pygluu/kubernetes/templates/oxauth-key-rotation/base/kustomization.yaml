@@ -7,5 +7,5 @@ commonLabels:
 resources:
   - cronjobs.yaml
 images:
-  - name: gluufederation/certmanager
-    newTag: 4.2.1_02
+  - name: janssenproject/certmanager
+    newTag: 5.0.0_dev

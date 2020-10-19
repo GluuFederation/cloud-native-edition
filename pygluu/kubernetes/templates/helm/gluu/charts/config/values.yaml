@@ -80,5 +80,5 @@ nameOverride: ""
 fullNameOverride: ""
 
 image:
-  repository: gluufederation/config-init
-  tag: 4.2.1_02
+  repository: janssenproject/configuration-manager
+  tag: 5.0.0_dev

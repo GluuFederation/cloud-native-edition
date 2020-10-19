@@ -88,7 +88,7 @@ jobs:
         tag_name: v${{ steps.get_version.outputs.version }}
         release_name: v${{ steps.get_version.outputs.version }}
         body: |
-          ![CDNJS](https://img.shields.io/badge/Gluu-4.2-green)
+          ![CDNJS](https://img.shields.io/badge/Gluu-5.0-green)
           # Release Notes
 
           ## [v${{ steps.get_version.outputs.version }}](https://github.com/${{ steps.get_version.outputs.gituser }}/${{ steps.get_version.outputs.gitproject }}/tree/v${{ steps.get_version.outputs.version }}) (${{ steps.get_version.outputs.releasedate }})

@@ -13,7 +13,7 @@ spec:
         spec:
           containers:
             - name: oxauth-key-rotation
-              image: gluufederation/certmanager:4.2.1_02
+              image: janssenproject/certmanager:5.0.0_dev
               resources:
                 requests:
                   memory: "300Mi"
