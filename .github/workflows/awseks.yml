@@ -1,7 +1,8 @@
 name: awseks
 # This builds, packages and tests pygluu-kubernetes
-on: [workflow_dispatch]
-
+on:
+  schedule:
+    - cron:  '0 0 * * *'
 jobs:
   build:
 
