@@ -165,8 +165,8 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
         official_version, dev_version = determine_final_official_and_dev_version(tag_list)
         if repo == "casa":
             update_dicts_and_yamls("CASA", repo, tag_list)
-        elif repo == "oxd-server":
-            update_dicts_and_yamls("OXD", repo, tag_list)
+        elif repo == "client-api":
+            update_dicts_and_yamls("CLIENT_API", repo, tag_list)
         elif repo == "fido2":
             update_dicts_and_yamls("FIDO2", repo, tag_list)
         elif repo == "scim":
@@ -210,7 +210,7 @@ def main():
     org = os.environ.get("ORG_NAME", "gluufederation")
     gluu_docker_repositories_names_used_in_cn = ["casa", "fido2", "scim", "config-init",
                                                  "cr-rotate", "certmanager", "opendj", "jackrabbit", "oxauth",
-                                                 "oxd-server", "oxpassport", "oxshibboleth",
+                                                 "client-api", "oxpassport", "oxshibboleth",
                                                  "oxtrust", "persistence", "radius", "gluu-gateway",
                                                  "gluu-gateway-ui", "upgrade"]
 

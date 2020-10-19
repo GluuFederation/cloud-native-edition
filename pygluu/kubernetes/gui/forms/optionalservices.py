@@ -27,9 +27,9 @@ class OptionalServiceForm(FlaskForm):
         enable_casa (string|required|default: N)
         enable_fido2 (string|required|default: N)
         enable_scim (string|required|default: N)
-        enable_oxd (string|required|default: N)
-        oxd_application_keystore_cn (string|required_if enable_oxd = Y|default: oxd-server)
-        oxd_admin_keystore_cn (string|required_if enable_oxd = Y|default: oxd-server)
+        enable_client_api (string|required|default: N)
+        client_api_application_keystore_cn (string|required_if enable_client_api = Y|default: client-api)
+        client_api_admin_keystore_cn (string|required_if enable_client_api = Y|default: client-api)
         enable_oxtrust_api (string|required|default: N)
         enable_oxtrust_test_mode (string|required|default: N)
     """
@@ -69,18 +69,18 @@ class OptionalServiceForm(FlaskForm):
                              choices=[("Y", "Yes"), ("N", "No")],
                              default="N",
                              validators=[DataRequired()])
-    enable_oxd = RadioField("Deploy oxd server",
+    enable_client_api = RadioField("Deploy Client API",
                             choices=[("Y", "Yes"), ("N", "No")],
                             default="N",
                             validators=[DataRequired()])
-    oxd_application_keystore_cn = StringField(
-        "oxd server application keystore name",
-        default="oxd-server",
-        validators=[RequiredIfFieldEqualTo("enable_oxd", "Y")])
-    oxd_admin_keystore_cn = StringField(
-        "oxd server admin keystore name",
-        default="oxd-server",
-        validators=[RequiredIfFieldEqualTo("enable_oxd", "Y")])
+    client_api_application_keystore_cn = StringField(
+        "Client API application keystore name",
+        default="client-api",
+        validators=[RequiredIfFieldEqualTo("enable_client_api", "Y")])
+    client_api_admin_keystore_cn = StringField(
+        "Client API admin keystore name",
+        default="client-api",
+        validators=[RequiredIfFieldEqualTo("enable_client_api", "Y")])
 
     enable_oxtrust_api = RadioField("Enable oxTrust API",
                                     choices=[("Y", "Yes"), ("N", "No")],

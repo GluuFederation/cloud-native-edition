@@ -3,10 +3,10 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 commonLabels:
-  app: oxd-server
+  app: client-api
 resources:
   - services.yaml
   - deployments.yaml
 images:
-  - name: gluufederation/oxd-server
+  - name: janssenproject/client-api
     newTag: 4.2.1_02

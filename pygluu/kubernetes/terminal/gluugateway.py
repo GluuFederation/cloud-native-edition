@@ -31,7 +31,7 @@ class PromptGluuGateway:
         if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
             self.enabled_services.append("gluu-gateway-ui")
             self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
-            self.settings.set("ENABLE_OXD", "Y")
+            self.settings.set("ENABLE_CLIENT_API", "Y")
             self.postgres.prompt_postgres()
             if not self.settings.get("KONG_NAMESPACE"):
                 self.settings.set("KONG_NAMESPACE", click.prompt("Please enter a namespace for Gluu Gateway",

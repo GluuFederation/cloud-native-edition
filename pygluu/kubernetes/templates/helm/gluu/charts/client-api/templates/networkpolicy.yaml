@@ -2,13 +2,13 @@ kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: oxd-server-policy
+  name: client-api-policy
 spec:
   policyTypes:
     - Ingress
   podSelector:
     matchLabels:
-      app: oxd-server
+      app: client-api
   ingress:
   - from:
     - podSelector:

@@ -4,15 +4,15 @@ apiVersion: v1
 kind: Service
 metadata:
   # the name must match the application
-  name: {{ .Values.service.oxdServerServiceName }}
+  name: {{ .Values.service.clientApiServerServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "oxd-server.labels" . | indent 4 }}
+{{ include "client-api.labels" . | indent 4 }}
 spec:
   ports:
     - port: 8444
-      name: tcp-{{ include "oxd-server.name" . }}-admin-gui
+      name: tcp-{{ include "client-api.name" . }}-admin-gui
     - port: 8443
-      name: tcp-{{ include "oxd-server.name" . }}-app-connector
+      name: tcp-{{ include "client-api.name" . }}-app-connector
   selector:
-    app: {{ include "oxd-server.name" . }}
+    app: {{ include "client-api.name" . }}

@@ -66,8 +66,8 @@ dependencies:
       condition: config.configmap.gluuRadiusEnabled
       version: 1.2.16
 
-    - name: oxd-server
-      condition: global.oxd-server.enabled
+    - name: client-api
+      condition: global.client-api.enabled
       version: 1.2.16
   
     - name: persistence

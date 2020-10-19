@@ -61,18 +61,18 @@ hostpath_ldap_local_folder = Path("./ldap/overlays/local/hostpath/")
 hostpath_jcr_local_folder = Path("./jackrabbit/overlays/local/hostpath/")
 
 
-def register_op_client(namespace, client_name, op_host, oxd_url):
-    """Registers an op client using oxd.
+def register_op_client(namespace, client_name, op_host, client_api_url):
+    """Registers an op client using client_api.
 
     :param namespace:
     :param client_name:
     :param op_host:
-    :param oxd_url:
+    :param client_api_url:
     :return:
     """
     kubernetes = Kubernetes()
     logger.info("Registering a client : {}".format(client_name))
-    oxd_id, client_id, client_secret = "", "", ""
+    client_api_id, client_id, client_secret = "", "", ""
 
     data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
            '", "post_logout_redirect_uris": ["https://' + op_host + \
@@ -80,7 +80,7 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
            '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
 
     exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                         "{}/register-site".format(oxd_url), "--header",
+                         "{}/register-site".format(client_api_url), "--header",
                          "Content-Type: application/json", "--data-raw",
                          data]
     try:
@@ -92,18 +92,18 @@ def register_op_client(namespace, client_name, op_host, oxd_url):
                                                        stdout=False)
 
         client_registration_response_dict = literal_eval(client_registration_response)
-        oxd_id = client_registration_response_dict["oxd_id"]
+        client_api_id = client_registration_response_dict["client_api_id"]
         client_id = client_registration_response_dict["client_id"]
         client_secret = client_registration_response_dict["client_secret"]
     except (IndexError, Exception):
         exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                             "{}/register-site".format(oxd_url), "--header",
+                             "{}/register-site".format(client_api_url), "--header",
                              "'Content-Type: application/json'", "--data-raw",
                              "'" + data + "'"]
         manual_curl_command = " ".join(exec_curl_command)
         logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
-    return oxd_id, client_id, client_secret
+    return client_api_id, client_id, client_secret
 
 
 class Kustomize(object):
@@ -129,7 +129,7 @@ class Kustomize(object):
         self.oxpassport_yaml = str(self.output_yaml_directory.joinpath("oxpassport.yaml").resolve())
         self.oxauth_key_rotate_yaml = str(self.output_yaml_directory.joinpath("oxauth-key-rotation.yaml").resolve())
         self.cr_rotate_yaml = str(self.output_yaml_directory.joinpath("cr-rotate.yaml").resolve())
-        self.oxd_server_yaml = str(self.output_yaml_directory.joinpath("oxd-server.yaml").resolve())
+        self.client_api_server_yaml = str(self.output_yaml_directory.joinpath("client-api.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
         self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
@@ -551,12 +551,12 @@ class Kustomize(object):
         # oxTrust
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
-        # oxdserver
-        if self.settings.get("ENABLE_OXD") == "Y":
-            configmap_parser["data"]["GLUU_OXD_APPLICATION_CERT_CN"] = self.settings.get("OXD_APPLICATION_KEYSTORE_CN")
-            configmap_parser["data"]["GLUU_OXD_ADMIN_CERT_CN"] = self.settings.get("OXD_ADMIN_KEYSTORE_CN")
+        # ClientAPI
+        if self.settings.get("ENABLE_CLIENT_API") == "Y":
+            configmap_parser["data"]["JANS_CLIENT_API_APPLICATION_CERT_CN"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
+            configmap_parser["data"]["JANS_CLIENT_API_ADMIN_CERT_CN"] = self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN")
         # casa
-        configmap_parser["data"]["GLUU_OXD_SERVER_URL"] = self.settings.get("OXD_APPLICATION_KEYSTORE_CN") + ":8443"
+        configmap_parser["data"]["JANS_CLIENT_API_SERVER_URL"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN") + ":8443"
         configmap_parser.dump_it()
 
     def kustomize_it(self):
@@ -702,17 +702,17 @@ class Kustomize(object):
                 self.remove_resources(app_file, "DaemonSet")
                 self.adjust_yamls_for_fqdn_status[app_file] = "DaemonSet"
 
-            if app == "oxd-server" and self.settings.get("ENABLE_OXD") == "Y":
+            if app == "client-api" and self.settings.get("ENABLE_CLIENT_API") == "Y":
                 logger.info("Building {} manifests".format(app))
                 self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
                                                namespace=self.settings.get("GLUU_NAMESPACE"),
-                                               image_name_key="OXD_IMAGE_NAME",
-                                               image_tag_key="OXD_IMAGE_TAG")
+                                               image_name_key="CLIENT_API_IMAGE_NAME",
+                                               image_tag_key="CLIENT_API_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
-                oxd_server_service_parser = Parser(app_file, "Service")
-                oxd_server_service_parser["metadata"]["name"] = self.settings.get("OXD_APPLICATION_KEYSTORE_CN")
-                oxd_server_service_parser.dump_it()
+                client_api_server_service_parser = Parser(app_file, "Service")
+                client_api_server_service_parser["metadata"]["name"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
+                client_api_server_service_parser.dump_it()
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "casa" and self.settings.get("ENABLE_CASA") == "Y":
@@ -900,24 +900,24 @@ class Kustomize(object):
             self.settings.set("LB_ADD", lb_hostname)
 
     def parse_gluu_gateway_ui_configmap(self):
-        oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("OXD_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
+        client_api_server_url = "https://{}.{}.svc.cluster.local:8443".format(
+            self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
         gg_ui_cm_parser = Parser(self.gg_ui_yaml, "ConfigMap")
         gg_ui_cm_parser["data"]["DB_USER"] = self.settings.get("GLUU_GATEWAY_UI_PG_USER")
         gg_ui_cm_parser["data"]["KONG_ADMIN_URL"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
             self.settings.get("KONG_NAMESPACE"))
         gg_ui_cm_parser["data"]["DB_HOST"] = self.settings.get("POSTGRES_URL")
         gg_ui_cm_parser["data"]["DB_DATABASE"] = self.settings.get("GLUU_GATEWAY_UI_DATABASE")
-        gg_ui_cm_parser["data"]["OXD_SERVER_URL"] = oxd_server_url
+        gg_ui_cm_parser["data"]["CLIENT_API_URL"] = client_api_server_url
         # Register new client if one was not provided
         if not gg_ui_cm_parser["data"]["CLIENT_ID"] or \
-                not gg_ui_cm_parser["data"]["OXD_ID"] or \
+                not gg_ui_cm_parser["data"]["CLIENT_API_ID"] or \
                 not gg_ui_cm_parser["data"]["CLIENT_SECRET"]:
-            oxd_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
+            client_api_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
                                                                   "konga-client",
                                                                   self.settings.get("GLUU_FQDN"),
-                                                                  oxd_server_url)
-            gg_ui_cm_parser["data"]["OXD_ID"] = oxd_id
+                                                                  client_api_server_url)
+            gg_ui_cm_parser["data"]["CLIENT_API_ID"] = client_api_id
             gg_ui_cm_parser["data"]["CLIENT_ID"] = client_id
             gg_ui_cm_parser["data"]["CLIENT_SECRET"] = client_secret
         gg_ui_cm_parser["data"]["OP_SERVER_URL"] = "https://" + self.settings.get("GLUU_FQDN")
@@ -1375,14 +1375,14 @@ class Kustomize(object):
         self.kubernetes.patch_namespaced_deployment_scale(name="scim", replicas=self.settings.get("SCIM_REPLICAS"),
                                                           namespace=self.settings.get("GLUU_NAMESPACE"))
 
-    def deploy_oxd(self):
-        self.kubernetes.create_objects_from_dict(self.oxd_server_yaml)
-        self.kubernetes.create_objects_from_dict(Path("./oxd-server/base/networkpolicy.yaml"),
+    def deploy_client_api(self):
+        self.kubernetes.create_objects_from_dict(self.client_api_server_yaml)
+        self.kubernetes.create_objects_from_dict(Path("./client-api/base/networkpolicy.yaml"),
                                                  self.settings.get("GLUU_NAMESPACE"))
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=oxd-server", self.timeout)
-        self.kubernetes.patch_namespaced_deployment_scale(name="oxd-server",
-                                                          replicas=self.settings.get("OXD_SERVER_REPLICAS"),
+            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=client-api", self.timeout)
+        self.kubernetes.patch_namespaced_deployment_scale(name="client-api",
+                                                          replicas=self.settings.get("CLIENT_API_REPLICAS"),
                                                           namespace=self.settings.get("GLUU_NAMESPACE"))
 
     def deploy_casa(self):
@@ -1648,9 +1648,9 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_scim()
 
-        if self.settings.get("ENABLE_OXD") == "Y":
+        if self.settings.get("ENABLE_CLIENT_API") == "Y":
             self.kubernetes = Kubernetes()
-            self.deploy_oxd()
+            self.deploy_client_api()
 
         if self.settings.get("ENABLE_CASA") == "Y":
             self.kubernetes = Kubernetes()
@@ -1687,16 +1687,16 @@ class Kustomize(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server",
+                              "oxshibboleth", "oxtrust", "radius", "client-api",
                               "jackrabbit", "fido2", "scim", "config-init-load-job"]
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
-        gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=oxd-server",
+        gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=client-api",
                                       "app=oxpassport", "app=radius", "app=oxauth-key-rotation", "app=jackrabbit"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
-        secrets = ["oxdkeystorecm", "gluu", "tls-certificate",
+        secrets = ["clientApikeystorecm", "gluu", "tls-certificate",
                    "gluu-jackrabbit-admin-pass", "gluu-jackrabbit-postgres-pass"]
         cb_secrets = ["cb-pass", "cb-crt", "cb-super-pass"]
         daemon_set_label = "app=cr-rotate"
@@ -1714,7 +1714,7 @@ class Kustomize(object):
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                                           "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
                                           "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
-        network_policies = ["oxd-server-policy"]
+        network_policies = ["client-api-policy"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
         eks_yamls_folder = Path("./gluueksyamls")

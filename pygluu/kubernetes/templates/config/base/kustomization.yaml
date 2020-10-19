@@ -15,8 +15,8 @@ images:
 configMapGenerator:
   - name: gluu-config-cm
     literals:
-      - GLUU_OXD_SERVER_URL="oxd-server:8443"
-      - GLUU_OXD_BIND_IP_ADDRESSES="*"
+      - JANS_CLIENT_API_SERVER_URL="client-api:8443"
+      - JANS_CLIENT_API_BIND_IP_ADDRESSES="*"
       - GLUU_KEY_ROTATION_FORCE="false"
       - GLUU_SSL_CERT_FROM_SECRETS="true"
       - GLUU_KEY_ROTATION_CHECK="3600"
@@ -68,8 +68,8 @@ configMapGenerator:
       - GLUU_COUCHBASE_SUPERUSER_PASSWORD_FILE="/etc/gluu/conf/couchbase_superuser_password"
       - GLUU_COUCHBASE_CERT_FILE="/etc/certs/couchbase.crt"
       - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"
-      - GLUU_OXD_APPLICATION_CERT_CN="oxd-server"
-      - GLUU_OXD_ADMIN_CERT_CN="oxd-server"
+      - JANS_CLIENT_API_APPLICATION_CERT_CN="client-api"
+      - JANS_CLIENT_API_ADMIN_CERT_CN="client-api"
   - name: config-generate-params
     files:
       - generate.json
