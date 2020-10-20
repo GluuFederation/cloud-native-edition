@@ -57,7 +57,7 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_CASA") == "Y":
             self.enabled_services.append("casa")
             self.settings.set("ENABLE_CASA_BOOLEAN", "true")
-            self.settings.set("ENABLE_CLIENT_API", "Y")
+            self.settings.set("ENABLE_OXD", "Y")
 
         if not self.settings.get("ENABLE_FIDO2"):
             self.settings.set("ENABLE_FIDO2", confirm_yesno("Deploy fido2"))
@@ -69,17 +69,17 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_SCIM") == "Y":
             self.enabled_services.append("scim")
 
-        if not self.settings.get("ENABLE_CLIENT_API"):
-            self.settings.set("ENABLE_CLIENT_API", confirm_yesno("Deploy Client API"))
+        if not self.settings.get("ENABLE_OXD"):
+            self.settings.set("ENABLE_OXD", confirm_yesno("Deploy oxd server"))
 
-        if self.settings.get("ENABLE_CLIENT_API") == "Y":
-            self.enabled_services.append("client-api")
-            if not self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"):
-                self.settings.set("CLIENT_API_APPLICATION_KEYSTORE_CN", click.prompt("Client API application keystore name",
-                                                                              default="client-api"))
-            if not self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN"):
-                self.settings.set("CLIENT_API_ADMIN_KEYSTORE_CN", click.prompt("Client API admin keystore name",
-                                                                        default="client-api"))
+        if self.settings.get("ENABLE_OXD") == "Y":
+            self.enabled_services.append("oxd-server")
+            if not self.settings.get("OXD_APPLICATION_KEYSTORE_CN"):
+                self.settings.set("OXD_APPLICATION_KEYSTORE_CN", click.prompt("oxd server application keystore name",
+                                                                              default="oxd-server"))
+            if not self.settings.get("OXD_ADMIN_KEYSTORE_CN"):
+                self.settings.set("OXD_ADMIN_KEYSTORE_CN", click.prompt("oxd server admin keystore name",
+                                                                        default="oxd-server"))
 
         if not self.settings.get("ENABLE_OXTRUST_API"):
             self.settings.set("ENABLE_OXTRUST_API", confirm_yesno("Enable oxTrust API"))

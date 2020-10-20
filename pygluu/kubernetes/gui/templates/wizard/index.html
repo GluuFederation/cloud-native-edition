@@ -154,15 +154,15 @@
         /* function check casa option yes/no */
         casaOption = function(el){
           if(el.val() == "Y"){
-            $('#enable_client_api-0').prop('checked', true).trigger('change');
-            $('#enable_client_api-1').prop('disabled', true);
-            $('#enable_client_api-0').parents('.radio-switch').addClass('disabled');
+            $('#enable_oxd-0').prop('checked', true).trigger('change');
+            $('#enable_oxd-1').prop('disabled', true);
+            $('#enable_oxd-0').parents('.radio-switch').addClass('disabled');
           }else{
-            if($('#enable_client_api-0').val() == "N"){
-              $('#enable_client_api-1').prop('checked', true).trigger('change');
+            if($('#enable_oxd-0').val() == "N"){
+              $('#enable_oxd-1').prop('checked', true).trigger('change');
             }
-            $('#enable_client_api-0').parents('.radio-switch').removeClass('disabled');
-            $('#enable_client_api-1').prop('disabled', false);
+            $('#enable_oxd-0').parents('.radio-switch').removeClass('disabled');
+            $('#enable_oxd-1').prop('disabled', false);
           }
         }
         /* load function on load */
@@ -176,8 +176,8 @@
           casaOption($(this));
         });
 
-        $('input[name="enable_client_api"]').on('change', function(){
-          showHideOption($('#clientApiSetup'), $(this).val());
+        $('input[name="enable_oxd"]').on('change', function(){
+          showHideOption($('#oxdSetup'), $(this).val());
         });
 
         $('input[name="enable_oxtrust_api"]').on('change', function(){
@@ -188,7 +188,7 @@
 
       {% if template == "gluu_gateway" %}
         $('input[name="install_gluu_gateway').on('change', function(){
-          showHideOption($('#clientApi-alert'), $(this).val());
+          showHideOption($('#oxd-alert'), $(this).val());
           showHideOption($('#postgresSetup'), $(this).val());
           showHideOption($('#gluuGatewaySetup'), $(this).val());
         });

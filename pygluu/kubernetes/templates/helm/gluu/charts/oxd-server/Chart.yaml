@@ -2,8 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
 appVersion: "4.2.1"
-description: client-api chart
-name: client-api
+description: oxd-server chart
+name: oxd-server
 version: 1.2.16
 maintainers:
 - name: Gluu

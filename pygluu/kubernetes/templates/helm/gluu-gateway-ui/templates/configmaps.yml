@@ -18,12 +18,12 @@ data:
   DB_DATABASE: {{ .Values.dbDatabase }}
   NODE_ENV: {{ .Values.nodeEnv | quote }}
   PORT: {{ .Values.ports.containerPort | quote }}
-  CLIENT_API_URL: {{ .Values.clientApiServerUrl | quote }}
+  OXD_SERVER_URL: {{ .Values.oxdServerUrl | quote }}
   OP_SERVER_URL: {{ .Values.opServerUrl | quote }}
-  CLIENT_API_ID: {{ .Values.clientApiId | quote }}
+  OXD_ID: {{ .Values.oxdId | quote }}
   CLIENT_ID: {{ .Values.clientId | quote }}
   CLIENT_SECRET: {{ .Values.clientSecret | quote }}
-  CLIENT_API_VERSION: {{ .Values.clientApiServerVersion | quote }}
+  OXD_SERVER_VERSION: {{ .Values.oxdServerVersion | quote }}
   GG_HOST: {{ .Values.ggHost | quote }}
   GG_UI_REDIRECT_URL_HOST: {{ .Values.ggUiRedirectUrlHost | quote }}
   EXPLICIT_HOST: {{ .Values.explicitHost | quote }}

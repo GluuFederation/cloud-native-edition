@@ -53,9 +53,9 @@ class PromptImages:
             prompt_and_set_setting("jackrabbit", "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG")
             # OXAUTH
             prompt_and_set_setting("oxAuth", "OXAUTH_IMAGE_NAME", "OXAUTH_IMAGE_TAG")
-            # CLIENT_API
-            if self.settings.get("ENABLE_CLIENT_API") == "Y":
-                prompt_and_set_setting("CLIENT_API server", "CLIENT_API_IMAGE_NAME", "CLIENT_API_IMAGE_TAG")
+            # OXD
+            if self.settings.get("ENABLE_OXD") == "Y":
+                prompt_and_set_setting("OXD server", "OXD_IMAGE_NAME", "OXD_IMAGE_TAG")
             # OXPASSPORT
             if self.settings.get("ENABLE_OXPASSPORT") == "Y":
                 prompt_and_set_setting("oxPassport", "OXPASSPORT_IMAGE_NAME", "OXPASSPORT_IMAGE_TAG")

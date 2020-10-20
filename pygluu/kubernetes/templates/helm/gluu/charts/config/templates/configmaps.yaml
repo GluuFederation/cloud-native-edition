@@ -18,8 +18,8 @@ data:
   GLUU_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
-  JANS_CLIENT_API_SERVER_URL: {{ .Values.configmap.jansClientApiServerUrl | quote }}
-  JANS_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.jansClientApiBindIpAddresses | quote }}
+  GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
+  GLUU_OXD_BIND_IP_ADDRESSES: {{ .Values.configmap.gluuOxdBindIpAddresses | quote }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
@@ -73,8 +73,8 @@ data:
   {{- if .Values.global.oxshibboleth.enabled }}
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
-  JANS_CLIENT_API_APPLICATION_CERT_CN: {{ .Values.configmap.jansClientApiApplicationCertCn | quote }}
-  JANS_CLIENT_API_ADMIN_CERT_CN: {{ .Values.configmap.jansClientApiAdminCertCn | quote }}
+  GLUU_OXD_APPLICATION_CERT_CN: {{ .Values.configmap.gluuOxdApplicationCertCn | quote }}
+  GLUU_OXD_ADMIN_CERT_CN: {{ .Values.configmap.gluuOxdAdminCertCn | quote }}
   {{ if eq .Values.configmap.gluuCacheType "REDIS" }}
   GLUU_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}

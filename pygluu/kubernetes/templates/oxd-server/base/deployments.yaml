@@ -3,23 +3,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-api
+  name: oxd-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client-api
+      app: oxd-server
   template:
     metadata:
       labels:
-        APP_NAME: client-api
+        APP_NAME: oxd-server
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
-      - name: client-api
+      - name: oxd-server
         imagePullPolicy: Always
-        image: janssenproject/client-api:4.2.1_02
+        image: gluufederation/oxd-server:4.2.1_02
         command:
           - /bin/sh
           - -c

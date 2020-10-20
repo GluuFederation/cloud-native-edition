@@ -29,12 +29,12 @@ sslKeyPath: "/etc/certs/tls.key"
 sslCertPath: "/etc/certs/tls.crt"
 dbDatabase: "konga"
 nodeEnv: "production"
-clientApiServerUrl: "https://client-api.gluu.svc.cluster.local:8443"
+oxdServerUrl: "https://oxd-server.gluu.svc.cluster.local:8443"
 opServerUrl: "demoexample.gluu.org"
-clientApiId:
+oxdId:
 clientId:
 clientSecret:
-clientApiServerVersion: "4.2"
+oxdServerVersion: "4.2"
 ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"

@@ -1,12 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for client-api.
+# Default values for oxd-server.
 replicas: 1
 service:
-  # This must match config.configMap.jansClientApiApplicationCertCn
-  clientApiServerServiceName: client-api
+  # This must match config.configMap.gluuOxdApplicationCertCn
+  oxdServerServiceName: oxd-server
 image:
-  repository: janssenproject/client-api
+  repository: gluufederation/oxd-server
   tag: 4.2.1_02
   pullPolicy: Always
 

@@ -1,4 +1,5 @@
 name: updateimages
+# This builds, packages and releases pygluu-kubernetes
 on: [workflow_dispatch]
 jobs:
   createPullRequest:

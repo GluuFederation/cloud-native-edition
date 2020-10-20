@@ -3,20 +3,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "client-api.fullname" . }}
+  name: {{ include "oxd-server.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "client-api.labels" . | indent 4 }}
+{{ include "oxd-server.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "client-api.name" . }}
+      app: {{ include "oxd-server.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "client-api.name" . }}
+        app: {{ include "oxd-server.name" . }}
         release: {{ .Release.Name }}
       {{- if .Values.global.istio.ingress }}
       annotations:
@@ -67,7 +67,7 @@ spec:
               subPath: couchbase.crt
           {{- end }}
             {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
-            - name: {{ include "client-api.name" . }}-updatelbip
+            - name: {{ include "oxd-server.name" . }}-updatelbip
               mountPath: /scripts
             {{- end }}
           {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
@@ -88,7 +88,7 @@ spec:
             secretName: {{ .Release.Name }}-cb-crt
       {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
-        - name: {{ include "client-api.name" . }}-updatelbip
+        - name: {{ include "oxd-server.name" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
         {{- end }}

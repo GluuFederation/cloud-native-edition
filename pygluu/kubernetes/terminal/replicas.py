@@ -41,8 +41,8 @@ class PromptReplicas:
         if self.settings.get("ENABLE_OXPASSPORT") == "Y" and not self.settings.get("OXPASSPORT_REPLICAS"):
             self.settings.set("OXPASSPORT_REPLICAS", click.prompt("Number of oxPassport replicas", default=1))
 
-        if self.settings.get("ENABLE_CLIENT_API") == "Y" and not self.settings.get("CLIENT_API_REPLICAS"):
-            self.settings.set("CLIENT_API_REPLICAS", click.prompt("Number of client-api replicas", default=1))
+        if self.settings.get("ENABLE_OXD") == "Y" and not self.settings.get("OXD_SERVER_REPLICAS"):
+            self.settings.set("OXD_SERVER_REPLICAS", click.prompt("Number of oxd-server replicas", default=1))
 
         if self.settings.get("ENABLE_CASA") == "Y" and not self.settings.get("CASA_REPLICAS"):
             self.settings.set("CASA_REPLICAS", click.prompt("Number of Casa replicas", default=1))
