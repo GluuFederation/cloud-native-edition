@@ -553,10 +553,10 @@ class Kustomize(object):
             configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
         # ClientAPI
         if self.settings.get("ENABLE_CLIENT_API") == "Y":
-            configmap_parser["data"]["JANS_CLIENT_API_APPLICATION_CERT_CN"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
-            configmap_parser["data"]["JANS_CLIENT_API_ADMIN_CERT_CN"] = self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN")
+            configmap_parser["data"]["CLOUD_NATIVE_CLIENT_API_APPLICATION_CERT_CN"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
+            configmap_parser["data"]["CLOUD_NATIVE_CLIENT_API_ADMIN_CERT_CN"] = self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN")
         # casa
-        configmap_parser["data"]["JANS_CLIENT_API_SERVER_URL"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN") + ":8443"
+        configmap_parser["data"]["CLOUD_NATIVE_CLIENT_API_SERVER_URL"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN") + ":8443"
         configmap_parser.dump_it()
 
     def kustomize_it(self):

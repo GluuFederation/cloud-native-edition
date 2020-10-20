@@ -6,81 +6,81 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
-  JANS_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
-  JANS_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
-  JANS_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  JANS_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  JANS_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
-  JANS_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
-  JANS_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
-  JANS_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
-  JANS_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
-  JANS_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
+  CLOUD_NATIVE_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
+  CLOUD_NATIVE_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
+  CLOUD_NATIVE_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  CLOUD_NATIVE_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  CLOUD_NATIVE_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
+  CLOUD_NATIVE_MAX_RAM_PERCENTAGE: {{ .Values.configmap.gluuMaxRamPercent | quote }}
+  CLOUD_NATIVE_CACHE_TYPE: {{ .Values.configmap.gluuCacheType | quote }}
+  CLOUD_NATIVE_DOCUMENT_STORE_TYPE: {{ .Values.configmap.gluuDocumentStoreType | quote }}
+  CLOUD_NATIVE_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.gluuJackrabbitSyncInterval | quote }}
+  CLOUD_NATIVE_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
-  JANS_AUTH_SERVER_BACKEND: {{ .Values.configmap.gluuAuthServerBackend | quote }}
-  JANS_CLIENT_API_SERVER_URL: {{ .Values.configmap.jansClientApiServerUrl | quote }}
-  JANS_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.jansClientApiBindIpAddresses | quote }}
+  CLOUD_NATIVE_AUTH_SERVER_BACKEND: {{ .Values.configmap.gluuAuthServerBackend | quote }}
+  CLOUD_NATIVE_CLIENT_API_SERVER_URL: {{ .Values.configmap.jansClientApiServerUrl | quote }}
+  CLOUD_NATIVE_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.jansClientApiBindIpAddresses | quote }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
-  JANS_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
+  CLOUD_NATIVE_PERSISTENCE_TYPE: {{ .Values.global.gluuPersistenceType }}
   {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid")  }}
-  # used only if JANS_PERSISTENCE_TYPE is ldap or hybrid
-  JANS_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
+  # used only if CLOUD_NATIVE_PERSISTENCE_TYPE is ldap or hybrid
+  CLOUD_NATIVE_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
-  #  used only if JANS_PERSISTENCE_TYPE is couchbase or hybrid
-  JANS_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
-  JANS_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
-  JANS_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
-  JANS_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
-  JANS_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}
-  JANS_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbaseSuperUserPassFile | quote }}
+  #  used only if CLOUD_NATIVE_PERSISTENCE_TYPE is couchbase or hybrid
+  CLOUD_NATIVE_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
+  CLOUD_NATIVE_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
+  CLOUD_NATIVE_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
+  CLOUD_NATIVE_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
+  CLOUD_NATIVE_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}
+  CLOUD_NATIVE_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbaseSuperUserPassFile | quote }}
   {{- end }}
-  JANS_KEY_ROTATION_FORCE: "false"
-  JANS_KEY_ROTATION_CHECK: "3600"
-  JANS_KEY_ROTATION_INTERVAL: "48"
-  JANS_SSL_CERT_FROM_SECRETS: "true"
-  # options: default/user/site/cache/statistic used only if JANS_PERSISTENCE_TYPE is hybrid or hybrid
+  CLOUD_NATIVE_KEY_ROTATION_FORCE: "false"
+  CLOUD_NATIVE_KEY_ROTATION_CHECK: "3600"
+  CLOUD_NATIVE_KEY_ROTATION_INTERVAL: "48"
+  CLOUD_NATIVE_SSL_CERT_FROM_SECRETS: "true"
+  # options: default/user/site/cache/statistic used only if CLOUD_NATIVE_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
-  JANS_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
+  CLOUD_NATIVE_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
   {{- end }}
-  JANS_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  JANS_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
-  JANS_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
-  JANS_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
+  CLOUD_NATIVE_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  CLOUD_NATIVE_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
+  CLOUD_NATIVE_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
+  CLOUD_NATIVE_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  JANS_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  JANS_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
-  JANS_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
-  JANS_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
-  JANS_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
-  JANS_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
+  CLOUD_NATIVE_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  CLOUD_NATIVE_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
+  CLOUD_NATIVE_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
+  CLOUD_NATIVE_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
+  CLOUD_NATIVE_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
+  CLOUD_NATIVE_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
   {{ if eq .Values.global.gluuJackrabbitCluster "true" }}
-  JANS_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
-  JANS_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
-  JANS_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
-  JANS_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
-  JANS_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
-  JANS_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
-  JANS_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
-  JANS_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
-  # JANS_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
+  CLOUD_NATIVE_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
+  CLOUD_NATIVE_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
+  CLOUD_NATIVE_JACKRABBIT_CLUSTER: {{ .Values.global.gluuJackrabbitCluster | quote }}
+  CLOUD_NATIVE_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.gluuJackrabbitPostgresUser | quote }}
+  CLOUD_NATIVE_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitPostgresPasswordFile | quote }}
+  CLOUD_NATIVE_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
+  CLOUD_NATIVE_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
+  CLOUD_NATIVE_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
+  # CLOUD_NATIVE_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
   {{- end }}
   # Auto enable installation of some services
-  JANS_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
-  JANS_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
-  JANS_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
+  CLOUD_NATIVE_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
+  CLOUD_NATIVE_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
+  CLOUD_NATIVE_RADIUS_ENABLED: {{ .Values.configmap.gluuRadiusEnabled | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
-  JANS_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
+  CLOUD_NATIVE_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
-  JANS_CLIENT_API_APPLICATION_CERT_CN: {{ .Values.configmap.jansClientApiApplicationCertCn | quote }}
-  JANS_CLIENT_API_ADMIN_CERT_CN: {{ .Values.configmap.jansClientApiAdminCertCn | quote }}
+  CLOUD_NATIVE_CLIENT_API_APPLICATION_CERT_CN: {{ .Values.configmap.jansClientApiApplicationCertCn | quote }}
+  CLOUD_NATIVE_CLIENT_API_ADMIN_CERT_CN: {{ .Values.configmap.jansClientApiAdminCertCn | quote }}
   {{ if eq .Values.configmap.gluuCacheType "REDIS" }}
-  JANS_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
-  JANS_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
-  JANS_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}
-  JANS_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
-  JANS_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
+  CLOUD_NATIVE_REDIS_URL: {{ .Values.configmap.gluuRedisUrl | quote }}
+  CLOUD_NATIVE_REDIS_TYPE: {{ .Values.configmap.gluuRedisType | quote }}
+  CLOUD_NATIVE_REDIS_USE_SSL: {{ .Values.configmap.gluuRedisUseSsl | quote }}
+  CLOUD_NATIVE_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
+  CLOUD_NATIVE_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
   {{- end }}
 
 ---

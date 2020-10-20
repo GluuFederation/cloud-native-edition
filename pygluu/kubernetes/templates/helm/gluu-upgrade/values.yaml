@@ -25,7 +25,7 @@ domain: demoexample.gluu.org
 # options: ldap/couchbase/hybrid
 gluuPersistenceType: ldap
 # options: default/user/site/cache/statistic
-# used only if JANS_PERSISTENCE_TYPE is ldap or hybrid
+# used only if CLOUD_NATIVE_PERSISTENCE_TYPE is ldap or hybrid
 gluuPersistenceLdapMapping: default 
 gluuLdapUrl: opendj:1636
 # gluuCouchbaseUrl is the couchbase service name
