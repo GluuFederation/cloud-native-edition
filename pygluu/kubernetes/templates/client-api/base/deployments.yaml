@@ -19,7 +19,7 @@ spec:
       containers:
       - name: client-api
         imagePullPolicy: Always
-        image: janssenproject/client-api:5.0.0_dev
+        image: janssenproject/client-api:4.2.1_02
         command:
           - /bin/sh
           - -c

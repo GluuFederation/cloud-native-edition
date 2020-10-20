@@ -2,8 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxauth-key-rotation.
 image:
-  repository: janssenproject/certmanager
-  tag: 5.0.0_dev
+  repository: gluufederation/certmanager
+  tag: 4.2.1_02
   pullPolicy: Always
 keysLife: 48
 nameOverride: ""

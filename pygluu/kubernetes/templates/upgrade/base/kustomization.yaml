@@ -8,7 +8,7 @@ resources:
   - jobs.yaml
 images:
   - name: gluufederation/upgrade
-    newTag: 5.0.0_dev
+    newTag: 4.2.1_02
 configMapGenerator:
   - name: upgrade-cm
     literals:

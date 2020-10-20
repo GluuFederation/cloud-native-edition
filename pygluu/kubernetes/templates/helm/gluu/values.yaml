@@ -106,8 +106,8 @@ config:
     gluuRadiusEnabled: false
     gluuSamlEnabled: false
   image:
-    repository: janssenproject/configuration-manager
-    tag: 5.0.0_dev
+    repository: gluufederation/config-init
+    tag: 4.2.1_02
   resources: {}
 nginx-ingress:
   ingress:
@@ -131,7 +131,7 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -148,7 +148,7 @@ opendj:
     size: 5Gi
   image:
     repository: gluufederation/opendj
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -159,8 +159,8 @@ opendj:
       memory: 2000Mi
 persistence:
   image:
-    repository: janssenproject/persistence-loader
-    tag: 5.0.0_dev
+    repository: gluufederation/persistence
+    tag: 4.2.1_02
     pullPolicy: Always
   resources: {}
 oxauth:
@@ -168,8 +168,8 @@ oxauth:
     oxAuthServiceName: oxauth
   replicas: 1
   image:
-    repository: janssenproject/auth-server
-    tag: 5.0.0_dev
+    repository: gluufederation/oxauth
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -184,7 +184,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -198,8 +198,8 @@ fido2:
     fido2ServiceName: fido2
   replicas: 1
   image:
-    repository: janssenproject/fido2
-    tag: 5.0.0_dev
+    repository: gluufederation/fido2
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -212,8 +212,8 @@ scim:
   service:
     scimServiceName: scim
   image:
-    repository: janssenproject/scim
-    tag: 5.0.0_dev
+    repository: gluufederation/scim
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -228,7 +228,7 @@ client-api:
   replicas: 1
   image:
     repository: janssenproject/client-api
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -243,7 +243,7 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     requests:
@@ -258,7 +258,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 5.0.0_dev
+    tag: 4.2.1_03
     pullPolicy: Always
   resources:
     limits:
@@ -273,7 +273,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -288,7 +288,7 @@ radius:
   replicas: 1
   image:
     repository: gluufederation/radius
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -302,7 +302,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 5.0.0_dev
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:
@@ -314,8 +314,8 @@ cr-rotate:
 oxauth-key-rotation:
   keysLife: 48
   image:
-    repository: janssenproject/certmanager
-    tag: 5.0.0_dev
+    repository: gluufederation/certmanager
+    tag: 4.2.1_02
     pullPolicy: Always
   resources:
     limits:

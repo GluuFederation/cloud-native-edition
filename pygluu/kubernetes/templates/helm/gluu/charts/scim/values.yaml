@@ -1,8 +1,8 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 image:
-  repository: janssenproject/scim
-  tag: 5.0.0_dev
+  repository: gluufederation/scim
+  tag: 4.2.1_02
   pullPolicy: Always
 
 #Resources for the deployment

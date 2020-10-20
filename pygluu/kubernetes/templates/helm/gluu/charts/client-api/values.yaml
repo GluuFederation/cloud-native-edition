@@ -7,7 +7,7 @@ service:
   clientApiServerServiceName: client-api
 image:
   repository: janssenproject/client-api
-  tag: 5.0.0_dev
+  tag: 4.2.1_02
   pullPolicy: Always
 
 nameOverride: ""

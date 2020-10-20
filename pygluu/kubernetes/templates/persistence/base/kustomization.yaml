@@ -7,6 +7,6 @@ commonLabels:
 resources:
   - jobs.yaml
 images:
-  - name: janssenproject/persistence-loader
-    newTag: 5.0.0_dev
+  - name: gluufederation/persistence
+    newTag: 4.2.1_02
 

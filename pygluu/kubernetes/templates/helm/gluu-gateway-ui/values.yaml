@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: gluufederation/gluu-gateway-ui
-  tag: 5.0.0_dev
+  tag: 4.2.1_02
   pullPolicy: Always
 cloud:
   enabled: true
@@ -34,11 +34,11 @@ opServerUrl: "demoexample.gluu.org"
 clientApiId:
 clientId:
 clientSecret:
-clientApiServerVersion: "5.0"
+clientApiServerVersion: "4.2"
 ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"
-ggVersion: "5.0"
+ggVersion: "4.2"
 nameOverride: ""
 fullnameOverride: ""
 service:

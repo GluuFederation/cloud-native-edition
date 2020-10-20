@@ -9,4 +9,4 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/casa
-    newTag: 5.0.0_dev
+    newTag: 4.2.1_02

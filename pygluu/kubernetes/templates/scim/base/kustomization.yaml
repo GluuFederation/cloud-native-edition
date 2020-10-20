@@ -8,5 +8,5 @@ resources:
   - services.yaml
   - deployments.yaml
 images:
-  - name: janssenproject/scim
-    newTag: 5.0.0_dev
+  - name: gluufederation/scim
+    newTag: 4.2.1_02

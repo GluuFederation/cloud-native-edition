@@ -32,7 +32,7 @@ fullnameOverride: ""
 restartPolicy: Never
 image:
   repository: gluufederation/opendj
-  tag: 5.0.0_dev
+  tag: 4.2.1_02
   pullPolicy: Always
 
 serviceAccount:

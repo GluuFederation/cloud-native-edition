@@ -20,7 +20,7 @@ spec:
       containers:
       - name: radius
         imagePullPolicy: Always
-        image: gluufederation/radius:5.0.0_dev
+        image: gluufederation/radius:4.2.1_02
         command:
           - /bin/sh
           - -c
