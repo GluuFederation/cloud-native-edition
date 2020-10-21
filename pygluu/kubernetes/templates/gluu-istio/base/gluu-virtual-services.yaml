@@ -229,7 +229,7 @@ spec:
     - uri:
         prefix: "/.well-known/scim-configuration"
     rewrite:
-      uri: "/scim/restv1/scim-configuration"
+      uri: "/scim/restv1/scim/scim-configuration"
     route:
       - destination:
           host: scim.gluu.svc.cluster.local

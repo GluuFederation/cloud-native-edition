@@ -205,8 +205,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /scim/restv1/scim-configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /scim/restv1/scim-configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /scim/restv1/scim/scim-configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /scim/restv1/scim/scim-configuration
 spec:
 {{- if .Values.ingress.tls }}
   tls:
