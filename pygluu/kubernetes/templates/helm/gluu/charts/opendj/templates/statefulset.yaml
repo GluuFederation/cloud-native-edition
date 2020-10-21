@@ -1,6 +1,6 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-{{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
+{{- if or (eq .Values.global.cnPersistenceType "ldap") (eq .Values.global.cnPersistenceType "hybrid") }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

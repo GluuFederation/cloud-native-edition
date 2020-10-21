@@ -48,7 +48,7 @@ spec:
         port:
           number: 8080
       weight: 100
-  - name: "{{ .Release.Name }}-istio-gluu"
+  - name: "{{ .Release.Name }}-istio-cn"
     match:
     - uri:
         prefix: "/auth-server"

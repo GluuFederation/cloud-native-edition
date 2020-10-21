@@ -1,5 +1,5 @@
-# gluuReleaseName is the release name used when deploying main gluu server chart
-gluuReleaseName: cv # CHANGE 
+# cnReleaseName is the release name used when deploying main gluu server chart
+cnReleaseName: cv # CHANGE
 
 image:
   repository: gluufederation/upgrade
@@ -23,15 +23,15 @@ target: "4.1"
 # domain is the FQDN used in main gluu server chart 
 domain: demoexample.gluu.org
 # options: ldap/couchbase/hybrid
-gluuPersistenceType: ldap
+cnPersistenceType: ldap
 # options: default/user/site/cache/statistic
 # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
-gluuPersistenceLdapMapping: default 
-gluuLdapUrl: opendj:1636
-# gluuCouchbaseUrl is the couchbase service name
-gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
-gluuCouchbaseUser: admin
-# gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
-gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
-# gluuCouchbaseCertFile location of
-gluuCouchbaseCertFile: /etc/certs/couchbase.crt
+cnPersistenceLdapMapping: default
+cnLdapUrl: opendj:1636
+# cnCouchbaseUrl is the couchbase service name
+cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+cnCouchbaseUser: admin
+# cnCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
+cnCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+# cnCouchbaseCertFile location of
+cnCouchbaseCertFile: /etc/certs/couchbase.crt

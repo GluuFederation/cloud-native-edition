@@ -48,11 +48,11 @@ dependencies:
   
     - name: oxpassport
       version: 1.2.16
-      condition: config.configmap.gluuPassportEnabled
+      condition: config.configmap.cnPassportEnabled
 
     - name: casa
       version: 1.2.16
-      condition: config.configmap.gluuCasaEnabled
+      condition: config.configmap.cnCasaEnabled
   
     - name: auth-server-key-rotation
       condition: global.auth-server-key-rotation.enabled
@@ -63,7 +63,7 @@ dependencies:
       condition: global.cr-rotate.enabled
   
     - name: radius
-      condition: config.configmap.gluuRadiusEnabled
+      condition: config.configmap.cnRadiusEnabled
       version: 1.2.16
 
     - name: client-api
@@ -74,6 +74,6 @@ dependencies:
       condition: global.persistence.enabled
       version: 1.2.16
 
-    - name: gluu-istio-ingress
+    - name: cn-istio-ingress
       condition: global.istio.ingress
       version: 1.2.16

@@ -23,13 +23,13 @@ spec:
       {{- end }}
     spec:
       volumes:
-      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
-        - name: gluu-jackrabbit-admin-pass
+      {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+        - name: cn-jackrabbit-admin-pass
           secret:
-            secretName: gluu-jackrabbit-admin-pass
-        - name: gluu-jackrabbit-postgres-pass
+            secretName: cn-jackrabbit-admin-pass
+        - name: cn-jackrabbit-postgres-pass
           secret:
-            secretName: gluu-jackrabbit-postgres-pass
+            secretName: cn-jackrabbit-postgres-pass
       {{- end }}
       containers:
       - name: {{ include "jackrabbit.fullname" . }}
@@ -43,11 +43,11 @@ spec:
             containerPort: {{ .Values.ports.jackrabbit.port }}
             protocol: TCP
         volumeMounts:
-        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
-          - name: gluu-jackrabbit-admin-pass
+        {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+          - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
-          - name: gluu-jackrabbit-postgres-pass
+          - name: cn-jackrabbit-postgres-pass
             mountPath: /etc/gluu/conf/postgres_password
             subPath: postgres_password
         {{- end }}

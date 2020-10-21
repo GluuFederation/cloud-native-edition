@@ -49,7 +49,7 @@ spec:
           - name: {{ include "radius.fullname" .}}-updatelbip
             mountPath: /scripts
         {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
@@ -87,7 +87,7 @@ spec:
           configMap:
             name: {{ .Release.Name }}-updatelbip
         {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass 

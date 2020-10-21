@@ -3,7 +3,7 @@
 # Default values for client-api.
 replicas: 1
 service:
-  # This must match config.configMap.jansClientApiApplicationCertCn
+  # This must match config.configMap.cnClientApiApplicationCertCn
   clientApiServerServiceName: client-api
 image:
   repository: janssenproject/client-api

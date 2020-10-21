@@ -312,7 +312,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-gluu
+  name: {{ $fullName }}-cn
   labels: 
     app: auth-server
   annotations:

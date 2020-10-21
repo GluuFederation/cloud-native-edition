@@ -24,7 +24,7 @@ spec:
       {{- end }}
     spec:
       containers:
-      - name: {{ template "gluu.fullname" . }}
+      - name: {{ template "cn.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
@@ -41,8 +41,8 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
-        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
-          - name: gluu-jackrabbit-admin-pass
+        {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+          - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
         {{- end }}
@@ -50,7 +50,7 @@ spec:
           - name: {{ include "auth-server.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+        {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
@@ -87,12 +87,12 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
-      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
-        - name: gluu-jackrabbit-admin-pass
+      {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+        - name: cn-jackrabbit-admin-pass
           secret:
-            secretName: gluu-jackrabbit-admin-pass
+            secretName: cn-jackrabbit-admin-pass
       {{- end }}
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
+      {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass

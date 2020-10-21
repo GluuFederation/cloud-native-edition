@@ -15,66 +15,66 @@ redisPass: P@assw0rd
 countryCode: US
 state: TX
 city: SLC
-gluuLdapInit: true
-gluuLdapInitPort: 1636
-gluuOxtrustConfigGeneration: true
+cnLdapInit: true
+cnLdapInitPort: 1636
+cnOxtrustConfigGeneration: true
 configmap:
-  jansClientApiApplicationCertCn: client-api
-  jansClientApiAdminCertCn: client-api
-  # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  cnClientApiApplicationCertCn: client-api
+  cnClientApiAdminCertCn: client-api
+  # used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
   # NOTE: For the CB instalation please check the documentation
-  gluuCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-  gluuCouchbasePass: P@ssw0rd
-  # gluuCouchbaseUrl is the couchbase service name
-  gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
-  gluuCouchbaseUser: admin
-  # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
-  gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
-  # gluuCouchbaseCertFile location of
-  gluuCouchbaseCertFile: /etc/certs/couchbase.crt
+  cnCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  cnCouchbasePass: P@ssw0rd
+  # cnCouchbaseUrl is the couchbase service name
+  cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+  cnCouchbaseUser: admin
+  # cnCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
+  cnCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+  # cnCouchbaseCertFile location of
+  cnCouchbaseCertFile: /etc/certs/couchbase.crt
   # options: default/user/site/cache/statistic
-  # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
-  gluuPersistenceLdapMapping: default
+  # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
+  cnPersistenceLdapMapping: default
   # options REDIS/NATIVE_PERSISTENCE
-  gluuCacheType: NATIVE_PERSISTENCE
-  gluuSyncShibManifests: false
-  gluuSyncCasaManifests: false
-  gluuMaxRamPercent: "75.0"
+  cnCacheType: NATIVE_PERSISTENCE
+  cnSyncShibManifests: false
+  cnSyncCasaManifests: false
+  cnMaxRamPercent: "75.0"
   configAdapterName: kubernetes
   containerMetadataName: kubernetes
   configSecretAdapter: kubernetes
   # If REDIS is the Cache Type or if going to be used with clientApi
-  gluuRedisUrl: redis:6379
-  gluuRedisUseSsl: "false"
-  gluuRedisType: STANDALONE
-  gluuRedisSslTruststore: ""
-  gluuRedisSentinelGroup: ""
-  gluuOxtrustBackend: oxtrust:8080
-  gluuAuthServerBackend: auth-server:8080
-  jansClientApiServerUrl: client-api:8443
-  jansClientApiBindIpAddresses: "*"
-  gluuLdapUrl: opendj:1636
+  cnRedisUrl: redis:6379
+  cnRedisUseSsl: "false"
+  cnRedisType: STANDALONE
+  cnRedisSslTruststore: ""
+  cnRedisSentinelGroup: ""
+  cnOxtrustBackend: oxtrust:8080
+  cnAuthServerBackend: auth-server:8080
+  cnClientApiServerUrl: client-api:8443
+  cnClientApiBindIpAddresses: "*"
+  cnLdapUrl: opendj:1636
   # Jackrabbit content repository
-  gluuJackrabbitPostgresUser: jackrabbit
-  gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
-  gluuJackrabbitPostgresDatabaseName: jackrabbit
-  gluuJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
-  gluuJackrabbitPostgresPort: 5432
-  gluuJackrabbitSyncInterval: 300
-  gluuJackrabbitUrl: http://jackrabbit:8080
-  gluuJackrabbitAdminId: admin
-  gluuJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
+  cnJackrabbitPostgresUser: jackrabbit
+  cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
+  cnJackrabbitPostgresDatabaseName: jackrabbit
+  cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+  cnJackrabbitPostgresPort: 5432
+  cnJackrabbitSyncInterval: 300
+  cnJackrabbitUrl: http://jackrabbit:8080
+  cnJackrabbitAdminId: admin
+  cnJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
   # Options LOCAL / JCA (jackrabbit)
-  gluuDocumentStoreType: JCA
+  cnDocumentStoreType: JCA
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
   ldapServiceName: opendj
   #support for oxtrust API
-  gluuOxtrustApiEnabled: false
-  gluuOxtrustApiTestMode: false
-  gluuCasaEnabled: true
-  gluuPassportEnabled: false
-  gluuRadiusEnabled: false
-  gluuSamlEnabled: true
+  cnOxtrustApiEnabled: false
+  cnOxtrustApiTestMode: false
+  cnCasaEnabled: true
+  cnPassportEnabled: false
+  cnRadiusEnabled: false
+  cnSamlEnabled: true
 
 nameOverride: ""
 fullNameOverride: ""

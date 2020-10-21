@@ -2,29 +2,29 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 # opendj Environament Variables
 # common ConfigMap values
-gluuLdapInit: true
-gluuOxtrustConfigGeneration: true
+cnLdapInit: true
+cnOxtrustConfigGeneration: true
 
-gluuLdapInitPort: 1636
+cnLdapInitPort: 1636
 
 ldapServiceName: opendj
 
 ldapPass: P@assw0rd
 concurrencyPolicy: Forbid
 
-# gluuRedisEnabled will determin if GLUU_REDIS_URL and GLUU_REDIS_TYPE if they will be used.
-gluuRedisEnabled: false
-gluuLdapAutoReplicate: false
+# cnRedisEnabled will determin if CN_REDIS_URL and CN_REDIS_TYPE if they will be used.
+cnRedisEnabled: false
+cnLdapAutoReplicate: false
 
-gluuRedisUrl: redis:6379
+cnRedisUrl: redis:6379
 # options REDIS/NATIVE_PERSISTENCE
-gluuCacheType: NATIVE_PERSISTENCE
-gluuRedisType: STANDALONE
+cnCacheType: NATIVE_PERSISTENCE
+cnRedisType: STANDALONE
 
 configAdapterName: kubernetes
 configSecretAdapter: kubernetes
 
-gluuOxtrustConfigGenerationRepl: false
+cnOxtrustConfigGenerationRepl: false
 
 nameOverride: ""
 fullnameOverride: ""

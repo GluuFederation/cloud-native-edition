@@ -6,21 +6,21 @@ metadata:
   name: {{ include "ldap-backup.fullname" . }}
   namespace: {{ .Release.Namespace }}
 data:
-  GLUU_LDAP_AUTO_REPLICATE: {{ .Values.gluuLdapAutoReplicate | quote }}
-  GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-  GLUU_CONFIG_ADAPTER: {{ .Values.configAdapterName | quote }}
-  GLUU_SECRET_ADAPTER: {{ .Values.configSecretAdapter | quote }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.ldapServiceName }} 
-  GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
-  GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
-  GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
-  GLUU_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
+  CN_LDAP_AUTO_REPLICATE: {{ .Values.cnLdapAutoReplicate | quote }}
+  CN_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  CN_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  CN_CONFIG_ADAPTER: {{ .Values.configAdapterName | quote }}
+  CN_SECRET_ADAPTER: {{ .Values.configSecretAdapter | quote }}
+  CN_LDAP_INIT_HOST: {{ .Values.ldapServiceName }}
+  CN_LDAP_INIT: {{ .Values.cnLdapInit | quote }} # TODO: To be removed
+  CN_LDAP_INIT_PORT: {{ .Values.cnLdapInitPort | quote }}
+  CN_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
+  CN_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
   {{- if and (.Values.gluuRedisEnabled) (eq .Values.gluuCacheType "REDIS") }}
-  GLUU_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
-  GLUU_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
+  CN_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
+  CN_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
   {{- end }}
   # must the same as the opendj service name
-  GLUU_CERT_ALT_NAME: {{ .Values.ldapServiceName }} 
+  CN_CERT_ALT_NAME: {{ .Values.ldapServiceName }}
 
   
