@@ -159,6 +159,30 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  name: gluu-ingress-scim
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "scim"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+spec:
+  tls:
+    - hosts:
+      - FQDN
+      secretName: tls-certificate
+  rules:
+  - host: FQDN
+    http:
+      paths:
+      - path: /scim
+        backend:
+          serviceName: scim
+          servicePort: 8080
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
   name: gluu-ingress-fido-u2f-configuration
   annotations:
     kubernetes.io/ingress.class: nginx

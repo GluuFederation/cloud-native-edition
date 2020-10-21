@@ -236,3 +236,13 @@ spec:
           port:
             number: 8080
         weight: 100
+  - name: "gluu-istio-scim"
+    match:
+      - uri:
+          prefix: "/scim"
+    route:
+      - destination:
+          host: scim.gluu.svc.cluster.local
+          port:
+            number: 8080
+        weight: 100

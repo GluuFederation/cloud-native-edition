@@ -5,7 +5,7 @@
     "FIDO2_IMAGE_NAME": "gluufederation/fido2",
     "FIDO2_IMAGE_TAG": "4.2.1_02",
     "SCIM_IMAGE_NAME": "gluufederation/scim",
-    "SCIM_IMAGE_TAG": "4.2.1_02",
+    "SCIM_IMAGE_TAG": "4.2.1_04",
     "CONFIG_IMAGE_NAME": "gluufederation/config-init",
     "CONFIG_IMAGE_TAG": "4.2.1_02",
     "CACHE_REFRESH_ROTATE_IMAGE_NAME": "gluufederation/cr-rotate",

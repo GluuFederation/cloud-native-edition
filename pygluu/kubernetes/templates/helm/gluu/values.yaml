@@ -213,7 +213,7 @@ scim:
     scimServiceName: scim
   image:
     repository: gluufederation/scim
-    tag: 4.2.1_02
+    tag: 4.2.1_04
     pullPolicy: Always
   resources:
     limits:

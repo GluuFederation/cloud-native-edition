@@ -1046,7 +1046,7 @@ class Kustomize(object):
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
-                             "gluu-casa", "gluu-ingress-fido2-configuration"]
+                             "gluu-casa", "gluu-ingress-fido2-configuration", "gluu-ingress-scim"]
 
         ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         for ingress_name in ingress_name_list:
@@ -1712,7 +1712,7 @@ class Kustomize(object):
         nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
-                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
+                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-scim",
                                           "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         network_policies = ["oxd-server-policy"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
