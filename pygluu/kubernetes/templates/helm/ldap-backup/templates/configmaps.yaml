@@ -14,11 +14,11 @@ data:
   CN_LDAP_INIT_HOST: {{ .Values.ldapServiceName }}
   CN_LDAP_INIT: {{ .Values.cnLdapInit | quote }} # TODO: To be removed
   CN_LDAP_INIT_PORT: {{ .Values.cnLdapInitPort | quote }}
-  CN_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
-  CN_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
-  {{- if and (.Values.gluuRedisEnabled) (eq .Values.gluuCacheType "REDIS") }}
-  CN_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
-  CN_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
+  CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
+  CN_CACHE_TYPE: {{ .Values.cnCacheType | quote }}
+  {{- if and (.Values.cnRedisEnabled) (eq .Values.cnCacheType "REDIS") }}
+  CN_REDIS_URL: {{ .Values.cnRedisUrl | quote }}
+  CN_REDIS_TYPE: {{ .Values.cnRedisType | quote }}
   {{- end }}
   # must the same as the opendj service name
   CN_CERT_ALT_NAME: {{ .Values.ldapServiceName }}
