@@ -769,6 +769,7 @@ class Kustomize(object):
         upgrade_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings.get("GLUU_CACHE_TYPE")
         upgrade_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
         upgrade_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        upgrade_cm_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         upgrade_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
         upgrade_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
         upgrade_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
@@ -1510,6 +1511,14 @@ class Kustomize(object):
                            "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
             input("Press Enter once index has been deleted...")
             self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=opendj")
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            import click
+            from pygluu.kubernetes.helpers import prompt_password
+            self.settings.set("COUCHBASE_SUPERUSER_PASSWORD", self.settings.get("COUCHBASE_PASSWORD"))
+            self.settings.set("COUCHBASE_SUPERUSER", self.settings.get("COUCHBASE_USER"))
+            self.settings.set("COUCHBASE_USER", click.prompt("Please enter gluu couchbase username.", default="gluu"))
+            self.settings.set("COUCHBASE_PASSWORD", prompt_password("Couchbase Gluu user"))
+
         self.kustomize_gluu_upgrade()
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
@@ -1531,7 +1540,7 @@ class Kustomize(object):
                                                                     namespace=self.settings.get("POSTGRES_NAMESPACE"))
                 self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
                                                     self.timeout)
-            self.def_jackrabbit_secret()
+        self.def_jackrabbit_secret()
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.create_objects_from_dict("ldap/base/101-ox.yaml",
                                                      self.settings.get("GLUU_NAMESPACE"))
@@ -1548,11 +1557,27 @@ class Kustomize(object):
             time.sleep(10)
             if not self.settings.get("AWS_LB_TYPE") == "alb":
                 self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
+        else:
+            encoded_cb_super_pass_bytes = base64.b64encode(
+                self.settings.get("COUCHBASE_SUPERUSER_PASSWORD").encode("utf-8"))
+            encoded_cb_super_pass_string = str(encoded_cb_super_pass_bytes, "utf-8")
+            self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
+                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              literal="couchbase_superuser_password",
+                                                              value_of_literal=encoded_cb_super_pass_string)
+            encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
+            encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+            # Patch old password
+            self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
+                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              literal="couchbase_password",
+                                                              value_of_literal=encoded_cb_pass_string)
+
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         logger.info("Updating manifests and Gluu version...")
-        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record".format(self.output_yaml_directory),
+        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
                                            silent=True)
 
     def install(self, install_couchbase=True, restore=False):
