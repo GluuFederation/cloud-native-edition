@@ -134,7 +134,7 @@ class Kustomize(object):
         self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
         self.gg_ui_yaml = str(self.output_yaml_directory.joinpath("gluu-gateway-ui.yaml").resolve())
-        self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("gluu-istio-ingress.yaml").resolve())
+        self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("cn-istio-ingress.yaml").resolve())
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
         self.gluu_config = ""
@@ -488,7 +488,7 @@ class Kustomize(object):
         destination_rule_name = "gluu-" + app + "-mtls"
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
             # Adjust virtual services
-            virtual_service_path = Path("./gluu-istio/base/gluu-virtual-services.yaml")
+            virtual_service_path = Path("./cn-istio/base/cn-virtual-services.yaml")
             virtual_service_parser = Parser(virtual_service_path, "VirtualService", virtual_service)
             virtual_service_parser["spec"]["hosts"] = [self.settings.get("GLUU_FQDN")]
             http_entries = virtual_service_parser["spec"]["http"]
@@ -496,7 +496,7 @@ class Kustomize(object):
                 virtual_service_parser["spec"]["http"][i]["route"][0]["destination"]["host"] = app_internal_addresss
             virtual_service_parser.dump_it()
             # Adjust destination rules
-            destination_rule_path = Path("./gluu-istio/base/gluu-destination-rules.yaml")
+            destination_rule_path = Path("./cn-istio/base/cn-destination-rules.yaml")
             destination_rule_parser = Parser(destination_rule_path, "DestinationRule", destination_rule_name)
             destination_rule_parser["spec"]["host"] = app_internal_addresss
             destination_rule_parser.dump_it()
@@ -745,8 +745,8 @@ class Kustomize(object):
                     parser.dump_it()
                     exec_cmd(command, output_file=app_file)
 
-            if self.settings.get("USE_ISTIO_INGRESS") == "Y" and app == "gluu-istio-ingress":
-                command = self.kubectl + " kustomize ./gluu-istio/base"
+            if self.settings.get("USE_ISTIO_INGRESS") == "Y" and app == "cn-istio-ingress":
+                command = self.kubectl + " kustomize ./cn-istio/base"
                 exec_cmd(command, output_file=app_file)
 
     def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key, app_file):

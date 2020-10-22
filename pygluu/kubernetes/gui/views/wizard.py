@@ -535,12 +535,12 @@ def install_istio():
             data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             if data["USE_ISTIO_INGRESS"] == "Y":
-                data["ENABLED_SERVICES_LIST"].append('gluu-istio-ingress')
+                data["ENABLED_SERVICES_LIST"].append('cn-istio-ingress')
                 data["LB_ADD"] = form.lb_add.data
                 data["USE_ISTIO"] = "Y"
             else:
-                if 'gluu-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
-                    data["ENABLED_SERVICES_LIST"].remove('gluu-istio-ingress')
+                if 'cn-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
+                    data["ENABLED_SERVICES_LIST"].remove('cn-istio-ingress')
                 data["LB_ADD"] = ""
 
         if data["USE_ISTIO"] == "Y":

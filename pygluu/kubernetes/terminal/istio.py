@@ -44,7 +44,7 @@ class PromptIstio:
             self.settings.set("ISTIO_SYSTEM_NAMESPACE", click.prompt("Istio namespace",
                                                                      default="istio-system"))
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
-            self.enabled_services.append("gluu-istio-ingress")
+            self.enabled_services.append("cn-istio-ingress")
             self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
 
             if not self.settings.get("LB_ADD"):
