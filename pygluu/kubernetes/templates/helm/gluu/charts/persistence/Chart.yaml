@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "4.2.1"
 description: A Helm chart for persistence layer for Gluu server
 name: persistence
-version: 1.2.19
+version: 1.2.20
 maintainers:
 - name: Gluu
 email: support@gluu.org
