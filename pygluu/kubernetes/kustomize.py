@@ -138,6 +138,7 @@ class Kustomize(object):
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
         self.gluu_config = ""
+        self.gluu_install_envs = ""
         if self.settings.get("DEPLOYMENT_ARCH") == "gke":
             # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
             if self.settings.get("INSTALL_REDIS") == "Y" or \
@@ -1440,14 +1441,19 @@ class Kustomize(object):
     def copy_configs_before_restore(self):
         self.gluu_secret = self.kubernetes.read_namespaced_secret("gluu", self.settings.get("GLUU_NAMESPACE")).data
         self.gluu_config = self.kubernetes.read_namespaced_configmap("gluu", self.settings.get("GLUU_NAMESPACE")).data
+        self.gluu_install_envs = self.kubernetes.read_namespaced_configmap("gluu-config-cm",
+                                                                           self.settings.get("GLUU_NAMESPACE")).data
 
     def save_a_copy_of_config(self):
-        self.kubernetes.patch_or_create_namespaced_secret(name="secret-params", literal=None, value_of_literal=None,
+        self.kubernetes.patch_or_create_namespaced_secret(name="copy-of-secret-params-before-restore", literal=None, value_of_literal=None,
                                                           namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           data=self.gluu_secret)
-        self.kubernetes.patch_or_create_namespaced_configmap(name="config-params",
+        self.kubernetes.patch_or_create_namespaced_configmap(name="copy-of-config-params-before-restore",
                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
                                                              data=self.gluu_config)
+        self.kubernetes.patch_or_create_namespaced_configmap(name="copy-of-install-config-params-before-restore",
+                                                             namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                             data=self.gluu_install_envs)
 
     def mount_config(self):
         self.kubernetes.patch_or_create_namespaced_secret(name="gluu", literal=None, value_of_literal=None,
@@ -1459,15 +1465,23 @@ class Kustomize(object):
 
     def run_backup_command(self):
         try:
-            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "-n", " ",
-                                 "-l", "/opt/opendj/ldif/backup-this-copy.ldif",
+            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "--hostname", "localhost", "--port", "4444",
+                                 "--bindDN", "cn=Directory manager", "--backendID", "userRoot", "--trustAll",
+                                 "--ldifFile", "/opt/opendj/ldif/backup-this-copy.ldif",
                                  "--bindPassword", self.settings.get("LDAP_PW")]
             self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
                                                             app_label="app=opendj",
                                                             container="opendj",
                                                             namespace=self.settings.get("GLUU_NAMESPACE"))
-        except (ConnectionError, Exception):
-            pass
+        except (ConnectionError, Exception) as e:
+            exec_ldap_command = ["/opt/opendj/bin/import-ldif", "--hostname", "localhost", "--port", "4444",
+                                 "--bindDN", "cn=Directory manager", "--backendID", "userRoot", "--trustAll",
+                                 "--ldifFile", "/opt/opendj/ldif/backup-this-copy.ldif",
+                                 "--bindPassword", "YOURPASSWORD"]
+            logger.error(e)
+            logger.info("An error has occured during importing the marked ldif. Please run the following command "
+                        "manually inside the opendj container:\n {}".format(" ".join(exec_ldap_command)))
+            input("Press Enter once import has run successfully...")
 
     def setup_backup_ldap(self):
         encoded_ldap_pw_bytes = base64.b64encode(self.settings.get("LDAP_PW").encode("utf-8"))
@@ -1586,6 +1600,12 @@ class Kustomize(object):
             if self.settings.get("USE_ISTIO") == "Y":
                 labels = {"app": "gluu", "istio-injection": "enabled"}
             self.kubernetes.create_namespace(name=self.settings.get("GLUU_NAMESPACE"), labels=labels)
+        if restore:
+            logger.info("Waiting for resources to be removed...")
+            time.sleep(30)
+            self.kubernetes.patch_or_create_namespaced_configmap(name="gluu-config-cm",
+                                                                 namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                                 data=self.gluu_install_envs)
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
         if install_couchbase:
@@ -1647,7 +1667,8 @@ class Kustomize(object):
             if restore:
                 self.run_backup_command()
                 self.mount_config()
-                self.wait_for_nginx_add()
+                if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+                    self.wait_for_nginx_add()
             else:
                 self.deploy_ldap()
                 if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
@@ -1717,7 +1738,7 @@ class Kustomize(object):
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=oxd-server",
-                                      "app=oxpassport", "app=radius", "app=oxauth-key-rotation", "app=jackrabbit"]
+                                      "app=oxpassport", "app=radius", "app=oxauth-key-rotation"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]
@@ -1746,9 +1767,15 @@ class Kustomize(object):
         gke_yamls_folder = Path("./gluugkeyamls")
         aks_yamls_folder = Path("./gluuaksyamls")
         if restore:
-            gluu_service_names.pop(3)
-            gluu_storage_class_names.pop(1)
-            stateful_set_labels.pop(0)
+            # TODO: Remove  pop method
+            gluu_service_names.remove("opendj")
+            gluu_service_names.remove("jackrabbit")
+            gluu_storage_class_names = []
+            stateful_set_labels.remove("app=opendj")
+            stateful_set_labels.remove("app=jackrabbit")
+            secrets.remove("gluu-jackrabbit-admin-pass")
+            secrets.remove("gluu-jackrabbit-postgres-pass")
+            all_labels = gluu_deployment_app_labels + stateful_set_labels + jobs_labels + [daemon_set_label]
 
         for service in gluu_service_names:
             self.kubernetes.delete_service(service, self.settings.get("GLUU_NAMESPACE"))
