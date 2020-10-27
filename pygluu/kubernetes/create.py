@@ -3,14 +3,6 @@
  https://www.apache.org/licenses/LICENSE-2.0
  Installs Gluu
 """
-# TODO: Delete this script as soon as the kubernetes python client fixes CRD issue
-# from .installclient import install_kubernetes_client_11_0_0
-
-# try:
-#     from .kubeapi import Kubernetes
-# except ImportError:
-#     install_kubernetes_client_11_0_0()
-# End of section to be removed. TODO
 import argparse
 import time
 import sys

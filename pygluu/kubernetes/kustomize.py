@@ -61,18 +61,18 @@ hostpath_ldap_local_folder = Path("./ldap/overlays/local/hostpath/")
 hostpath_jcr_local_folder = Path("./jackrabbit/overlays/local/hostpath/")
 
 
-def register_op_client(namespace, client_name, op_host, client_api_url):
-    """Registers an op client using client_api.
+def register_op_client(namespace, client_name, op_host, oxd_url):
+    """Registers an op client using oxd.
 
     :param namespace:
     :param client_name:
     :param op_host:
-    :param client_api_url:
+    :param oxd_url:
     :return:
     """
     kubernetes = Kubernetes()
     logger.info("Registering a client : {}".format(client_name))
-    client_api_id, client_id, client_secret = "", "", ""
+    oxd_id, client_id, client_secret = "", "", ""
 
     data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
            '", "post_logout_redirect_uris": ["https://' + op_host + \
@@ -80,30 +80,30 @@ def register_op_client(namespace, client_name, op_host, client_api_url):
            '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
 
     exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                         "{}/register-site".format(client_api_url), "--header",
+                         "{}/register-site".format(oxd_url), "--header",
                          "Content-Type: application/json", "--data-raw",
                          data]
     try:
         client_registration_response = \
             kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                       app_label="app=auth-server",
-                                                       container="auth-server",
+                                                       app_label="app=oxauth",
+                                                       container="oxauth",
                                                        namespace=namespace,
                                                        stdout=False)
 
         client_registration_response_dict = literal_eval(client_registration_response)
-        client_api_id = client_registration_response_dict["client_api_id"]
+        oxd_id = client_registration_response_dict["oxd_id"]
         client_id = client_registration_response_dict["client_id"]
         client_secret = client_registration_response_dict["client_secret"]
     except (IndexError, Exception):
         exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                             "{}/register-site".format(client_api_url), "--header",
+                             "{}/register-site".format(oxd_url), "--header",
                              "'Content-Type: application/json'", "--data-raw",
                              "'" + data + "'"]
         manual_curl_command = " ".join(exec_curl_command)
         logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
             client_name, manual_curl_command))
-    return client_api_id, client_id, client_secret
+    return oxd_id, client_id, client_secret
 
 
 class Kustomize(object):
@@ -120,21 +120,21 @@ class Kustomize(object):
         self.ldap_yaml = str(self.output_yaml_directory.joinpath("ldap.yaml").resolve())
         self.jackrabbit_yaml = str(self.output_yaml_directory.joinpath("jackrabbit.yaml").resolve())
         self.persistence_yaml = str(self.output_yaml_directory.joinpath("persistence.yaml").resolve())
-        self.auth_server_yaml = str(self.output_yaml_directory.joinpath("auth_server.yaml").resolve())
+        self.oxauth_yaml = str(self.output_yaml_directory.joinpath("oxauth.yaml").resolve())
         self.fido2_yaml = str(self.output_yaml_directory.joinpath("fido2.yaml").resolve())
         self.scim_yaml = str(self.output_yaml_directory.joinpath("scim.yaml").resolve())
         self.oxtrust_yaml = str(self.output_yaml_directory.joinpath("oxtrust.yaml").resolve())
         self.gluu_upgrade_yaml = str(self.output_yaml_directory.joinpath("upgrade.yaml").resolve())
         self.oxshibboleth_yaml = str(self.output_yaml_directory.joinpath("oxshibboleth.yaml").resolve())
         self.oxpassport_yaml = str(self.output_yaml_directory.joinpath("oxpassport.yaml").resolve())
-        self.auth_server_key_rotate_yaml = str(self.output_yaml_directory.joinpath("auth-server-key-rotation.yaml").resolve())
+        self.oxauth_key_rotate_yaml = str(self.output_yaml_directory.joinpath("oxauth-key-rotation.yaml").resolve())
         self.cr_rotate_yaml = str(self.output_yaml_directory.joinpath("cr-rotate.yaml").resolve())
-        self.client_api_server_yaml = str(self.output_yaml_directory.joinpath("client-api.yaml").resolve())
+        self.oxd_server_yaml = str(self.output_yaml_directory.joinpath("oxd-server.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
         self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
         self.gg_ui_yaml = str(self.output_yaml_directory.joinpath("gluu-gateway-ui.yaml").resolve())
-        self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("cn-istio-ingress.yaml").resolve())
+        self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("gluu-istio-ingress.yaml").resolve())
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
         self.gluu_config = ""
@@ -769,6 +769,7 @@ class Kustomize(object):
         upgrade_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings.get("GLUU_CACHE_TYPE")
         upgrade_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
         upgrade_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        upgrade_cm_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         upgrade_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
         upgrade_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
         upgrade_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
@@ -1046,7 +1047,7 @@ class Kustomize(object):
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
-                             "gluu-casa", "gluu-ingress-fido2-configuration"]
+                             "gluu-casa", "gluu-ingress-fido2-configuration", "gluu-ingress-scim"]
 
         ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         for ingress_name in ingress_name_list:
@@ -1510,6 +1511,14 @@ class Kustomize(object):
                            "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
             input("Press Enter once index has been deleted...")
             self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=opendj")
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            import click
+            from pygluu.kubernetes.helpers import prompt_password
+            self.settings.set("COUCHBASE_SUPERUSER_PASSWORD", self.settings.get("COUCHBASE_PASSWORD"))
+            self.settings.set("COUCHBASE_SUPERUSER", self.settings.get("COUCHBASE_USER"))
+            self.settings.set("COUCHBASE_USER", click.prompt("Please enter gluu couchbase username.", default="gluu"))
+            self.settings.set("COUCHBASE_PASSWORD", prompt_password("Couchbase Gluu user"))
+
         self.kustomize_gluu_upgrade()
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
@@ -1531,7 +1540,7 @@ class Kustomize(object):
                                                                     namespace=self.settings.get("POSTGRES_NAMESPACE"))
                 self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
                                                     self.timeout)
-            self.def_jackrabbit_secret()
+        self.def_jackrabbit_secret()
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.create_objects_from_dict("ldap/base/101-ox.yaml",
                                                      self.settings.get("GLUU_NAMESPACE"))
@@ -1548,11 +1557,27 @@ class Kustomize(object):
             time.sleep(10)
             if not self.settings.get("AWS_LB_TYPE") == "alb":
                 self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
+        else:
+            encoded_cb_super_pass_bytes = base64.b64encode(
+                self.settings.get("COUCHBASE_SUPERUSER_PASSWORD").encode("utf-8"))
+            encoded_cb_super_pass_string = str(encoded_cb_super_pass_bytes, "utf-8")
+            self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
+                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              literal="couchbase_superuser_password",
+                                                              value_of_literal=encoded_cb_super_pass_string)
+            encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
+            encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
+            # Patch old password
+            self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
+                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              literal="couchbase_password",
+                                                              value_of_literal=encoded_cb_pass_string)
+
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         logger.info("Updating manifests and Gluu version...")
-        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record".format(self.output_yaml_directory),
+        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
                                            silent=True)
 
     def install(self, install_couchbase=True, restore=False):
@@ -1712,7 +1737,7 @@ class Kustomize(object):
         nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                                           "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
-                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress",
+                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-scim",
                                           "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         network_policies = ["client-api-policy"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
