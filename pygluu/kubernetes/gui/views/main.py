@@ -400,16 +400,16 @@ def get_wizard_step():
     Define wizard step based on settings value
     :return:
     """
-    if not gluu_settings.db.get("ACCEPT_GLUU_LICENSE"):
+    if not gluu_settings.db.get("ACCEPT_CN_LICENSE"):
         return url_for("wizard.agreement")
 
-    if not gluu_settings.db.get("GLUU_VERSION"):
+    if not gluu_settings.db.get("CN_VERSION"):
         return url_for("wizard.gluu_version")
 
     if not gluu_settings.db.get("DEPLOYMENT_ARCH"):
         return url_for("wizard.deployment_arch")
 
-    if not gluu_settings.db.get("GLUU_NAMESPACE"):
+    if not gluu_settings.db.get("CN_NAMESPACE"):
         return url_for("wizard.gluu_namespace")
 
     if not gluu_settings.db.get("ENABLE_CACHE_REFRESH"):
@@ -441,7 +441,7 @@ def get_wizard_step():
             gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
         return url_for("wizard.couchbase")
 
-    if not gluu_settings.db.get("GLUU_CACHE_TYPE"):
+    if not gluu_settings.db.get("CN_CACHE_TYPE"):
         return url_for("wizard.cache_type")
 
     if gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
@@ -453,7 +453,7 @@ def get_wizard_step():
             not gluu_settings.db.get("LDAP_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
 
-    if not gluu_settings.db.get("GLUU_FQDN"):
+    if not gluu_settings.db.get("CN_FQDN"):
         return url_for("wizard.configuration")
 
     if not gluu_settings.db.get("EDIT_IMAGE_NAMES_TAGS"):

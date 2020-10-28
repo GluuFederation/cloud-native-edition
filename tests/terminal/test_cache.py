@@ -15,4 +15,4 @@ def test_cache_type(monkeypatch, settings, given, expected):
     monkeypatch.setattr("pygluu.kubernetes.terminal.redis.PromptRedis.prompt_redis", lambda x: None)
 
     PromptCache(settings).prompt_cache_type()
-    assert settings.get("GLUU_CACHE_TYPE") == expected
+    assert settings.get("CN_CACHE_TYPE") == expected

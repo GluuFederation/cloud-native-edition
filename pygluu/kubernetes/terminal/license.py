@@ -18,17 +18,17 @@ class PromptLicense:
     def __init__(self, settings, accept_license=False):
         self.settings = settings
         if accept_license:
-            self.settings.set("ACCEPT_GLUU_LICENSE", "Y")
+            self.settings.set("ACCEPT_CN_LICENSE", "Y")
         self.prompt_license()
 
     def prompt_license(self):
         """Prompts user to accept Apache 2.0 license
         """
-        if self.settings.get("ACCEPT_GLUU_LICENSE") != "Y":
+        if self.settings.get("ACCEPT_CN_LICENSE") != "Y":
             with open("./LICENSE") as f:
                 print(f.read())
 
-            self.settings.set("ACCEPT_GLUU_LICENSE", confirm_yesno("Do you accept the Gluu license stated above"))
-            if self.settings.get("ACCEPT_GLUU_LICENSE") != "Y":
+            self.settings.set("ACCEPT_CN_LICENSE", confirm_yesno("Do you accept the Gluu license stated above"))
+            if self.settings.get("ACCEPT_CN_LICENSE") != "Y":
                 logger.info("License not accepted.")
                 raise SystemExit(1)

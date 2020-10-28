@@ -12,20 +12,20 @@ images:
 configMapGenerator:
   - name: opendj-backup-cm
     literals:
-      - GLUU_LDAP_AUTO_REPLICATE="false"
-      - GLUU_CONFIG_KUBERNETES_NAMESPACE="default"
-      - GLUU_SECRET_KUBERNETES_NAMESPACE="default"
-      - GLUU_CONFIG_ADAPTER="kubernetes"
-      - GLUU_SECRET_ADAPTER="kubernetes"
-      - GLUU_LDAP_INIT="true"
-      - GLUU_LDAP_INIT_HOST="opendj"
-      - GLUU_LDAP_INIT_PORT="1636"
-      - GLUU_OXTRUST_CONFIG_GENERATION="true"
-      - GLUU_CACHE_TYPE=GLUUCACHETYPE
-      - GLUU_REDIS_TYPE="STANDALONE"
-      - GLUU_REDIS_URL="redis:6379"
-      - GLUU_CERT_ALT_NAME="opendj"
+      - CN_LDAP_AUTO_REPLICATE="false"
+      - CN_CONFIG_KUBERNETES_NAMESPACE="default"
+      - CN_SECRET_KUBERNETES_NAMESPACE="default"
+      - CN_CONFIG_ADAPTER="kubernetes"
+      - CN_SECRET_ADAPTER="kubernetes"
+      - CN_LDAP_INIT="true"
+      - CN_LDAP_INIT_HOST="opendj"
+      - CN_LDAP_INIT_PORT="1636"
+      - CN_OXTRUST_CONFIG_GENERATION="true"
+      - CN_CACHE_TYPE=CNCACHETYPE
+      - CN_REDIS_TYPE="STANDALONE"
+      - CN_REDIS_URL="redis:6379"
+      - CN_CERT_ALT_NAME="opendj"
       # options: ldap/couchbase/hybrid
-      - GLUU_PERSISTENCE_TYPE=PERSISTENCETYPE
-      # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
-      - GLUU_PERSISTENCE_LDAP_MAPPING=LDAPMAPPING
+      - CN_PERSISTENCE_TYPE=PERSISTENCETYPE
+      # options: default/user/site/cache/statistic; used only if CN_PERSISTENCE_TYPE is hybrid
+      - CN_PERSISTENCE_LDAP_MAPPING=LDAPMAPPING

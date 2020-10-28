@@ -16,7 +16,7 @@ def test_helm_release_name(monkeypatch, settings, given, expected):
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
-    assert settings.get("GLUU_HELM_RELEASE_NAME") == expected
+    assert settings.get("CN_HELM_RELEASE_NAME") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -28,7 +28,7 @@ def test_helm_ingress_release_name(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
+    settings.set("CN_HELM_RELEASE_NAME", "gluu")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("INSTALL_GLUU_GATEWAY", "N")
 
@@ -47,7 +47,7 @@ def test_helm_ingress_namespace(monkeypatch, settings, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
-    settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
+    settings.set("CN_HELM_RELEASE_NAME", "gluu")
     settings.set("INSTALL_GLUU_GATEWAY", "N")
 
     prompt = PromptHelm(settings)

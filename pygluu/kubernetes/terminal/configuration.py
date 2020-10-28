@@ -35,13 +35,13 @@ class PromptConfiguration:
         check_fqdn_provided = False
 
         while True:
-            if not self.settings.get("GLUU_FQDN") or check_fqdn_provided:
-                self.settings.set("GLUU_FQDN", click.prompt("Enter Hostname", default="demoexample.gluu.org"))
+            if not self.settings.get("CN_FQDN") or check_fqdn_provided:
+                self.settings.set("CN_FQDN", click.prompt("Enter Hostname", default="demoexample.gluu.org"))
 
             regex_bool = re.match(
                 '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
                 # noqa: W605
-                self.settings.get("GLUU_FQDN"))
+                self.settings.get("CN_FQDN"))
 
             if regex_bool:
                 break
@@ -74,12 +74,12 @@ class PromptConfiguration:
                 self.settings.set("LDAP_PW", self.settings.get("COUCHBASE_PASSWORD"))
 
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
-            self.settings.set("IS_GLUU_FQDN_REGISTERED", "N")
+            self.settings.set("IS_CN_FQDN_REGISTERED", "N")
 
-        if not self.settings.get("IS_GLUU_FQDN_REGISTERED"):
-            self.settings.set("IS_GLUU_FQDN_REGISTERED", confirm_yesno("Are you using a globally resolvable FQDN"))
+        if not self.settings.get("IS_CN_FQDN_REGISTERED"):
+            self.settings.set("IS_CN_FQDN_REGISTERED", confirm_yesno("Are you using a globally resolvable FQDN"))
 
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "N":
+        if self.settings.get("IS_CN_FQDN_REGISTERED") == "N":
             self.enabled_services.append("update-lb-ip")
             self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
 
@@ -90,7 +90,7 @@ class PromptConfiguration:
     def generate_main_config(self):
         """Prepare generate.json and output it
         """
-        self.config_settings["hostname"] = self.settings.get("GLUU_FQDN")
+        self.config_settings["hostname"] = self.settings.get("CN_FQDN")
         self.config_settings["country_code"] = self.settings.get("COUNTRY_CODE")
         self.config_settings["state"] = self.settings.get("STATE")
         self.config_settings["city"] = self.settings.get("CITY")

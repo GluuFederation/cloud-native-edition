@@ -186,7 +186,7 @@ class Kubernetes(object):
             try:
                 resp = self.apps_cli.delete_collection_namespaced_deployment(namespace=namespace,
                                                                              label_selector=app_label,
-                                                                             v1_delete_options=self.delete_options)
+                                                                             body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -215,7 +215,7 @@ class Kubernetes(object):
             try:
                 resp = self.apps_cli.delete_collection_namespaced_stateful_set(namespace=namespace,
                                                                                label_selector=app_label,
-                                                                               v1_delete_options=self.delete_options)
+                                                                               body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -230,7 +230,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.jobs_cli.delete_collection_namespaced_job(namespace=namespace, label_selector=app_label,
-                                                                      v1_delete_options=self.delete_options)
+                                                                      body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -243,13 +243,15 @@ class Kubernetes(object):
         response = True
         while response:
             try:
-                resp = self.cronjobs_cli.delete_collection_namespaced_cron_job(namespace=namespace, label_selector=app_label,
-                                                                      v1_delete_options=self.delete_options)
+                resp = self.cronjobs_cli.delete_collection_namespaced_cron_job(namespace=namespace,
+                                                                               label_selector=app_label,
+                                                                               body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
-        logger.info('cronjob with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
+        logger.info(
+            'cronjob with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
 
     def delete_secret(self, name, namespace="default"):
         """Delete secret using name in namespace"""
@@ -272,7 +274,7 @@ class Kubernetes(object):
             try:
                 resp = self.apps_cli.delete_collection_namespaced_daemon_set(namespace=namespace,
                                                                              label_selector=app_label,
-                                                                             v1_delete_options=self.delete_options)
+                                                                             body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -288,7 +290,7 @@ class Kubernetes(object):
             try:
                 resp = self.core_cli.delete_collection_namespaced_replication_controller(namespace=namespace,
                                                                                          label_selector=app_label,
-                                                                                         v1_delete_options=self.delete_options)
+                                                                                         body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -304,7 +306,7 @@ class Kubernetes(object):
             try:
                 resp = self.core_cli.delete_collection_namespaced_config_map(namespace=namespace,
                                                                              label_selector=app_label,
-                                                                             v1_delete_options=self.delete_options)
+                                                                             body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -383,7 +385,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_collection_persistent_volume(label_selector=app_label,
-                                                                         v1_delete_options=self.delete_options)
+                                                                         body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -398,7 +400,7 @@ class Kubernetes(object):
             try:
                 resp = self.core_cli.delete_collection_namespaced_persistent_volume_claim(namespace=namespace,
                                                                                           label_selector=app_label,
-                                                                                          v1_delete_options=self.delete_options)
+                                                                                          body=self.delete_options)
             except client.rest.ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
@@ -626,7 +628,8 @@ class Kubernetes(object):
             return False
 
     def patch_or_create_namespaced_secret(self, name, literal, value_of_literal, namespace="default",
-                                          secret_type="Opaque", second_literal=None, value_of_second_literal=None, data=None):
+                                          secret_type="Opaque", second_literal=None, value_of_second_literal=None,
+                                          data=None):
         """Patch secret and if not exist create"""
         # Instantiate the Secret object
         body = client.V1Secret()
@@ -882,7 +885,8 @@ class Kubernetes(object):
         for pod_name in pods_name:
             self.read_namespaced_pod_status(name=pod_name, namespace=namespace, timeout=timeout)
 
-    def connect_get_namespaced_pod_exec(self, exec_command, container, app_label=None, namespace="default", stdout=True):
+    def connect_get_namespaced_pod_exec(self, exec_command, container, app_label=None, namespace="default",
+                                        stdout=True):
         """Execute command in pod with app label in namespace"""
         pods_name = self.list_pod_name_by_label(namespace, app_label)
         for pod_name in pods_name:

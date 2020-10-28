@@ -29,12 +29,12 @@ class PromptUpgrade:
         versions, version_number = get_supported_versions()
         self.enabled_services.append("upgrade")
         self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
-        if not self.settings.get("GLUU_UPGRADE_TARGET_VERSION"):
-            self.settings.set("GLUU_UPGRADE_TARGET_VERSION", click.prompt(
+        if not self.settings.get("CN_UPGRADE_TARGET_VERSION"):
+            self.settings.set("CN_UPGRADE_TARGET_VERSION", click.prompt(
                 "Please enter the version to upgrade Gluu to", default=version_number,
             ))
 
-        image_names_and_tags = versions.get(self.settings.get("GLUU_UPGRADE_TARGET_VERSION"), {})
+        image_names_and_tags = versions.get(self.settings.get("CN_UPGRADE_TARGET_VERSION"), {})
         self.settings.update(image_names_and_tags)
 
         # reset this config to force image prompt

@@ -20,8 +20,8 @@ class PromptHelm:
 
         :return:
         """
-        if not self.settings.get("GLUU_HELM_RELEASE_NAME"):
-            self.settings.set("GLUU_HELM_RELEASE_NAME", click.prompt("Please enter Gluu helm name", default="gluu"))
+        if not self.settings.get("CN_HELM_RELEASE_NAME"):
+            self.settings.set("CN_HELM_RELEASE_NAME", click.prompt("Please enter Gluu helm name", default="gluu"))
 
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",

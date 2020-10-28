@@ -15,5 +15,5 @@ def test_upgrade_version(monkeypatch, settings, given, expected):
     )
 
     PromptUpgrade(settings).prompt_upgrade()
-    assert settings.get("GLUU_UPGRADE_TARGET_VERSION") == expected
+    assert settings.get("CN_UPGRADE_TARGET_VERSION") == expected
     assert settings.get("EDIT_IMAGE_NAMES_TAGS") == ""

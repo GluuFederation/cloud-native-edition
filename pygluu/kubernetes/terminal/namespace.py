@@ -19,5 +19,5 @@ class PromptNamespace:
     def prompt_gluu_namespace(self):
         """Prompt to enable optional services
         """
-        if not self.settings.get("GLUU_NAMESPACE"):
-            self.settings.set("GLUU_NAMESPACE", click.prompt("Namespace to deploy Gluu in", default="gluu"))
+        if not self.settings.get("CN_NAMESPACE"):
+            self.settings.set("CN_NAMESPACE", click.prompt("Namespace to deploy Gluu in", default="gluu"))

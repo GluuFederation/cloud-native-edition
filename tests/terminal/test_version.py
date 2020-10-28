@@ -9,7 +9,7 @@ def test_version_no_prompt(settings):
 
     prompt = PromptVersion(settings, version="5.0")
     prompt.prompt_version()
-    assert settings.get("GLUU_VERSION") == "5.0"
+    assert settings.get("CN_VERSION") == "5.0"
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -23,7 +23,7 @@ def test_version_merge_names_tags(settings, given, expected):
     with open("./gluu_versions.json", "w") as f:
         json.dump({"5.0": {"LDAP_IMAGE_TAG": "5.0.0_01"}}, f)
 
-    settings.set("GLUU_VERSION", "5.0")
+    settings.set("CN_VERSION", "5.0")
     settings.set("LDAP_IMAGE_TAG", given)
 
     PromptVersion(settings)
@@ -44,8 +44,8 @@ def test_version(monkeypatch, settings, given, expected):
 
     prompt = PromptVersion(settings)
 
-    # unset GLUU_VERSION in order to prompt user-input
-    settings.set("GLUU_VERSION", "")
+    # unset CN_VERSION in order to prompt user-input
+    settings.set("CN_VERSION", "")
 
     prompt.prompt_version()
-    assert settings.get("GLUU_VERSION") == expected
+    assert settings.get("CN_VERSION") == expected

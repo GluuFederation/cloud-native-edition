@@ -142,18 +142,18 @@ class Couchbase(object):
         """
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           literal="couchbase.crt",
                                                           value_of_literal=encoded_ca_crt_string)
 
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           literal="couchbase_password",
                                                           value_of_literal=encoded_cb_pass_string)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           literal="couchbase_superuser_password",
                                                           value_of_literal=encoded_cb_super_pass_string)
 
@@ -408,7 +408,7 @@ class Couchbase(object):
         """
         Installs Couchbase
         """
-        self.kubernetes.create_namespace(name=self.settings.get("GLUU_NAMESPACE"))
+        self.kubernetes.create_namespace(name=self.settings.get("CN_NAMESPACE"))
         if self.settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N":
             self.analyze_couchbase_cluster_yaml()
         cb_namespace = self.settings.get("COUCHBASE_NAMESPACE")

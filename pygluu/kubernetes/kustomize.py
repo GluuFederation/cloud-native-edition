@@ -327,7 +327,7 @@ class Kustomize(object):
         return output_yamls_folder, ldap_kustomize_yaml_directory, jcr_kustomize_yaml_directory
 
     def adjust_fqdn_yaml_entries(self):
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y" or \
+        if self.settings.get("IS_CN_FQDN_REGISTERED") == "Y" or \
                 self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or \
                 self.settings.get("DEPLOYMENT_ARCH") == "minikube" or \
                 self.settings.get("DEPLOYMENT_ARCH") == "gke" or \
@@ -345,7 +345,7 @@ class Kustomize(object):
                             self.settings.get("DEPLOYMENT_ARCH") == "aks" or \
                             self.settings.get("DEPLOYMENT_ARCH") == "do":
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = \
-                            [self.settings.get("GLUU_FQDN")]
+                            [self.settings.get("CN_FQDN")]
                         parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings.get("HOST_EXT_IP")
                     else:
                         try:
@@ -418,7 +418,7 @@ class Kustomize(object):
                     if {"mountPath": "/scripts", "name": "update-lb-ip"} not in volume_mount_list:
                         parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
                             {"mountPath": "/scripts", "name": "update-lb-ip"})
-                    parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings.get("GLUU_FQDN")]
+                    parser["spec"]["template"]["spec"]["hostAliases"][0]["hostnames"] = [self.settings.get("CN_FQDN")]
                     parser["spec"]["template"]["spec"]["hostAliases"][0]["ip"] = self.settings.get("HOST_EXT_IP")
                 parser.dump_it()
 
@@ -484,13 +484,13 @@ class Kustomize(object):
         parser.dump_it()
 
     def adjust_istio_virtual_services_destination_rules(self, app, virtual_service):
-        app_internal_addresss = app + "." + self.settings.get("GLUU_NAMESPACE") + "." + "svc.cluster.local"
+        app_internal_addresss = app + "." + self.settings.get("CN_NAMESPACE") + "." + "svc.cluster.local"
         destination_rule_name = "gluu-" + app + "-mtls"
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
             # Adjust virtual services
             virtual_service_path = Path("./cn-istio/base/cn-virtual-services.yaml")
             virtual_service_parser = Parser(virtual_service_path, "VirtualService", virtual_service)
-            virtual_service_parser["spec"]["hosts"] = [self.settings.get("GLUU_FQDN")]
+            virtual_service_parser["spec"]["hosts"] = [self.settings.get("CN_FQDN")]
             http_entries = virtual_service_parser["spec"]["http"]
             for i, http in enumerate(http_entries):
                 virtual_service_parser["spec"]["http"][i]["route"][0]["destination"]["host"] = app_internal_addresss
@@ -506,51 +506,51 @@ class Kustomize(object):
             configmap_parser = Parser(app_file, "ConfigMap", "gluu-config-cm")
         else:
             configmap_parser = Parser(app_file, "ConfigMap")
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y" or \
+        if self.settings.get("IS_CN_FQDN_REGISTERED") == "Y" or \
                 self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube", "gke", "aks", "do"):
             try:
                 del configmap_parser["data"]["LB_ADDR"]
             except KeyError:
                 logger.info("Key not deleted as it does not exist inside yaml.")
 
-        configmap_parser["data"]["GLUU_CACHE_TYPE"] = self.settings.get("GLUU_CACHE_TYPE")
-        configmap_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
-        configmap_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
-        configmap_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
-        configmap_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
-        configmap_parser["data"]["DOMAIN"] = self.settings.get("GLUU_FQDN")
-        configmap_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
-        configmap_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
-        configmap_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
-        configmap_parser["data"]["GLUU_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")
+        configmap_parser["data"]["CN_CACHE_TYPE"] = self.settings.get("CN_CACHE_TYPE")
+        configmap_parser["data"]["CN_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("CN_NAMESPACE")
+        configmap_parser["data"]["CN_SECRET_KUBERNETES_NAMESPACE"] = self.settings.get("CN_NAMESPACE")
+        configmap_parser["data"]["CN_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
+        configmap_parser["data"]["CN_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
+        configmap_parser["data"]["DOMAIN"] = self.settings.get("CN_FQDN")
+        configmap_parser["data"]["CN_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
+        configmap_parser["data"]["CN_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        configmap_parser["data"]["CN_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
+        configmap_parser["data"]["CN_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")
         # Persistence keys
-        if self.settings.get("GLUU_CACHE_TYPE") == "REDIS":
-            configmap_parser["data"]["GLUU_REDIS_URL"] = self.settings.get("REDIS_URL")
-            configmap_parser["data"]["GLUU_REDIS_TYPE"] = self.settings.get("REDIS_TYPE")
-            configmap_parser["data"]["GLUU_REDIS_USE_SSL"] = self.settings.get("REDIS_USE_SSL")
-            configmap_parser["data"]["GLUU_REDIS_SSL_TRUSTSTORE"] = self.settings.get("REDIS_SSL_TRUSTSTORE")
-            configmap_parser["data"]["GLUU_REDIS_SENTINEL_GROUP"] = self.settings.get("REDIS_SENTINEL_GROUP")
-        configmap_parser["data"]["GLUU_CASA_ENABLED"] = self.settings.get("ENABLE_CASA_BOOLEAN")
-        configmap_parser["data"]["GLUU_OXTRUST_API_ENABLED"] = self.settings.get("ENABLE_OXTRUST_API_BOOLEAN")
-        configmap_parser["data"]["GLUU_OXTRUST_API_TEST_MODE"] = self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN")
-        configmap_parser["data"]["GLUU_PASSPORT_ENABLED"] = self.settings.get("ENABLE_OXPASSPORT_BOOLEAN")
-        configmap_parser["data"]["GLUU_RADIUS_ENABLED"] = self.settings.get("ENABLE_RADIUS_BOOLEAN")
-        configmap_parser["data"]["GLUU_SAML_ENABLED"] = self.settings.get("ENABLE_SAML_BOOLEAN")
-        configmap_parser["data"]["GLUU_JACKRABBIT_ADMIN_ID"] = self.settings.get("JACKRABBIT_ADMIN_ID")
+        if self.settings.get("CN_CACHE_TYPE") == "REDIS":
+            configmap_parser["data"]["CN_REDIS_URL"] = self.settings.get("REDIS_URL")
+            configmap_parser["data"]["CN_REDIS_TYPE"] = self.settings.get("REDIS_TYPE")
+            configmap_parser["data"]["CN_REDIS_USE_SSL"] = self.settings.get("REDIS_USE_SSL")
+            configmap_parser["data"]["CN_REDIS_SSL_TRUSTSTORE"] = self.settings.get("REDIS_SSL_TRUSTSTORE")
+            configmap_parser["data"]["CN_REDIS_SENTINEL_GROUP"] = self.settings.get("REDIS_SENTINEL_GROUP")
+        configmap_parser["data"]["CN_CASA_ENABLED"] = self.settings.get("ENABLE_CASA_BOOLEAN")
+        configmap_parser["data"]["CN_OXTRUST_API_ENABLED"] = self.settings.get("ENABLE_OXTRUST_API_BOOLEAN")
+        configmap_parser["data"]["CN_OXTRUST_API_TEST_MODE"] = self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN")
+        configmap_parser["data"]["CN_PASSPORT_ENABLED"] = self.settings.get("ENABLE_OXPASSPORT_BOOLEAN")
+        configmap_parser["data"]["CN_RADIUS_ENABLED"] = self.settings.get("ENABLE_RADIUS_BOOLEAN")
+        configmap_parser["data"]["CN_SAML_ENABLED"] = self.settings.get("ENABLE_SAML_BOOLEAN")
+        configmap_parser["data"]["CN_JACKRABBIT_ADMIN_ID"] = self.settings.get("JACKRABBIT_ADMIN_ID")
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-            configmap_parser["data"]["GLUU_JACKRABBIT_CLUSTER"] = "true"
-            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_USER"] = self.settings.get("JACKRABBIT_PG_USER")
-            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_PASSWORD_FILE"] = "/etc/gluu/conf/postgres_password"
-            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_HOST"] = self.settings.get("POSTGRES_URL")
-            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_PORT"] = "5432"
-            configmap_parser["data"]["GLUU_JACKRABBIT_POSTGRES_DATABASE"] = self.settings.get("JACKRABBIT_DATABASE")
+            configmap_parser["data"]["CN_JACKRABBIT_CLUSTER"] = "true"
+            configmap_parser["data"]["CN_JACKRABBIT_POSTGRES_USER"] = self.settings.get("JACKRABBIT_PG_USER")
+            configmap_parser["data"]["CN_JACKRABBIT_POSTGRES_PASSWORD_FILE"] = "/etc/gluu/conf/postgres_password"
+            configmap_parser["data"]["CN_JACKRABBIT_POSTGRES_HOST"] = self.settings.get("POSTGRES_URL")
+            configmap_parser["data"]["CN_JACKRABBIT_POSTGRES_PORT"] = "5432"
+            configmap_parser["data"]["CN_JACKRABBIT_POSTGRES_DATABASE"] = self.settings.get("JACKRABBIT_DATABASE")
 
         # Auth-Server
         if self.settings.get("ENABLE_CASA_BOOLEAN") == "true":
-            configmap_parser["data"]["GLUU_SYNC_CASA_MANIFESTS"] = "true"
+            configmap_parser["data"]["CN_SYNC_CASA_MANIFESTS"] = "true"
         # oxTrust
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
-            configmap_parser["data"]["GLUU_SYNC_SHIB_MANIFESTS"] = "true"
+            configmap_parser["data"]["CN_SYNC_SHIB_MANIFESTS"] = "true"
         # ClientAPI
         if self.settings.get("ENABLE_CLIENT_API") == "Y":
             configmap_parser["data"]["CN_CLIENT_API_APPLICATION_CERT_CN"] = self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
@@ -695,7 +695,7 @@ class Kustomize(object):
             if app == "cr-rotate" and self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
                 logger.info("Building {} manifests".format(app))
                 self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings.get("GLUU_NAMESPACE"),
+                                               namespace=self.settings.get("CN_NAMESPACE"),
                                                image_name_key="CACHE_REFRESH_ROTATE_IMAGE_NAME",
                                                image_tag_key="CACHE_REFRESH_ROTATE_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
@@ -705,7 +705,7 @@ class Kustomize(object):
             if app == "client-api" and self.settings.get("ENABLE_CLIENT_API") == "Y":
                 logger.info("Building {} manifests".format(app))
                 self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings.get("GLUU_NAMESPACE"),
+                                               namespace=self.settings.get("CN_NAMESPACE"),
                                                image_name_key="CLIENT_API_IMAGE_NAME",
                                                image_tag_key="CLIENT_API_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
@@ -719,7 +719,7 @@ class Kustomize(object):
                 self.adjust_istio_virtual_services_destination_rules(app, "gluu-istio-casa")
                 logger.info("Building {} manifests".format(app))
                 self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings.get("GLUU_NAMESPACE"),
+                                               namespace=self.settings.get("CN_NAMESPACE"),
                                                image_name_key="CASA_IMAGE_NAME",
                                                image_tag_key="CASA_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
@@ -730,18 +730,18 @@ class Kustomize(object):
             if app == "radius" and self.settings.get("ENABLE_RADIUS") == "Y":
                 logger.info("Building {} manifests".format(app))
                 self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings.get("GLUU_NAMESPACE"),
+                                               namespace=self.settings.get("CN_NAMESPACE"),
                                                image_name_key="RADIUS_IMAGE_NAME",
                                                image_tag_key="RADIUS_IMAGE_TAG")
                 exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
-            if app == "update-lb-ip" and self.settings.get("IS_GLUU_FQDN_REGISTERED") == "N":
+            if app == "update-lb-ip" and self.settings.get("IS_CN_FQDN_REGISTERED") == "N":
                 if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
                     logger.info("Building {} manifests".format(app))
                     parser = Parser(kustomization_file, "Kustomization")
-                    parser["namespace"] = self.settings.get("GLUU_NAMESPACE")
+                    parser["namespace"] = self.settings.get("CN_NAMESPACE")
                     parser.dump_it()
                     exec_cmd(command, output_file=app_file)
 
@@ -752,34 +752,34 @@ class Kustomize(object):
     def build_manifest(self, app, kustomization_file, command, image_name_key, image_tag_key, app_file):
         logger.info("Building {} manifests".format(app))
         self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                       namespace=self.settings.get("GLUU_NAMESPACE"),
+                                       namespace=self.settings.get("CN_NAMESPACE"),
                                        image_name_key=image_name_key,
                                        image_tag_key=image_tag_key)
         exec_cmd(command, output_file=app_file)
 
     def kustomize_gluu_upgrade(self):
         self.update_kustomization_yaml(kustomization_yaml="upgrade/base/kustomization.yaml",
-                                       namespace=self.settings.get("GLUU_NAMESPACE"),
+                                       namespace=self.settings.get("CN_NAMESPACE"),
                                        image_name_key="UPGRADE_IMAGE_NAME",
                                        image_tag_key="UPGRADE_IMAGE_TAG")
         command = self.kubectl + " kustomize upgrade/base"
         exec_cmd(command, output_file=self.gluu_upgrade_yaml)
         upgrade_cm_parser = Parser(self.gluu_upgrade_yaml, "ConfigMap")
-        upgrade_cm_parser["data"]["DOMAIN"] = self.settings.get("GLUU_FQDN")
-        upgrade_cm_parser["data"]["GLUU_CACHE_TYPE"] = self.settings.get("GLUU_CACHE_TYPE")
-        upgrade_cm_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
-        upgrade_cm_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
-        upgrade_cm_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
-        upgrade_cm_parser["data"]["GLUU_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
-        upgrade_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
-        upgrade_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
-        upgrade_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
+        upgrade_cm_parser["data"]["DOMAIN"] = self.settings.get("CN_FQDN")
+        upgrade_cm_parser["data"]["CN_CACHE_TYPE"] = self.settings.get("CN_CACHE_TYPE")
+        upgrade_cm_parser["data"]["CN_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
+        upgrade_cm_parser["data"]["CN_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        upgrade_cm_parser["data"]["CN_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
+        upgrade_cm_parser["data"]["CN_PERSISTENCE_LDAP_MAPPING"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
+        upgrade_cm_parser["data"]["CN_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
+        upgrade_cm_parser["data"]["CN_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("CN_NAMESPACE")
+        upgrade_cm_parser["data"]["CN_SECRET_KUBERNETES_NAMESPACE"] = self.settings.get("CN_NAMESPACE")
         upgrade_cm_parser.dump_it()
 
         upgrade_job_parser = Parser(self.gluu_upgrade_yaml, "Job")
         upgrade_job_parser["spec"]["template"]["spec"]["containers"][0]["args"] = \
-            ["--source", self.settings.get("GLUU_VERSION"),
-             "--target", self.settings.get("GLUU_UPGRADE_TARGET_VERSION")]
+            ["--source", self.settings.get("CN_VERSION"),
+             "--target", self.settings.get("CN_UPGRADE_TARGET_VERSION")]
         upgrade_job_parser.dump_it()
 
         self.adjust_yamls_for_fqdn_status[self.gluu_upgrade_yaml] = "Job"
@@ -804,8 +804,8 @@ class Kustomize(object):
             gg_ui_job_parser.dump_it()
 
             gg_ui_ingress_parser = Parser(self.gg_ui_yaml, "Ingress")
-            gg_ui_ingress_parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("GLUU_FQDN")
-            gg_ui_ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
+            gg_ui_ingress_parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("CN_FQDN")
+            gg_ui_ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("CN_FQDN")
             gg_ui_ingress_parser.dump_it()
             self.remove_resources(self.gg_ui_yaml, "Deployment")
             self.adjust_yamls_for_fqdn_status[self.gg_ui_yaml] = "Deployment"
@@ -823,7 +823,7 @@ class Kustomize(object):
                     service_parser["spec"]["ports"][0]["targetPort"] = 8090
                 service_parser.dump_it()
         ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
-        ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
+        ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("CN_FQDN")
         ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"] = \
             self.settings.get("ARN_AWS_IAM")
         if not self.settings.get("ARN_AWS_IAM"):
@@ -860,9 +860,9 @@ class Kustomize(object):
         while True:
             try:
                 ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
-                                                                  self.settings.get("GLUU_NAMESPACE")).data["ssl_cert"]
+                                                                  self.settings.get("CN_NAMESPACE")).data["ssl_cert"]
                 ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                                 self.settings.get("GLUU_NAMESPACE")).data["ssl_key"]
+                                                                 self.settings.get("CN_NAMESPACE")).data["ssl_key"]
                 break
             except (KeyError, Exception):
                 logger.info("Waiting for Gluu secret...")
@@ -885,8 +885,8 @@ class Kustomize(object):
     def deploy_alb(self):
         shutil.copy(Path("./alb/ingress.yaml"), self.output_yaml_directory.joinpath("ingress.yaml"))
         self.kubernetes.create_objects_from_dict(self.output_yaml_directory.joinpath("ingress.yaml"),
-                                                 self.settings.get("GLUU_NAMESPACE"))
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+                                                 self.settings.get("CN_NAMESPACE"))
+        if self.settings.get("IS_CN_FQDN_REGISTERED") != "Y":
             prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
             lb_hostname = prompt
             while True:
@@ -902,7 +902,7 @@ class Kustomize(object):
 
     def parse_gluu_gateway_ui_configmap(self):
         client_api_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
+            self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("CN_NAMESPACE"))
         gg_ui_cm_parser = Parser(self.gg_ui_yaml, "ConfigMap")
         gg_ui_cm_parser["data"]["DB_USER"] = self.settings.get("GLUU_GATEWAY_UI_PG_USER")
         gg_ui_cm_parser["data"]["KONG_ADMIN_URL"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
@@ -914,17 +914,17 @@ class Kustomize(object):
         if not gg_ui_cm_parser["data"]["CLIENT_ID"] or \
                 not gg_ui_cm_parser["data"]["CLIENT_API_ID"] or \
                 not gg_ui_cm_parser["data"]["CLIENT_SECRET"]:
-            client_api_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
+            client_api_id, client_id, client_secret = register_op_client(self.settings.get("CN_NAMESPACE"),
                                                                   "konga-client",
-                                                                  self.settings.get("GLUU_FQDN"),
+                                                                  self.settings.get("CN_FQDN"),
                                                                   client_api_server_url)
             gg_ui_cm_parser["data"]["CLIENT_API_ID"] = client_api_id
             gg_ui_cm_parser["data"]["CLIENT_ID"] = client_id
             gg_ui_cm_parser["data"]["CLIENT_SECRET"] = client_secret
-        gg_ui_cm_parser["data"]["OP_SERVER_URL"] = "https://" + self.settings.get("GLUU_FQDN")
+        gg_ui_cm_parser["data"]["OP_SERVER_URL"] = "https://" + self.settings.get("CN_FQDN")
 
-        gg_ui_cm_parser["data"]["GG_HOST"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        gg_ui_cm_parser["data"]["GG_UI_REDIRECT_URL_HOST"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
+        gg_ui_cm_parser["data"]["GG_HOST"] = self.settings.get("CN_FQDN") + "/gg-ui/"
+        gg_ui_cm_parser["data"]["GG_UI_REDIRECT_URL_HOST"] = self.settings.get("CN_FQDN") + "/gg-ui/"
 
         gg_ui_cm_parser.dump_it()
 
@@ -1052,11 +1052,11 @@ class Kustomize(object):
         ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         for ingress_name in ingress_name_list:
             parser = Parser(ingress_file, "Ingress", ingress_name)
-            parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("GLUU_FQDN")
-            parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
+            parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("CN_FQDN")
+            parser["spec"]["rules"][0]["host"] = self.settings.get("CN_FQDN")
             parser.dump_it()
 
-        self.kubernetes.create_objects_from_dict(ingress_file, self.settings.get("GLUU_NAMESPACE"))
+        self.kubernetes.create_objects_from_dict(ingress_file, self.settings.get("CN_NAMESPACE"))
 
     @property
     def generate_postgres_init_sql(self):
@@ -1235,7 +1235,7 @@ class Kustomize(object):
                                                           namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
                                                           literal="DB_PASSWORD",
                                                           value_of_literal=encoded_gg_ui_pg_pass_string)
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+        if self.settings.get("IS_CN_FQDN_REGISTERED") != "Y":
             if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
                 self.kubernetes = Kubernetes()
                 self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml,
@@ -1291,12 +1291,12 @@ class Kustomize(object):
                                                         namespace=self.settings.get("REDIS_NAMESPACE"))
 
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=redis-cluster", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=redis-cluster", self.timeout)
 
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=configuration-manager-load",
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=configuration-manager-load",
                                                 self.timeout)
 
     def deploy_ldap(self):
@@ -1304,7 +1304,7 @@ class Kustomize(object):
         logger.info("Deploying LDAP.Please wait..")
         time.sleep(10)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=opendj", self.timeout)
 
     def def_jackrabbit_secret(self):
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
@@ -1313,7 +1313,7 @@ class Kustomize(object):
             encoded_jackrabbit_pg_pass_string = str(encoded_jackrabbit_pg_pass_bytes, "utf-8")
 
             self.kubernetes.patch_or_create_namespaced_secret(name="gluu-jackrabbit-postgres-pass",
-                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              namespace=self.settings.get("CN_NAMESPACE"),
                                                               literal="postgres_password",
                                                               value_of_literal=encoded_jackrabbit_pg_pass_string)
             jackrabbit_parser = Parser(self.jackrabbit_yaml, "StatefulSet")
@@ -1327,7 +1327,7 @@ class Kustomize(object):
             self.settings.get("JACKRABBIT_ADMIN_PASSWORD").encode("utf-8"))
         encoded_jackrabbit_admin_pass_string = str(encoded_jackrabbit_admin_pass_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="gluu-jackrabbit-admin-pass",
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           literal="jackrabbit_admin_password",
                                                           value_of_literal=encoded_jackrabbit_admin_pass_string)
 
@@ -1337,20 +1337,20 @@ class Kustomize(object):
         logger.info("Deploying Jackrabbit content repository.Please wait..")
         time.sleep(10)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=jackrabbit", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=jackrabbit", self.timeout)
 
     def deploy_persistence(self):
         self.kubernetes.create_objects_from_dict(self.persistence_yaml)
         logger.info("Trying to import ldifs...")
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=persistence-load",
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=persistence-load",
                                                 self.timeout)
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.patch_namespaced_stateful_set_scale(name="opendj",
                                                                 replicas=self.settings.get("LDAP_REPLICAS"),
-                                                                namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                                namespace=self.settings.get("CN_NAMESPACE"))
             if not self.settings.get("AWS_LB_TYPE") == "alb":
-                self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
+                self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=opendj", self.timeout)
 
     def deploy_update_lb_ip(self):
         self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml)
@@ -1358,63 +1358,63 @@ class Kustomize(object):
     def deploy_auth_server(self):
         self.kubernetes.create_objects_from_dict(self.auth_server_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=auth-server", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=auth-server", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="auth-server", replicas=self.settings.get("AUTH_SERVER_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_fido2(self):
         self.kubernetes.create_objects_from_dict(self.fido2_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=fido2", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=fido2", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="fido2", replicas=self.settings.get("FIDO2_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_scim(self):
         self.kubernetes.create_objects_from_dict(self.scim_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=scim", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=scim", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="scim", replicas=self.settings.get("SCIM_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_client_api(self):
         self.kubernetes.create_objects_from_dict(self.client_api_server_yaml)
         self.kubernetes.create_objects_from_dict(Path("./client-api/base/networkpolicy.yaml"),
-                                                 self.settings.get("GLUU_NAMESPACE"))
+                                                 self.settings.get("CN_NAMESPACE"))
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=client-api", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=client-api", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="client-api",
                                                           replicas=self.settings.get("CLIENT_API_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_casa(self):
         self.kubernetes.create_objects_from_dict(self.casa_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=casa", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=casa", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="casa", replicas=self.settings.get("CASA_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_oxtrust(self):
         self.kubernetes.create_objects_from_dict(self.oxtrust_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=oxtrust", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=oxtrust", self.timeout)
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxtrust",
                                                             replicas=self.settings.get("OXTRUST_REPLICAS"),
-                                                            namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                            namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_oxshibboleth(self):
         self.kubernetes.create_objects_from_dict(self.oxshibboleth_yaml)
-        self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=oxshibboleth", self.timeout)
+        self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=oxshibboleth", self.timeout)
         self.kubernetes.patch_namespaced_stateful_set_scale(name="oxshibboleth",
                                                             replicas=self.settings.get("OXSHIBBOLETH_REPLICAS"),
-                                                            namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                            namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_oxpassport(self):
         self.kubernetes.create_objects_from_dict(self.oxpassport_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=oxpassport", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=oxpassport", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="oxpassport",
                                                           replicas=self.settings.get("OXPASSPORT_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_auth_server_key_rotation(self):
         self.kubernetes.create_objects_from_dict(self.auth_server_key_rotate_yaml)
@@ -1422,39 +1422,39 @@ class Kustomize(object):
     def deploy_radius(self):
         self.kubernetes.create_objects_from_dict(self.radius_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=radius", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=radius", self.timeout)
         self.kubernetes.patch_namespaced_deployment_scale(name="radius", replicas=self.settings.get("RADIUS_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                          namespace=self.settings.get("CN_NAMESPACE"))
 
     def deploy_cr_rotate(self):
-        self.kubernetes.delete_role("gluu-role", self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings.get("GLUU_NAMESPACE"))
+        self.kubernetes.delete_role("gluu-role", self.settings.get("CN_NAMESPACE"))
+        self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings.get("CN_NAMESPACE"))
         self.kubernetes.delete_cluster_role_binding("gluu-rolebinding")
         time.sleep(10)
         self.kubernetes.create_objects_from_dict(self.cr_rotate_yaml)
 
     def deploy_gluu_istio_ingress(self):
         self.kubernetes.create_objects_from_dict(self.gluu_istio_ingress_yaml,
-                                                 namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                 namespace=self.settings.get("CN_NAMESPACE"))
 
     def copy_configs_before_restore(self):
-        self.gluu_secret = self.kubernetes.read_namespaced_secret("gluu", self.settings.get("GLUU_NAMESPACE")).data
-        self.gluu_config = self.kubernetes.read_namespaced_configmap("gluu", self.settings.get("GLUU_NAMESPACE")).data
+        self.gluu_secret = self.kubernetes.read_namespaced_secret("gluu", self.settings.get("CN_NAMESPACE")).data
+        self.gluu_config = self.kubernetes.read_namespaced_configmap("gluu", self.settings.get("CN_NAMESPACE")).data
 
     def save_a_copy_of_config(self):
         self.kubernetes.patch_or_create_namespaced_secret(name="secret-params", literal=None, value_of_literal=None,
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           data=self.gluu_secret)
         self.kubernetes.patch_or_create_namespaced_configmap(name="config-params",
-                                                             namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                             namespace=self.settings.get("CN_NAMESPACE"),
                                                              data=self.gluu_config)
 
     def mount_config(self):
         self.kubernetes.patch_or_create_namespaced_secret(name="gluu", literal=None, value_of_literal=None,
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           data=self.gluu_secret)
         self.kubernetes.patch_or_create_namespaced_configmap(name="gluu",
-                                                             namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                             namespace=self.settings.get("CN_NAMESPACE"),
                                                              data=self.gluu_config)
 
     def run_backup_command(self):
@@ -1465,7 +1465,7 @@ class Kustomize(object):
             self.kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_ldap_command,
                                                             app_label="app=opendj",
                                                             container="opendj",
-                                                            namespace=self.settings.get("GLUU_NAMESPACE"))
+                                                            namespace=self.settings.get("CN_NAMESPACE"))
         except (ConnectionError, Exception):
             pass
 
@@ -1473,24 +1473,24 @@ class Kustomize(object):
         encoded_ldap_pw_bytes = base64.b64encode(self.settings.get("LDAP_PW").encode("utf-8"))
         encoded_ldap_pw_string = str(encoded_ldap_pw_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="ldap-auth",
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                          namespace=self.settings.get("CN_NAMESPACE"),
                                                           literal="password",
                                                           value_of_literal=encoded_ldap_pw_string)
         kustomize_parser = Parser("ldap/backup/kustomization.yaml", "Kustomization")
-        kustomize_parser["namespace"] = self.settings.get("GLUU_NAMESPACE")
-        kustomize_parser["configMapGenerator"][0]["literals"] = ["GLUU_LDAP_AUTO_REPLICATE=" + self.settings.get(
-            "GLUU_CACHE_TYPE"), "GLUU_CONFIG_KUBERNETES_NAMESPACE=" + self.settings.get("GLUU_NAMESPACE"),
-                                                                 "GLUU_SECRET_KUBERNETES_NAMESPACE=" +
-                                                                 self.settings.get("GLUU_NAMESPACE"),
-                                                                 "GLUU_CONFIG_ADAPTER=kubernetes",
-                                                                 "GLUU_SECRET_ADAPTER=kubernetes",
-                                                                 "GLUU_LDAP_INIT='true'",
-                                                                 "GLUU_LDAP_INIT_HOST='opendj'",
-                                                                 "GLUU_LDAP_INIT_PORT='1636'",
-                                                                 "GLUU_CERT_ALT_NAME='opendj'",
-                                                                 "GLUU_PERSISTENCE_LDAP_MAPPING=" + self.settings.get(
+        kustomize_parser["namespace"] = self.settings.get("CN_NAMESPACE")
+        kustomize_parser["configMapGenerator"][0]["literals"] = ["CN_LDAP_AUTO_REPLICATE=" + self.settings.get(
+            "CN_CACHE_TYPE"), "CN_CONFIG_KUBERNETES_NAMESPACE=" + self.settings.get("CN_NAMESPACE"),
+                                                                 "CN_SECRET_KUBERNETES_NAMESPACE=" +
+                                                                 self.settings.get("CN_NAMESPACE"),
+                                                                 "CN_CONFIG_ADAPTER=kubernetes",
+                                                                 "CN_SECRET_ADAPTER=kubernetes",
+                                                                 "CN_LDAP_INIT='true'",
+                                                                 "CN_LDAP_INIT_HOST='opendj'",
+                                                                 "CN_LDAP_INIT_PORT='1636'",
+                                                                 "CN_CERT_ALT_NAME='opendj'",
+                                                                 "CN_PERSISTENCE_LDAP_MAPPING=" + self.settings.get(
                                                                      "HYBRID_LDAP_HELD_DATA"),
-                                                                 "GLUU_PERSISTENCE_TYPE=" + self.settings.get(
+                                                                 "CN_PERSISTENCE_TYPE=" + self.settings.get(
                                                                      "PERSISTENCE_BACKEND")]
         kustomize_parser.dump_it()
         cron_job_parser = Parser("ldap/backup/cronjobs.yaml", "CronJob")
@@ -1508,9 +1508,9 @@ class Kustomize(object):
                                    "'cn=Directory Manager'", "--trustAll", "-f"]
             manual_exec_delete_command = " ".join(exec_delete_command)
             logger.warning("Please delete backend index manually by calling\n kubectl exec -ti opendj-0 -n {} "
-                           "-- {}".format(self.settings.get("GLUU_NAMESPACE"), manual_exec_delete_command))
+                           "-- {}".format(self.settings.get("CN_NAMESPACE"), manual_exec_delete_command))
             input("Press Enter once index has been deleted...")
-            self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=opendj")
+            self.kubernetes.delete_stateful_set(self.settings.get("CN_NAMESPACE"), "app=opendj")
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
             import click
             from pygluu.kubernetes.helpers import prompt_password
@@ -1523,7 +1523,7 @@ class Kustomize(object):
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         self.kubernetes = Kubernetes()
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
             if self.settings.get("INSTALL_GLUU_GATEWAY") == "N":
@@ -1543,7 +1543,7 @@ class Kustomize(object):
         self.def_jackrabbit_secret()
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.create_objects_from_dict("ldap/base/101-ox.yaml",
-                                                     self.settings.get("GLUU_NAMESPACE"))
+                                                     self.settings.get("CN_NAMESPACE"))
             ldap_parser = Parser(self.ldap_yaml, "StatefulSet")
             ldap_parser["spec"]["template"]["spec"]["containers"][0]["volumeMounts"].append(
                 {"mountPath": "/opt/opendj/config/schema/101-ox.ldif",
@@ -1556,26 +1556,26 @@ class Kustomize(object):
             logger.info("Deploying LDAP.Please wait..")
             time.sleep(10)
             if not self.settings.get("AWS_LB_TYPE") == "alb":
-                self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=opendj", self.timeout)
+                self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=opendj", self.timeout)
         else:
             encoded_cb_super_pass_bytes = base64.b64encode(
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD").encode("utf-8"))
             encoded_cb_super_pass_string = str(encoded_cb_super_pass_bytes, "utf-8")
             self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
-                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              namespace=self.settings.get("CN_NAMESPACE"),
                                                               literal="couchbase_superuser_password",
                                                               value_of_literal=encoded_cb_super_pass_string)
             encoded_cb_pass_bytes = base64.b64encode(self.settings.get("COUCHBASE_PASSWORD").encode("utf-8"))
             encoded_cb_pass_string = str(encoded_cb_pass_bytes, "utf-8")
             # Patch old password
             self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
-                                                              namespace=self.settings.get("GLUU_NAMESPACE"),
+                                                              namespace=self.settings.get("CN_NAMESPACE"),
                                                               literal="couchbase_password",
                                                               value_of_literal=encoded_cb_pass_string)
 
         self.kubernetes.create_objects_from_dict(self.gluu_upgrade_yaml)
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         logger.info("Updating manifests and Gluu version...")
         stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
                                            silent=True)
@@ -1585,7 +1585,7 @@ class Kustomize(object):
             labels = {"app": "gluu"}
             if self.settings.get("USE_ISTIO") == "Y":
                 labels = {"app": "gluu", "istio-injection": "enabled"}
-            self.kubernetes.create_namespace(name=self.settings.get("GLUU_NAMESPACE"), labels=labels)
+            self.kubernetes.create_namespace(name=self.settings.get("CN_NAMESPACE"), labels=labels)
         self.kustomize_it()
         self.adjust_fqdn_yaml_entries()
         if install_couchbase:
@@ -1635,7 +1635,7 @@ class Kustomize(object):
             self.deploy_jackrabbit()
 
         if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.setup_tls(namespace=self.settings.get("GLUU_NAMESPACE"))
+            self.setup_tls(namespace=self.settings.get("CN_NAMESPACE"))
 
         if self.settings.get("INSTALL_REDIS") == "Y":
             self.kubernetes = Kubernetes()
@@ -1657,7 +1657,7 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.deploy_persistence()
 
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+        if self.settings.get("IS_CN_FQDN_REGISTERED") != "Y":
             if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
                 self.kubernetes = Kubernetes()
                 self.deploy_update_lb_ip()
@@ -1751,9 +1751,9 @@ class Kustomize(object):
             stateful_set_labels.pop(0)
 
         for service in gluu_service_names:
-            self.kubernetes.delete_service(service, self.settings.get("GLUU_NAMESPACE"))
+            self.kubernetes.delete_service(service, self.settings.get("CN_NAMESPACE"))
         for network_policy in network_policies:
-            self.kubernetes.delete_network_policy(network_policy, self.settings.get("GLUU_NAMESPACE"))
+            self.kubernetes.delete_network_policy(network_policy, self.settings.get("CN_NAMESPACE"))
         if not restore:
             if self.settings.get("INSTALL_REDIS") == "Y":
                 self.uninstall_redis()
@@ -1765,36 +1765,36 @@ class Kustomize(object):
                 self.uninstall_postgres()
 
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
-        self.kubernetes.delete_cronjob(self.settings.get("GLUU_NAMESPACE"), "app=auth-server-key-rotation")
+        self.kubernetes.delete_cronjob(self.settings.get("CN_NAMESPACE"), "app=auth-server-key-rotation")
         for deployment in gluu_deployment_app_labels:
-            self.kubernetes.delete_deployment_using_label(self.settings.get("GLUU_NAMESPACE"), deployment)
+            self.kubernetes.delete_deployment_using_label(self.settings.get("CN_NAMESPACE"), deployment)
         if not restore:
             self.kubernetes.delete_deployment_using_name(nginx_deployemnt_app_name, "ingress-nginx")
         for stateful_set in stateful_set_labels:
-            self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), stateful_set)
+            self.kubernetes.delete_stateful_set(self.settings.get("CN_NAMESPACE"), stateful_set)
         for job in jobs_labels:
-            self.kubernetes.delete_job(self.settings.get("GLUU_NAMESPACE"), job)
+            self.kubernetes.delete_job(self.settings.get("CN_NAMESPACE"), job)
         for secret in secrets:
-            self.kubernetes.delete_secret(secret, self.settings.get("GLUU_NAMESPACE"))
+            self.kubernetes.delete_secret(secret, self.settings.get("CN_NAMESPACE"))
         if not restore:
             for secret in cb_secrets:
-                self.kubernetes.delete_secret(secret, self.settings.get("GLUU_NAMESPACE"))
-        self.kubernetes.delete_daemon_set(self.settings.get("GLUU_NAMESPACE"), daemon_set_label)
+                self.kubernetes.delete_secret(secret, self.settings.get("CN_NAMESPACE"))
+        self.kubernetes.delete_daemon_set(self.settings.get("CN_NAMESPACE"), daemon_set_label)
         for config_map in gluu_config_maps_names:
-            self.kubernetes.delete_config_map_using_name(config_map, self.settings.get("GLUU_NAMESPACE"))
+            self.kubernetes.delete_config_map_using_name(config_map, self.settings.get("CN_NAMESPACE"))
         if not restore:
             for config_map in nginx_config_maps_names:
                 self.kubernetes.delete_config_map_using_name(config_map, "ingress-nginx")
         for cm_pv_pvc in all_labels:
-            self.kubernetes.delete_config_map_using_label(self.settings.get("GLUU_NAMESPACE"), cm_pv_pvc)
+            self.kubernetes.delete_config_map_using_label(self.settings.get("CN_NAMESPACE"), cm_pv_pvc)
             self.kubernetes.delete_persistent_volume(cm_pv_pvc)
-            self.kubernetes.delete_persistent_volume_claim(self.settings.get("GLUU_NAMESPACE"), cm_pv_pvc)
+            self.kubernetes.delete_persistent_volume_claim(self.settings.get("CN_NAMESPACE"), cm_pv_pvc)
         for storage_class in gluu_storage_class_names:
             self.kubernetes.delete_storage_class(storage_class)
 
         if not restore:
-            self.kubernetes.delete_role("gluu-role", self.settings.get("GLUU_NAMESPACE"))
-            self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings.get("GLUU_NAMESPACE"))
+            self.kubernetes.delete_role("gluu-role", self.settings.get("CN_NAMESPACE"))
+            self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings.get("CN_NAMESPACE"))
             self.kubernetes.delete_role(nginx_roles_name, "ingress-nginx")
             self.kubernetes.delete_cluster_role_binding("gluu-rolebinding")
             self.kubernetes.delete_cluster_role_binding(gluu_cluster_role_bindings_name)
@@ -1803,7 +1803,7 @@ class Kustomize(object):
             self.kubernetes.delete_service_account(nginx_service_account_name, "ingress-nginx")
             self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
             for extension in nginx_ingress_extensions_names:
-                self.kubernetes.delete_ingress(extension, self.settings.get("GLUU_NAMESPACE"))
+                self.kubernetes.delete_ingress(extension, self.settings.get("CN_NAMESPACE"))
         if minkube_yamls_folder.exists() or microk8s_yamls_folder.exists():
             shutil.rmtree('/data', ignore_errors=True)
         else:

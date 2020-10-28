@@ -67,7 +67,7 @@ def initialize():
     if not session.get('finish_endpoint'):
         return redirect(url_for('main.index'))
 
-    if not gluu_settings.db.get("ACCEPT_GLUU_LICENSE") and \
+    if not gluu_settings.db.get("ACCEPT_CN_LICENSE") and \
             request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
         return redirect(url_for("wizard.agreement"))
 
@@ -175,7 +175,7 @@ def agreement():
     """
     form = LicenseForm()
     if form.validate_on_submit():
-        gluu_settings.db.set("ACCEPT_GLUU_LICENSE", "Y" if form.accept_gluu_license.data else "N")
+        gluu_settings.db.set("ACCEPT_CN_LICENSE", "Y" if form.accept_gluu_license.data else "N")
         return redirect(url_for(request.form["next_step"]))
 
     with open("./LICENSE", "r") as f:
@@ -183,7 +183,7 @@ def agreement():
 
     if request.method == "GET":
         # populate form data from settings
-        form.accept_gluu_license.data = gluu_settings.db.get("ACCEPT_GLUU_LICENSE")
+        form.accept_gluu_license.data = gluu_settings.db.get("ACCEPT_CN_LICENSE")
 
     return render_template("wizard/index.html",
                            license=agreement_file,
@@ -206,12 +206,12 @@ def gluu_version():
 
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        gluu_settings.db.set("GLUU_VERSION", form.gluu_version.data)
+        gluu_settings.db.set("CN_VERSION", form.gluu_version.data)
         return redirect(url_for(next_step))
 
     if request.method == "GET":
         # populate form data from settings
-        form.gluu_version.data = gluu_settings.db.get("GLUU_VERSION")
+        form.gluu_version.data = gluu_settings.db.get("CN_VERSION")
 
     return render_template("wizard/index.html",
                            form=form,
@@ -253,13 +253,13 @@ def gluu_namespace():
     form = NamespaceForm()
     if form.validate_on_submit():
         next_step = request.form["next_step"]
-        gluu_settings.db.set("GLUU_NAMESPACE", form.gluu_namespace.data)
+        gluu_settings.db.set("CN_NAMESPACE", form.gluu_namespace.data)
         return redirect(url_for(next_step))
 
     if request.method == "GET":
         # populate form
-        if gluu_settings.db.get("GLUU_NAMESPACE"):
-            form.gluu_namespace.data = gluu_settings.db.get("GLUU_NAMESPACE")
+        if gluu_settings.db.get("CN_NAMESPACE"):
+            form.gluu_namespace.data = gluu_settings.db.get("CN_NAMESPACE")
 
     return render_template("wizard/index.html",
                            form=form,
@@ -956,9 +956,9 @@ def cache_type():
     """
     form = CacheTypeForm()
     if form.validate_on_submit():
-        data = {"GLUU_CACHE_TYPE": form.gluu_cache_type.data}
+        data = {"CN_CACHE_TYPE": form.gluu_cache_type.data}
 
-        if data["GLUU_CACHE_TYPE"] == "REDIS":
+        if data["CN_CACHE_TYPE"] == "REDIS":
             data["REDIS_TYPE"] = form.redis.redis_type.data
             data["INSTALL_REDIS"] = form.redis.install_redis.data
 
@@ -1051,7 +1051,7 @@ def configuration():
         form.ldap_pw.render_kw = {"disabled": "disabled"}
 
     if form.validate_on_submit():
-        data = {"GLUU_FQDN": form.gluu_fqdn.data,
+        data = {"CN_FQDN": form.gluu_fqdn.data,
                 "COUNTRY_CODE": form.country_code.data,
                 "STATE": form.state.data,
                 "CITY": form.city.data,
@@ -1065,11 +1065,11 @@ def configuration():
             data["LDAP_PW"] = gluu_settings.db.get("COUCHBASE_PASSWORD")
 
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
-            data["IS_GLUU_FQDN_REGISTERED"] = "N"
+            data["IS_CN_FQDN_REGISTERED"] = "N"
         else:
-            data["IS_GLUU_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
+            data["IS_CN_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
 
-        if data["IS_GLUU_FQDN_REGISTERED"] == "N":
+        if data["IS_CN_FQDN_REGISTERED"] == "N":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("update-lb-ip")
         gluu_settings.db.update(data)
@@ -1198,7 +1198,7 @@ def images():
     if request.method == "GET":
         # get default images
         versions, _ = get_supported_versions()
-        image_names_tags = versions.get(gluu_settings.db.get("GLUU_VERSION"), {})
+        image_names_tags = versions.get(gluu_settings.db.get("CN_VERSION"), {})
 
         for k, v in image_names_tags.items():
             field = getattr(form, k.lower(), None)
@@ -1269,7 +1269,7 @@ def replicas():
 def helm_config():
     form = HelmForm()
     if form.validate_on_submit():
-        data = {"GLUU_HELM_RELEASE_NAME": form.gluu_helm_release_name.data,
+        data = {"CN_HELM_RELEASE_NAME": form.gluu_helm_release_name.data,
                 "NGINX_INGRESS_RELEASE_NAME": form.nginx_ingress_release_name.data,
                 "NGINX_INGRESS_NAMESPACE": form.nginx_ingress_namespace.data}
 
@@ -1298,11 +1298,11 @@ def upgrade():
     if form.validate_on_submit():
         data = {"ENABLED_SERVICES_LIST": gluu_settings.db.get("ENABLED_SERVICES_LIST")}
         data["ENABLED_SERVICES_LIST"].append("upgrade")
-        data["GLUU_UPGRADE_TARGET_VERSION"] = form.upgrade_target_version.data
+        data["CN_UPGRADE_TARGET_VERSION"] = form.upgrade_target_version.data
         gluu_settings.db.update(data)
         # get supported versions image name and tag
         versions, version_number = get_supported_versions()
-        image_names_and_tags = versions.get(gluu_settings.db.get("GLUU_UPGRADE_TARGET_VERSION"), {})
+        image_names_and_tags = versions.get(gluu_settings.db.get("CN_UPGRADE_TARGET_VERSION"), {})
         for k, v in image_names_and_tags.items():
             if "IMAGE_NAME" in k and gluu_settings.db.get(k) != v:
                 continue
@@ -1375,7 +1375,7 @@ def generate_main_config():
     """
     Prepare generate.json and output it
     """
-    config_settings["hostname"] = gluu_settings.db.get("GLUU_FQDN")
+    config_settings["hostname"] = gluu_settings.db.get("CN_FQDN")
     config_settings["country_code"] = gluu_settings.db.get("COUNTRY_CODE")
     config_settings["state"] = gluu_settings.db.get("STATE")
     config_settings["city"] = gluu_settings.db.get("CITY")

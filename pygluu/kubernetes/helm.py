@@ -72,7 +72,7 @@ class Helm(object):
         self.values_file = Path("./helm/gluu/values.yaml").resolve()
         self.settings = SettingsHandler()
         self.kubernetes = Kubernetes()
-        self.ldap_backup_release_name = self.settings.get('GLUU_HELM_RELEASE_NAME') + "-ldap-backup"
+        self.ldap_backup_release_name = self.settings.get('CN_HELM_RELEASE_NAME') + "-ldap-backup"
         if self.settings.get("DEPLOYMENT_ARCH") == "gke":
             # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
             if self.settings.get("INSTALL_REDIS") == "Y" or \
@@ -90,7 +90,7 @@ class Helm(object):
 
     def prepare_alb(self):
         ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
-        ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
+        ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("CN_FQDN")
         ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"] = \
             self.settings.get("ARN_AWS_IAM")
         if not self.settings.get("ARN_AWS_IAM"):
@@ -117,8 +117,8 @@ class Helm(object):
 
     def deploy_alb(self):
         alb_ingress = Path("./alb/ingress.yaml")
-        self.kubernetes.create_objects_from_dict(alb_ingress, self.settings.get("GLUU_NAMESPACE"))
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+        self.kubernetes.create_objects_from_dict(alb_ingress, self.settings.get("CN_NAMESPACE"))
+        if self.settings.get("IS_CN_FQDN_REGISTERED") != "Y":
             prompt = input("Please input the DNS of the Application load balancer  created found on AWS UI: ")
             lb_hostname = prompt
             while True:
@@ -246,11 +246,11 @@ class Helm(object):
             provisioner = "microk8s.io/hostpath"
         values_file_parser["global"]["provisioner"] = provisioner
         values_file_parser["global"]["lbIp"] = self.settings.get("HOST_EXT_IP")
-        values_file_parser["global"]["domain"] = self.settings.get("GLUU_FQDN")
+        values_file_parser["global"]["domain"] = self.settings.get("CN_FQDN")
         values_file_parser["global"]["isDomainRegistered"] = "false"
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y":
+        if self.settings.get("IS_CN_FQDN_REGISTERED") == "Y":
             values_file_parser["global"]["isDomainRegistered"] = "true"
-        if self.settings.get("GLUU_CACHE_TYPE") == "REDIS":
+        if self.settings.get("CN_CACHE_TYPE") == "REDIS":
             values_file_parser["config"]["configmap"]["gluuRedisUrl"] = self.settings.get("REDIS_URL")
             values_file_parser["config"]["configmap"]["gluuRedisType"] = self.settings.get("REDIS_TYPE")
             values_file_parser["config"]["configmap"]["gluuRedisUseSsl"] = self.settings.get("REDIS_USE_SSL")
@@ -302,8 +302,8 @@ class Helm(object):
             values_file_parser["global"]["alb"]["ingress"] = True
         else:
             values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
-            values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
-            values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
+            values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("CN_FQDN")]
+            values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("CN_FQDN")]
         if self.settings.get("USE_ISTIO") == "Y":
             values_file_parser["global"]["istio"]["enabled"] = True
 
@@ -339,7 +339,7 @@ class Helm(object):
                 "CLIENT_API_ADMIN_KEYSTORE_CN")
 
         values_file_parser["opendj"]["gluuRedisEnabled"] = False
-        if self.settings.get("GLUU_CACHE_TYPE") == "REDIS":
+        if self.settings.get("CN_CACHE_TYPE") == "REDIS":
             values_file_parser["opendj"]["gluuRedisEnabled"] = True
 
         values_file_parser["global"]["nginx-ingress"]["enabled"] = True
@@ -360,7 +360,7 @@ class Helm(object):
         values_file_parser["config"]["countryCode"] = self.settings.get("COUNTRY_CODE")
         values_file_parser["config"]["state"] = self.settings.get("STATE")
         values_file_parser["config"]["city"] = self.settings.get("CITY")
-        values_file_parser["config"]["configmap"]["gluuCacheType"] = self.settings.get("GLUU_CACHE_TYPE")
+        values_file_parser["config"]["configmap"]["gluuCacheType"] = self.settings.get("CN_CACHE_TYPE")
         values_file_parser["opendj"]["replicas"] = self.settings.get("LDAP_REPLICAS")
         values_file_parser["opendj"]["persistence"]["size"] = self.settings.get("LDAP_STORAGE_SIZE")
         if self.settings.get("ENABLE_OXTRUST_API_BOOLEAN") == "true":
@@ -415,7 +415,7 @@ class Helm(object):
         labels = {"app": "gluu"}
         if self.settings.get("USE_ISTIO") == "Y":
             labels = {"app": "gluu", "istio-injection": "enabled"}
-        self.kubernetes.create_namespace(name=self.settings.get("GLUU_NAMESPACE"), labels=labels)
+        self.kubernetes.create_namespace(name=self.settings.get("CN_NAMESPACE"), labels=labels)
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap" and self.settings.get("INSTALL_COUCHBASE") == "Y":
             couchbase_app = Couchbase()
             couchbase_app.uninstall()
@@ -430,7 +430,7 @@ class Helm(object):
         self.analyze_global_values()
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
-                self.settings.get('GLUU_HELM_RELEASE_NAME'), self.values_file, self.settings.get("GLUU_NAMESPACE")))
+                self.settings.get('CN_HELM_RELEASE_NAME'), self.values_file, self.settings.get("CN_NAMESPACE")))
 
             if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                     self.settings.get("PERSISTENCE_BACKEND") == "ldap":
@@ -440,7 +440,7 @@ class Helm(object):
                 values_file_parser.dump_it()
 
                 exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
-                    self.ldap_backup_release_name, self.settings.get("GLUU_NAMESPACE")))
+                    self.ldap_backup_release_name, self.settings.get("CN_NAMESPACE")))
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
@@ -453,9 +453,9 @@ class Helm(object):
         try:
             # Try to get gluu cert + key
             ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
-                                                              self.settings.get("GLUU_NAMESPACE")).data["ssl_cert"]
+                                                              self.settings.get("CN_NAMESPACE")).data["ssl_cert"]
             ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                             self.settings.get("GLUU_NAMESPACE")).data["ssl_key"]
+                                                             self.settings.get("CN_NAMESPACE")).data["ssl_key"]
 
             self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
                                                               namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
@@ -469,11 +469,11 @@ class Helm(object):
             logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
                          "Please mount crt and key inside gg-ui deployment")
         client_api_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
+            self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("CN_NAMESPACE"))
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
         values_file_parser["cloud"]["isDomainRegistered"] = "false"
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y":
+        if self.settings.get("IS_CN_FQDN_REGISTERED") == "Y":
             values_file_parser["cloud"]["isDomainRegistered"] = "true"
         if self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or self.settings.get("DEPLOYMENT_ARCH") == "minikube":
             values_file_parser["cloud"]["enabled"] = False
@@ -488,18 +488,18 @@ class Helm(object):
         values_file_parser["image"]["tag"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_TAG")
         values_file_parser["loadBalancerIp"] = self.settings.get("HOST_EXT_IP")
         values_file_parser["dbPassword"] = self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
-        values_file_parser["opServerUrl"] = "https://" + self.settings.get("GLUU_FQDN")
-        values_file_parser["ggHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
+        values_file_parser["opServerUrl"] = "https://" + self.settings.get("CN_FQDN")
+        values_file_parser["ggHost"] = self.settings.get("CN_FQDN") + "/gg-ui/"
+        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("CN_FQDN") + "/gg-ui/"
         # Register new client if one was not provided
         if not values_file_parser["clientApiId"] or \
                 not values_file_parser["clientId"] or \
                 not values_file_parser["clientSecret"]:
-            client_api_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
+            client_api_id, client_id, client_secret = register_op_client(self.settings.get("CN_NAMESPACE"),
                                                                          "konga-client",
-                                                                         self.settings.get("GLUU_FQDN"),
+                                                                         self.settings.get("CN_FQDN"),
                                                                          client_api_server_url,
-                                                                         self.settings.get('GLUU_HELM_RELEASE_NAME'))
+                                                                         self.settings.get('CN_HELM_RELEASE_NAME'))
             if not client_api_id:
                 values_file_parser.dump_it()
                 logger.error("Due to a failure in konga client registration the installation has stopped."
@@ -587,10 +587,10 @@ class Helm(object):
             raise SystemExit(1)
 
     def uninstall_gluu(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('GLUU_HELM_RELEASE_NAME'),
-                                                        self.settings.get("GLUU_NAMESPACE")))
+        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('CN_HELM_RELEASE_NAME'),
+                                                        self.settings.get("CN_NAMESPACE")))
         exec_cmd("helm delete {} --namespace={}".format(self.ldap_backup_release_name,
-                                                        self.settings.get("GLUU_NAMESPACE")))
+                                                        self.settings.get("CN_NAMESPACE")))
 
     def uninstall_nginx_ingress(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('NGINX_INGRESS_RELEASE_NAME'),

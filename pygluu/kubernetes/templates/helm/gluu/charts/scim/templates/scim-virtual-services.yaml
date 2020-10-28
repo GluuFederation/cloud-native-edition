@@ -24,4 +24,14 @@ spec:
           port:
             number: 8080
         weight: 100
+  - name: {{ .Release.Name }}-istio-scim
+    match:
+    - uri:
+        prefix: "/scim"
+    route:
+    - destination:
+        host: {{ .Values.service.scimServiceName }}.{{.Release.Namespace}}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
 {{- end }}
