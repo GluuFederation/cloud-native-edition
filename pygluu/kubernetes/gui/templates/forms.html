@@ -201,7 +201,7 @@
   </div>
 {% endmacro %}
 
-{% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install", notes_type="info") %}
+{% macro install_card(title, description, install_url, uninstall_target=None, notes=None, button_text="Install", notes_type="info", disabled=False) %}
   <div class="card shadow mb-4 bg-white rounded">
     <div class="card-body">
       {% if notes %}
@@ -212,7 +212,11 @@
     </div>
     <div class="card-footer">
       <div class="float-right">
+        {% if disabled %}
+          <button class="btn btn-secondary" disabled> {{ button_text }} </button>
+        {% else %}
         <a id="actionBtn" href="{{ install_url }}" class="btn btn-primary">{{ button_text }}</a>
+        {% endif %}
         {% if uninstall_target %}
           <button type="button" class="mx-2 btn btn-danger float-right" data-toggle="modal" data-target="#uninstallModal" data-uninstall="{{ uninstall_target }}">Uninstall</button>
         {% endif %}
