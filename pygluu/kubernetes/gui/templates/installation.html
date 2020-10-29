@@ -5,6 +5,8 @@
       <h3 class="text-center">Gluu Cloud Native Edition</h3>
       <div class="d-flex align-items-center">
         <div>
+
+          <input id="operationTarget" type="hidden" data-target="{{ target }}">
           <span id="progress" class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
           <span id="install_status" class="font-weight-bold"></span>
         </div>
@@ -15,14 +17,41 @@
     <div id="footer" class="card-footer text-center">
       <a id="finish-button" href="{{ url_for('main.index') }}" class="btn btn-primary collapse">Finish</a>
       <a id="retry-button" onclick="window.location.reload()" class="btn btn-warning collapse">Try Again</a>
+      <button id="stop-button" type="button" class="mx-2 btn btn-danger" data-toggle="modal" data-target="#stopModal">Stop</button>
     </div>
+  </div>
+  <div class="modal fade" id="stopModal" tabindex="-1" role="dialog" aria-labelledby="stopModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="stopProcess" novalidate>
+          <div class="modal-header">
+            <h5 class="modal-title" id="stopModalLabel">Are you absolutely sure?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
 
+          <div class="modal-body">
+            <p>This action <strong>cannot</strong> be undone. All processes will be stopped</p>
+          </div>
+
+          <div class="modal-footer">
+            <button id="ContinueConfirmBtn" type="button" class="btn btn-primary" data-dismiss="modal">Continue Anyway</button>
+            <button id="StopConfirmBtn" type="submit" name="stop_confirm" class="btn btn-secondary" value="Y">
+              <span id="spinner" class="spinner-border spinner-border-sm collapse" role="status" aria-hidden="true"></span>
+              <span id="waitText">STOP Installation</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 {% endblock %}
 
 {% block custom_script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
 <script>
+    const operationTarget = document.getElementById('operationTarget');
     const output = document.getElementById('output');
     const installStatus = document.getElementById('install_status');
     const progress = document.getElementById('progress');
@@ -31,11 +60,12 @@
     const footer = document.getElementById('footer');
     const finishBtn = document.getElementById('finish-button');
     const retryBtn = document.getElementById('retry-button');
+    const stopBtn = document.getElementById('stop-button');
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/logs');
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/installation');
 
     window.addEventListener('load', (event) => {
-      socket.emit('install')
+      socket.emit('start_installation', operationTarget.dataset.target)
     });
 
     socket.on('response', response => {
@@ -43,6 +73,7 @@
         install_status.innerHTML = 'Installation Completed';
         progress.classList.add('collapse');
         finishBtn.classList.add('show');
+        stopBtn.classList.add('collapse');
         socket.emit('disconnect');
       }
 
@@ -60,6 +91,59 @@
         retryBtn.classList.add('show');
         socket.emit('disconnect');
       }
+    });
+    const sendHttpRequest = (method, url, data) => {
+      const promise = new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+        xhr.responseType = 'json';
+
+        if (data) {
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.setRequestHeader("X-CSRFToken", csrftoken)
+          /*data.forEach((value, key) => {object[key] = value});*/
+        }
+
+        xhr.onload = () => {
+          if (xhr.status >= 400) {
+            reject(xhr.response);
+          } else {
+            resolve(xhr.response);
+          }
+        };
+
+        xhr.onerror = () => {
+          reject('Something went wrong!');
+        };
+
+        xhr.send(JSON.stringify(data));
+      });
+      return promise;
+    };
+    const form = document.getElementById( "stopProcess" );
+    var formData = new FormData(form);
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        var StopConfirmBtn = document.getElementById("StopConfirmBtn"),
+            ContinueConfirmBtn = document.getElementById("ContinueConfirmBtn");
+
+        document.getElementById('spinner').classList.add('show');
+        document.getElementById('waitText').innerHTML = 'Please wait...';
+        StopConfirmBtn.disabled = true;
+        ContinueConfirmBtn.disabled = true;
+        setTimeout(() => {
+            sendHttpRequest('POST', '/operations/stop', formData)
+            .then(responseData => {
+              if(responseData.success){
+               window.location = '/';
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }, 3000);
+
     });
 
 </script>

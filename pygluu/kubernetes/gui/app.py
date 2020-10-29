@@ -10,7 +10,7 @@ from flask import Flask
 from pygluu.kubernetes.gui.extensions import csrf, socketio, gluu_settings
 from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
-
+from pygluu.kubernetes.gui.views.operation import operation_blueprint
 
 def resolve_secret_key(path):
     key = ""
@@ -59,6 +59,8 @@ def create_app(debug=False):
     # register blueprint
     app.register_blueprint(main_blueprint)
     app.register_blueprint(wizard_blueprint)
+    app.register_blueprint(operation_blueprint, url_prefix="/operations")
+
 
     @app.context_processor
     def hash_processor():

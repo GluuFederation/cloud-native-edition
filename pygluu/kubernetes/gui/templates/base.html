@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='/img/favicon.ico') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}{% endblock %} - Gluu Cloud Native</title>
   </head>
   <body>

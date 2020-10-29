@@ -11,17 +11,15 @@ import os
 from flask import Blueprint, render_template, \
     redirect, url_for, request, session, \
     current_app, jsonify
-from werkzeug.utils import secure_filename
 from flask_socketio import emit
 from pygtail import Pygtail
-from ..installer import InstallHandler
+from werkzeug.utils import secure_filename
 from ..extensions import socketio
 from ..extensions import gluu_settings
 from pygluu.kubernetes.helpers import get_logger
 
 logger = get_logger("gluu-gui        ")
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
-installer = InstallHandler()
 
 
 @main_blueprint.route("/")
@@ -34,16 +32,12 @@ def install():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install"
-            installer.run_install()
-
-            return render_template("installation.html")
+            return render_template("installation.html", target="install")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -54,16 +48,12 @@ def install_no_wait():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.timeout = 0
-            installer.target = "install"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-no-wait")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -74,15 +64,12 @@ def install_ldap_backup():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install-ldap-backup"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-ldap-backup")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -93,15 +80,12 @@ def install_kubedb():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install-kubedb"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-kubedb")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -112,15 +96,12 @@ def install_gg_dbmode():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install-gg-dbmode"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-gg-dbmode")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
 
     if validating_gg_settings():
         return render_template("preinstall.html",
@@ -135,15 +116,12 @@ def install_couchbase():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install-couchbase"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-couchbase")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -154,15 +132,12 @@ def install_couchbase_backup():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "install-couchbase-backup"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="install-couchbase-backup")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "kustomize"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -173,15 +148,12 @@ def helm_install_gg_dbmode():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "helm-install-gg-dbmode"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="helm-install-gg-dbmode")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "helm"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -192,15 +164,12 @@ def helm_install():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "helm-install"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="helm-install")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "helm"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -211,15 +180,12 @@ def helm_install_gluu():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "helm-install-gluu"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="helm-install-gluu")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
-    session["install_method"] = "helm"
     return render_template("preinstall.html",
                            title="Setup install Settings",
                            setting_exist=gluu_settings.db.is_exist())
@@ -244,9 +210,7 @@ def upgrade():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "upgrade"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="upgrade")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
@@ -262,9 +226,7 @@ def restore():
     if request.method == "POST":
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = "restore"
-            installer.run_install()
-            return render_template("installation.html")
+            return render_template("installation.html", target="restore")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
@@ -294,10 +256,8 @@ def uninstall():
 
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            installer.target = session["installer_target"]
-            installer.run_uninstall()
-            return render_template("installation.html")
-
+            target = session["installer_target"]
+            return render_template("installation.html", target=target)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -323,33 +283,6 @@ def upload_file():
                             "redirect_url": redirect_url})
         else:
             return jsonify({"success": False, 'message': 'File type not supported'})
-
-
-@socketio.on("install", namespace="/logs")
-def installer_logs():
-    data = ("Installation in progress", "ONPROGRESS")
-    while installer.thread.is_alive():
-
-        if not installer.queue.empty():
-            data = installer.queue.get()
-
-        logs = Pygtail("./setup.log", paranoid=True)
-        for log in logs.readlines():
-            emit("response", {"title": data[0],
-                              "log": log,
-                              "status": data[1]})
-
-    if not installer.queue.empty():
-        data = installer.queue.get()
-
-    logs = Pygtail("./setup.log", paranoid=True)
-    for log in logs.readlines():
-        emit("response", {"title": data[0], "log": log, "status": data[1]})
-
-
-@socketio.on("disconnect", namespace="/logs")
-def installation_finish():
-    print("Installation completed")
 
 
 def validating_gg_settings():
