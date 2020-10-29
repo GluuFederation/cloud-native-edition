@@ -520,6 +520,7 @@ class Kustomize(object):
         configmap_parser["data"]["CN_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
         configmap_parser["data"]["DOMAIN"] = self.settings.get("CN_FQDN")
         configmap_parser["data"]["CN_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
+        configmap_parser["data"]["CN_COUCHBASE_INDEX_NUM_REPLICA"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
         configmap_parser["data"]["CN_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
         configmap_parser["data"]["CN_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         configmap_parser["data"]["CN_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")

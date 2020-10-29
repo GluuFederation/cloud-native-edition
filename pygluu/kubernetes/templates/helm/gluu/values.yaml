@@ -64,6 +64,7 @@ config:
     cnCouchbaseSuperUserPass: P@ssw0rd
     cnCouchbaseSuperUser: admin
     cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+    cnCouchbaseIndexNumReplica: 0
     cnCouchbaseUser: gluu
     cnCouchbasePassFile: /etc/gluu/conf/couchbase_password
     cnCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password

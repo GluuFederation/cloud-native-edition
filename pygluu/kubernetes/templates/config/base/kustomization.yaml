@@ -63,6 +63,7 @@ configMapGenerator:
       - CN_LDAP_URL="opendj:1636"
       # used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
       - CN_COUCHBASE_URL=COUCHBASEURL
+      - CN_COUCHBASE_INDEX_NUM_REPLICA="0"
       - CN_COUCHBASE_USER=CBUSER
       - CN_COUCHBASE_SUPERUSER=CBSUPER
       - CN_COUCHBASE_SUPERUSER_PASSWORD_FILE="/etc/gluu/conf/couchbase_superuser_password"
