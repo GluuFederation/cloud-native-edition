@@ -1303,11 +1303,17 @@ def upgrade():
         # get supported versions image name and tag
         versions, version_number = get_supported_versions()
         image_names_and_tags = versions.get(gluu_settings.db.get("CN_UPGRADE_TARGET_VERSION"), {})
+        custom_images = []
         for k, v in image_names_and_tags.items():
             if "IMAGE_NAME" in k and gluu_settings.db.get(k) != v:
-                continue
-            gluu_settings.db.set(k, v)
-            
+                image = '_'.join(k.split("_")[:2])
+                custom_images.append(f"{image}_NAME")
+                custom_images.append(f"{image}_TAG")
+
+        for k, v in image_names_and_tags.items():
+            if k not in custom_images:
+                gluu_settings.db.set(k, v)
+
         return redirect(url_for(request.form["next_step"]))
 
     if request.method == "GET":
