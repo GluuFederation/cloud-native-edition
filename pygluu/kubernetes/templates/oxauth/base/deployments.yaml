@@ -56,6 +56,7 @@ spec:
               - /app/scripts/healthcheck.py
           initialDelaySeconds: 30
           periodSeconds: 30
+          timeoutSeconds: 5
         readinessProbe:
           exec:
             command:
@@ -63,6 +64,7 @@ spec:
               - /app/scripts/healthcheck.py
           initialDelaySeconds: 25
           periodSeconds: 25
+          timeoutSeconds: 5
       hostAliases:
       - ip: NGINX_IP
         hostnames:

@@ -57,12 +57,14 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /casa/health-check
             port: 8080
           initialDelaySeconds: 25
           periodSeconds: 25
+          timeoutSeconds: 5
         resources:
           requests:
             memory: "500Mi"

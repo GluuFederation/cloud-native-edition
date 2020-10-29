@@ -66,8 +66,10 @@ spec:
               port: 443
             initialDelaySeconds: 25
             periodSeconds: 25
+            timeoutSeconds: 5
           livenessProbe:
             tcpSocket:
               port: 443
             initialDelaySeconds: 30
             periodSeconds: 30
+            timeoutSeconds: 5

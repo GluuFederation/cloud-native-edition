@@ -49,6 +49,7 @@ spec:
                 - https://localhost:8443/health-check
             initialDelaySeconds: 30
             periodSeconds: 30
+            timeoutSeconds: 5
           readinessProbe:
             exec:
               command:
@@ -57,6 +58,7 @@ spec:
                 - https://localhost:8443/health-check
             initialDelaySeconds: 25
             periodSeconds: 25
+            timeoutSeconds: 5
           volumeMounts:
           {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
             - name: cb-pass
