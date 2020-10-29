@@ -128,6 +128,7 @@ jobs:
           "COUCHBASE_VOLUME_TYPE": "io1",
           "COUCHBASE_CLUSTER_NAME": "cbgluu",
           "COUCHBASE_URL": "cbgluu.cbns.svc.cluster.local",
+          "COUCHBASE_INDEX_NUM_REPLICA": "0",
           "COUCHBASE_USER": "gluu",
           "COUCHBASE_SUPERUSER": "admin",
           "COUCHBASE_PASSWORD": "nTB5#|",
