@@ -89,6 +89,15 @@ class PromptCouchbase:
                         f".cluster.local",
             ))
 
+        if not self.settings.get("COUCHBASE_INDEX_NUM_REPLICA"):
+            self.settings.set("COUCHBASE_INDEX_NUM_REPLICA", click.prompt(
+                "Please enter the number of replicas per index created. "
+                "Please note that the number of index nodes must be one greater than the number of replicas. "
+                "That means if your couchbase cluster only has 2 "
+                "index nodes you cannot place the number of replicas to be higher than 1.",
+                default="0",
+            ))
+
         if not self.settings.get("COUCHBASE_SUPERUSER"):
             self.settings.set("COUCHBASE_SUPERUSER", click.prompt("Please enter couchbase superuser username.",
                                                                   default="admin"))

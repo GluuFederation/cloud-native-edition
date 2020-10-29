@@ -65,6 +65,7 @@ config:
     gluuCouchbaseSuperUser: admin
     gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
     gluuCouchbaseUser: gluu
+    gluuCouchbaseIndexNumReplica: 0
     gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
     gluuCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password
     gluuCouchbaseCertFile: /etc/certs/couchbase.crt

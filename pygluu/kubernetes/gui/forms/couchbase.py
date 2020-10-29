@@ -35,6 +35,7 @@ class CouchbaseForm(FlaskForm):
         couchbase_namespace (string|required|default: cbns)
         couchbase_cluster_name (string|required|default: cbgluu)
         couchbase_url (string|required|default: cbgluu.cbns.svc.cluster.local)
+        couchbase_index_num_replica string|required|default: 0)
         couchbase_user (string|required|default: admin)
         couchbase_password (string|required|default: auto generate)
         couchbase_password_confirmation (string|required|equal to couchbase_password)
@@ -83,6 +84,15 @@ class CouchbaseForm(FlaskForm):
         "Please enter  couchbase (remote or local) URL base name",
         default="cbgluu.cbns.svc.cluster.local",
         validators=[InputRequired()])
+
+    couchbase_index_num_replica = StringField(
+        "Please enter the number of replicas per index created.",
+        description="Please note that the number of index nodes must be one greater than the number of replicas. "
+                    "That means if your couchbase cluster only has 2 "
+                    "index nodes you cannot place the number of replicas to be higher than 1.",
+        default=0,
+        validators=[InputRequired()])
+
     couchbase_superuser = StringField("Please enter couchbase superuser username",
                                       default="admin",
                                       validators=[InputRequired()])

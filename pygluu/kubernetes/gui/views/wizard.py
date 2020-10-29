@@ -739,6 +739,7 @@ def couchbase():
         data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
         data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
         data["COUCHBASE_URL"] = form.couchbase_url.data
+        data["COUCHBASE_INDEX_NUM_REPLICA"] = form.couchbase_index_num_replica.data
         data["COUCHBASE_SUPERUSER"] = form.couchbase_superuser.data
         data["COUCHBASE_SUPERUSER_PASSWORD"] = form.couchbase_superuser_password.data
         data["COUCHBASE_USER"] = form.couchbase_user.data

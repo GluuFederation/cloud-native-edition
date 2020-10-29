@@ -522,6 +522,7 @@ class Kustomize(object):
         configmap_parser["data"]["DOMAIN"] = self.settings.get("GLUU_FQDN")
         configmap_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
         configmap_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        configmap_parser["data"]["GLUU_COUCHBASE_INDEX_NUM_REPLICA"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
         configmap_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         configmap_parser["data"]["GLUU_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")
         # Persistence keys

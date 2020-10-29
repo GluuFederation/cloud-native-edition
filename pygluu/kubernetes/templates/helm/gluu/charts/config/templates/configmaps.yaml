@@ -31,6 +31,7 @@ data:
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   GLUU_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
   GLUU_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
+  GLUU_COUCHBASE_INDEX_NUM_REPLICA: {{ .Values.configmap.gluuCouchbaseIndexNumReplica | quote }}
   GLUU_COUCHBASE_CERT_FILE: {{ .Values.configmap.gluuCouchbaseCertFile | quote }}
   GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.gluuCouchbasePassFile | quote }}
   GLUU_COUCHBASE_SUPERUSER: {{ .Values.configmap.gluuCouchbaseSuperUser }}

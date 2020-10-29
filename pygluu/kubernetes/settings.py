@@ -98,6 +98,7 @@ class SettingsHandler(object):
                                 COUCHBASE_SUPERUSER_PASSWORD="",
                                 COUCHBASE_CRT="",
                                 COUCHBASE_CN="",
+                                COUCHBASE_INDEX_NUM_REPLICA="",
                                 COUCHBASE_SUBJECT_ALT_NAME="",
                                 COUCHBASE_CLUSTER_FILE_OVERRIDE="",
                                 COUCHBASE_USE_LOW_RESOURCES="",
