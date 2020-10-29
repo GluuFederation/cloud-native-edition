@@ -52,6 +52,7 @@ spec:
             - /app/scripts/healthcheck.py
           initialDelaySeconds: 30
           periodSeconds: 30
+          timeoutSeconds: 5
           failureThreshold: 20
         readinessProbe:
           exec:
@@ -59,6 +60,7 @@ spec:
             - python3
             - /app/scripts/healthcheck.py
           initialDelaySeconds: 25
+          timeoutSeconds: 5
           periodSeconds: 25
           failureThreshold: 20
         {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}

@@ -47,12 +47,14 @@ spec:
             port: 8090
           initialDelaySeconds: 30
           periodSeconds: 30
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /passport/token
             port: 8090
           initialDelaySeconds: 25
           periodSeconds: 25
+          timeoutSeconds: 5
         volumeMounts:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"

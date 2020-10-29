@@ -61,6 +61,7 @@ spec:
             port: http-passport
           initialDelaySeconds: 30
           periodSeconds: 30
+          timeoutSeconds: 5
           failureThreshold: 20
         readinessProbe:
           httpGet:
@@ -68,6 +69,7 @@ spec:
             port: http-passport
           initialDelaySeconds: 25
           periodSeconds: 25
+          timeoutSeconds: 5
           failureThreshold: 20
         {{- if or (eq .Values.global.provisioner "microk8s.io/hostpath" ) (eq .Values.global.provisioner "k8s.io/minikube-hostpath") }}
         resources: {}
