@@ -1,6 +1,7 @@
 import os
 import requests
 from pathlib import Path
+from collections import OrderedDict
 from pygluu.kubernetes.helpers import get_logger
 logger = get_logger("gluu-gui")
 
@@ -94,3 +95,154 @@ def download_couchbase_pkg(url):
         r.close()
     return filename
 
+
+class WizardHandler(object):
+    def __init__(self):
+        self.steps = self.default_steps
+        self.current_step = None
+        self.nextstep = None
+        self.finalstep = 'wizard.setting_summary'
+
+    @property
+    def default_steps(self):
+        default_steps = OrderedDict({
+            'license': {
+                "title": "License",
+                "endpoint": "wizard.agreement"
+            },
+            'version': {
+                "title": "Gluu version",
+                "endpoint": "wizard.gluu_version"
+            },
+            'deployment': {
+                "title": "Deployment architecture",
+                "endpoint": "wizard.deployment_arch"
+            },
+            'namespace': {
+                "title": "Gluu namespace",
+                "endpoint": "wizard.gluu_namespace"
+            },
+            'services': {
+                "title": "Optional Services",
+                "endpoint": "wizard.optional_services"
+            },
+            'gluu_gateway': {
+                "title": "Gluu gateway",
+                "endpoint": "wizard.gluu_gateway"
+            },
+            'jackrabbit': {
+                "title": "Install jackrabbit",
+                "endpoint": "wizard.install_jackrabbit"
+            },
+            'istio': {
+                "title": "Install Istio",
+                "endpoint": "wizard.install_istio"
+            },
+            'environment': {
+                "title": "Environment Setting",
+                "endpoint": "wizard.environment"
+            },
+            'persistence_backend': {
+                "title": "Persistence backend",
+                "endpoint": "wizard.persistence_backend"
+            },
+            'volumes': {
+                "title": "Volumes",
+                "endpoint": "wizard.volumes"
+            },
+            'couchbase_multicluster': {
+                "title": "Couchbase multi cluster",
+                "endpoint": "wizard.couchbase_multi_cluster"
+            },
+            'couchbase': {
+                "title": "Couchbase",
+                "endpoint": "wizard.couchbase"
+            },
+            'couchbase_calculator': {
+                "title": "Couchbase calculator",
+                "endpoint": "wizard.couchbase_calculator"
+            },
+            'cache': {
+                "title": "Cache type",
+                "endpoint": "wizard.cache_type"
+            },
+            'backup': {
+                "title": "Backup",
+                "endpoint": "wizard.backup"
+            },
+            'configuration': {
+                "title": "Configuration",
+                "endpoint": "wizard.configuration"
+            },
+            'images': {
+                "title": "Images",
+                "endpoint": "wizard.images"
+            },
+            'replicas': {
+                "title": "Replicas",
+                "endpoint": "wizard.replicas"
+            }
+        })
+        return default_steps
+
+    def helm_steps(self):
+        """
+        Populating wizard steps for helm install
+        :return:
+        """
+        self.steps = self.default_steps
+        self.steps.update({
+            'helm_config': {
+                "title": "Helm Configuration",
+                "endpoint": "wizard.helm_config"
+            }
+        })
+        return self.steps
+
+    def normal_steps(self):
+        self.steps = self.default_steps
+
+    def upgrade_steps(self):
+        """
+        Populating wizard steps for upgrade version
+        :return:
+        """
+        self.steps = self.default_steps
+        self.steps.update({
+            'upgrade': {
+                "title": "Upgrade Version",
+                "endpoint": "wizard.upgrade"
+            }
+        })
+        self.steps.move_to_end('images')
+        return self.steps
+
+    def step_number(self):
+        """
+        Get step number or index
+        :return:
+        """
+        keys = list(self.steps.keys())
+        index = keys.index(self.current_step)
+        return index + 1
+
+    def next_step(self):
+        """
+        get next step endpoint
+        :return:
+        """
+        try:
+            keys = list(self.steps.keys())
+            index = keys.index(self.current_step) + 1
+            return self.steps[keys[index]]['endpoint']
+        except IndexError:
+            return self.finalstep
+
+    def prev_step(self):
+        """
+        get previous step endpoint
+        :return:
+        """
+        keys = list(self.steps.keys())
+        index = keys.index(self.current_step) - 1
+        return self.steps[keys[index]]['endpoint']
