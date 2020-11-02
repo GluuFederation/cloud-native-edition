@@ -64,6 +64,11 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_FIDO2") == "Y":
             self.enabled_services.append("fido2")
 
+        if not self.settings.get("ENABLE_CONFIG_API"):
+            self.settings.set("ENABLE_CONFIG_API", confirm_yesno("Deploy Config API"))
+        if self.settings.get("ENABLE_CONFIG_API") == "Y":
+            self.enabled_services.append("config-api")
+
         if not self.settings.get("ENABLE_SCIM"):
             self.settings.set("ENABLE_SCIM", confirm_yesno("Deploy scim"))
         if self.settings.get("ENABLE_SCIM") == "Y":
@@ -75,11 +80,12 @@ class PromptOptionalServices:
         if self.settings.get("ENABLE_CLIENT_API") == "Y":
             self.enabled_services.append("client-api")
             if not self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"):
-                self.settings.set("CLIENT_API_APPLICATION_KEYSTORE_CN", click.prompt("Client API application keystore name",
-                                                                              default="client-api"))
+                self.settings.set("CLIENT_API_APPLICATION_KEYSTORE_CN",
+                                  click.prompt("Client API application keystore name",
+                                               default="client-api"))
             if not self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN"):
                 self.settings.set("CLIENT_API_ADMIN_KEYSTORE_CN", click.prompt("Client API admin keystore name",
-                                                                        default="client-api"))
+                                                                               default="client-api"))
 
         if not self.settings.get("ENABLE_OXTRUST_API"):
             self.settings.set("ENABLE_OXTRUST_API", confirm_yesno("Enable oxTrust API"))

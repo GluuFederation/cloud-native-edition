@@ -29,6 +29,8 @@ global:
     enabled: false
   config:
     enabled: true
+  config-api:
+    enabled: true
   jackrabbit:
     enabled: true
   persistence:
@@ -231,6 +233,21 @@ client-api:
   replicas: 1
   image:
     repository: janssenproject/client-api
+    tag: 5.0.0_dev
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+    requests:
+      cpu: 1000m
+      memory: 400Mi
+config-api:
+  service:
+    configApiServerServiceName: config-api
+  replicas: 1
+  image:
+    repository: janssenproject/config-api
     tag: 5.0.0_dev
     pullPolicy: Always
   resources:

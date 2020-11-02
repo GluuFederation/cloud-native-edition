@@ -251,31 +251,31 @@ class Helm(object):
         if self.settings.get("IS_CN_FQDN_REGISTERED") == "Y":
             values_file_parser["global"]["isDomainRegistered"] = "true"
         if self.settings.get("CN_CACHE_TYPE") == "REDIS":
-            values_file_parser["config"]["configmap"]["gluuRedisUrl"] = self.settings.get("REDIS_URL")
-            values_file_parser["config"]["configmap"]["gluuRedisType"] = self.settings.get("REDIS_TYPE")
-            values_file_parser["config"]["configmap"]["gluuRedisUseSsl"] = self.settings.get("REDIS_USE_SSL")
-            values_file_parser["config"]["configmap"]["gluuRedisSslTruststore"] = \
+            values_file_parser["config"]["configmap"]["cnRedisUrl"] = self.settings.get("REDIS_URL")
+            values_file_parser["config"]["configmap"]["cnRedisType"] = self.settings.get("REDIS_TYPE")
+            values_file_parser["config"]["configmap"]["cnRedisUseSsl"] = self.settings.get("REDIS_USE_SSL")
+            values_file_parser["config"]["configmap"]["cnRedisSslTruststore"] = \
                 self.settings.get("REDIS_SSL_TRUSTSTORE")
-            values_file_parser["config"]["configmap"]["gluuRedisSentinelGroup"] = \
+            values_file_parser["config"]["configmap"]["cnRedisSentinelGroup"] = \
                 self.settings.get("REDIS_SENTINEL_GROUP")
             values_file_parser["config"]["redisPass"] = self.settings.get("REDIS_PW")
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") \
                 or self.settings.get("TEST_ENVIRONMENT") == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
         values_file_parser["config"]["configmap"]["lbAddr"] = self.settings.get("LB_ADD")
-        values_file_parser["global"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
-        values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
-        values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = \
+        values_file_parser["global"]["cnPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
+        values_file_parser["config"]["configmap"]["cnPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
+        values_file_parser["config"]["configmap"]["cnPersistenceLdapMapping"] = \
             self.settings.get("HYBRID_LDAP_HELD_DATA")
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
-            values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseIndexNumReplica"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUser"] = \
+            values_file_parser["config"]["configmap"]["cnCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
+            values_file_parser["config"]["configmap"]["cnCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
+            values_file_parser["config"]["configmap"]["cnCouchbaseIndexNumReplica"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
+            values_file_parser["config"]["configmap"]["cnCouchbaseSuperUser"] = \
                 self.settings.get("COUCHBASE_SUPERUSER")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")
-            values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
+            values_file_parser["config"]["configmap"]["cnCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")
+            values_file_parser["config"]["configmap"]["cnCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
+            values_file_parser["config"]["configmap"]["cnCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
         values_file_parser["global"]["auth-server"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
@@ -288,12 +288,14 @@ class Helm(object):
         values_file_parser["global"]["scim"]["enabled"] = False
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True
+        if self.settings.get("ENABLE_CONFIG_API") == "Y":
+            values_file_parser["global"]["config-api"]["enabled"] = True
         if self.settings.get("INSTALL_JACKRABBIT") == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
-            values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings.get("JACKRABBIT_URL")
-            values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitAdminPass"] = \
+            values_file_parser["config"]["configmap"]["cnJackrabbitUrl"] = self.settings.get("JACKRABBIT_URL")
+            values_file_parser["jackrabbit"]["secrets"]["cnJackrabbitAdminPass"] = \
                 self.settings.get("JACKRABBIT_ADMIN_PASSWORD")
-            values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitPostgresPass"] = \
+            values_file_parser["jackrabbit"]["secrets"]["cnJackrabbitPostgresPass"] = \
                 self.settings.get("JACKRABBIT_PG_PASSWORD")
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
             values_file_parser["global"]["istio"]["ingress"] = True
@@ -308,18 +310,18 @@ class Helm(object):
         if self.settings.get("USE_ISTIO") == "Y":
             values_file_parser["global"]["istio"]["enabled"] = True
 
-        values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
+        values_file_parser["global"]["cnJackrabbitCluster"] = "false"
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-            values_file_parser["global"]["gluuJackrabbitCluster"] = "true"
-            values_file_parser["config"]["configmap"]["gluuJackrabbitAdminId"] = \
+            values_file_parser["global"]["cnJackrabbitCluster"] = "true"
+            values_file_parser["config"]["configmap"]["cnJackrabbitAdminId"] = \
                 self.settings.get("JACKRABBIT_ADMIN_ID")
-            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = \
+            values_file_parser["config"]["configmap"]["cnJackrabbitPostgresUser"] = \
                 self.settings.get("JACKRABBIT_PG_USER")
-            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresDatabaseName"] = \
+            values_file_parser["config"]["configmap"]["cnJackrabbitPostgresDatabaseName"] = \
                 self.settings.get("JACKRABBIT_DATABASE")
-            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresHost"] = \
+            values_file_parser["config"]["configmap"]["cnJackrabbitPostgresHost"] = \
                 self.settings.get("POSTGRES_URL")
-            values_file_parser["config"]["configmap"]["gluuJackrabbitPostgresUser"] = \
+            values_file_parser["config"]["configmap"]["cnJackrabbitPostgresUser"] = \
                 self.settings.get("JACKRABBIT_PG_USER")
 
         if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
@@ -329,7 +331,7 @@ class Helm(object):
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
             values_file_parser["global"]["oxshibboleth"]["enabled"] = True
-            values_file_parser["config"]["configmap"]["gluuSyncShibManifests"] = True
+            values_file_parser["config"]["configmap"]["cnSyncShibManifests"] = True
 
         values_file_parser["global"]["client-api"]["enabled"] = False
         if self.settings.get("ENABLE_CLIENT_API") == "Y":
@@ -339,9 +341,9 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["jansClientApiAdminCertCn"] = self.settings.get(
                 "CLIENT_API_ADMIN_KEYSTORE_CN")
 
-        values_file_parser["opendj"]["gluuRedisEnabled"] = False
+        values_file_parser["opendj"]["cnRedisEnabled"] = False
         if self.settings.get("CN_CACHE_TYPE") == "REDIS":
-            values_file_parser["opendj"]["gluuRedisEnabled"] = True
+            values_file_parser["opendj"]["cnRedisEnabled"] = True
 
         values_file_parser["global"]["nginx-ingress"]["enabled"] = True
 
@@ -361,23 +363,23 @@ class Helm(object):
         values_file_parser["config"]["countryCode"] = self.settings.get("COUNTRY_CODE")
         values_file_parser["config"]["state"] = self.settings.get("STATE")
         values_file_parser["config"]["city"] = self.settings.get("CITY")
-        values_file_parser["config"]["configmap"]["gluuCacheType"] = self.settings.get("CN_CACHE_TYPE")
+        values_file_parser["config"]["configmap"]["cnCacheType"] = self.settings.get("CN_CACHE_TYPE")
         values_file_parser["opendj"]["replicas"] = self.settings.get("LDAP_REPLICAS")
         values_file_parser["opendj"]["persistence"]["size"] = self.settings.get("LDAP_STORAGE_SIZE")
         if self.settings.get("ENABLE_OXTRUST_API_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuOxtrustApiEnabled"] = True
+            values_file_parser["config"]["configmap"]["cnOxtrustApiEnabled"] = True
         if self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuOxtrustApiTestMode"] = True
+            values_file_parser["config"]["configmap"]["cnOxtrustApiTestMode"] = True
         if self.settings.get("ENABLE_CASA_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuCasaEnabled"] = True
-            values_file_parser["config"]["configmap"]["gluuSyncCasaManifests"] = True
+            values_file_parser["config"]["configmap"]["cnCasaEnabled"] = True
+            values_file_parser["config"]["configmap"]["cnSyncCasaManifests"] = True
 
         if self.settings.get("ENABLE_OXPASSPORT_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
+            values_file_parser["config"]["configmap"]["cnPassportEnabled"] = True
         if self.settings.get("ENABLE_RADIUS_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuRadiusEnabled"] = True
+            values_file_parser["config"]["configmap"]["cnRadiusEnabled"] = True
         if self.settings.get("ENABLE_SAML_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
+            values_file_parser["config"]["configmap"]["cnSamlEnabled"] = True
 
         values_file_parser["oxpassport"]["resources"] = {}
         values_file_parser["casa"]["image"]["repository"] = self.settings.get("CASA_IMAGE_NAME")

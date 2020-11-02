@@ -153,6 +153,7 @@ class SettingsHandler(object):
                                 RADIUS_REPLICAS="",
                                 FIDO2_REPLICAS="",
                                 SCIM_REPLICAS="",
+                                ENABLE_CONFIG_API="",
                                 ENABLE_OXTRUST_API="",
                                 ENABLE_OXTRUST_TEST_MODE="",
                                 ENABLE_CACHE_REFRESH="",
