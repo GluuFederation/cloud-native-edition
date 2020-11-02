@@ -15,6 +15,8 @@ images:
 configMapGenerator:
   - name: gluu-config-cm
     literals:
+      - CN_CONFIG_KUBERNETES_CONFIGMAP="cn"
+      - CN_SECRET_KUBERNETES_SECRET="cn"
       - CN_CLIENT_API_SERVER_URL="client-api:8443"
       - CN_CLIENT_API_BIND_IP_ADDRESSES="*"
       - CN_KEY_ROTATION_FORCE="false"

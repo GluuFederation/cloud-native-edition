@@ -10,6 +10,8 @@ data:
   CN_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
   CN_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   CN_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  CN_CONFIG_KUBERNETES_CONFIGMAP: {{ .Values.configmap.cnConfigKubernetesConfigMap }}
+  CN_SECRET_KUBERNETES_SECRET: {{ .Values.configmap.cnSecretKubernetesSecret }}
   CN_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}
   CN_MAX_RAM_PERCENTAGE: {{ .Values.configmap.cnMaxRamPercent | quote }}
   CN_CACHE_TYPE: {{ .Values.configmap.cnCacheType | quote }}

@@ -19,6 +19,8 @@ cnLdapInit: true
 cnLdapInitPort: 1636
 cnOxtrustConfigGeneration: true
 configmap:
+  cnConfigKubernetesConfigMap: cn
+  cnSecretKubernetesSecret: cn
   cnClientApiApplicationCertCn: client-api
   cnClientApiAdminCertCn: client-api
   # used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
