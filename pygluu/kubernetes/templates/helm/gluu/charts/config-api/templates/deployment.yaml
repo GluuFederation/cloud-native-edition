@@ -36,8 +36,8 @@ spec:
                 /app/scripts/entrypoint.sh
           {{- end }}
           ports:
-            - containerPort: 8444
-            - containerPort: 8443
+            - containerPort: 9444
+            - containerPort: 8074
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config-cm

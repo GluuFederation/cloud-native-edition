@@ -10,7 +10,9 @@ metadata:
 {{ include "config-api.labels" . | indent 4 }}
 spec:
   ports:
-    - port: 8080
-      name: tcp-{{ include "config-api.name" . }}
+    - port: 9444
+      name: tcp-{{ include "config-api.name" . }}-ssl
+    - port: 8074
+      name: tcp-{{ include "config-api.name" . }}-http
   selector:
     app: {{ include "config-api.name" . }}
