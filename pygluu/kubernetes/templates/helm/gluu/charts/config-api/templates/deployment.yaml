@@ -42,20 +42,16 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-cm
           livenessProbe:
-            exec:
-              command:
-                - curl
-                - -k
-                - https://localhost:8443/health-check
+            httpGet:
+              path: /health-check/live
+              port: 8074
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
           readinessProbe:
-            exec:
-              command:
-                - curl
-                - -k
-                - https://localhost:8443/health-check
+            httpGet:
+              path: /health-check/ready
+              port: 8074
             initialDelaySeconds: 25
             periodSeconds: 25
             timeoutSeconds: 5
