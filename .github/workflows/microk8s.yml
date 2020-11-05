@@ -175,6 +175,7 @@ jobs:
           "CLIENT_API_REPLICAS": 1,
           "CASA_REPLICAS": 1,
           "RADIUS_REPLICAS": 1,
+          "ENABLE_CONFIG_API": "Y",
           "ENABLE_OXTRUST_API": "N",
           "ENABLE_OXTRUST_TEST_MODE": "N",
           "ENABLE_CACHE_REFRESH": "N",
