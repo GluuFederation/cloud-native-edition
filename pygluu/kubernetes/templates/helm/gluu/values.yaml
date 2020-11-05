@@ -9,7 +9,7 @@ global:
     testEnviroment: false
   upgrade:
     enabled: false
-  provisioner: k8s.io/minikube-hostpath
+  provisioner: microk8s.io/hostpath
   pool: default
   fsType: ext4
   gcePdStorageType: pd-standard
@@ -19,14 +19,14 @@ global:
   lbIp: ""
   domain: demoexample.gluu.org
   isDomainRegistered: "false"
-  cnPersistenceType: couchbase
+  cnPersistenceType: ldap
   cnJackrabbitCluster: "true"
   auth-server:
     enabled: true
   fido2:
-    enabled: false
+    enabled: true
   scim:
-    enabled: false
+    enabled: true
   config:
     enabled: true
   config-api:
@@ -42,11 +42,11 @@ global:
   oxshibboleth:
     enabled: false
   client-api:
-    enabled: false
+    enabled: true
   nginx-ingress:
     enabled: true
   auth-server-key-rotation:
-    enabled: false
+    enabled: true
   cr-rotate:
     enabled: false
 config:
