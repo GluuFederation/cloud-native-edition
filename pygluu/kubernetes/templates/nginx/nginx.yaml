@@ -155,8 +155,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /scim/restv1/scim-configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /scim/restv1/scim-configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /jans-scim/restv1/scim-configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /jans-scim/restv1/scim-configuration
 spec:
   tls:
     - hosts:
@@ -193,7 +193,7 @@ spec:
   - host: FQDN
     http:
       paths:
-      - path: /scim
+      - path: /jans-scim
         pathType: Prefix
         backend:
           service:
@@ -240,8 +240,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido2-configuration /fido2/restv1/fido2/configuration$1 break;"
-    nginx.ingress.kubernetes.io/rewrite-target: /fido2/restv1/fido2/configuration
+    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido2-configuration /jans-fido2/restv1/configuration$1 break;"
+    nginx.ingress.kubernetes.io/rewrite-target: /jans-fido2/restv1/configuration
 spec:
   tls:
     - hosts:

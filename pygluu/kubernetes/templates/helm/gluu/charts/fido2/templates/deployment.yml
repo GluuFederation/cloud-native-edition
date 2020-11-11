@@ -55,14 +55,14 @@ spec:
         {{- end }}
         livenessProbe:
           httpGet:
-            path: /fido2/restv1/fido2/configuration
+            path: /jans-fido2/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 30
           periodSeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /fido2/restv1/fido2/configuration
+            path:  /jans-fido2/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25

@@ -51,14 +51,14 @@ spec:
             name: update-lb-ip
         livenessProbe:
           httpGet:
-            path: /fido2/restv1/fido2/configuration
+            path: /jans-fido2/health-check
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /fido2/restv1/fido2/configuration
+            path: /jans-fido2/health-check
             port: 8080
           initialDelaySeconds: 25
           periodSeconds: 25

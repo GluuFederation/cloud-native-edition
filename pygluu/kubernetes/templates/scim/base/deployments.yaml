@@ -51,14 +51,14 @@ spec:
             name: update-lb-ip
         livenessProbe:
           httpGet:
-            path: /scim/restv1/scim/v2/ServiceProviderConfig
+            path: /jans-scim/health-check
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /scim/restv1/scim/v2/ServiceProviderConfig
+            path: /jans-scim/health-check
             port: 8080
           initialDelaySeconds: 25
           periodSeconds: 25
