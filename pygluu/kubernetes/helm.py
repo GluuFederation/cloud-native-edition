@@ -179,7 +179,7 @@ class Helm(object):
                 self.settings.get('NGINX_INGRESS_RELEASE_NAME') + "-nginx-ingress-controller")
             try:
                 exec_cmd("helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx")
-                exec_cmd("helm repo add stable https://kubernetes-charts.storage.googleapis.com/")
+                exec_cmd("helm repo add stable https://charts.helm.sh/stable")
                 exec_cmd("helm repo update")
             except FileNotFoundError:
                 logger.error("Helm v3 is not installed. Please install it to continue "
