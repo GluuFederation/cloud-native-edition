@@ -1,11 +1,11 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseEphemeralBucket
 metadata:
-  name: gluu-cache
+  name: jans-cache
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu_cache
+  name: jans_cache
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: high
@@ -17,11 +17,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseEphemeralBucket
 metadata:
-  name: gluu-token
+  name: jans-token
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu_token
+  name: jans_token
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: high
@@ -33,11 +33,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseEphemeralBucket
 metadata:
-  name: gluu-session
+  name: jans-session
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu_session
+  name: jans_session
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: high

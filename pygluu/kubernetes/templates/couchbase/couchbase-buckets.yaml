@@ -1,11 +1,11 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu
+  name: jans
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu #DO NOT CHANGE THIS LINE
+  name: jans #DO NOT CHANGE THIS LINE
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: low
@@ -18,11 +18,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu-site
+  name: jans-site
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu_site  #DO NOT CHANGE THIS LINE
+  name: jans_site  #DO NOT CHANGE THIS LINE
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: low
@@ -35,11 +35,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu-user
+  name: jans-user
   labels:
-    cluster: gluu-couchbase
+    cluster: jans-couchbase
 spec:
-  name: gluu_user  #DO NOT CHANGE THIS LINE
+  name: jans_user  #DO NOT CHANGE THIS LINE
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: high

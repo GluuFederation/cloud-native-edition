@@ -1,59 +1,59 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseGroup
 metadata:
-  name: gluu-group
+  name: jans-group
   labels:
     cluster: CLUSTERNAME
 spec:
   roles:
   - name: query_select
-    bucket: gluu
+    bucket: jans
   - name: query_select
-    bucket: gluu_site
+    bucket: jans_site
   - name: query_select
-    bucket: gluu_user
+    bucket: jans_user
   - name: query_select
-    bucket: gluu_cache
+    bucket: jans_cache
   - name: query_select
-    bucket: gluu_token
+    bucket: jans_token
   - name: query_select
-    bucket: gluu_session
+    bucket: jans_session
 
   - name: query_update
-    bucket: gluu
+    bucket: jans
   - name: query_update
-    bucket: gluu_site
+    bucket: jans_site
   - name: query_update
-    bucket: gluu_user
+    bucket: jans_user
   - name: query_update
-    bucket: gluu_cache
+    bucket: jans_cache
   - name: query_update
-    bucket: gluu_token
+    bucket: jans_token
   - name: query_update
-    bucket: gluu_session
+    bucket: jans_session
 
   - name: query_insert
-    bucket: gluu
+    bucket: jans
   - name: query_insert
-    bucket: gluu_site
+    bucket: jans_site
   - name: query_insert
-    bucket: gluu_user
+    bucket: jans_user
   - name: query_insert
-    bucket: gluu_cache
+    bucket: jans_cache
   - name: query_insert
-    bucket: gluu_token
+    bucket: jans_token
   - name: query_insert
-    bucket: gluu_session
+    bucket: jans_session
 
   - name: query_delete
-    bucket: gluu
+    bucket: jans
   - name: query_delete
-    bucket: gluu_site
+    bucket: jans_site
   - name: query_delete
-    bucket: gluu_user
+    bucket: jans_user
   - name: query_delete
-    bucket: gluu_cache
+    bucket: jans_cache
   - name: query_delete
-    bucket: gluu_token
+    bucket: jans_token
   - name: query_delete
-    bucket: gluu_session
+    bucket: jans_session

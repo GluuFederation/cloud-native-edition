@@ -1,10 +1,10 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseUser
 metadata:
-  name: gluu
+  name: jans
   labels:
     cluster: my-cluster
 spec:
-  fullName: "Gluu Cloud Native"
+  fullName: "Janssen Cloud Native"
   authDomain: local
-  authSecret: gluu-couchbase-user-password
+  authSecret: jans-couchbase-user-password

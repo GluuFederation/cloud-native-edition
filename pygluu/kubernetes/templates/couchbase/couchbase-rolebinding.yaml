@@ -1,11 +1,11 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseRoleBinding
 metadata:
-  name: gluu-role-binding
+  name: jans-role-binding
 spec:
   subjects:
   - kind: CouchbaseUser
-    name: gluu
+    name: jans
   roleRef:
     kind: CouchbaseGroup
-    name: gluu-group
+    name: jans-group
