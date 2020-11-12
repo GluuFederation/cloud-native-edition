@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "4.2.1"
 description: Radius Helm chart 
 name: radius
-version: 1.2.20
+version: 1.2.21
 maintainers:
 - name: Gluu
 email: support@gluu.org

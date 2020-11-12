@@ -8,4 +8,4 @@ maintainers:
 email: support@gluu.org
 description: A Helm chart for the opendj server
 name: opendj
-version: 1.2.20
+version: 1.2.21
