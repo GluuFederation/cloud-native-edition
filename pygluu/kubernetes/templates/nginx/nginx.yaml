@@ -360,3 +360,29 @@ spec:
             name: casa
             port:
               number: 8080
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gluu-config-api
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "config-api"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+spec:
+  tls:
+    - hosts:
+      - FQDN
+      secretName: tls-certificate
+  rules:
+  - host: FQDN
+    http:
+      paths:
+      - path: /jans-config-api
+        pathType: Prefix
+        backend:
+          service:
+            name: config-api
+            port:
+              number: 8074
