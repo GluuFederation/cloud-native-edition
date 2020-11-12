@@ -981,9 +981,12 @@ class Kustomize(object):
                         name="ingress-nginx", namespace="ingress-nginx").status.load_balancer.ingress[0].hostname
                     self.settings.set("LB_ADD", hostname_ip)
                     if self.settings.get("AWS_LB_TYPE") == "nlb":
-                        ip_static = socket.gethostbyname(str(hostname_ip))
-                        if ip_static:
-                            break
+                        try:
+                            ip_static = socket.gethostbyname(str(hostname_ip))
+                            if ip_static:
+                                break
+                        except socket.gaierror:
+                            logger.info("Address has not recieved an ip yet.")
                 elif self.settings.get("DEPLOYMENT_ARCH") == "local":
                     self.settings.set("LB_ADD", "ingress-nginx.ingress-nginx.svc.cluster.local")
                     break
