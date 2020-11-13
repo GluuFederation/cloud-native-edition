@@ -149,7 +149,7 @@ class Helm(object):
                             if ip_static:
                                 break
                         except socket.gaierror:
-                            logger.info("Address has not recieved an ip yet.")
+                            logger.info("Address has not received an ip yet.")
                 elif self.settings.get("DEPLOYMENT_ARCH") == "local":
                     self.settings.set("LB_ADD", self.settings.get('NGINX_INGRESS_RELEASE_NAME') +
                                       "-nginx-ingress-controller." + self.settings.get("NGINX_INGRESS_NAMESPACE") +
