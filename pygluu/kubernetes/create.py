@@ -64,9 +64,15 @@ def main():
         parser.print_help()
         return
     copy_templates()
+    settings = SettingsHandler()
+    settings.validate()
+    if not settings.validate():
+        for error in settings.errors:
+            logger.error(error)
+        sys.exit()
+
     prompts = Prompt()
     prompts.prompt()
-    settings = SettingsHandler()
 
     timeout = 120
     if args.subparser_name == "install-no-wait":
