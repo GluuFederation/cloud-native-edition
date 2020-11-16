@@ -1142,7 +1142,8 @@
       "if": {
         "properties": {
           "COUCHBASE_USE_LOW_RESOURCES": { "const": "N" },
-          "COUCHBASE_CLUSTER_FILE_OVERRIDE": { "enum": ["N", "Y"]}
+          "COUCHBASE_CLUSTER_FILE_OVERRIDE": { "const": "N" },
+          "INSTALL_COUCHBASE": { "const": "Y" }
         }
       },
       "then": {
