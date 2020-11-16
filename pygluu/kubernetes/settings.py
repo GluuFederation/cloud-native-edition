@@ -11,7 +11,7 @@ import contextlib
 import json
 import os
 import shutil
-import sys
+import jsonschema
 from pathlib import Path
 from pygluu.kubernetes.helpers import get_logger, update_settings_json_file
 
@@ -26,6 +26,9 @@ def unlink_settings_json():
 
 class SettingsHandler(object):
     def __init__(self):
+        self.setting_file = Path("./settings.json")
+        self.setting_schema = Path("./settings_schema.json")
+        self.errors = tuple()
         self.db = self.default_settings
         self.load()
 
@@ -227,15 +230,13 @@ class SettingsHandler(object):
             # No installation settings mounted as /installer-settings.json. Checking settings.json.
             pass
 
-        filename = Path("./settings.json")
         try:
-            with open(filename) as f:
+            with open(self.setting_file) as f:
                 try:
                     custom_settings = json.load(f)
                 except json.decoder.JSONDecodeError as e:
-                    logger.error("Non valid settings.json")
-                    logger.error(str(e))
-                    sys.exit()
+                    self.errors.append("Non valid settings.json", str(e))
+                    return
             self.db.update(custom_settings)
         except FileNotFoundError:
             pass
@@ -243,7 +244,6 @@ class SettingsHandler(object):
     def store_data(self):
         try:
             update_settings_json_file(self.db)
-            # json.dump(self.db, open(self.path, "w+"))
             return True
         except Exception as exc:
             logger.info(f"Uncaught error={exc}")
@@ -305,3 +305,52 @@ class SettingsHandler(object):
             return False
         else:
             return True
+
+    def validate(self):
+        stop_validation = False
+        # Validating settings file
+        try:
+            with open(self.setting_file) as f:
+                try:
+                    settings = json.load(f)
+                except json.decoder.JSONDecodeError as e:
+                    self.errors.append([f"Not a valid settings.json : {str(e)}"])
+                    stop_validation = True
+
+            if not stop_validation:
+                self.validate_schema(settings)
+
+        except FileNotFoundError:
+            pass
+
+        return len(self.errors) == 0
+
+    def validate_schema(self, settings):
+        """
+        Validate json schema using setting_schema.json
+        :return:
+        """
+        schema = {}
+        with open(self.setting_schema) as f:
+            try:
+                schema = json.load(f)
+            except FileNotFoundError:
+                pass
+
+        validator = jsonschema.Draft7Validator(schema)
+        errors = sorted(validator.iter_errors(settings), key=lambda e: e.path)
+
+        self.errors = []
+        for error in errors:
+            if "errors" in error.schema and error.validator != 'required':
+                key = error.path[0]
+                error_msg = error.schema.get('errors').get(error.validator)
+                message = f"{key} : {error_msg}"
+            else:
+                if error.path:
+                    key = error.path[0]
+                    message = f"{key} : {error.message}"
+                else:
+                    message = error.message
+
+            self.errors.append(message)

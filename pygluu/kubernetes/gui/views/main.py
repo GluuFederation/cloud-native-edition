@@ -22,6 +22,15 @@ logger = get_logger("gluu-gui        ")
 main_blueprint = Blueprint("main", __name__, template_folder="templates")
 
 
+@main_blueprint.before_request
+def initialize():
+    """
+    Do settings setting.json validation
+    """
+    if not request.endpoint == "main.index":
+        gluu_settings.db.validate()
+
+
 @main_blueprint.route("/")
 def index():
     return render_template("index.html")
@@ -38,9 +47,13 @@ def install():
             return redirect(url_for("main.index"))
 
     session["finish_endpoint"] = request.endpoint
+    session["install_method"] = "kustomize"
+
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/install-no-wait", methods=["GET", "POST"])
@@ -56,7 +69,9 @@ def install_no_wait():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/install-ldap-backup", methods=["GET", "POST"])
@@ -72,7 +87,9 @@ def install_ldap_backup():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/install-kubedb", methods=["GET", "POST"])
@@ -88,7 +105,9 @@ def install_kubedb():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/install-gg-dbmode", methods=["GET", "POST"])
@@ -106,7 +125,9 @@ def install_gg_dbmode():
     if validating_gg_settings():
         return render_template("preinstall.html",
                                title="Setup install Settings",
-                               setting_exist=gluu_settings.db.is_exist())
+                               setting_exist=gluu_settings.db.is_exist(),
+                               settings=gluu_settings.db,
+                               error_count=len(gluu_settings.db.errors))
     else:
         return redirect(url_for("wizard.gluu_gateway"))
 
@@ -124,7 +145,9 @@ def install_couchbase():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/install-couchbase-backup", methods=["GET", "POST"])
@@ -140,7 +163,9 @@ def install_couchbase_backup():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/helm-install-gg-dbmode", methods=["GET", "POST"])
@@ -156,7 +181,9 @@ def helm_install_gg_dbmode():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/helm-install", methods=["GET", "POST"])
@@ -172,7 +199,9 @@ def helm_install():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/helm-install-gluu", methods=["GET", "POST"])
@@ -188,7 +217,9 @@ def helm_install_gluu():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/generate-settings", methods=["GET", "POST"])
@@ -218,7 +249,9 @@ def upgrade():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup upgrade Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/restore", methods=["GET", "POST"])
@@ -234,7 +267,9 @@ def restore():
     session["finish_endpoint"] = request.endpoint
     return render_template("preinstall.html",
                            title="Setup restore Settings",
-                           setting_exist=gluu_settings.db.is_exist())
+                           setting_exist=gluu_settings.db.is_exist(),
+                           settings=gluu_settings.db,
+                           error_count=len(gluu_settings.db.errors))
 
 
 @main_blueprint.route("/uninstall", methods=["POST"])
@@ -252,12 +287,15 @@ def uninstall():
             else:
                 return render_template("preinstall.html",
                                        title="Setup Uninstall Settings",
-                                       setting_exist=settings_exist)
+                                       setting_exist=settings_exist,
+                                       settings=gluu_settings.db,
+                                       error_count=len(gluu_settings.db.errors))
 
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             target = session["installer_target"]
             return render_template("installation.html", target=target)
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -276,7 +314,11 @@ def upload_file():
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join('./', filename))
+            file.save(os.path.join('./settings.json'))
+            gluu_settings.db.validate()
+            if not gluu_settings.db.is_valid:
+                return jsonify(
+                    {"success": False, 'message': 'Invalid settings'})
             redirect_url = get_wizard_step()
             return jsonify({"success": True,
                             'message': 'File settings has been uploaded',

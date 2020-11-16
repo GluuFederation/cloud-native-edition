@@ -47,7 +47,8 @@ setup(
         "Flask-SocketIO >= 4.3.1",
         "Pygtail >= 0.11.1",
         "gunicorn >= 20.0.4",
-        "gevent >= 20.9.0"
+        "gevent >= 20.9.0",
+        "jsonschema >= 3.2.0",
     ],
     classifiers=[
         "Intended Audience :: Developers",
