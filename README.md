@@ -3,6 +3,7 @@
 ![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=5.0)
 ![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=5.0)
 ![testcases](https://github.com/GluuFederation/cloud-native-edition/workflows/testcases/badge.svg?branch=5.0)
+[![codecov](https://codecov.io/gh/GluuFederation/cloud-native-edition/branch/master/graph/badge.svg)](https://codecov.io/gh/GluuFederation/cloud-native-edition)
 
 # pygluu-kubernetes
 
