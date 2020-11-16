@@ -24,7 +24,7 @@ def find_version(*file_paths):
 setup(
     name="pygluu-kubernetes",
     version=find_version("pygluu", "kubernetes", "__init__.py"),
-    url="",
+    url="https://gluu.org",
     copyright="Copyright 2020, Gluu Cloud Native Edition",
     license="Apache 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
     author="Gluu",

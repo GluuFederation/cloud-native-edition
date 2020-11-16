@@ -3,7 +3,7 @@ name: testcases
 on:
   push:
     branches:
-      - 5.0
+      - master
     paths:
       - "pygluu/**"
       - "tests/**"
