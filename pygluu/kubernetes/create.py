@@ -73,7 +73,8 @@ def main():
 
     prompts = Prompt()
     prompts.prompt()
-
+    settings = SettingsHandler()
+    
     timeout = 120
     if args.subparser_name == "install-no-wait":
         timeout = 0
