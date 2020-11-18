@@ -53,7 +53,7 @@ spec:
     managed: true
     selector:
       matchLabels:
-        cluster: cbjans
+        cluster: jans-couchbase
   servers:
     - name: analytics-us-west-2a
       size: 1
