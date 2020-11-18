@@ -3,7 +3,7 @@ kind: CouchbaseGroup
 metadata:
   name: jans-group
   labels:
-    cluster: CLUSTERNAME
+    cluster: jans-couchbase
 spec:
   roles:
   - name: query_select

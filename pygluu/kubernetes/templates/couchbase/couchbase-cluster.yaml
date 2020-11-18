@@ -1,7 +1,7 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseCluster
 metadata:
-  name: CLUSTERNAME
+  name: jans-couchbase
 spec:
   image: couchbase/server:6.6.0
   antiAffinity: false
@@ -16,7 +16,7 @@ spec:
       managed: true
       selector:
         matchLabels:
-          cluster: CLUSTERNAME
+          cluster: jans-couchbase
   exposeAdminConsole: true
   adminConsoleServices:
     - data
