@@ -3,7 +3,7 @@ kind: CouchbaseUser
 metadata:
   name: jans
   labels:
-    cluster: jans-couchbase
+    cluster: cbjans
 spec:
   fullName: "Janssen Cloud Native"
   authDomain: local

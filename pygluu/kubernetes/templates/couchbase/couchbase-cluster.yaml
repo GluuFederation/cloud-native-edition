@@ -1,7 +1,7 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseCluster
 metadata:
-  name: jans-couchbase
+  name: cbjans
 spec:
   image: couchbase/server:6.6.0
   antiAffinity: false
@@ -16,7 +16,7 @@ spec:
       managed: true
       selector:
         matchLabels:
-          cluster: jans-couchbase
+          cluster: cbjans
   exposeAdminConsole: true
   adminConsoleServices:
     - data
@@ -53,7 +53,7 @@ spec:
     managed: true
     selector:
       matchLabels:
-        cluster: jans-couchbase
+        cluster: cbjans
   servers:
     - name: analytics-us-west-2a
       size: 1

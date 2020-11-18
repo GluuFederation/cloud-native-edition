@@ -3,7 +3,7 @@ kind: CouchbaseEphemeralBucket
 metadata:
   name: jans-cache
   labels:
-    cluster: jans-couchbase
+    cluster: cbjans
 spec:
   name: jans_cache
   memoryQuota: 100Mi
@@ -19,7 +19,7 @@ kind: CouchbaseEphemeralBucket
 metadata:
   name: jans-token
   labels:
-    cluster: jans-couchbase
+    cluster: cbjans
 spec:
   name: jans_token
   memoryQuota: 100Mi
@@ -35,7 +35,7 @@ kind: CouchbaseEphemeralBucket
 metadata:
   name: jans-session
   labels:
-    cluster: jans-couchbase
+    cluster: cbjans
 spec:
   name: jans_session
   memoryQuota: 100Mi
