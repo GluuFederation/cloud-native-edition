@@ -113,7 +113,13 @@ config:
   image:
     repository: janssenproject/configuration-manager
     tag: 5.0.0_dev
-  resources: {}
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
 nginx-ingress:
   ingress:
     enabled: true
@@ -167,7 +173,13 @@ persistence:
     repository: janssenproject/persistence-loader
     tag: 5.0.0_dev
     pullPolicy: Always
-  resources: {}
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
 auth-server:
   service:
     authServerServiceName: auth-server
