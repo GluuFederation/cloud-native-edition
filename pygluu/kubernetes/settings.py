@@ -346,7 +346,6 @@ class SettingsHandler(object):
                                 key = error.path[0]
                                 message = f"{key} : {error.message}"
                             else:
-                                # import pdb; pdb.set_trace()
                                 message = error.message
 
                         self.errors.append(message)
