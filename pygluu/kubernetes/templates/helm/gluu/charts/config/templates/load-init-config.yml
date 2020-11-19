@@ -30,7 +30,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
-          readOnlyRootFilesystem: true
         volumeMounts:
           - mountPath: /app/db/generate.json
             name: {{ include "config.fullname" . }}-mount-gen-file

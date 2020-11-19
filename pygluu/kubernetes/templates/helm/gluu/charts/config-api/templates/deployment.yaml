@@ -29,7 +29,6 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsNonRoot: true
-            readOnlyRootFilesystem: true
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           command:

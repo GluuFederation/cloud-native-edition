@@ -22,7 +22,6 @@ spec:
               securityContext:
                 runAsUser: 1000
                 runAsNonRoot: true
-                readOnlyRootFilesystem: true
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
               volumeMounts:

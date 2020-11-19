@@ -23,7 +23,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
-          readOnlyRootFilesystem: true
         {{- if .Values.global.istio.enabled }}
         command:
           - tini

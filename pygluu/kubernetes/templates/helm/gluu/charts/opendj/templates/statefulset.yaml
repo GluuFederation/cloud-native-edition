@@ -30,7 +30,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
-          readOnlyRootFilesystem: true
         lifecycle:
           preStop:
             exec:
