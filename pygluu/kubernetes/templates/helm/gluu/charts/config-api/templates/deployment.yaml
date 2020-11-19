@@ -12,7 +12,6 @@ spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      APP_NAME: config-api
       app: {{ include "config-api.name" . }}
   template:
     metadata:
