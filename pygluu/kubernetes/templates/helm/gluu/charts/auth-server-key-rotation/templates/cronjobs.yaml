@@ -7,10 +7,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: auth-server-key-rotation
-    app: {{ include "auth-server-key-rotation.name" . }}
     release: {{ .Release.Name }}
 {{ include "auth-server-key-rotation.labels" . | indent 4 }}
-
 spec:
   schedule: "0 */{{ .Values.keysLife }} * * *"
   concurrencyPolicy: Forbid

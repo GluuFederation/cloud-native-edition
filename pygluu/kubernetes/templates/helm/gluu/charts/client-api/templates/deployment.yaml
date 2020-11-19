@@ -7,7 +7,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: client-api
-    app: {{ include "client-api.name" . }}
 {{ include "client-api.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}

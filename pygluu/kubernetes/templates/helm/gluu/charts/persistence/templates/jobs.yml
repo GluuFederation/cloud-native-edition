@@ -7,7 +7,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: persistence-loader
-    app: {{ include "persistence.name" . }}
 {{ include "persistence.labels" . | indent 4 }}
 spec:
   template:

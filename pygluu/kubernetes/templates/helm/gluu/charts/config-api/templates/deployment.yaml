@@ -7,7 +7,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: config-api
-    app: {{ include "config-api.name" . }}
 {{ include "config-api.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
@@ -15,7 +14,6 @@ spec:
     matchLabels:
       APP_NAME: config-api
       app: {{ include "config-api.name" . }}
-      release: {{ .Release.Name }}
   template:
     metadata:
       labels:

@@ -7,7 +7,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: scim
-    app: {{ include "scim.name" . }}
 {{ include "scim.labels" . | indent 4}}
 spec:
   replicas: 1

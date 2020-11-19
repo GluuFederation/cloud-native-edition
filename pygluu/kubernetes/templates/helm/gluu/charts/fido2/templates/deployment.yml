@@ -7,8 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: fido2
-    app: { { include "fido2.name" . } }
-  {{ include "fido2.labels" . | indent 4}}
+{{ include "fido2.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.replicas }}
   selector:

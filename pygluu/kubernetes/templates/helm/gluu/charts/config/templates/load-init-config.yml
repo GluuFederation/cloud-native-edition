@@ -7,13 +7,14 @@ metadata:
   name: {{ include "config.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "config.name" . }}-init-load
+    APP_NAME: configuration-manager
 {{ include "config.labels" . | indent 4}}
 spec:
   template:
     metadata:
       name: {{ include "config.name" . }}-job
       labels:
+        APP_NAME: configuration-manager
         app: {{ include "config.name" . }}-init-load
     spec:
       volumes:
