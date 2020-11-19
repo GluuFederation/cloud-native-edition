@@ -59,14 +59,14 @@ spec:
         {{- end }}
         livenessProbe:
           httpGet:
-            path: /jans-fido2/restv1/health-check
+            path: /jans-fido2/sys/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 30
           periodSeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path:  /jans-fido2/restv1/health-check
+            path:  /jans-fido2/sys/health-check
             port: {{ .Values.ports.containerPort }}
           initialDelaySeconds: 25
           periodSeconds: 25
