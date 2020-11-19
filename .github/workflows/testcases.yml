@@ -8,7 +8,13 @@ on:
       - "pygluu/**"
       - "tests/**"
       - "setup.py"
-
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "pygluu/**"
+      - "tests/**"
+      - "setup.py"
 jobs:
   build:
     runs-on: ubuntu-latest
