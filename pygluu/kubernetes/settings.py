@@ -10,6 +10,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 import contextlib
 import json
 import os
+import sys
 import shutil
 import jsonschema
 from pathlib import Path
@@ -28,9 +29,11 @@ class SettingsHandler(object):
     def __init__(self):
         self.setting_file = Path("./settings.json")
         self.setting_schema = Path("./settings_schema.json")
-        self.errors = tuple()
+        self.errors = list()
         self.db = self.default_settings
+        self.schema = {}
         self.load()
+        self.load_schema()
 
     @property
     def default_settings(self):
@@ -218,10 +221,8 @@ class SettingsHandler(object):
         return default_settings
 
     def load(self):
-        self.get_settings()
-
-    def get_settings(self):
-        """Get merged settings (default and custom settings from json file).
+        """
+        Get merged settings (default and custom settings from json file).
         """
         # Check if running in container and settings.json mounted
         try:
@@ -235,11 +236,29 @@ class SettingsHandler(object):
                 try:
                     custom_settings = json.load(f)
                 except json.decoder.JSONDecodeError as e:
-                    self.errors.append("Non valid settings.json", str(e))
+                    self.errors.append(f"Non valid settings.json: {str(e)}")
                     return
             self.db.update(custom_settings)
         except FileNotFoundError:
             pass
+
+    def load_schema(self):
+        try:
+            with open(self.setting_schema) as f:
+                try:
+                    self.schema = json.load(f)
+                    jsonschema.Draft7Validator.check_schema(self.schema)
+                except json.decoder.JSONDecodeError as e:
+                    logger.info(
+                        f"Opps! settings_schema.json not readable")
+                    sys.exit(4)
+                except jsonschema.SchemaError as e:
+                    logger.info(
+                        f"Opps! settings_schema.json is invalid")
+                    sys.exit(4)
+        except FileNotFoundError:
+            logger.info(f"Opps! settings_schema.json not found")
+            sys.exit(4)
 
     def store_data(self):
         try:
@@ -306,50 +325,38 @@ class SettingsHandler(object):
             return True
 
     def validate(self):
-        stop_validation = False
-        # Validating settings file
+        self.errors = []
         try:
             with open(self.setting_file) as f:
                 try:
                     settings = json.load(f)
-                except json.decoder.JSONDecodeError as e:
-                    self.errors.append([f"Not a valid settings.json : {str(e)}"])
-                    stop_validation = True
+                    validator = jsonschema.Draft7Validator(self.schema)
+                    errors = sorted(validator.iter_errors(settings),
+                                    key=lambda e: e.path)
 
-            if not stop_validation:
-                self.validate_schema(settings)
+                    for error in errors:
+                        if "errors" in error.schema and \
+                                error.validator != 'required':
+                            key = error.path[0]
+                            error_msg = error.schema.get('errors').get(
+                                error.validator)
+                            message = f"{key} : {error_msg}"
+                        else:
+                            if error.path:
+                                key = error.path[0]
+                                message = f"{key} : {error.message}"
+                            else:
+                                # import pdb; pdb.set_trace()
+                                message = error.message
+
+                        self.errors.append(message)
+
+                except json.decoder.JSONDecodeError as e:
+                    self.errors.append(f"Not a valid settings.json : {str(e)}")
+                    return False
 
         except FileNotFoundError:
-            pass
+            #skip validating file does not exist
+            return True
 
         return len(self.errors) == 0
-
-    def validate_schema(self, settings):
-        """
-        Validate json schema using setting_schema.json
-        :return:
-        """
-        schema = {}
-        with open(self.setting_schema) as f:
-            try:
-                schema = json.load(f)
-            except FileNotFoundError:
-                pass
-
-        validator = jsonschema.Draft7Validator(schema)
-        errors = sorted(validator.iter_errors(settings), key=lambda e: e.path)
-
-        self.errors = []
-        for error in errors:
-            if "errors" in error.schema and error.validator != 'required':
-                key = error.path[0]
-                error_msg = error.schema.get('errors').get(error.validator)
-                message = f"{key} : {error_msg}"
-            else:
-                if error.path:
-                    key = error.path[0]
-                    message = f"{key} : {error.message}"
-                else:
-                    message = error.message
-
-            self.errors.append(message)

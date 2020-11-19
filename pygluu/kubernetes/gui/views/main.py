@@ -315,8 +315,8 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join('./settings.json'))
-            gluu_settings.db.validate()
-            if not gluu_settings.db.is_valid:
+
+            if not gluu_settings.db.validate():
                 return jsonify(
                     {"success": False, 'message': 'Invalid settings'})
             redirect_url = get_wizard_step()
