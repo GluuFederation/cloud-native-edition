@@ -6,6 +6,8 @@ metadata:
   name: {{ include "client-api.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: client-api
+    app: {{ include "client-api.name" . }}
 {{ include "client-api.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
@@ -16,6 +18,7 @@ spec:
   template:
     metadata:
       labels:
+        APP_NAME: client-api
         app: {{ include "client-api.name" . }}
         release: {{ .Release.Name }}
       {{- if .Values.global.istio.ingress }}
@@ -26,6 +29,10 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
           command:

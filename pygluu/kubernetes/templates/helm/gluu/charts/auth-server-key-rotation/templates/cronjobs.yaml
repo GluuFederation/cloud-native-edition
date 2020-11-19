@@ -6,6 +6,7 @@ metadata:
   name: {{ include "auth-server-key-rotation.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: auth-server-key-rotation
     app: {{ include "auth-server-key-rotation.name" . }}
     release: {{ .Release.Name }}
 {{ include "auth-server-key-rotation.labels" . | indent 4 }}
@@ -20,6 +21,10 @@ spec:
           containers:
             - name: {{ .Chart.Name }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              securityContext:
+                runAsUser: 1000
+                runAsNonRoot: true
+                readOnlyRootFilesystem: true
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
               volumeMounts:

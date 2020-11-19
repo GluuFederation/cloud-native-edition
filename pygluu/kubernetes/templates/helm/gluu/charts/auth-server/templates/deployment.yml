@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: auth-server
+    app: {{ include "auth-server.name" . }}
 {{ include "auth-server.labels" . | indent 4}}
 spec:
   replicas: {{ .Values.replicas }}
@@ -27,6 +28,10 @@ spec:
       - name: {{ template "cn.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh

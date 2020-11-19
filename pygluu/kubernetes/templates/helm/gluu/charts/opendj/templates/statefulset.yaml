@@ -27,6 +27,10 @@ spec:
       - name: {{ include "opendj.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
         lifecycle:
           preStop:
             exec:

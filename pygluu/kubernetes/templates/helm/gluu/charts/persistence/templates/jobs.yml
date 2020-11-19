@@ -6,18 +6,25 @@ metadata:
   name: {{ include "persistence.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    APP_NAME: persistence-loader
+    app: {{ include "persistence.name" . }}
 {{ include "persistence.labels" . | indent 4 }}
 spec:
   template:
     metadata:
       name: {{ include "persistence.name" . }}
       labels:
+        APP_NAME: persistence-loader
         app: {{ include "persistence.name" . }}
     spec:
       restartPolicy: Never
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
         {{- if .Values.global.istio.enabled }}
         command:
           - tini

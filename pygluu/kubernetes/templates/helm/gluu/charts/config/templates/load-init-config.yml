@@ -7,6 +7,7 @@ metadata:
   name: {{ include "config.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    app: {{ include "config.name" . }}-init-load
 {{ include "config.labels" . | indent 4}}
 spec:
   template:
@@ -25,6 +26,10 @@ spec:
       containers:
       - name: {{ include "config.name" . }}-load
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
         volumeMounts:
           - mountPath: /app/db/generate.json
             name: {{ include "config.fullname" . }}-mount-gen-file
