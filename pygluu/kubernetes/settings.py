@@ -298,9 +298,8 @@ class SettingsHandler(object):
             return False
 
     def is_exist(self):
-        filename = Path("./settings.json")
         try:
-            filename.resolve(strict=True)
+            self.setting_file.resolve(strict=True)
         except FileNotFoundError:
             return False
         else:
