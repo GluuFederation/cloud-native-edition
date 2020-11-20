@@ -206,9 +206,7 @@
     "GLUU_GATEWAY_UI_IMAGE_TAG": { "type": "string" },
     "UPGRADE_IMAGE_NAME": { "type": "string" },
     "UPGRADE_IMAGE_TAG": { "type": "string" },
-    "CONFIRM_PARAMS": { "$ref": "#/definitions/yes-no-string" },
-    "EXPECTED_TRANSACTIONS_PER_SEC": { "type": "string" },
-    "CLIENT_API_SERVER_REPLICAS": { "$ref": "#/definitions/emptiable-number" }
+    "CONFIRM_PARAMS": { "$ref": "#/definitions/yes-no-string" }
   },
   "allOf": [
     { "$ref": "#/definitions/cache-refresh-enabled"},

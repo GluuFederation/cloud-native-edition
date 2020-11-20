@@ -1135,7 +1135,7 @@ def replicas():
     if gluu_settings.db.get("ENABLE_OXPASSPORT") == "N":
         del form.oxpassport_replicas
     if gluu_settings.db.get("ENABLE_CLIENT_API") == "N":
-        del form.client_api_server_replicas
+        del form.client_api_replicas
     if gluu_settings.db.get("ENABLE_CASA") == "N":
         del form.casa_replicas
     if gluu_settings.db.get("ENABLE_RADIUS") == "N":
