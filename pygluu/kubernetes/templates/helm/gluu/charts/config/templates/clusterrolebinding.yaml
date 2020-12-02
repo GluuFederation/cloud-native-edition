@@ -22,7 +22,7 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     app: {{ template "gluu.name" . }}-load
-  name: gluu-rolebinding
+  name: {{ include "config.name" . }}-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
