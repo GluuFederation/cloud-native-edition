@@ -58,6 +58,7 @@ config:
   countryCode: US
   state: TX
   city: Austin
+  secondaryCluster: false
   configmap:
     cnConfigKubernetesConfigMap: cn
     cnSecretKubernetesSecret: cn
