@@ -15,6 +15,8 @@ redisPass: P@assw0rd
 countryCode: US
 state: TX
 city: SLC
+secondaryCluster:
+  enabled: false
 gluuLdapInit: true
 gluuLdapInitPort: 1636
 gluuOxtrustConfigGeneration: true
