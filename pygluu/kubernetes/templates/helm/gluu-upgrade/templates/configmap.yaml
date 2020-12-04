@@ -4,11 +4,13 @@ metadata:
     name: {{ include "cn-upgrade.fullname" . }}
     namespace: {{ .Release.Namespace }}
 data:
+  DOMAIN: {{ .Values.domain }}
+  CN_CACHE_TYPE: {{ .Values.cnCacheType }}
+  CN_CONFIG_ADAPTER: {{ .Values.configAdapterName }}
   CN_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace }}
   CN_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace }}
-  CN_CONFIG_ADAPTER: {{ .Values.configAdapterName }}
   CN_SECRET_ADAPTER: {{ .Values.configSecretAdapter }}
-  DOMAIN: {{ .Values.domain }}
+
     # options: ldap/couchbase/hybrid
   CN_PERSISTENCE_TYPE: {{ .Values.cnPersistenceType }}
     # options: default/user/site/cache/statistic; used only if CN_PERSISTENCE_TYPE is hybrid
@@ -24,5 +26,7 @@ data:
   CN_COUCHBASE_USER: {{ .Values.cnCouchbaseUser }}
   CN_COUCHBASE_CERT_FILE: {{ .Values.cnCouchbaseCertFile | quote }}
   CN_COUCHBASE_PASSWORD_FILE: {{ .Values.cnCouchbasePassFile | quote }}
-  {{- end }} 
+  CN_COUCHBASE_SUPERUSER: {{ .Values.cnCouchbaseSuperUser }}
+  CN_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.cnCouchbaseSuperUserPassFile | quote }}
+  {{- end }}
   

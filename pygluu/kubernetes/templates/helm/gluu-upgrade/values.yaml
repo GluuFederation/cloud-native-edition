@@ -1,22 +1,21 @@
 # cnReleaseName is the release name used when deploying main gluu server chart
 cnReleaseName: cv # CHANGE
-
 image:
   repository: gluufederation/upgrade
   tag: 5.0.0_dev
 
-resources: {}
-  # requests:
-  #   memory: 100Mi
-  #   cpu: 150m
-  # limits:
-  #   memory: 100Mi
-  #   cpu: 150m
+cnCacheType: NATIVE_PERSISTENCE
+configAdapterName: kubernetes
+cnCouchbaseCertFile: /etc/certs/couchbase.crt
+cnCouchbaseUser: admin
+cnCouchbasePassFile:  /etc/gluu/conf/couchbase_password
+cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+cnCouchbaseSuperUser: admin
+cnCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password
 
 nameOverride: ""
 fullnameOverride: ""
 
-configAdapterName: kubernetes
 configSecretAdapter: kubernetes
 source: "4.0"
 target: "4.1"
@@ -28,10 +27,10 @@ cnPersistenceType: ldap
 # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
 cnPersistenceLdapMapping: default
 cnLdapUrl: opendj:1636
-# cnCouchbaseUrl is the couchbase service name
-cnCouchbaseUrl: cbgluu.default.svc.cluster.local
-cnCouchbaseUser: admin
-# cnCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
-cnCouchbasePassFile:  /etc/gluu/conf/couchbase_password
-# cnCouchbaseCertFile location of
-cnCouchbaseCertFile: /etc/certs/couchbase.crt
+resources: {}
+  # requests:
+  #   memory: 100Mi
+  #   cpu: 150m
+  # limits:
+  #   memory: 100Mi
+  #   cpu: 150m
