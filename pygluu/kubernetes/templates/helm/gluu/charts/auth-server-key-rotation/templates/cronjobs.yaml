@@ -19,9 +19,6 @@ spec:
           containers:
             - name: {{ .Chart.Name }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-              securityContext:
-                runAsUser: 1000
-                runAsNonRoot: true
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
               volumeMounts:
