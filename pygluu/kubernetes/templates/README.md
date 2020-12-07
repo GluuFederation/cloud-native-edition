@@ -3,7 +3,7 @@
 ## System Requirements for cloud deployments
 
 !!!note
-    For local deployments like `minikube` and `microk8s`  or cloud installations for demoing  Gluu may set the resources to the minimum and hence  can have `8GB RAM`, `4 CPU`, and `50GB disk` in total to run all services.
+    For local deployments like `minikube` and `microk8s`  or cloud installations for demoing Gluu may set the resources to the minimum and hence7  can have `8GB RAM`, `4 CPU`, and `50GB disk` in total to run all services.
   
 Please calculate the minimum required resources as per services deployed. The following table contains default recommended resources to start with. Depending on the use of each service the resources may be increased or decreased. 
 
@@ -208,9 +208,10 @@ Please calculate the minimum required resources as per services deployed. The fo
     1. **Optional if not using istio ingress:** Install [nginx-ingress](https://github.com/kubernetes/ingress-nginx) Helm [Chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress).
     
        ```bash
-       helm repo add stable https://kubernetes-charts.storage.googleapis.com
+       helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+       helm repo add stable https://charts.helm.sh/stable
        helm repo update
-       helm install <nginx-release-name> stable/nginx-ingress --namespace=<nginx-namespace>
+       helm install <nginx-release-name> ingress-nginx/ingress-nginx --namespace=<nginx-namespace>
        ```
     
     1.  - If the FQDN for gluu i.e `demoexample.gluu.org` is registered and globally resolvable, forward it to the loadbalancers address created in the previous step by nginx-ingress. A record can be added on most cloud providers to forward the domain to the loadbalancer. Forexample, on AWS assign a CNAME record for the LoadBalancer DNS name, or use Amazon Route 53 to create a hosted zone. More details in this [AWS guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html?icmpid=docs_elb_console). Another example on [GCE](https://medium.com/@kungusamuel90/custom-domain-name-mapping-for-k8s-on-gcp-4dc263b2dabe).
@@ -446,6 +447,7 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `config.countryCode`                                  | Country code of where the Org is located                                                                                         | `US`                                                        |
         | `config.state`                                        | State                                                                                                                            | `TX`                                                        |
         | `config.city`                                         | City                                                                                                                             | `Austin`                                                    |
+        | `config.secondaryCluster.enabled`                     | Enable on every kubernetes cluster except the first.  Used to enable roles and roles binding without installing config job.      | `false`                                                    |        
         | `config.configmap.gluuOxdApplicationCertCn`           | oxd OAuth client application certificate common name                                                                             | `oxd-server`                                                |
         | `config.configmap.gluuOxdAdminCertCn`                 | oxd OAuth client admin certificate common name                                                                                   | `oxd-server`                                                |
         | `config.configmap.gluuCouchbaseCrt`                   | Couchbase certificate authority                                                                                                  | `LS0tLS1CRUdJTiBDRVJ.....`                                  |
@@ -753,7 +755,7 @@ Please calculate the minimum required resources as per services deployed. The fo
               restartPolicy: Never
               containers:
                 - name: cloud-native-installer
-                  image: gluufederation/cloud-native:4.2.1_dev
+                  image: gluufederation/cloud-native:4.2.1_a4
         ---
         kind: Service
         apiVersion: v1
