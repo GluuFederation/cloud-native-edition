@@ -576,24 +576,6 @@ class Helm(object):
                                          self.settings.get("POSTGRES_URL"),
                                          self.settings.get("KONG_NAMESPACE")))
 
-
-    def install_kubedb(self):
-        self.uninstall_kubedb()
-        self.kubernetes.create_namespace(name="gluu-kubedb", labels={"app": "kubedb"})
-        try:
-            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-            exec_cmd("helm repo update")
-            exec_cmd("helm install kubedb-operator appscode/kubedb  --version v0.13.0-rc.0 "
-                     "--namespace gluu-kubedb")
-            self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb")
-            exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.13.0-rc.0 "
-                     "--namespace gluu-kubedb")
-        except FileNotFoundError:
-            logger.error("Helm v3 is not installed. Please install it to continue "
-                         "https://helm.sh/docs/intro/install/")
-            raise SystemExit(1)
-
-
     def uninstall_gluu_gateway_dbmode(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('KONG_HELM_RELEASE_NAME'),
                                                         self.settings.get("KONG_NAMESPACE")))
@@ -601,19 +583,6 @@ class Helm(object):
     def uninstall_gluu_gateway_ui(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
                                                         self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
-
-    def uninstall_kubedb(self):
-        logger.info("Deleting KubeDB...This may take a little while.")
-        try:
-            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-            exec_cmd("helm repo update")
-            exec_cmd("helm delete kubedb-operator --namespace gluu-kubedb")
-            exec_cmd("helm delete kubedb-catalog --namespace gluu-kubedb")
-            time.sleep(20)
-        except FileNotFoundError:
-            logger.error("Helm v3 is not installed. Please install it to continue "
-                         "https://helm.sh/docs/intro/install/")
-            raise SystemExit(1)
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('CN_HELM_RELEASE_NAME'),

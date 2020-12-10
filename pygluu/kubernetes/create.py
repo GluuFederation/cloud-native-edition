@@ -79,15 +79,19 @@ def main():
             helm = Helm()
             helm.uninstall_gluu()
             if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-                helm.uninstall_kubedb()
+                from pygluu.kubernetes.kubedb import Kubedb
+                kubedb = Kubedb()
+                kubedb.uninstall_kubedb()
 
         elif args.subparser_name == "upgrade-values-yaml":
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
             # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
             helm = Helm()
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
+                from pygluu.kubernetes.kubedb import Kubedb
+                kubedb = Kubedb()
+                kubedb.uninstall_kubedb()
+                kubedb.install_kubedb()
             prompt_upgrade = PromptUpgrade(settings)
             prompt_upgrade.prompt_upgrade()
             helm = Helm()
@@ -125,8 +129,9 @@ def main():
             helm.install_gluu_gateway_dbmode()
 
         elif args.subparser_name == "install-kubedb":
-            helm = Helm()
-            helm.install_kubedb()
+            from pygluu.kubernetes.kubedb import Kubedb
+            kubedb = Kubedb()
+            kubedb.install_kubedb()
 
         elif args.subparser_name == "uninstall-gg-dbmode":
             helm = Helm()
@@ -144,8 +149,10 @@ def main():
             if settings.get("INSTALL_REDIS") == "Y" or \
                     settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     settings.get("JACKRABBIT_CLUSTER") == "Y":
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
+                from pygluu.kubernetes.kubedb import Kubedb
+                kubedb = Kubedb()
+                kubedb.uninstall_kubedb()
+                kubedb.install_kubedb()
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
                 from pygluu.kubernetes.postgres import Postgres
                 postgres = Postgres()
@@ -159,6 +166,7 @@ def main():
 
         elif args.subparser_name == "helm-uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
+            from pygluu.kubernetes.kubedb import Kubedb
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             helm = Helm()
@@ -168,7 +176,8 @@ def main():
             helm.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
-            helm.uninstall_kubedb()
+            kubedb = Kubedb()
+            kubedb.uninstall_kubedb()
 
         elif args.subparser_name == "helm-install-gluu":
             from pygluu.kubernetes.terminal.helm import PromptHelm
