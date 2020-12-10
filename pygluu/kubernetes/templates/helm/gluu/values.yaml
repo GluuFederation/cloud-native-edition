@@ -230,6 +230,7 @@ fido2:
 scim:
   service:
     scimServiceName: scim
+  replicas: 1
   image:
     repository: janssenproject/scim
     tag: 5.0.0_dev

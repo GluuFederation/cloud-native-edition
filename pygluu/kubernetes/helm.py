@@ -288,11 +288,15 @@ class Helm(object):
         values_file_parser["global"]["fido2"]["enabled"] = False
         if self.settings.get("ENABLE_FIDO2") == "Y":
             values_file_parser["global"]["fido2"]["enabled"] = True
+            values_file_parser["fido2"]["replicas"] = self.settings.get("FIDO2_REPLICAS")
         values_file_parser["global"]["scim"]["enabled"] = False
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True
+            values_file_parser["scim"]["replicas"] = self.settings.get("SCIM_REPLICAS")
+
         if self.settings.get("ENABLE_CONFIG_API") == "Y":
             values_file_parser["global"]["config-api"]["enabled"] = True
+
         if self.settings.get("INSTALL_JACKRABBIT") == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
             values_file_parser["config"]["configmap"]["cnJackrabbitUrl"] = self.settings.get("JACKRABBIT_URL")
@@ -343,6 +347,8 @@ class Helm(object):
                 self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN")
             values_file_parser["config"]["configmap"]["jansClientApiAdminCertCn"] = self.settings.get(
                 "CLIENT_API_ADMIN_KEYSTORE_CN")
+            values_file_parser["client-api"]["replicas"] = self.settings.get("CLIENT_API_REPLICAS")
+
 
         values_file_parser["opendj"]["cnRedisEnabled"] = False
         if self.settings.get("CN_CACHE_TYPE") == "REDIS":
@@ -387,6 +393,7 @@ class Helm(object):
         values_file_parser["oxpassport"]["resources"] = {}
         values_file_parser["casa"]["image"]["repository"] = self.settings.get("CASA_IMAGE_NAME")
         values_file_parser["casa"]["image"]["tag"] = self.settings.get("CASA_IMAGE_TAG")
+        values_file_parser["casa"]["replicas"] = self.settings.get("CASA_REPLICAS")
         values_file_parser["config"]["image"]["repository"] = self.settings.get("CONFIG_IMAGE_NAME")
         values_file_parser["config"]["image"]["tag"] = self.settings.get("CONFIG_IMAGE_TAG")
         values_file_parser["cr-rotate"]["image"]["repository"] = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME")
@@ -401,16 +408,21 @@ class Helm(object):
         values_file_parser["auth-server"]["image"]["tag"] = self.settings.get("AUTH_SERVER_IMAGE_TAG")
         values_file_parser["client-api"]["image"]["repository"] = self.settings.get("CLIENT_API_IMAGE_NAME")
         values_file_parser["client-api"]["image"]["tag"] = self.settings.get("CLIENT_API_IMAGE_TAG")
+        values_file_parser["auth-server"]["replicas"] = self.settings.get("AUTH_SERVER_REPLICAS")
         values_file_parser["oxpassport"]["image"]["repository"] = self.settings.get("OXPASSPORT_IMAGE_NAME")
         values_file_parser["oxpassport"]["image"]["tag"] = self.settings.get("OXPASSPORT_IMAGE_TAG")
+        values_file_parser["oxpassport"]["replicas"] = self.settings.get("OXPASSPORT_REPLICAS")
         values_file_parser["oxshibboleth"]["image"]["repository"] = self.settings.get("OXSHIBBOLETH_IMAGE_NAME")
         values_file_parser["oxshibboleth"]["image"]["tag"] = self.settings.get("OXSHIBBOLETH_IMAGE_TAG")
+        values_file_parser["oxshibboleth"]["replicas"] = self.settings.get("OXSHIBBOLETH_REPLICAS")
         values_file_parser["jackrabbit"]["image"]["repository"] = self.settings.get("JACKRABBIT_IMAGE_NAME")
         values_file_parser["jackrabbit"]["image"]["tag"] = self.settings.get("JACKRABBIT_IMAGE_TAG")
         values_file_parser["oxtrust"]["image"]["repository"] = self.settings.get("OXTRUST_IMAGE_NAME")
         values_file_parser["oxtrust"]["image"]["tag"] = self.settings.get("OXTRUST_IMAGE_TAG")
+        values_file_parser["oxtrust"]["replicas"] = self.settings.get("OXTRUST_REPLICAS")
         values_file_parser["radius"]["image"]["repository"] = self.settings.get("RADIUS_IMAGE_NAME")
         values_file_parser["radius"]["image"]["tag"] = self.settings.get("RADIUS_IMAGE_TAG")
+        values_file_parser["radius"]["replicas"] = self.settings.get("RADIUS_REPLICAS")
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
