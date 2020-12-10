@@ -214,6 +214,7 @@ fido2:
 scim:
   service:
     scimServiceName: scim
+  replicas: 1
   image:
     repository: gluufederation/scim
     tag: 4.2.1_04

@@ -9,7 +9,7 @@ metadata:
     APP_NAME: scim
 {{ include "scim.labels" . | indent 4}}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: {{ include "scim.name" . }}
