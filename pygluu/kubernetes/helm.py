@@ -70,6 +70,7 @@ def register_op_client(namespace, client_name, op_host, client_api_url, release_
 class Helm(object):
     def __init__(self):
         self.values_file = Path("./helm/gluu/values.yaml").resolve()
+        self.upgrade_values_file = Path("./helm/gluu-upgrade/values.yaml").resolve()
         self.settings = SettingsHandler()
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get('CN_HELM_RELEASE_NAME') + "-ldap-backup"
@@ -87,6 +88,63 @@ class Helm(object):
                 self.kubernetes.create_cluster_role_binding(cluster_role_binding_name=cluster_role_binding_name,
                                                             user_name=user_account,
                                                             cluster_role_name="cluster-admin")
+
+    def analyze_storage_class(self, storageclass):
+        parser = Parser(storageclass, "StorageClass")
+        if self.settings.get("DEPLOYMENT_ARCH") == "eks":
+            parser["provisioner"] = "kubernetes.io/aws-ebs"
+            parser["parameters"]["encrypted"] = "true"
+            parser["parameters"]["type"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
+            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings.get("DEPLOYMENT_ARCH") == "gke":
+            parser["provisioner"] = "kubernetes.io/gce-pd"
+            try:
+                del parser["parameters"]["encrypted"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser["parameters"]["type"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
+            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings.get("DEPLOYMENT_ARCH") == "aks":
+            parser["provisioner"] = "kubernetes.io/azure-disk"
+            try:
+                del parser["parameters"]["encrypted"]
+                del parser["parameters"]["type"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser["parameters"]["storageaccounttype"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
+            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
+            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+            parser.dump_it()
+        elif self.settings.get("DEPLOYMENT_ARCH") == "do":
+            parser["provisioner"] = "dobs.csi.digitalocean.com"
+            try:
+                del parser["parameters"]
+                del parser["allowedTopologies"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser.dump_it()
+        elif self.settings.get('DEPLOYMENT_ARCH') == "microk8s":
+            try:
+                parser["provisioner"] = "microk8s.io/hostpath"
+                del parser["allowedTopologies"]
+                del parser["allowVolumeExpansion"]
+                del parser["parameters"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser.dump_it()
+        elif self.settings.get('DEPLOYMENT_ARCH') == "minikube":
+            try:
+                parser["provisioner"] = "k8s.io/minikube-hostpath"
+                del parser["allowedTopologies"]
+                del parser["allowVolumeExpansion"]
+                del parser["parameters"]
+            except KeyError:
+                logger.info("Key not deleted as it does not exist inside yaml.")
+            parser.dump_it()
 
     def prepare_alb(self):
         ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
@@ -273,7 +331,8 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
             values_file_parser["config"]["configmap"]["cnCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["cnCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
-            values_file_parser["config"]["configmap"]["cnCouchbaseIndexNumReplica"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
+            values_file_parser["config"]["configmap"]["cnCouchbaseIndexNumReplica"] = self.settings.get(
+                "COUCHBASE_INDEX_NUM_REPLICA")
             values_file_parser["config"]["configmap"]["cnCouchbaseSuperUser"] = \
                 self.settings.get("COUCHBASE_SUPERUSER")
             values_file_parser["config"]["configmap"]["cnCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")
@@ -391,7 +450,8 @@ class Helm(object):
         values_file_parser["config"]["image"]["tag"] = self.settings.get("CONFIG_IMAGE_TAG")
         values_file_parser["cr-rotate"]["image"]["repository"] = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_NAME")
         values_file_parser["cr-rotate"]["image"]["tag"] = self.settings.get("CACHE_REFRESH_ROTATE_IMAGE_TAG")
-        values_file_parser["auth-server-key-rotation"]["image"]["repository"] = self.settings.get("CERT_MANAGER_IMAGE_NAME")
+        values_file_parser["auth-server-key-rotation"]["image"]["repository"] = self.settings.get(
+            "CERT_MANAGER_IMAGE_NAME")
         values_file_parser["auth-server-key-rotation"]["image"]["tag"] = self.settings.get("CERT_MANAGER_IMAGE_TAG")
         values_file_parser["opendj"]["image"]["repository"] = self.settings.get("LDAP_IMAGE_NAME")
         values_file_parser["opendj"]["image"]["tag"] = self.settings.get("LDAP_IMAGE_TAG")
@@ -440,17 +500,35 @@ class Helm(object):
 
             if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                     self.settings.get("PERSISTENCE_BACKEND") == "ldap":
-                values_file = Path("./helm/ldap-backup/values.yaml").resolve()
-                values_file_parser = Parser(values_file, True)
-                values_file_parser["ldapPass"] = self.settings.get("LDAP_PW")
-                values_file_parser.dump_it()
+                self.install_ldap_backup()
 
-                exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
-                    self.ldap_backup_release_name, self.settings.get("CN_NAMESPACE")))
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
             raise SystemExit(1)
+
+    def install_ldap_backup(self):
+        values_file = Path("./helm/ldap-backup/values.yaml").resolve()
+        values_file_parser = Parser(values_file, True)
+        values_file_parser["ldapPass"] = self.settings.get("LDAP_PW")
+        values_file_parser.dump_it()
+        exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
+            self.ldap_backup_release_name, self.settings.get("CN_NAMESPACE")))
+
+    def upgrade_gluu(self):
+        values_file_parser = Parser(self.upgrade_values_file, True)
+        values_file_parser["domain"] = self.settings.get("CN_FQDN")
+        values_file_parser["cnCacheType"] = self.settings.get("CN_CACHE_TYPE")
+        values_file_parser["cnCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
+        values_file_parser["cnCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
+        values_file_parser["cnCouchbaseSuperUser"] = self.settings.get("COUCHBASE_SUPERUSER")
+        values_file_parser["cnPersistenceLdapMapping"] = self.settings.get("HYBRID_LDAP_HELD_DATA")
+        values_file_parser["cnPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
+        values_file_parser["source"] = self.settings.get("CN_VERSION")
+        values_file_parser["target"] = self.settings.get("CN_UPGRADE_TARGET_VERSION")
+        values_file_parser.dump_it()
+        exec_cmd("helm install {} -f {} ./helm/gluu-upgrade --namespace={}".format(
+            self.settings.get('CN_HELM_RELEASE_NAME'), self.values_file, self.settings.get("CN_NAMESPACE")))
 
     def install_gluu_gateway_ui(self):
         self.uninstall_gluu_gateway_ui()
@@ -514,8 +592,8 @@ class Helm(object):
                              "and clientSecret inside ./helm/gluu-gateway-ui/values.yaml then run "
                              "helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui "
                              "--namespace={}".format(
-                                                    self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
-                                                    self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
+                    self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
+                    self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
                 raise SystemExit(1)
             values_file_parser["clientApiId"] = client_api_id
             values_file_parser["clientId"] = client_id
@@ -555,6 +633,84 @@ class Helm(object):
                                          self.settings.get("POSTGRES_URL"),
                                          self.settings.get("KONG_NAMESPACE")))
 
+    @property
+    def generate_postgres_init_sql(self):
+        services_using_postgres = []
+        if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+            services_using_postgres.append("JACKRABBIT")
+        if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            services_using_postgres.append("KONG")
+            services_using_postgres.append("GLUU_GATEWAY_UI")
+        # Generate init sql
+        postgres_init_sql = ""
+        for service in services_using_postgres:
+            pg_user = self.settings.get("{}_PG_USER".format(service))
+            pg_password = self.settings.get("{}_PG_PASSWORD".format(service))
+            pg_database = self.settings.get("{}_DATABASE".format(service))
+            postgres_init_sql_jackrabbit = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
+                                           "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\n" \
+                .format(pg_user, pg_user, pg_password, pg_database, pg_database, pg_user)
+            postgres_init_sql = postgres_init_sql + postgres_init_sql_jackrabbit
+        return postgres_init_sql
+
+    def create_patch_secret_init_sql(self):
+        postgres_init_sql = self.generate_postgres_init_sql
+        encoded_postgers_init_bytes = base64.b64encode(postgres_init_sql.encode("utf-8"))
+        encoded_postgers_init_string = str(encoded_postgers_init_bytes, "utf-8")
+        self.kubernetes.patch_or_create_namespaced_secret(name="pg-init-sql",
+                                                          namespace=self.settings.get("POSTGRES_NAMESPACE"),
+                                                          literal="data.sql",
+                                                          value_of_literal=encoded_postgers_init_string)
+
+    def patch_or_deploy_postgres(self):
+
+        # Jackrabbit Cluster would have installed postgres
+        if self.settings.get("JACKRABBIT_CLUSTER") == "N":
+            self.deploy_postgres()
+        else:
+            self.create_patch_secret_init_sql()
+            logger.info("Restarting postgres...please wait 2mins..")
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=0,
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+            time.sleep(120)
+            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
+                                                                replicas=3,
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
+
+    def deploy_postgres(self):
+        self.uninstall_postgres()
+        self.kubernetes.create_namespace(name=self.settings.get("POSTGRES_NAMESPACE"), labels={"app": "postgres"})
+        self.create_patch_secret_init_sql()
+        if self.settings.get("DEPLOYMENT_ARCH") != "local":
+            postgres_storage_class = Path("./postgres/storageclasses.yaml")
+            self.analyze_storage_class(postgres_storage_class)
+            self.kubernetes.create_objects_from_dict(postgres_storage_class)
+
+        postgres_yaml = Path("./postgres/postgres.yaml")
+        postgres_parser = Parser(postgres_yaml, "Postgres")
+        postgres_parser["spec"]["replicas"] = self.settings.get("POSTGRES_REPLICAS")
+        postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            postgres_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
+        postgres_parser["metadata"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") or \
+                self.settings.get("TEST_ENVIRONMENT") == "Y":
+            try:
+                del postgres_parser["spec"]["podTemplate"]["spec"]["resources"]
+            except KeyError:
+                logger.info("Resources not deleted as they are not found inside yaml.")
+
+        postgres_parser.dump_it()
+        self.kubernetes.create_namespaced_custom_object(filepath=postgres_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="postgreses",
+                                                        namespace=self.settings.get("POSTGRES_NAMESPACE"))
+        if not self.settings.get("AWS_LB_TYPE") == "alb":
+            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
+
     def install_kubedb(self):
         self.uninstall_kubedb()
         self.kubernetes.create_namespace(name="gluu-kubedb", labels={"app": "kubedb"})
@@ -570,6 +726,40 @@ class Helm(object):
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
             raise SystemExit(1)
+
+    def deploy_redis(self):
+        self.uninstall_redis()
+        self.kubernetes.create_namespace(name=self.settings.get("REDIS_NAMESPACE"), labels={"app": "redis"})
+        if self.settings.get("DEPLOYMENT_ARCH") != "local":
+            redis_storage_class = Path("./redis/storageclasses.yaml")
+            self.analyze_storage_class(redis_storage_class)
+            self.kubernetes.create_objects_from_dict(redis_storage_class)
+
+        redis_configmap = Path("./redis/configmaps.yaml")
+        redis_conf_parser = Parser(redis_configmap, "ConfigMap")
+        redis_conf_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
+        redis_conf_parser.dump_it()
+        self.kubernetes.create_objects_from_dict(redis_configmap)
+
+        redis_yaml = Path("./redis/redis.yaml")
+        redis_parser = Parser(redis_yaml, "Redis")
+        redis_parser["spec"]["cluster"]["master"] = self.settings.get("REDIS_MASTER_NODES")
+        redis_parser["spec"]["cluster"]["replicas"] = self.settings.get("REDIS_NODES_PER_MASTER")
+        redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") == "local":
+            redis_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
+        redis_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
+        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
+            del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
+        redis_parser.dump_it()
+        self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="redises",
+                                                        namespace=self.settings.get("REDIS_NAMESPACE"))
+
+        if not self.settings.get("AWS_LB_TYPE") == "alb":
+            self.kubernetes.check_pods_statuses(self.settings.get("CN_NAMESPACE"), "app=redis-cluster", self.timeout)
 
     def uninstall_gluu_gateway_dbmode(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('KONG_HELM_RELEASE_NAME'),
@@ -601,3 +791,51 @@ class Helm(object):
     def uninstall_nginx_ingress(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('NGINX_INGRESS_RELEASE_NAME'),
                                                         self.settings.get("NGINX_INGRESS_NAMESPACE")))
+
+    def uninstall_postgres(self):
+        logger.info("Removing gluu-postgres...")
+        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
+                                                                version="v1alpha1",
+                                                                plural="postgreses",
+                                                                name="postgres",
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
+                                                                version="v1alpha1",
+                                                                plural="postgresversions",
+                                                                name="postgres",
+                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
+        self.kubernetes.delete_storage_class("postgres-sc")
+        self.kubernetes.delete_service("kubedb", self.settings.get("POSTGRES_NAMESPACE"))
+        self.kubernetes.delete_service("postgres", self.settings.get("POSTGRES_NAMESPACE"))
+        self.kubernetes.delete_service("postgres-replicas", self.settings.get("POSTGRES_NAMESPACE"))
+        self.kubernetes.delete_service("postgres-stats", self.settings.get("POSTGRES_NAMESPACE"))
+
+    def uninstall_redis(self):
+        logger.info("Removing gluu-redis-cluster...")
+        logger.info("Removing redis...")
+        redis_yaml = Path("./redis/redis.yaml")
+        self.kubernetes.delete_namespaced_custom_object(filepath=redis_yaml,
+                                                        group="kubedb.com",
+                                                        version="v1alpha1",
+                                                        plural="redises",
+                                                        namespace=self.settings.get("REDIS_NAMESPACE"))
+        self.kubernetes.delete_storage_class("redis-sc")
+        self.kubernetes.delete_service("kubedb", self.settings.get("REDIS_NAMESPACE"))
+
+    def uninstall_kong(self):
+        logger.info("Removing gluu gateway kong...")
+        self.kubernetes.delete_job(self.settings.get("KONG_NAMESPACE"), "app=kong-migration-job")
+        self.kubernetes.delete_custom_resource("kongconsumers.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("kongcredentials.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("kongingresses.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("kongplugins.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("tcpingresses.configuration.konghq.com")
+        self.kubernetes.delete_custom_resource("kongclusterplugins.configuration.konghq.com")
+        self.kubernetes.delete_cluster_role("kong-ingress-clusterrole")
+        self.kubernetes.delete_service_account("kong-serviceaccount", self.settings.get("KONG_NAMESPACE"))
+        self.kubernetes.delete_cluster_role_binding("kong-ingress-clusterrole-nisa-binding")
+        self.kubernetes.delete_config_map_using_name("kong-server-blocks", self.settings.get("KONG_NAMESPACE"))
+        self.kubernetes.delete_service("kong-proxy", self.settings.get("KONG_NAMESPACE"))
+        self.kubernetes.delete_service("kong-validation-webhook", self.settings.get("KONG_NAMESPACE"))
+        self.kubernetes.delete_service("kong-admin", self.settings.get("KONG_NAMESPACE"))
+        self.kubernetes.delete_deployment_using_name("ingress-kong", self.settings.get("KONG_NAMESPACE"))

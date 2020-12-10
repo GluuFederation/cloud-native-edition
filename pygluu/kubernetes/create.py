@@ -10,7 +10,6 @@ from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
 from pygluu.kubernetes.helpers import get_logger, copy_templates
 from pygluu.kubernetes.helm import Helm
-from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.settings import SettingsHandler
 
 logger = get_logger("gluu-create        ")
@@ -69,20 +68,17 @@ def main():
     prompts.prompt()
     settings = SettingsHandler()
     
-    timeout = 120
-    if args.subparser_name == "install-no-wait":
-        timeout = 0
+
     try:
         if args.subparser_name == "install-ldap-backup":
-            kustomize = Kustomize(timeout)
-            kustomize.setup_backup_ldap()
+            helm = Helm()
+            helm.install_ldap_backup()
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
-            kustomize = Kustomize(timeout)
-            kustomize.uninstall()
+            helm = Helm()
+            helm.uninstall_gluu()
             if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-                helm = Helm()
                 helm.uninstall_kubedb()
 
         elif args.subparser_name == "upgrade-values-yaml":
@@ -99,12 +95,6 @@ def main():
             helm.analyze_global_values()
             logger.info("Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
                         "Continue with the steps found at https://gluu.org/docs/gluu-server/latest/upgrade/#helm")
-
-        elif args.subparser_name == "restore":
-            kustomize = Kustomize(timeout)
-            kustomize.copy_configs_before_restore()
-            kustomize.uninstall(restore=True)
-            kustomize.install(install_couchbase=False, restore=True)
 
         elif args.subparser_name == "install-couchbase":
             from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
@@ -131,17 +121,17 @@ def main():
             from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
             prompt_gluu_gateway = PromptGluuGateway(settings)
             prompt_gluu_gateway.prompt_gluu_gateway()
-            kustomize = Kustomize(timeout)
-            kustomize.install_gluu_gateway_dbmode()
+            helm = Helm()
+            helm.install_gluu_gateway_dbmode()
 
         elif args.subparser_name == "install-kubedb":
             helm = Helm()
             helm.install_kubedb()
 
         elif args.subparser_name == "uninstall-gg-dbmode":
-            kustomize = Kustomize(timeout)
-            kustomize.uninstall_kong()
-            kustomize.uninstall_gluu_gateway_ui()
+            helm = Helm()
+            helm.uninstall_gluu_gateway_dbmode()
+            helm.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")
@@ -157,12 +147,10 @@ def main():
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
-                kustomize = Kustomize(timeout)
-                kustomize.deploy_postgres()
+                helm.deploy_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
-                kustomize = Kustomize(timeout)
-                kustomize.uninstall_redis()
-                kustomize.deploy_redis()
+                helm.uninstall_redis()
+                helm.depl
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":

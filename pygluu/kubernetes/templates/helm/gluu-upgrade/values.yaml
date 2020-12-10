@@ -1,5 +1,3 @@
-# cnReleaseName is the release name used when deploying main gluu server chart
-cnReleaseName: cv # CHANGE
 image:
   repository: gluufederation/upgrade
   tag: 5.0.0_dev

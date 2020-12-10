@@ -9,7 +9,6 @@ from pygtail import Pygtail
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.helm import Helm
 from pygluu.kubernetes.helpers import get_logger
-from pygluu.kubernetes.kustomize import Kustomize
 from .extensions import gluu_settings
 
 logger = get_logger("gluu-gui        ")
