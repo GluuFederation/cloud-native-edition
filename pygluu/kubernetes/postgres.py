@@ -56,7 +56,7 @@ class Postgres(object):
     def patch_or_install_postgres(self):
         # Jackrabbit Cluster would have installed postgres
         if self.settings.get("JACKRABBIT_CLUSTER") == "N":
-            self.deploy_postgres()
+            self.install_postgres()
         else:
             self.create_patch_secret_init_sql()
             logger.info("Restarting postgres...please wait 2mins..")

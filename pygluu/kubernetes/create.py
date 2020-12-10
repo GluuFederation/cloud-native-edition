@@ -123,10 +123,11 @@ def main():
 
         elif args.subparser_name == "install-gg-dbmode":
             from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
+            from pygluu.kubernetes.gluugateway import GluuGateway
             prompt_gluu_gateway = PromptGluuGateway(settings)
             prompt_gluu_gateway.prompt_gluu_gateway()
-            helm = Helm()
-            helm.install_gluu_gateway_dbmode()
+            gluugateway = GluuGateway()
+            gluugateway.install_gluu_gateway_dbmode()
 
         elif args.subparser_name == "install-kubedb":
             from pygluu.kubernetes.kubedb import Kubedb
@@ -134,9 +135,10 @@ def main():
             kubedb.install_kubedb()
 
         elif args.subparser_name == "uninstall-gg-dbmode":
-            helm = Helm()
-            helm.uninstall_gluu_gateway_dbmode()
-            helm.uninstall_gluu_gateway_ui()
+            from pygluu.kubernetes.gluugateway import GluuGateway
+            gluugateway = GluuGateway()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")
@@ -190,24 +192,26 @@ def main():
         elif args.subparser_name == "helm-install-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
+            from pygluu.kubernetes.gluugateway import GluuGateway
             postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             postgres.patch_or_install_postgres()
-            helm = Helm()
-            helm.install_gluu_gateway_dbmode()
-            helm.install_gluu_gateway_ui()
+            gluugateway = GluuGateway()
+            gluugateway.install_gluu_gateway_dbmode()
+            gluugateway.install_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
+            from pygluu.kubernetes.gluugateway import GluuGateway
             postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             postgres.uninstall_postgres()
-            helm = Helm()
-            helm.uninstall_gluu_gateway_dbmode()
-            helm.uninstall_gluu_gateway_ui()
+            gluugateway = GluuGateway()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gluu":
             from pygluu.kubernetes.terminal.helm import PromptHelm
