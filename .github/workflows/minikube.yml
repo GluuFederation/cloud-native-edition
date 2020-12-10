@@ -228,7 +228,7 @@ jobs:
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
-          sudo ./pygluu-kubernetes.pyz install
+          sudo ./pygluu-kubernetes.pyz helm-install-gluu
           cat /home/runner/work/test/settings.json
           kubectl get po -n gluu
           kubectl get po -n cbns

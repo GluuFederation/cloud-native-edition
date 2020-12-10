@@ -150,7 +150,7 @@ def main():
                 helm.deploy_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
                 helm.uninstall_redis()
-                helm.depl
+                helm.deploy_redis()
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
