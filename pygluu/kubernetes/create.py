@@ -147,7 +147,9 @@ def main():
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
-                helm.deploy_postgres()
+                from pygluu.kubernetes.postgres import Postgres
+                postgres = Postgres()
+                postgres.install_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
                 from pygluu.kubernetes.redis import Redis
                 redis = Redis()
@@ -178,20 +180,22 @@ def main():
 
         elif args.subparser_name == "helm-install-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
+            from pygluu.kubernetes.postgres import Postgres
+            postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            kustomize = Kustomize(timeout)
-            kustomize.patch_or_deploy_postgres()
+            postgres.patch_or_install_postgres()
             helm = Helm()
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
 
         elif args.subparser_name == "helm-uninstall-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
+            from pygluu.kubernetes.postgres import Postgres
+            postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            kustomize = Kustomize(timeout)
-            kustomize.uninstall_postgres()
+            postgres.uninstall_postgres()
             helm = Helm()
             helm.uninstall_gluu_gateway_dbmode()
             helm.uninstall_gluu_gateway_ui()
