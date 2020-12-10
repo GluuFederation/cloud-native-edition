@@ -89,63 +89,6 @@ class Helm(object):
                                                             user_name=user_account,
                                                             cluster_role_name="cluster-admin")
 
-    def analyze_storage_class(self, storageclass):
-        parser = Parser(storageclass, "StorageClass")
-        if self.settings.get("DEPLOYMENT_ARCH") == "eks":
-            parser["provisioner"] = "kubernetes.io/aws-ebs"
-            parser["parameters"]["encrypted"] = "true"
-            parser["parameters"]["type"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
-            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
-            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-            parser.dump_it()
-        elif self.settings.get("DEPLOYMENT_ARCH") == "gke":
-            parser["provisioner"] = "kubernetes.io/gce-pd"
-            try:
-                del parser["parameters"]["encrypted"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            parser["parameters"]["type"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
-            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
-            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-            parser.dump_it()
-        elif self.settings.get("DEPLOYMENT_ARCH") == "aks":
-            parser["provisioner"] = "kubernetes.io/azure-disk"
-            try:
-                del parser["parameters"]["encrypted"]
-                del parser["parameters"]["type"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            parser["parameters"]["storageaccounttype"] = self.settings.get("LDAP_JACKRABBIT_VOLUME")
-            unique_zones = list(dict.fromkeys(self.settings.get("NODES_ZONES")))
-            parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-            parser.dump_it()
-        elif self.settings.get("DEPLOYMENT_ARCH") == "do":
-            parser["provisioner"] = "dobs.csi.digitalocean.com"
-            try:
-                del parser["parameters"]
-                del parser["allowedTopologies"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            parser.dump_it()
-        elif self.settings.get('DEPLOYMENT_ARCH') == "microk8s":
-            try:
-                parser["provisioner"] = "microk8s.io/hostpath"
-                del parser["allowedTopologies"]
-                del parser["allowVolumeExpansion"]
-                del parser["parameters"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            parser.dump_it()
-        elif self.settings.get('DEPLOYMENT_ARCH') == "minikube":
-            try:
-                parser["provisioner"] = "k8s.io/minikube-hostpath"
-                del parser["allowedTopologies"]
-                del parser["allowVolumeExpansion"]
-                del parser["parameters"]
-            except KeyError:
-                logger.info("Key not deleted as it does not exist inside yaml.")
-            parser.dump_it()
-
     def prepare_alb(self):
         ingress_parser = Parser("./alb/ingress.yaml", "Ingress")
         ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("CN_FQDN")
