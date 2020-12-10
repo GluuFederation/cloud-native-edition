@@ -9,7 +9,7 @@ import sys
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
 from pygluu.kubernetes.helpers import get_logger, copy_templates
-from pygluu.kubernetes.helm import Helm
+from pygluu.kubernetes.gluu import Gluu
 from pygluu.kubernetes.settings import SettingsHandler
 
 logger = get_logger("gluu-create        ")
@@ -71,13 +71,13 @@ def main():
 
     try:
         if args.subparser_name == "install-ldap-backup":
-            helm = Helm()
-            helm.install_ldap_backup()
+            gluu = Gluu()
+            gluu.install_ldap_backup()
 
         elif args.subparser_name == "uninstall":
             logger.info("Removing all Gluu resources...")
-            helm = Helm()
-            helm.uninstall_gluu()
+            gluu = Gluu()
+            gluu.uninstall_gluu()
             if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
@@ -86,7 +86,7 @@ def main():
         elif args.subparser_name == "upgrade-values-yaml":
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
             # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
-            helm = Helm()
+            gluu = Gluu()
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
@@ -94,9 +94,9 @@ def main():
                 kubedb.install_kubedb()
             prompt_upgrade = PromptUpgrade(settings)
             prompt_upgrade.prompt_upgrade()
-            helm = Helm()
+            gluu = Gluu()
             logger.info("Patching values.yaml for helm upgrade...")
-            helm.analyze_global_values()
+            gluu.analyze_global_values()
             logger.info("Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
                         "Continue with the steps found at https://gluu.org/docs/gluu-server/latest/upgrade/#helm")
 
@@ -147,7 +147,7 @@ def main():
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            helm = Helm()
+            gluu = Gluu()
             if settings.get("INSTALL_REDIS") == "Y" or \
                     settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     settings.get("JACKRABBIT_CLUSTER") == "Y":
@@ -164,18 +164,18 @@ def main():
                 redis = Redis()
                 redis.uninstall_redis()
                 redis.install_redis()
-            helm.install_gluu()
+            gluu.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.kubedb import Kubedb
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            helm = Helm()
-            helm.uninstall_gluu()
-            helm.uninstall_nginx_ingress()
-            helm.uninstall_gluu_gateway_dbmode()
-            helm.uninstall_gluu_gateway_ui()
+            gluu = Gluu()
+            gluu.uninstall_gluu()
+            gluu.uninstall_nginx_ingress()
+            gluu.uninstall_gluu_gateway_dbmode()
+            gluu.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
             kubedb = Kubedb()
@@ -185,9 +185,9 @@ def main():
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            helm = Helm()
-            helm.uninstall_gluu()
-            helm.install_gluu(install_ingress=False)
+            gluu = Gluu()
+            gluu.uninstall_gluu()
+            gluu.install_gluu(install_ingress=False)
 
         elif args.subparser_name == "helm-install-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
@@ -217,8 +217,8 @@ def main():
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            helm = Helm()
-            helm.uninstall_gluu()
+            gluu = Gluu()
+            gluu.uninstall_gluu()
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")

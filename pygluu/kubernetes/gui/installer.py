@@ -7,7 +7,7 @@ from pathlib import Path
 from queue import Queue
 from pygtail import Pygtail
 from pygluu.kubernetes.couchbase import Couchbase
-from pygluu.kubernetes.helm import Helm
+from pygluu.kubernetes.gluu import Gluu
 from pygluu.kubernetes.helpers import get_logger
 from .extensions import gluu_settings
 
@@ -49,7 +49,7 @@ class InstallHandler(object):
             if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
                     gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm = Helm()
+                helm = Gluu()
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
@@ -83,7 +83,7 @@ class InstallHandler(object):
             kustomize.uninstall()
             if gluu_settings.db.get("INSTALL_REDIS") == "Y" or gluu_settings.db.get(
                     "INSTALL_GLUU_GATEWAY") == "Y":
-                helm = Helm()
+                helm = Gluu()
                 helm.uninstall_kubedb()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
         except SystemExit:
@@ -99,7 +99,7 @@ class InstallHandler(object):
             # sure kubedb is installed.
             self.queue.put(('Preparing upgrade...', 'ONPROGRESS'))
             if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm = Helm()
+                helm = Gluu()
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
 
@@ -119,12 +119,12 @@ class InstallHandler(object):
         try:
             # New feature in 4.2 compared to 4.1 and hence if enabled should make
             # sure kubedb is installed.
-            helm = Helm()
+            helm = Gluu()
             if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
 
-            helm = Helm()
+            helm = Gluu()
             logger.info("Patching values.yaml for helm upgrade...")
             self.queue.put(('Upgrading...', 'ONPROGRESS'))
             helm.analyze_global_values()
@@ -209,7 +209,7 @@ class InstallHandler(object):
     def install_kubedb(self):
         try:
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            helm = Helm()
+            helm = Gluu()
             helm.install_kubedb()
             self.queue.put(('Installation is complete', 'COMPLETED'))
         except SystemExit:
@@ -236,7 +236,7 @@ class InstallHandler(object):
     def helm_install(self):
         try:
             self.queue.put(('Preparing for installation', 'ONPROGRESS'))
-            helm = Helm()
+            helm = Gluu()
             if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
                     gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
@@ -262,7 +262,7 @@ class InstallHandler(object):
     def helm_uninstall(self):
         try:
             kustomize = Kustomize(self.timeout)
-            helm = Helm()
+            helm = Gluu()
             self.queue.put(('Uninstalling', 'ONPROGRESS'))
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
@@ -282,7 +282,7 @@ class InstallHandler(object):
 
     def helm_install_gluu(self):
         try:
-            helm = Helm()
+            helm = Gluu()
             self.queue.put(('Preparing for installation', 'ONPROGRESS'))
             helm.uninstall_gluu()
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
@@ -300,7 +300,7 @@ class InstallHandler(object):
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
             kustomize = Kustomize(self.timeout)
             kustomize.patch_or_deploy_postgres()
-            helm = Helm()
+            helm = Gluu()
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
             self.queue.put(('Installation is complete', 'COMPLETED'))
@@ -316,7 +316,7 @@ class InstallHandler(object):
             self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             kustomize = Kustomize(self.timeout)
             kustomize.uninstall_postgres()
-            helm = Helm()
+            helm = Gluu()
             helm.uninstall_gluu_gateway_dbmode()
             helm.uninstall_gluu_gateway_ui()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
@@ -330,7 +330,7 @@ class InstallHandler(object):
     def helm_uninstall_gluu(self):
         try:
             self.queue.put(('Uninstalling...', 'ONPROGRESS'))
-            helm = Helm()
+            helm = Gluu()
             helm.uninstall_gluu()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
         except SystemExit:
