@@ -149,15 +149,16 @@ def main():
             if settings.get("JACKRABBIT_CLUSTER") == "Y":
                 helm.deploy_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
-                helm.uninstall_redis()
-                helm.deploy_redis()
+                from pygluu.kubernetes.redis import Redis
+                redis = Redis()
+                redis.uninstall_redis()
+                redis.install_redis()
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            kustomize = Kustomize(timeout)
             helm = Helm()
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
@@ -165,7 +166,6 @@ def main():
             helm.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
-            kustomize.uninstall()
             helm.uninstall_kubedb()
 
         elif args.subparser_name == "helm-install-gluu":
