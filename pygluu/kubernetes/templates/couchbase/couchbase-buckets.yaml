@@ -1,11 +1,11 @@
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu
+  name: gluu # Can be set to prefix
   labels:
     cluster: gluu-couchbase
 spec:
-  name: gluu #DO NOT CHANGE THIS LINE
+  name: gluu # Can be set to prefix
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: low
@@ -18,11 +18,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu-site
+  name: gluu-site # Can be set to prefix-site
   labels:
     cluster: gluu-couchbase
 spec:
-  name: gluu_site  #DO NOT CHANGE THIS LINE
+  name: gluu_site  # Can be set to prefix_site
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: low
@@ -35,11 +35,11 @@ spec:
 apiVersion: couchbase.com/v2
 kind: CouchbaseBucket
 metadata:
-  name: gluu-user
+  name: gluu-user # Can be set to prefix-user
   labels:
     cluster: gluu-couchbase
 spec:
-  name: gluu_user  #DO NOT CHANGE THIS LINE
+  name: gluu_user  # Can be set to prefix_user
   memoryQuota: 100Mi
   replicas: 1
   ioPriority: high
