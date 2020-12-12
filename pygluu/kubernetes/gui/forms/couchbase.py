@@ -35,6 +35,7 @@ class CouchbaseForm(FlaskForm):
         couchbase_namespace (string|required|default: cbns)
         couchbase_cluster_name (string|required|default: cbgluu)
         couchbase_url (string|required|default: cbgluu.cbns.svc.cluster.local)
+        couchbase_bucket_prefix (string|required|default: gluu)
         couchbase_index_num_replica string|required|default: 0)
         couchbase_user (string|required|default: admin)
         couchbase_password (string|required|default: auto generate)
@@ -83,6 +84,11 @@ class CouchbaseForm(FlaskForm):
     couchbase_url = StringField(
         "Please enter  couchbase (remote or local) URL base name",
         default="cbgluu.cbns.svc.cluster.local",
+        validators=[InputRequired()])
+
+    couchbase_bucket_prefix = StringField(
+        "Please enter a  prefix name for all couchbase gluu buckets",
+        default="gluu",
         validators=[InputRequired()])
 
     couchbase_index_num_replica = StringField(
