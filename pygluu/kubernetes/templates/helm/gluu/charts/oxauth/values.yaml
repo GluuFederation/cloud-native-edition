@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 image:
   repository: gluufederation/oxauth
-  tag: 4.2.1_02
+  tag: 4.2.2_01
   pullPolicy: Always
 
 replicas: 1

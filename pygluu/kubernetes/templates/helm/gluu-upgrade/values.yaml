@@ -3,7 +3,7 @@ gluuReleaseName: cv # CHANGE
 
 image:
   repository: gluufederation/upgrade
-  tag: 4.2.1_02
+  tag: 4.2.2_01
 
 resources: {}
   # requests:
@@ -31,6 +31,7 @@ gluuLdapUrl: opendj:1636
 # gluuCouchbaseUrl is the couchbase service name
 gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
 gluuCouchbaseUser: admin
+gluuCouchbaseBucketPrefix: gluu
 # gluuCouchbasePassFile is the location of password file. Should be named `couchbase_password` containing only password file
 gluuCouchbasePassFile:  /etc/gluu/conf/couchbase_password
 # gluuCouchbaseCertFile location of

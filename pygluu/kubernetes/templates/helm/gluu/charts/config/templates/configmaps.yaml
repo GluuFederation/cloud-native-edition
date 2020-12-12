@@ -30,6 +30,7 @@ data:
   GLUU_LDAP_URL: {{ .Values.configmap.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  GLUU_COUCHBASE_BUCKET_PREFIX: {{ .Values.configmap.gluuCouchbaseBucketPrefix }}
   GLUU_COUCHBASE_URL: {{ .Values.configmap.gluuCouchbaseUrl }}
   GLUU_COUCHBASE_USER: {{ .Values.configmap.gluuCouchbaseUser }}
   GLUU_COUCHBASE_INDEX_NUM_REPLICA: {{ .Values.configmap.gluuCouchbaseIndexNumReplica | quote }}

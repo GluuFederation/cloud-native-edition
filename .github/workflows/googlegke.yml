@@ -147,6 +147,7 @@ jobs:
           "COUCHBASE_INDEX_NUM_REPLICA": "0",s
           "COUCHBASE_USER": "gluu",
           "COUCHBASE_SUPERUSER": "admin",
+          "COUCHBASE_BUCKET_PREFIX": "test",
           "COUCHBASE_PASSWORD": "nTB5#|",
           "COUCHBASE_SUPERUSER_PASSWORD": "nTB5#2",
           "COUCHBASE_CRT": "",

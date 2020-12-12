@@ -89,6 +89,12 @@ class PromptCouchbase:
                         f".cluster.local",
             ))
 
+        if not self.settings.get("COUCHBASE_BUCKET_PREFIX"):
+            self.settings.set("COUCHBASE_BUCKET_PREFIX", click.prompt(
+                "Please enter a  prefix name for all couchbase gluu buckets",
+                default="gluu"
+            ))
+
         if not self.settings.get("COUCHBASE_INDEX_NUM_REPLICA"):
             self.settings.set("COUCHBASE_INDEX_NUM_REPLICA", click.prompt(
                 "Please enter the number of replicas per index created. "

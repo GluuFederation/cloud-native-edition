@@ -9,4 +9,4 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/fido2
-    newTag: 4.2.1_02
+    newTag: 4.2.2_01

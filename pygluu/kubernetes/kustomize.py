@@ -522,6 +522,7 @@ class Kustomize(object):
         configmap_parser["data"]["DOMAIN"] = self.settings.get("GLUU_FQDN")
         configmap_parser["data"]["GLUU_COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
         configmap_parser["data"]["GLUU_COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
+        configmap_parser["data"]["GLUU_COUCHBASE_BUCKET_PREFIX"] = self.settings.get("COUCHBASE_BUCKET_PREFIX")
         configmap_parser["data"]["GLUU_COUCHBASE_INDEX_NUM_REPLICA"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
         configmap_parser["data"]["GLUU_COUCHBASE_SUPERUSER"] = self.settings.get("COUCHBASE_SUPERUSER")
         configmap_parser["data"]["GLUU_JACKRABBIT_URL"] = self.settings.get("JACKRABBIT_URL")
@@ -776,6 +777,7 @@ class Kustomize(object):
         upgrade_cm_parser["data"]["GLUU_PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_BACKEND")
         upgrade_cm_parser["data"]["GLUU_CONFIG_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
         upgrade_cm_parser["data"]["GLUU_SECRET_KUBERNETES_NAMESPACE"] = self.settings.get("GLUU_NAMESPACE")
+        upgrade_cm_parser["data"]["GLUU_COUCHBASE_BUCKET_PREFIX"] = self.settings.get("COUCHBASE_BUCKET_PREFIX")
         upgrade_cm_parser.dump_it()
 
         upgrade_job_parser = Parser(self.gluu_upgrade_yaml, "Job")

@@ -22,6 +22,7 @@ data:
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
   GLUU_COUCHBASE_URL: {{ .Values.gluuCouchbaseUrl }}
   GLUU_COUCHBASE_USER: {{ .Values.gluuCouchbaseUser }}
+  GLUU_COUCHBASE_BUCKET_PREFIX: {{ .Values.gluuCouchbaseBucketPrefix }}
   GLUU_COUCHBASE_CERT_FILE: {{ .Values.gluuCouchbaseCertFile | quote }}
   GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.gluuCouchbasePassFile | quote }}
   {{- end }} 

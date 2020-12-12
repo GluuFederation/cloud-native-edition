@@ -93,6 +93,7 @@ class SettingsHandler(object):
                                 COUCHBASE_CLUSTER_NAME="",
                                 COUCHBASE_URL="",
                                 COUCHBASE_USER="",
+                                COUCHBASE_BUCKET_PREFIX="",
                                 COUCHBASE_SUPERUSER="",
                                 COUCHBASE_PASSWORD="",
                                 COUCHBASE_SUPERUSER_PASSWORD="",

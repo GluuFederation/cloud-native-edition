@@ -11,7 +11,7 @@ resources:
   - ingress.yaml
 images:
   - name: gluufederation/gluu-gateway-ui
-    newTag: 4.2.1_02
+    newTag: 4.2.2_01
 configMapGenerator:
   - name: gg-ui-cm
     literals:

@@ -273,6 +273,7 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
             values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
+            values_file_parser["config"]["configmap"]["gluuCouchbaseBucketPrefix"] = self.settings.get("COUCHBASE_BUCKET_PREFIX")
             values_file_parser["config"]["configmap"]["gluuCouchbaseIndexNumReplica"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUser"] = \
                 self.settings.get("COUCHBASE_SUPERUSER")
