@@ -218,7 +218,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.1_04
+    tag: 4.2.2_01
     pullPolicy: Always
   resources:
     limits:
@@ -263,7 +263,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.2.1_03
+    tag: 4.2.2_01
     pullPolicy: Always
   resources:
     limits:

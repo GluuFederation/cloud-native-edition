@@ -11,11 +11,11 @@ logger = get_logger("update-image")
 
 def determine_final_official_and_dev_version(tag_list):
     """
-    Determine official version i.e 4.1.0 , 4.2.1..etc using oxauths repo
+    Determine official version i.e 4.1.0 , 4.2.2..etc using oxauths repo
     @param tag_list:
     @return:
     """
-    # Check for the highest major.minor.patch i.e 4.2.0 vs 4.2.1
+    # Check for the highest major.minor.patch i.e 4.2.0 vs 4.2.2
     dev_image = ""
     patch_list = []
     for tag in tag_list:
