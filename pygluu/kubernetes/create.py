@@ -25,27 +25,24 @@ def create_parser():
                                                     "Gluu Cloud Native Edition non-interactively")
     subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
     subparsers.add_parser("install-kubedb", help="Install KubeDB for redis or postgres")
-    subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database")
-    subparsers.add_parser("uninstall-gg-dbmode", help="Unnstall Gluu Gateway with Postgres database")
     subparsers.add_parser("restore", help="Install Gluu Cloud Native Edition with a "
                                           "running database and previous configuration")
-    subparsers.add_parser("uninstall", help="Uninstall Gluu")
     subparsers.add_parser("upgrade", help="Upgrade Gluu Cloud Native Edition")
     subparsers.add_parser("upgrade-values-yaml", help="Upgrade Gluu Cloud Native Edition")
     subparsers.add_parser("install-couchbase", help="Install Couchbase only. Used with installation of Gluu with Helm")
     subparsers.add_parser("install-couchbase-backup", help="Install Couchbase backup only.")
     subparsers.add_parser("uninstall-couchbase", help="Uninstall Couchbase only.")
-    subparsers.add_parser("helm-install", help="Install Gluu Cloud Native Edition using helm. "
-                                               "This also installs the nginx-ingress chart")
-    subparsers.add_parser("helm-uninstall", help="Uninstall Gluu Cloud Native Edition using helm. "
-                                                 "This also uninstalls the nginx-ingress chart")
-    subparsers.add_parser("helm-install-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
-    subparsers.add_parser("helm-uninstall-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
+    subparsers.add_parser("install", help="Install Gluu Cloud Native Edition using helm. "
+                                          "This also installs the nginx-ingress chart")
+    subparsers.add_parser("uninstall", help="Uninstall Gluu Cloud Native Edition using helm. "
+                                            "This also uninstalls the nginx-ingress chart, gg, gg-ui and kubedb")
+    subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
+    subparsers.add_parser("uninstall-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
 
-    subparsers.add_parser("helm-install-gluu", help="Install Gluu Cloud Native Edition using helm. "
-                                                    "This assumes nginx-ingress is installed")
-    subparsers.add_parser("helm-uninstall-gluu", help="Uninstall Gluu Cloud Native Edition using helm. "
-                                                      "This only uninstalls Gluu")
+    subparsers.add_parser("install-gluu", help="Install Gluu Cloud Native Edition using helm. "
+                                               "This assumes nginx-ingress is installed")
+    subparsers.add_parser("uninstall-gluu", help="Uninstall Gluu Cloud Native Edition using helm."
+                                                 "This only uninstalls Gluu")
     return parser
 
 
@@ -67,15 +64,16 @@ def main():
     prompts = Prompt()
     prompts.prompt()
     settings = SettingsHandler()
-    
 
     try:
         if args.subparser_name == "install-ldap-backup":
             gluu = Gluu()
             gluu.install_ldap_backup()
 
-        elif args.subparser_name == "uninstall":
-            logger.info("Removing all Gluu resources...")
+        elif args.subparser_name == "uninstall-gluu":
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            prompt_helm = PromptHelm(settings)
+            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
@@ -121,29 +119,15 @@ def main():
             couchbase = Couchbase()
             couchbase.uninstall()
 
-        elif args.subparser_name == "install-gg-dbmode":
-            from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
-            from pygluu.kubernetes.gluugateway import GluuGateway
-            prompt_gluu_gateway = PromptGluuGateway(settings)
-            prompt_gluu_gateway.prompt_gluu_gateway()
-            gluugateway = GluuGateway()
-            gluugateway.install_gluu_gateway_dbmode()
-
         elif args.subparser_name == "install-kubedb":
             from pygluu.kubernetes.kubedb import Kubedb
             kubedb = Kubedb()
             kubedb.install_kubedb()
 
-        elif args.subparser_name == "uninstall-gg-dbmode":
-            from pygluu.kubernetes.gluugateway import GluuGateway
-            gluugateway = GluuGateway()
-            gluugateway.uninstall_gluu_gateway_dbmode()
-            gluugateway.uninstall_gluu_gateway_ui()
-
         elif args.subparser_name == "generate-settings":
             logger.info("settings.json has been generated")
 
-        elif args.subparser_name == "helm-install":
+        elif args.subparser_name == "install":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
@@ -166,22 +150,24 @@ def main():
                 redis.install_redis()
             gluu.install_gluu()
 
-        elif args.subparser_name == "helm-uninstall":
+        elif args.subparser_name == "uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.kubedb import Kubedb
+            from pygluu.kubernetes.gluugateway import GluuGateway
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             gluu = Gluu()
+            gluugateway = GluuGateway()
             gluu.uninstall_gluu()
             gluu.uninstall_nginx_ingress()
-            gluu.uninstall_gluu_gateway_dbmode()
-            gluu.uninstall_gluu_gateway_ui()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
             kubedb = Kubedb()
             kubedb.uninstall_kubedb()
 
-        elif args.subparser_name == "helm-install-gluu":
+        elif args.subparser_name == "install-gluu":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
@@ -189,36 +175,30 @@ def main():
             gluu.uninstall_gluu()
             gluu.install_gluu(install_ingress=False)
 
-        elif args.subparser_name == "helm-install-gg-dbmode":
+        elif args.subparser_name == "install-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
             from pygluu.kubernetes.gluugateway import GluuGateway
-            postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
+            postgres = Postgres()
             postgres.patch_or_install_postgres()
             gluugateway = GluuGateway()
             gluugateway.install_gluu_gateway_dbmode()
             gluugateway.install_gluu_gateway_ui()
 
-        elif args.subparser_name == "helm-uninstall-gg-dbmode":
+        elif args.subparser_name == "uninstall-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
             from pygluu.kubernetes.gluugateway import GluuGateway
-            postgres = Postgres()
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
+            postgres = Postgres()
             postgres.uninstall_postgres()
             gluugateway = GluuGateway()
             gluugateway.uninstall_gluu_gateway_dbmode()
             gluugateway.uninstall_gluu_gateway_ui()
 
-        elif args.subparser_name == "helm-uninstall-gluu":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
-            gluu = Gluu()
-            gluu.uninstall_gluu()
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")
