@@ -41,73 +41,12 @@ class InstallHandler(object):
             self.event.set()
             sys.exit(1)
 
-    def install(self):
-        try:
-            self.queue.put(('Preparing installation', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.uninstall()
-            if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
-                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                    gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm = Gluu()
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
-            self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            kustomize.install()
-            self.queue.put(('Installation is complete', 'COMPLETED'))
-        except SystemExit:
-            if self.queue:
-                self.queue.put(("Oops! Something went wrong", "ERROR"))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-
     def install_ldap_backup(self):
         try:
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.setup_backup_ldap()
+            gluu = Gluu()
+            gluu.install_ldap_backup()
             self.queue.put(('Installation is complete', 'COMPLETED'))
-        except SystemExit:
-            if self.queue:
-                self.queue.put(("Oops! Something went wrong", "ERROR"))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-
-    def uninstall(self):
-        try:
-            logger.info("Removing all Gluu resources...")
-            self.queue.put(('Uninstalling...', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.uninstall()
-            if gluu_settings.db.get("INSTALL_REDIS") == "Y" or gluu_settings.db.get(
-                    "INSTALL_GLUU_GATEWAY") == "Y":
-                helm = Gluu()
-                helm.uninstall_kubedb()
-            self.queue.put(('Uninstall is complete', 'COMPLETED'))
-        except SystemExit:
-            if self.queue:
-                self.queue.put(("Oops! Something went wrong", "ERROR"))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-
-    def upgrade(self):
-        try:
-            # New feature in 4.2 compared to 4.1 and hence if enabled should make
-            # sure kubedb is installed.
-            self.queue.put(('Preparing upgrade...', 'ONPROGRESS'))
-            if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm = Gluu()
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
-
-            logger.info("Starting upgrade...")
-            self.queue.put(('Upgrading...', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.upgrade()
-            self.queue.put(('Upgrade is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
                 self.queue.put(("Oops! Something went wrong", "ERROR"))
@@ -121,8 +60,10 @@ class InstallHandler(object):
             # sure kubedb is installed.
             helm = Gluu()
             if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
+                from pygluu.kubernetes.kubedb import Kubedb
+                kubedb = Kubedb()
+                kubedb.uninstall_kubedb()
+                kubedb.install_kubedb()
 
             helm = Gluu()
             logger.info("Patching values.yaml for helm upgrade...")
@@ -132,21 +73,6 @@ class InstallHandler(object):
                 "Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
                 "Continue with the steps found at https://gluu.org/docs/gluu-server/4.2/upgrade/#helm")
             self.queue.put(('Upgrade is complete', 'COMPLETED'))
-        except SystemExit:
-            if self.queue:
-                self.queue.put(("Oops! Something went wrong", "ERROR"))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-
-    def restore(self):
-        try:
-            self.queue.put(('Restoring...', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.copy_configs_before_restore()
-            kustomize.uninstall(restore=True)
-            kustomize.install(install_couchbase=False, restore=True)
-            self.queue.put(('Restoring is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
                 self.queue.put(("Oops! Something went wrong", "ERROR"))
@@ -193,24 +119,13 @@ class InstallHandler(object):
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
 
-    def install_gg_dbmode(self):
-        try:
-            self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.install_gluu_gateway_dbmode()
-            self.queue.put(('Installation is complete', 'COMPLETED'))
-        except SystemExit:
-            if self.queue:
-                self.queue.put(("Oops! Something went wrong", "ERROR"))
-            else:
-                logger.error("***** Error caught in main loop *****")
-                logger.error(traceback.format_exc())
-
     def install_kubedb(self):
         try:
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            helm = Gluu()
-            helm.install_kubedb()
+            from pygluu.kubernetes.kubedb import Kubedb
+            kubedb = Kubedb()
+            kubedb.uninstall_kubedb()
+            kubedb.install_kubedb()
             self.queue.put(('Installation is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
@@ -222,9 +137,16 @@ class InstallHandler(object):
     def uninstall_gg_dbmode(self):
         try:
             self.queue.put(('Uninstalling...', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.uninstall_kong()
-            kustomize.uninstall_gluu_gateway_ui()
+            from pygluu.kubernetes.terminal.helm import PromptHelm
+            from pygluu.kubernetes.postgres import Postgres
+            from pygluu.kubernetes.gluugateway import GluuGateway
+            prompt_helm = PromptHelm(gluu_settings)
+            prompt_helm.prompt_helm()
+            postgres = Postgres()
+            postgres.uninstall_postgres()
+            gluugateway = GluuGateway()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
@@ -233,22 +155,26 @@ class InstallHandler(object):
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
 
-    def helm_install(self):
+    def install(self):
         try:
             self.queue.put(('Preparing for installation', 'ONPROGRESS'))
             helm = Gluu()
             if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
                     gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                helm.uninstall_kubedb()
-                helm.install_kubedb()
+                from pygluu.kubernetes.kubedb import Kubedb
+                kubedb = Kubedb()
+                kubedb.uninstall_kubedb()
+                kubedb.install_kubedb()
             if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
-                kustomize = Kustomize(self.timeout)
-                kustomize.deploy_postgres()
+                from pygluu.kubernetes.postgres import Postgres
+                postgres = Postgres()
+                postgres.install_postgres()
             if gluu_settings.db.get("INSTALL_REDIS") == "Y":
-                kustomize = Kustomize(self.timeout)
-                kustomize.uninstall_redis()
-                kustomize.deploy_redis()
+                from pygluu.kubernetes.redis import Redis
+                redis = Redis()
+                redis.uninstall_redis()
+                redis.install_redis()
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
             helm.install_gluu()
             self.queue.put(('Installation is complete', 'COMPLETED'))
@@ -259,19 +185,21 @@ class InstallHandler(object):
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
 
-    def helm_uninstall(self):
+    def uninstall(self):
         try:
-            kustomize = Kustomize(self.timeout)
+            from pygluu.kubernetes.gluugateway import GluuGateway
+            from pygluu.kubernetes.kubedb import Kubedb
+            gluugateway = GluuGateway()
             helm = Gluu()
             self.queue.put(('Uninstalling', 'ONPROGRESS'))
             helm.uninstall_gluu()
             helm.uninstall_nginx_ingress()
-            helm.uninstall_gluu_gateway_dbmode()
-            helm.uninstall_gluu_gateway_ui()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
             time.sleep(30)
-            kustomize.uninstall()
-            helm.uninstall_kubedb()
+            kubedb = Kubedb()
+            kubedb.uninstall_kubedb()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
@@ -298,11 +226,13 @@ class InstallHandler(object):
     def helm_install_gg_mode(self):
         try:
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.patch_or_deploy_postgres()
-            helm = Gluu()
-            helm.install_gluu_gateway_dbmode()
-            helm.install_gluu_gateway_ui()
+            from pygluu.kubernetes.postgres import Postgres
+            from pygluu.kubernetes.gluugateway import GluuGateway
+            postgres = Postgres()
+            postgres.patch_or_install_postgres()
+            gluugateway = GluuGateway()
+            gluugateway.install_gluu_gateway_dbmode()
+            gluugateway.install_gluu_gateway_ui()
             self.queue.put(('Installation is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
@@ -311,14 +241,16 @@ class InstallHandler(object):
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
 
-    def helm_uninstall_gg_mode(self):
+    def uninstall_gg_mode(self):
         try:
             self.queue.put(('Uninstalling...', 'ONPROGRESS'))
-            kustomize = Kustomize(self.timeout)
-            kustomize.uninstall_postgres()
-            helm = Gluu()
-            helm.uninstall_gluu_gateway_dbmode()
-            helm.uninstall_gluu_gateway_ui()
+            from pygluu.kubernetes.postgres import Postgres
+            from pygluu.kubernetes.gluugateway import GluuGateway
+            postgres = Postgres()
+            postgres.uninstall_postgres()
+            gluugateway = GluuGateway()
+            gluugateway.uninstall_gluu_gateway_dbmode()
+            gluugateway.uninstall_gluu_gateway_ui()
             self.queue.put(('Uninstall is complete', 'COMPLETED'))
         except SystemExit:
             if self.queue:
@@ -327,7 +259,7 @@ class InstallHandler(object):
                 logger.error("***** Error caught in main loop *****")
                 logger.error(traceback.format_exc())
 
-    def helm_uninstall_gluu(self):
+    def uninstall_gluu(self):
         try:
             self.queue.put(('Uninstalling...', 'ONPROGRESS'))
             helm = Gluu()
