@@ -70,6 +70,7 @@ config:
     cnCouchbaseSuperUserPass: P@ssw0rd
     cnCouchbaseSuperUser: admin
     cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+    cnCouchbaseBucketPrefix: jans
     cnCouchbaseIndexNumReplica: 0
     cnCouchbaseUser: gluu
     cnCouchbasePassFile: /etc/gluu/conf/couchbase_password
@@ -173,7 +174,7 @@ opendj:
 persistence:
   image:
     repository: janssenproject/persistence-loader
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -188,7 +189,7 @@ auth-server:
   replicas: 1
   image:
     repository: janssenproject/auth-server
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -218,7 +219,7 @@ fido2:
   replicas: 1
   image:
     repository: janssenproject/fido2
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -233,7 +234,7 @@ scim:
   replicas: 1
   image:
     repository: janssenproject/scim
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -248,7 +249,7 @@ client-api:
   replicas: 1
   image:
     repository: janssenproject/client-api
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -263,7 +264,7 @@ config-api:
   replicas: 1
   image:
     repository: janssenproject/config-api
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -350,7 +351,7 @@ auth-server-key-rotation:
   keysLife: 48
   image:
     repository: janssenproject/certmanager
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
     pullPolicy: Always
   resources:
     limits:
@@ -359,3 +360,4 @@ auth-server-key-rotation:
     requests:
       cpu: 300m
       memory: 300Mi
+

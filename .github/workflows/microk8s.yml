@@ -15,7 +15,7 @@ jobs:
       matrix:
         python-version: [3.7]
         gluu-version: ['"5.0.0_dev"']
-        test-cases: ["install", "helm-install-gluu"]
+        test-cases: ["install"]
         persistence-backends: ['"ldap"','"couchbase"']
 
     steps:

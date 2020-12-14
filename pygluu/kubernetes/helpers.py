@@ -220,7 +220,8 @@ def prompt_password(password, length=6):
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             if password != "Redis":
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', pw_prompt)  # noqa: W605
+                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
+                                      pw_prompt)  # noqa: W605
 
         if confirm_pw_prompt != pw_prompt:
             logger.error("Passwords do not match")
@@ -230,6 +231,65 @@ def prompt_password(password, length=6):
         else:
             logger.info("Success! {} password was set.".format(password))
             return pw_prompt
+
+
+def analyze_storage_class(settings, storageclass):
+    from pygluu.kubernetes.yamlparser import Parser
+    parser = Parser(storageclass, "StorageClass")
+    if settings.get("DEPLOYMENT_ARCH") == "eks":
+        parser["provisioner"] = "kubernetes.io/aws-ebs"
+        parser["parameters"]["encrypted"] = "true"
+        parser["parameters"]["type"] = settings.get("LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+        parser.dump_it()
+    elif settings.get("DEPLOYMENT_ARCH") == "gke":
+        parser["provisioner"] = "kubernetes.io/gce-pd"
+        try:
+            del parser["parameters"]["encrypted"]
+        except KeyError:
+            logger.info("Key not deleted as it does not exist inside yaml.")
+        parser["parameters"]["type"] = settings.get("LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+        parser.dump_it()
+    elif settings.get("DEPLOYMENT_ARCH") == "aks":
+        parser["provisioner"] = "kubernetes.io/azure-disk"
+        try:
+            del parser["parameters"]["encrypted"]
+            del parser["parameters"]["type"]
+        except KeyError:
+            logger.info("Key not deleted as it does not exist inside yaml.")
+        parser["parameters"]["storageaccounttype"] = settings.get("LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
+        parser.dump_it()
+    elif settings.get("DEPLOYMENT_ARCH") == "do":
+        parser["provisioner"] = "dobs.csi.digitalocean.com"
+        try:
+            del parser["parameters"]
+            del parser["allowedTopologies"]
+        except KeyError:
+            logger.info("Key not deleted as it does not exist inside yaml.")
+        parser.dump_it()
+    elif settings.get('DEPLOYMENT_ARCH') == "microk8s":
+        try:
+            parser["provisioner"] = "microk8s.io/hostpath"
+            del parser["allowedTopologies"]
+            del parser["allowVolumeExpansion"]
+            del parser["parameters"]
+        except KeyError:
+            logger.info("Key not deleted as it does not exist inside yaml.")
+        parser.dump_it()
+    elif settings.get('DEPLOYMENT_ARCH') == "minikube":
+        try:
+            parser["provisioner"] = "k8s.io/minikube-hostpath"
+            del parser["allowedTopologies"]
+            del parser["allowVolumeExpansion"]
+            del parser["parameters"]
+        except KeyError:
+            logger.info("Key not deleted as it does not exist inside yaml.")
+        parser.dump_it()
 
 
 logger = get_logger("gluu-common        ")

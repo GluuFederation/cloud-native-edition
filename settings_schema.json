@@ -65,6 +65,7 @@
     "COUCHBASE_CLUSTER_NAME": { "type": "string" },
     "COUCHBASE_URL": { "type": "string" },
     "COUCHBASE_USER": { "type": "string" },
+    "COUCHBASE_BUCKET_PREFIX": { "type": "string" },
     "COUCHBASE_SUPERUSER": { "type": "string" },
     "COUCHBASE_PASSWORD": { "type": "string" },
     "COUCHBASE_SUPERUSER_PASSWORD": { "type": "string" },
@@ -1097,6 +1098,7 @@
         "COUCHBASE_SUPERUSER": { "$ref": "#/definitions/string-cannot-empty" },
         "COUCHBASE_SUPERUSER_PASSWORD": { "$ref": "#/definitions/password-pattern" },
         "COUCHBASE_USER": { "$ref": "#/definitions/string-cannot-empty" },
+        "COUCHBASE_BUCKET_PREFIX": { "$ref": "#/definitions/string-cannot-empty" },
         "COUCHBASE_PASSWORD": { "$ref": "#/definitions/password-pattern" }
       },
       "required": [
@@ -1109,6 +1111,7 @@
         "COUCHBASE_SUPERUSER",
         "COUCHBASE_SUPERUSER_PASSWORD",
         "COUCHBASE_USER",
+        "COUCHBASE_BUCKET_PREFIX",
         "COUCHBASE_PASSWORD"
       ]
     },

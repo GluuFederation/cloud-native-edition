@@ -18,6 +18,7 @@ from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.architecture import PromptArch
 from pygluu.kubernetes.terminal.helpers import confirm_yesno, gather_ip
 from pygluu.kubernetes.terminal.namespace import PromptNamespace
+
 logger = get_logger("gluu-prompt-couchbase")
 
 
@@ -87,6 +88,12 @@ class PromptCouchbase:
                 "Please enter  couchbase (remote or local) URL base name",
                 default=f"{self.settings.get('COUCHBASE_CLUSTER_NAME')}.{self.settings.get('COUCHBASE_NAMESPACE')}.svc"
                         f".cluster.local",
+            ))
+
+        if not self.settings.get("COUCHBASE_BUCKET_PREFIX"):
+            self.settings.set("COUCHBASE_BUCKET_PREFIX", click.prompt(
+                "Please enter a  prefix name for all couchbase gluu buckets",
+                default="gluu"
             ))
 
         if not self.settings.get("COUCHBASE_INDEX_NUM_REPLICA"):
