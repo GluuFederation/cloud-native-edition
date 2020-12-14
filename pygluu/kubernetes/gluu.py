@@ -228,6 +228,8 @@ class Gluu(object):
             values_file_parser["config"]["configmap"]["cnCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
             values_file_parser["config"]["configmap"]["cnCouchbaseIndexNumReplica"] = self.settings.get(
                 "COUCHBASE_INDEX_NUM_REPLICA")
+            values_file_parser["config"]["configmap"]["cnCouchbaseBucketPrefix"] = self.settings.get(
+                "COUCHBASE_BUCKET_PREFIX")
             values_file_parser["config"]["configmap"]["cnCouchbaseSuperUser"] = \
                 self.settings.get("COUCHBASE_SUPERUSER")
             values_file_parser["config"]["configmap"]["cnCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")

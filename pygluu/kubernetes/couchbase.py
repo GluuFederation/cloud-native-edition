@@ -32,19 +32,27 @@ def extract_couchbase_tar(tar_file):
     tr.close()
 
 
-def set_memory_for_buckets(memory_quota):
-    buckets = ["gluu", "gluu-site", "gluu-user"]
-    ephemeral_buckets = ["gluu-cache", "gluu-token", "gluu-session"]
+def set_memory_for_buckets(memory_quota, couchbase_bucket_prefix):
 
-    for bucket in buckets:
-        parser = Parser("./couchbase/couchbase-buckets.yaml", "CouchbaseBucket", bucket)
-        parser["spec"]["memoryQuota"] = str(memory_quota + 100) + "Mi"
-        parser.dump_it()
-
-    for bucket in ephemeral_buckets:
-        parser = Parser("./couchbase/couchbase-ephemeral-buckets.yaml", "CouchbaseEphemeralBucket", bucket)
-        parser["spec"]["memoryQuota"] = str(memory_quota + 100) + "Mi"
-        parser.dump_it()
+    def parse_couchbase_buckets(file, bucket_type, allbuckets):
+        for bucket in allbuckets:
+            metadata_name = "gluu"
+            if bucket:
+                metadata_name = "gluu-" + bucket
+            parser = Parser(file, bucket_type, metadata_name)
+            parser["spec"]["memoryQuota"] = str(memory_quota + 100) + "Mi"
+            parser["spec"]["name"] = couchbase_bucket_prefix
+            parser["metadata"]["name"] = couchbase_bucket_prefix
+            if bucket:
+                parser["spec"]["name"] = couchbase_bucket_prefix + "_" + bucket
+                parser["metadata"]["name"] = couchbase_bucket_prefix + "-" + bucket
+            parser.dump_it()
+    buckets = ["", "site", "user"]
+    ephemeral_buckets = ["cache", "token", "session"]
+    parse_couchbase_buckets("./couchbase/couchbase-buckets.yaml",
+                            "CouchbaseBucket", buckets)
+    parse_couchbase_buckets("./couchbase/couchbase-ephemeral-buckets.yaml",
+                            "CouchbaseEphemeralBucket", ephemeral_buckets)
 
 
 def create_server_spec_per_cb_service(zones, number_of_cb_service_nodes, cb_service_name, mem_req, mem_limit,
@@ -380,7 +388,7 @@ class Couchbase(object):
         parser["spec"]["cluster"]["eventingServiceMemoryQuota"] = str(eventing_service_memory_quota) + "Mi"
         parser["spec"]["cluster"]["analyticsServiceMemoryQuota"] = str(analytics_service_memory_quota) + "Mi"
 
-        set_memory_for_buckets(memory_quota)
+        set_memory_for_buckets(memory_quota, self.settings.get("COUCHBASE_BUCKET_PREFIX"))
         parser["metadata"]["name"] = self.settings.get("COUCHBASE_CLUSTER_NAME")
         parser["spec"]["servers"] = resources_servers
 
@@ -410,7 +418,14 @@ class Couchbase(object):
         """
         self.kubernetes.create_namespace(name=self.settings.get("CN_NAMESPACE"))
         if self.settings.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N":
-            self.analyze_couchbase_cluster_yaml()
+            try:
+                self.analyze_couchbase_cluster_yaml()
+            except Exception as e:
+                # TODO remove this exception
+                logger.error("Looks like some of the couchbase files were misconfigured. "
+                             "If you wish to override the couchbase files please set "
+                             "COUCHBASE_CLUSTER_FILE_OVERRIDE to Y`")
+                sys.exit()
         cb_namespace = self.settings.get("COUCHBASE_NAMESPACE")
         storage_class_file_parser = Parser(self.storage_class_file, "StorageClass")
         if self.settings.get('DEPLOYMENT_ARCH') == "gke" or \
@@ -578,6 +593,16 @@ class Couchbase(object):
         coucbase_group_parser = Parser(self.couchbase_group_file, "CouchbaseGroup")
         coucbase_group_parser["metadata"]["labels"]["cluster"] = \
             self.settings.get("COUCHBASE_CLUSTER_NAME")
+        permissions = ["query_select", "query_update", "query_insert", "query_delete"]
+        allbuckets = ["", "site", "user", "cache", "token", "session"]
+        roles = []
+        for permission in permissions:
+            for bucket in allbuckets:
+                bucket_name = self.settings.get("COUCHBASE_BUCKET_PREFIX")
+                if bucket:
+                    bucket_name = bucket_name + "_" + bucket
+                roles.append({"name": permission, "bucket": bucket_name})
+        coucbase_group_parser["spec"]["roles"] = roles
         coucbase_group_parser.dump_it()
         coucbase_user_parser = Parser(self.couchbase_user_file, "CouchbaseUser")
         coucbase_user_parser["metadata"]["labels"]["cluster"] = \

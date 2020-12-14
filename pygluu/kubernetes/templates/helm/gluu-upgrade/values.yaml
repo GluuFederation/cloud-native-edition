@@ -6,6 +6,7 @@ cnCacheType: NATIVE_PERSISTENCE
 configAdapterName: kubernetes
 cnCouchbaseCertFile: /etc/certs/couchbase.crt
 cnCouchbaseUser: admin
+cnCouchbaseBucketPrefix: jans
 cnCouchbasePassFile:  /etc/gluu/conf/couchbase_password
 cnCouchbaseUrl: cbgluu.default.svc.cluster.local
 cnCouchbaseSuperUser: admin

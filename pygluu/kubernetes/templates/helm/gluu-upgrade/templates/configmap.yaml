@@ -23,6 +23,7 @@ data:
   {{- else if or (eq .Values.cnPersistenceType "couchbase") (eq .Values.cnPersistenceType "hybrid") }}
   #  used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
   CN_COUCHBASE_URL: {{ .Values.cnCouchbaseUrl }}
+  CN_COUCHBASE_BUCKET_PREFIX: {{ .Values.cnCouchbaseBucketPrefix }}
   CN_COUCHBASE_USER: {{ .Values.cnCouchbaseUser }}
   CN_COUCHBASE_CERT_FILE: {{ .Values.cnCouchbaseCertFile | quote }}
   CN_COUCHBASE_PASSWORD_FILE: {{ .Values.cnCouchbasePassFile | quote }}
