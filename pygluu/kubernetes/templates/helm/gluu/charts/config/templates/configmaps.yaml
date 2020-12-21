@@ -42,6 +42,7 @@ data:
   GLUU_KEY_ROTATION_FORCE: "false"
   GLUU_KEY_ROTATION_CHECK: "3600"
   GLUU_KEY_ROTATION_INTERVAL: "48"
+  GLUU_CONTAINER_MAIN_NAME: {{ template "gluu.fullname" . }}
   GLUU_SSL_CERT_FROM_SECRETS: "true"
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}

@@ -72,6 +72,7 @@ configMapGenerator:
       - GLUU_COUCHBASE_PASSWORD_FILE="/etc/gluu/conf/couchbase_password"
       - GLUU_OXD_APPLICATION_CERT_CN="oxd-server"
       - GLUU_OXD_ADMIN_CERT_CN="oxd-server"
+      - GLUU_CONTAINER_MAIN_NAME="oxauth"
   - name: config-generate-params
     files:
       - generate.json
