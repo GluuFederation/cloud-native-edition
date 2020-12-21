@@ -45,6 +45,7 @@ data:
   CN_KEY_ROTATION_CHECK: "3600"
   CN_KEY_ROTATION_INTERVAL: "48"
   CN_SSL_CERT_FROM_SECRETS: "true"
+  CN_CONTAINER_MAIN_NAME: {{ .Release.Name }}-auth-server
   # options: default/user/site/cache/statistic used only if CN_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.cnPersistenceType "hybrid") (eq .Values.global.cnPersistenceType "ldap") }}
   CN_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.cnPersistenceLdapMapping | quote }}
