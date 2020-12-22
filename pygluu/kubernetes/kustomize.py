@@ -1604,6 +1604,7 @@ class Kustomize(object):
         self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=oxtrust")
         stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
                                            silent=True)
+        copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
         self.update_ingress_fqdn()
         stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.ingress_file),
                                            silent=True)
