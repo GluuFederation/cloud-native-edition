@@ -1602,6 +1602,8 @@ class Kustomize(object):
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         logger.info("Updating manifests and Gluu version...")
         self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=oxtrust")
+        logger.info("Waiting for oxTrust to be removed...")
+        time.sleep(30)
         stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
                                            silent=True)
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
