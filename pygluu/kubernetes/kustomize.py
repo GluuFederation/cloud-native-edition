@@ -135,6 +135,7 @@ class Kustomize(object):
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
         self.gg_ui_yaml = str(self.output_yaml_directory.joinpath("gluu-gateway-ui.yaml").resolve())
         self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("gluu-istio-ingress.yaml").resolve())
+        self.ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         self.adjust_yamls_for_fqdn_status = dict()
         self.gluu_secret = ""
         self.gluu_config = ""
@@ -1051,20 +1052,22 @@ class Kustomize(object):
         if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
             self.wait_for_nginx_add()
             self.set_lb_address()
+
+        self.update_ingress_fqdn()
+        self.kubernetes.create_objects_from_dict(self.ingress_file, self.settings.get("GLUU_NAMESPACE"))
+
+    def update_ingress_fqdn(self):
         ingress_name_list = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                              "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
                              "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
                              "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-stateful",
                              "gluu-casa", "gluu-ingress-fido2-configuration", "gluu-ingress-scim"]
 
-        ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         for ingress_name in ingress_name_list:
-            parser = Parser(ingress_file, "Ingress", ingress_name)
+            parser = Parser(self.ingress_file, "Ingress", ingress_name)
             parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("GLUU_FQDN")
             parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
             parser.dump_it()
-
-        self.kubernetes.create_objects_from_dict(ingress_file, self.settings.get("GLUU_NAMESPACE"))
 
     @property
     def generate_postgres_init_sql(self):
@@ -1598,7 +1601,11 @@ class Kustomize(object):
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         logger.info("Updating manifests and Gluu version...")
+        self.kubernetes.delete_stateful_set(self.settings.get("GLUU_NAMESPACE"), "app=oxtrust")
         stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.output_yaml_directory),
+                                           silent=True)
+        self.update_ingress_fqdn()
+        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.ingress_file),
                                            silent=True)
 
     def install(self, install_couchbase=True, restore=False):
