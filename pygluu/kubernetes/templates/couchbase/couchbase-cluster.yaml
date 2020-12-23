@@ -3,7 +3,7 @@ kind: CouchbaseCluster
 metadata:
   name: CLUSTERNAME
 spec:
-  image: couchbase/server:6.6.0
+  image: couchbase/server:6.6.1
   antiAffinity: false
   networking:
     tls:

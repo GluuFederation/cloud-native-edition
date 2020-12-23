@@ -9,4 +9,4 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/opendj
-    newTag: 4.2.2_01
+    newTag: 4.2.2_02

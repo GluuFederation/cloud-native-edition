@@ -32,7 +32,7 @@ spec:
       containers:
       - name: opendj
         imagePullPolicy: Always
-        image: gluufederation/opendj:4.2.2_01
+        image: gluufederation/opendj:4.2.2_02
         lifecycle:
           preStop:
             exec:

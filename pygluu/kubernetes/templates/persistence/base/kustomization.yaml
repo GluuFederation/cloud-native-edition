@@ -8,5 +8,5 @@ resources:
   - jobs.yaml
 images:
   - name: gluufederation/persistence
-    newTag: 4.2.2_01
+    newTag: 4.2.2_02
 

@@ -3,7 +3,7 @@
 
 image:
   repository: gluufederation/fido2
-  tag: 4.2.2_01
+  tag: 4.2.2_02
   pullPolicy: Always
 replicas: 1
 #Resources for the deployment
