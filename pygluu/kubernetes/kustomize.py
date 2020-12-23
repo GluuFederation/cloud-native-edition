@@ -1608,8 +1608,9 @@ class Kustomize(object):
                                            silent=True)
         copy(Path("./nginx"), self.output_yaml_directory.joinpath("nginx"))
         self.update_ingress_fqdn()
-        stdout, stderr, retcode = exec_cmd("kubectl apply -f {}/. --record --force".format(self.ingress_file),
-                                           silent=True)
+        self.uninstall_ingress()
+        self.kubernetes.create_objects_from_dict(self.ingress_file, self.settings.get("GLUU_NAMESPACE"))
+
 
     def install(self, install_couchbase=True, restore=False):
         if not restore:
@@ -1748,6 +1749,15 @@ class Kustomize(object):
             self.kubernetes = Kubernetes()
             self.install_gluu_gateway_dbmode()
 
+    def uninstall_ingress(self):
+        nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
+                                          "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
+                                          "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
+                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-scim",
+                                          "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
+        for extension in nginx_ingress_extensions_names:
+            self.kubernetes.delete_ingress(extension, self.settings.get("GLUU_NAMESPACE"))
+
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "opendj", "oxauth", "oxpassport",
                               "oxshibboleth", "oxtrust", "radius", "oxd-server",
@@ -1772,11 +1782,6 @@ class Kustomize(object):
         nginx_role_bindings_name = "nginx-ingress-role-nisa-binding"
         nginx_cluster_role_bindings_name = "nginx-ingress-clusterrole-nisa-binding"
         nginx_service_account_name = "nginx-ingress-serviceaccount"
-        nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
-                                          "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
-                                          "gluu-ingress-simple-web-discovery", "gluu-ingress-scim-configuration",
-                                          "gluu-ingress-fido-u2f-configuration", "gluu-ingress", "gluu-ingress-scim",
-                                          "gluu-ingress-stateful", "gluu-casa", "gluu-ingress-fido2-configuration"]
         network_policies = ["oxd-server-policy"]
         minkube_yamls_folder = Path("./gluuminikubeyamls")
         microk8s_yamls_folder = Path("./gluumicrok8yamls")
@@ -1846,8 +1851,7 @@ class Kustomize(object):
             self.kubernetes.delete_cluster_role_binding(nginx_cluster_role_bindings_name)
             self.kubernetes.delete_service_account(nginx_service_account_name, "ingress-nginx")
             self.kubernetes.delete_cluster_role(nginx_cluster_role_name)
-            for extension in nginx_ingress_extensions_names:
-                self.kubernetes.delete_ingress(extension, self.settings.get("GLUU_NAMESPACE"))
+            self.uninstall_ingress()
         if minkube_yamls_folder.exists() or microk8s_yamls_folder.exists():
             shutil.rmtree('/data', ignore_errors=True)
         else:
