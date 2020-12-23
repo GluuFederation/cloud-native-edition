@@ -1455,7 +1455,8 @@ class Kustomize(object):
                                                                            self.settings.get("GLUU_NAMESPACE")).data
 
     def save_a_copy_of_config(self):
-        self.kubernetes.patch_or_create_namespaced_secret(name="copy-of-secret-params-before-restore", literal=None, value_of_literal=None,
+        self.kubernetes.patch_or_create_namespaced_secret(name="copy-of-secret-params-before-restore", literal=None,
+                                                          value_of_literal=None,
                                                           namespace=self.settings.get("GLUU_NAMESPACE"),
                                                           data=self.gluu_secret)
         self.kubernetes.patch_or_create_namespaced_configmap(name="copy-of-config-params-before-restore",
@@ -1610,7 +1611,6 @@ class Kustomize(object):
         self.update_ingress_fqdn()
         self.uninstall_ingress()
         self.kubernetes.create_objects_from_dict(self.ingress_file, self.settings.get("GLUU_NAMESPACE"))
-
 
     def install(self, install_couchbase=True, restore=False):
         if not restore:

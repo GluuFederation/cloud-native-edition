@@ -145,6 +145,9 @@ jackrabbit:
       cpu: 1500m
       memory: 1000Mi
 opendj:
+  multiCluster:
+    enabled: false
+    serfAdvertiseAddr: "demoexample.gluu.org:31946"
   service:
     ldapServiceName: opendj
   replicas: 1
@@ -161,6 +164,37 @@ opendj:
     requests:
       cpu: 1500m
       memory: 2000Mi
+  ports:
+    tcp-ldaps:
+      port: 1636
+      targetPort: 1636
+      protocol: TCP
+      nodePort: ""
+    tcp-ldap:
+      port: 1389
+      targetPort: 1389
+      protocol: TCP
+      nodePort: ""
+    tcp-repl:
+      port: 8989
+      targetPort: 8989
+      protocol: TCP
+      nodePort: ""
+    tcp-admin:
+      port: 4444
+      targetPort: 4444
+      protocol: TCP
+      nodePort: ""
+    tcp-serf:
+      port: 7946
+      targetPort: 7946
+      protocol: TCP
+      nodePort: ""
+    udp-serf:
+      port: 7946
+      targetPort: 7946
+      protocol: UDP
+      nodePort: ""
 persistence:
   image:
     repository: gluufederation/persistence
@@ -173,7 +207,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.2_02
+    tag: 4.2.2_03
     pullPolicy: Always
   resources:
     limits:
@@ -188,7 +222,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.2_02
+    tag: 4.2.2_03
     pullPolicy: Always
   resources:
     limits:

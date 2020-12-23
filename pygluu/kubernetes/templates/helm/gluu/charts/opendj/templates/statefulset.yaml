@@ -34,6 +34,17 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{- if .Values.multiCluster.enabled }}
+        env:
+          - name: GLUU_SERF_ADVERTISE_ADDR
+            value: {{ .Values.multiCluster.serfAdvertiseAddr }}
+          - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
+            value: {{ index .Values "ports" "tcp-admin" "nodePort" }}
+          - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT
+            value: {{ index .Values "ports" "tcp-ldaps" "nodePort" }}
+          - name: GLUU_LDAP_ADVERTISE_REPLICATION_PORT
+            value: {{ index .Values "ports" "tcp-repl" "nodePort" }}
+        {{- end }}
         ports:
         {{- range $key, $value := .Values.ports }}
           - containerPort: {{ $value.targetPort }}
