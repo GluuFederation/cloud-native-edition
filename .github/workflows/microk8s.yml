@@ -195,7 +195,8 @@ jobs:
           "ENABLE_CASA_BOOLEAN": "true",
           "ENABLE_SAML_BOOLEAN": "true",
           "EDIT_IMAGE_NAMES_TAGS": "N",
-          "CONFIRM_PARAMS": "Y"
+          "CONFIRM_PARAMS": "Y",
+          "GLUU_LDAP_MULTI_CLUSTER": "N"
         }
         EOF
 

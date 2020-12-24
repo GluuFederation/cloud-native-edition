@@ -1010,12 +1010,18 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `RADIUS_IMAGE_NAME`                             | Radius image repository name                                                     | i.e `"gluufederation/radius"`                                                               |
 | `RADIUS_IMAGE_TAG`                              | Radius image tag                                                                 | i.e `"4.2.2_02"`                                                                            |
 | `GLUU_GATEWAY_IMAGE_NAME`                       | Gluu Gateway image repository name                                               | i.e `"gluufederation/gluu-gateway"`                                                         |
-| `GLUU_GATEWAY_IMAGE_TAG`                        | Gluu Gateway image tag                                                           | i.e `"4.2.2_01"`                                                                               |
+| `GLUU_GATEWAY_IMAGE_TAG`                        | Gluu Gateway image tag                                                           | i.e `"4.2.2_01"`                                                                            |
 | `GLUU_GATEWAY_UI_IMAGE_NAME`                    | Gluu Gateway UI image repository name                                            | i.e `"gluufederation/gluu-gateway-ui"`                                                      |
-| `GLUU_GATEWAY_UI_IMAGE_TAG`                     | Gluu Gateway UI image tag                                                        | i.e `"4.2.2_01"`                                                                               |
+| `GLUU_GATEWAY_UI_IMAGE_TAG`                     | Gluu Gateway UI image tag                                                        | i.e `"4.2.2_01"`                                                                            |
 | `UPGRADE_IMAGE_NAME`                            | Gluu upgrade image repository name                                               | i.e `"gluufederation/upgrade"`                                                              |
 | `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.2.2_02"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
+| `GLUU_LDAP_MULTI_CLUSTER`                       | HELM-ALPHA-FEATURE: Enable LDAP multi cluster environment                        |`"Y"` or `"N"`                                                                               |
+| `GLUU_LDAP_SERF_PORT`                           | HELM-ALPHA-FEATURE: Serf UDP and TCP port                                        | i.e `30946`                                                                              |
+| `GLUU_LDAP_ADVERTISE_ADDRESS`                   | HELM-ALPHA-FEATURE: LDAP pod advertise address                                   | i.e `demoexample.gluu.org:30946"`                                                               |
+| `GLUU_LDAP_ADVERTISE_ADMIN_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise admin port                               | i.e `30444`                                                                            |
+| `GLUU_LDAP_ADVERTISE_LDAPS_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise LDAPS port                               | i.e `30636`                                                              |
+| `GLUU_LDAP_ADVERTISE_REPLICATION_PORT`          | HELM-ALPHA-FEATURE: LDAP serf advertise replication port                         | i.e `30989`                                                                            |
 
 ### `APP_VOLUME_TYPE`-options
 
