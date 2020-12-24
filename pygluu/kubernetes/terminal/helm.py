@@ -25,7 +25,7 @@ class PromptHelm:
             self.settings.set("GLUU_HELM_RELEASE_NAME", click.prompt("Please enter Gluu helm name", default="gluu"))
 
         # ALPHA-FEATURE: Multi cluster ldap replication
-        if not self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
+        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
                 not self.settings.get("GLUU_LDAP_MULTI_CLUSTER"):
             self.settings.set("GLUU_LDAP_MULTI_CLUSTER",
                               confirm_yesno("ALPHA-FEATURE-Are you setting up a multi kubernetes cluster"))

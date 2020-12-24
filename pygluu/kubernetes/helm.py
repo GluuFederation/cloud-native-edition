@@ -335,28 +335,28 @@ class Helm(object):
             if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
                 values_file_parser["opendj"]["multiCluster"]["serfAdvertiseAddr"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT")
-                values_file_parser["opendj"]["ports"]["tcp-ldaps"]["nodePort"] = \
                     self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")
+                values_file_parser["opendj"]["ports"]["tcp-ldaps"]["nodePort"] = \
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"))
 
                 values_file_parser["opendj"]["ports"]["tcp-repl"]["port"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
                 values_file_parser["opendj"]["ports"]["tcp-repl"]["targetPort"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
                 values_file_parser["opendj"]["ports"]["tcp-repl"]["nodePort"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
 
                 values_file_parser["opendj"]["ports"]["tcp-admin"]["port"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
                 values_file_parser["opendj"]["ports"]["tcp-admin"]["targetPort"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
                 values_file_parser["opendj"]["ports"]["tcp-admin"]["nodePort"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
+                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
 
                 values_file_parser["opendj"]["ports"]["tcp-serf"]["nodePort"] = \
-                    self.settings.get("GLUU_LDAP_SERF_PORT")
+                    int(self.settings.get("GLUU_LDAP_SERF_PORT"))
                 values_file_parser["opendj"]["ports"]["udp-serf"]["nodePort"] = \
-                    self.settings.get("GLUU_LDAP_SERF_PORT")
+                    int(self.settings.get("GLUU_LDAP_SERF_PORT"))
 
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
