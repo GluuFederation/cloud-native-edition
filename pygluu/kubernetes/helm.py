@@ -423,6 +423,8 @@ class Helm(object):
         values_file_parser["oxauth-key-rotation"]["image"]["tag"] = self.settings.get("CERT_MANAGER_IMAGE_TAG")
         values_file_parser["opendj"]["image"]["repository"] = self.settings.get("LDAP_IMAGE_NAME")
         values_file_parser["opendj"]["image"]["tag"] = self.settings.get("LDAP_IMAGE_TAG")
+        if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
+            values_file_parser["opendj"]["image"]["tag"] = "4.2.2_advertise"
         values_file_parser["persistence"]["image"]["repository"] = self.settings.get("PERSISTENCE_IMAGE_NAME")
         values_file_parser["persistence"]["image"]["tag"] = self.settings.get("PERSISTENCE_IMAGE_TAG")
         values_file_parser["oxauth"]["image"]["repository"] = self.settings.get("OXAUTH_IMAGE_NAME")
