@@ -13,6 +13,7 @@ def test_helm_release_name(monkeypatch, settings, given, expected):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
@@ -31,6 +32,7 @@ def test_helm_ingress_release_name(monkeypatch, settings, given, expected):
     settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
@@ -49,6 +51,7 @@ def test_helm_ingress_namespace(monkeypatch, settings, given, expected):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
     settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
@@ -66,6 +69,7 @@ def test_helm_gg_helm_release_name(monkeypatch, settings, given, expected):
 
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
     settings.set("INSTALL_GLUU_GATEWAY", "Y")
     settings.set("GLUU_GATEWAY_UI_HELM_RELEASE_NAME", "gluu-gateway-ui")
 
@@ -86,8 +90,35 @@ def test_helm_gg_ui_helm_release_name(monkeypatch, settings, given, expected):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("INSTALL_GLUU_GATEWAY", "Y")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
     settings.set("KONG_HELM_RELEASE_NAME", "gluu-gateway")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
     assert settings.get("GLUU_GATEWAY_UI_HELM_RELEASE_NAME") == expected
+
+
+def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.helm import PromptHelm
+
+    monkeypatch.setattr("click.confirm", lambda x, default: True)
+
+    settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
+    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER", "Y")
+    settings.set("GLUU_LDAP_SERF_PORT", "30946")
+    settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", "demoexample.gluu.org:30946")
+    settings.set("GLUU_LDAP_ADVERTISE_ADMIN_PORT", "30444")
+    settings.set("GLUU_LDAP_ADVERTISE_LDAPS_PORT", "30636")
+    settings.set("GLUU_LDAP_ADVERTISE_REPLICATION_PORT", "30989")
+
+    prompt = PromptHelm(settings)
+    prompt.prompt_helm()
+    assert settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y"
+    assert settings.get("GLUU_LDAP_SERF_PORT") == "30946"
+    assert settings.get("GLUU_LDAP_ADVERTISE_ADDRESS") == "demoexample.gluu.org:30946"
+    assert settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT") == "30444"
+    assert settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT") == "30636"
+    assert settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT") == "30989"
