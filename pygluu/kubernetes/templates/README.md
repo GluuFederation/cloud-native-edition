@@ -527,7 +527,9 @@ Please calculate the minimum required resources as per services deployed. The fo
     === "opendj"
     
         | Parameter                                          | Description                                                                                                                      | Default                             |
-        | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |  
+        | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+        | `opendj.multiCluster.enabled`                      | HELM-ALPHA-FEATURE: Enable ldap multi cluster. One pod per k8 cluster only allowed currently.                                    | `opendj`                            |
+        | `opendj.multiCluster.serfAdvertiseAddr`            | HELM-ALPHA-FEATURE: Addvertised opendj pod address. This must be resolvable                                                      | `demoexample.gluu.org:31946`        |
         | `opendj.service.ldapServiceName`                   | Name of opendj service                                                                                                           | `opendj`                            |
         | `opendj.replicas`                                  | Opendj replicas                                                                                                                  | `1`                                 |
         | `opendj.persistence.size`                          | Storage for OpenDJ pod                                                                                                           | `5Gi`                               |
@@ -538,7 +540,31 @@ Please calculate the minimum required resources as per services deployed. The fo
         | `opendj.resources.limits.memory`                   | Opendj cpu limit                                                                                                                 | `1500m`                             |
         | `opendj.resources.requests.cpu`                    | Opendj memory request                                                                                                            | `2000Mi`                            |
         | `opendj.resources.requests.memory`                 | Opendj cpu request                                                                                                               | `1500m`                             |    
-        
+        | `opendj.ports.tcp-ldaps.port`                      | Opendj ldaps port                                                                                                                | `1636`                              |
+        | `opendj.ports.tcp-ldaps.targetPort`                | Opendj ldaps target port                                                                                                         | `1636`                              |    
+        | `opendj.ports.tcp-ldaps.protocol`                  | Opendj ldaps protocol                                                                                                            | `TCP`                               |    
+        | `opendj.ports.tcp-ldaps.nodePort`                  | Opendj ldaps node port. Used in ldap multi cluster                                                                               | `""`                                |    
+        | `opendj.ports.tcp-ldap.port`                       | Opendj ldap port                                                                                                                 | `1389`                              |
+        | `opendj.ports.tcp-ldap.targetPort`                 | Opendj ldap target port                                                                                                          | `1389`                              |    
+        | `opendj.ports.tcp-ldap.protocol`                   | Opendj ldap protocol                                                                                                             | `TCP`                               |    
+        | `opendj.ports.tcp-ldap.nodePort`                   | Opendj ldap node port. Used in ldap multi cluster                                                                                | `""`                                |    
+        | `opendj.ports.tcp-repl.port`                       | Opendj replication port                                                                                                          | `8989`                              |
+        | `opendj.ports.tcp-repl.targetPort`                 | Opendj replication target port                                                                                                   | `8989`                              |    
+        | `opendj.ports.tcp-repl.protocol`                   | Opendj replication protocol                                                                                                      | `TCP`                               |    
+        | `opendj.ports.tcp-repl.nodePort`                   | Opendj replication node port. Used in ldap multi cluster                                                                         | `""`                                |    
+        | `opendj.ports.tcp-admin.port`                      | Opendj admin port                                                                                                                | `4444`                              |
+        | `opendj.ports.tcp-admin.targetPort`                | Opendj admin target port                                                                                                         | `4444`                              |    
+        | `opendj.ports.tcp-admin.protocol`                  | Opendj admin protocol                                                                                                            | `TCP`                               |    
+        | `opendj.ports.tcp-admin.nodePort`                  | Opendj admin node port. Used in ldap multi cluster                                                                               | `""`                                |    
+        | `opendj.ports.tcp-serf.port`                       | Opendj serf port                                                                                                                 | `7946`                              |
+        | `opendj.ports.tcp-serf.targetPort`                 | Opendj serf target port                                                                                                          | `7946`                              |    
+        | `opendj.ports.tcp-serf.protocol`                   | Opendj serf protocol                                                                                                             | `TCP`                               |    
+        | `opendj.ports.tcp-serf.nodePort`                   | Opendj serf node port. Used in ldap multi cluster                                                                                | `""`                                |    
+        | `opendj.ports.udp-serf.port`                       | Opendj serf port                                                                                                                 | `7946`                              |
+        | `opendj.ports.udp-serf.targetPort`                 | Opendj serf target port                                                                                                          | `7946`                              |    
+        | `opendj.ports.udp-serf.protocol`                   | Opendj serf protocol                                                                                                             | `UDP`                               |    
+        | `opendj.ports.udp-serf.nodePort`                   | Opendj serf node port. Used in ldap multi cluster                                                                                | `""`                                |    
+                            
     === "persistence"
     
         | Parameter                                          | Description                                                                                                                      | Default                             |
