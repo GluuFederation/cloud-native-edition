@@ -530,6 +530,8 @@ Please calculate the minimum required resources as per services deployed. The fo
         | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
         | `opendj.multiCluster.enabled`                      | HELM-ALPHA-FEATURE: Enable ldap multi cluster. One pod per k8 cluster only allowed currently.                                    | `opendj`                            |
         | `opendj.multiCluster.serfAdvertiseAddr`            | HELM-ALPHA-FEATURE: Addvertised opendj pod address. This must be resolvable                                                      | `demoexample.gluu.org:31946`        |
+        | `opendj.multiCluster.serfKey`                      | HELM-ALPHA-FEATURE: The key size must be a 16, 24, or 32 bytes encoded as base64 string.                                         | `Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=`        |
+        | `opendj.multiCluster.serfPeers`                    | HELM-ALPHA-FEATURE: All opendj serf advertised addresses. This must be resolvable                                                | `["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]`        |
         | `opendj.service.ldapServiceName`                   | Name of opendj service                                                                                                           | `opendj`                            |
         | `opendj.replicas`                                  | Opendj replicas                                                                                                                  | `1`                                 |
         | `opendj.persistence.size`                          | Storage for OpenDJ pod                                                                                                           | `5Gi`                               |
@@ -1043,11 +1045,13 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.2.2_02"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
 | `GLUU_LDAP_MULTI_CLUSTER`                       | HELM-ALPHA-FEATURE: Enable LDAP multi cluster environment                        |`"Y"` or `"N"`                                                                               |
-| `GLUU_LDAP_SERF_PORT`                           | HELM-ALPHA-FEATURE: Serf UDP and TCP port                                        | i.e `30946`                                                                              |
-| `GLUU_LDAP_ADVERTISE_ADDRESS`                   | HELM-ALPHA-FEATURE: LDAP pod advertise address                                   | i.e `demoexample.gluu.org:30946"`                                                               |
-| `GLUU_LDAP_ADVERTISE_ADMIN_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise admin port                               | i.e `30444`                                                                            |
-| `GLUU_LDAP_ADVERTISE_LDAPS_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise LDAPS port                               | i.e `30636`                                                              |
-| `GLUU_LDAP_ADVERTISE_REPLICATION_PORT`          | HELM-ALPHA-FEATURE: LDAP serf advertise replication port                         | i.e `30989`                                                                            |
+| `GLUU_LDAP_SERF_PORT`                           | HELM-ALPHA-FEATURE: Serf UDP and TCP port                                        | i.e `30946`                                                                                 |
+| `GLUU_LDAP_ADVERTISE_ADDRESS`                   | HELM-ALPHA-FEATURE: LDAP pod advertise address                                   | i.e `demoexample.gluu.org:30946"`                                                           |
+| `GLUU_LDAP_ADVERTISE_ADMIN_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise admin port                               | i.e `30444`                                                                                 |
+| `GLUU_LDAP_ADVERTISE_LDAPS_PORT`                | HELM-ALPHA-FEATURE: LDAP serf advertise LDAPS port                               | i.e `30636`                                                                                 |
+| `GLUU_LDAP_ADVERTISE_REPLICATION_PORT`          | HELM-ALPHA-FEATURE: LDAP serf advertise replication port                         | i.e `30989`                                                                                 |
+| `GLUU_LDAP_SECONDARY_CLUSTER`                   | HELM-ALPHA-FEATURE: Is this the first kubernetes cluster or not                  | `"Y"` or `"N"`                                                                              |
+| `GLUU_LDAP_SERF_PEERS`                          | HELM-ALPHA-FEATURE: All opendj serf advertised addresses. This must be resolvable | `["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]` |
 
 ### `APP_VOLUME_TYPE`-options
 

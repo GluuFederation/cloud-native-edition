@@ -27,7 +27,10 @@ spec:
       {{- if .Values.multiCluster.enabled }}
         - name: serfkey
           secret:
-            secretName: serfkey
+            secretName: {{ .Release.Name }}-serf-key
+        - name: serfpeers
+          configMap:
+            name: {{ .Release.Name }}-serf-peers
       {{- end }}
       containers:
       - name: {{ include "opendj.fullname" . }}
@@ -64,8 +67,11 @@ spec:
         {{- end }}
         {{- if .Values.multiCluster.enabled }}
           - mountPath: "/etc/gluu/conf/serf-key"
-            name: {{ .Release.Name }}-serf-key
+            name: serfkey
             subPath: serf-key
+          - mountPath: "/etc/gluu/conf/serf-peers-static.json"
+            name: serfpeers
+            subPath: serf-peers-static.json
         {{- end }}
         livenessProbe:
           exec:

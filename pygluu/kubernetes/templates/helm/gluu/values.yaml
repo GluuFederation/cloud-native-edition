@@ -147,8 +147,9 @@ jackrabbit:
 opendj:
   multiCluster:
     enabled: false
-    serfAdvertiseAddr: "demoexample.gluu.org:31946"
+    serfAdvertiseAddr: "firstldap.gluu.org:30946"
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
+    serfPeers: ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
   service:
     ldapServiceName: opendj
   replicas: 1

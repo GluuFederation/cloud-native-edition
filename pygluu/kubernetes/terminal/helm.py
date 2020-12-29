@@ -33,22 +33,28 @@ class PromptHelm:
         if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
             if not self.settings.get("GLUU_LDAP_SERF_PORT"):
                 self.settings.set("GLUU_LDAP_SERF_PORT",
-                                  click.prompt("Please enter LDAP serf port (NodePort)",
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP serf port (NodePort)",
                                                default="30946"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", click.prompt("Please enter Serf advertise address",
                                                                               default="demoexample.gluu.org:30946"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_ADMIN_PORT",
-                                  click.prompt("Please enter LDAP advertise admin port (NodePort)", default="30444"))
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise admin port (NodePort)", default="30444"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_LDAPS_PORT",
-                                  click.prompt("Please enter LDAP advertise LDAPS port (NodePort)", default="30636"))
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise LDAPS port (NodePort)", default="30636"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_REPLICATION_PORT",
-                                  click.prompt("Please enter LDAP advertise replication port (NodePort)",
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise replication port (NodePort)",
                                                default="30989"))
-
+            if not self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER"):
+                self.settings.set("GLUU_LDAP_SECONDARY_CLUSTER",
+                                  confirm_yesno("ALPHA-FEATURE-Is this not the first kubernetes cluster"))
+            if not self.settings.get("GLUU_LDAP_SERF_PEERS"):
+                self.settings.set("GLUU_LDAP_SERF_PEERS",
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers as an array",
+                                               default="['firstldap.gluu.org:30946', 'secondldap.gluu.org:31946']"))
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))
