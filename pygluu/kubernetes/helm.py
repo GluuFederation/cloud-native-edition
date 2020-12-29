@@ -17,6 +17,7 @@ from ast import literal_eval
 import time
 import socket
 import base64
+import secrets
 
 logger = get_logger("gluu-helm          ")
 
@@ -336,6 +337,8 @@ class Helm(object):
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
                 values_file_parser["opendj"]["multiCluster"]["serfAdvertiseAddr"] = \
                     self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")
+                serf_key = base64.b64encode(secrets.token_bytes()).decode()
+                values_file_parser["opendj"]["multiCluster"]["serfKey"] = serf_key
                 values_file_parser["opendj"]["ports"]["tcp-ldaps"]["nodePort"] = \
                     int(self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"))
 

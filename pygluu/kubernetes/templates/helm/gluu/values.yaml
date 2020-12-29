@@ -148,6 +148,7 @@ opendj:
   multiCluster:
     enabled: false
     serfAdvertiseAddr: "demoexample.gluu.org:31946"
+    serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
   service:
     ldapServiceName: opendj
   replicas: 1
