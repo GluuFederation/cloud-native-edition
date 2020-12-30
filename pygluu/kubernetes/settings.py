@@ -217,7 +217,8 @@ class SettingsHandler(object):
                                 GLUU_LDAP_ADVERTISE_ADMIN_PORT="",
                                 GLUU_LDAP_ADVERTISE_LDAPS_PORT="",
                                 GLUU_LDAP_ADVERTISE_REPLICATION_PORT="",
-                                GLUU_LDAP_SECONDARY_CLUSTER=""
+                                GLUU_LDAP_SECONDARY_CLUSTER="",
+                                GLUU_LDAP_SERF_PEERS="",
                                 )
         return default_settings
 
