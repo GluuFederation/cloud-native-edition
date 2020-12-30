@@ -341,8 +341,8 @@ class Helm(object):
                 values_file_parser["opendj"]["multiCluster"]["serfKey"] = serf_key
                 values_file_parser["opendj"]["multiCluster"]["serfPeers"] = \
                     self.settings.get("GLUU_LDAP_SERF_PEERS")
-                values_file_parser["config"]["secondaryCluster"]["enabled"] = \
-                    self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER")
+                if self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER"):
+                    values_file_parser["config"]["secondaryCluster"]["enabled"] = True
                 values_file_parser["opendj"]["ports"]["tcp-ldaps"]["nodePort"] = \
                     int(self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"))
 
