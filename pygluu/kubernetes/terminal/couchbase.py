@@ -155,11 +155,15 @@ class PromptCouchbase:
                                      self.settings.get("COUCHBASE_NAMESPACE")),
                     "*.{}.{}.svc".format(self.settings.get("COUCHBASE_CLUSTER_NAME"),
                                          self.settings.get("COUCHBASE_NAMESPACE")),
+                    "*.{}.{}.svc.cluster.local".format(self.settings.get("COUCHBASE_CLUSTER_NAME"),
+                                                       self.settings.get("COUCHBASE_NAMESPACE")),
                     "{}-srv".format(self.settings.get("COUCHBASE_CLUSTER_NAME")),
                     "{}-srv.{}".format(self.settings.get("COUCHBASE_CLUSTER_NAME"),
                                        self.settings.get("COUCHBASE_NAMESPACE")),
                     "{}-srv.{}.svc".format(self.settings.get("COUCHBASE_CLUSTER_NAME"),
                                            self.settings.get("COUCHBASE_NAMESPACE")),
+                    "*.{}-srv.{}.svc.cluster.local".format(self.settings.get("COUCHBASE_CLUSTER_NAME"),
+                                                         self.settings.get("COUCHBASE_NAMESPACE")),
                     "localhost"
                 ])
             if not self.settings.get("COUCHBASE_CN"):
