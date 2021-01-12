@@ -33,7 +33,6 @@ def extract_couchbase_tar(tar_file):
 
 
 def set_memory_for_buckets(memory_quota, couchbase_bucket_prefix):
-
     def parse_couchbase_buckets(file, bucket_type, allbuckets):
         for bucket in allbuckets:
             metadata_name = "gluu"
@@ -47,6 +46,7 @@ def set_memory_for_buckets(memory_quota, couchbase_bucket_prefix):
                 parser["spec"]["name"] = couchbase_bucket_prefix + "_" + bucket
                 parser["metadata"]["name"] = couchbase_bucket_prefix + "-" + bucket
             parser.dump_it()
+
     buckets = ["", "site", "user"]
     ephemeral_buckets = ["cache", "token", "session"]
     parse_couchbase_buckets("./couchbase/couchbase-buckets.yaml",
@@ -110,7 +110,11 @@ class Couchbase(object):
         self.couchbase_source_folder_pattern, self.couchbase_source_file = self.get_couchbase_files
         self.couchbase_custom_resource_definition_file = self.couchbase_source_file.joinpath("crd.yaml")
         self.couchbase_operator_dac_file = self.couchbase_source_file.joinpath("operator_dac.yaml")
+        self.couchbase_admission_file = self.couchbase_source_file.joinpath("admission.yaml")
+        self.couchbase_operator_backup_file = self.couchbase_source_file.joinpath("operator_dac_backup.yaml")
         self.filename = ""
+        # @TODO: Remove flag after depreciation of couchbase operator 2.0
+        self.old_couchbase = False
 
     @property
     def get_couchbase_files(self):
@@ -126,6 +130,11 @@ class Couchbase(object):
                 if "_1." in str(couchbase_tar_file.resolve()):
                     logger.fatal("Couchbase Autonomous Operator version must be > 2.0")
                     sys.exit()
+                # @TODO: Remove condition and underlying lines after depreciation of couchbase operator 2.0
+                if "_2.0" in str(couchbase_tar_file.resolve()):
+                    logger.warning("An newer version of the couchbase operator exists. "
+                                   "Please consider canceling out and using it.https://www.couchbase.com/downloads")
+                    self.old_couchbase = True
 
             except IndexError:
                 logger.fatal("Couchbase package not found.")
@@ -534,9 +543,27 @@ class Couchbase(object):
                                                           namespace=self.settings.get("COUCHBASE_NAMESPACE"),
                                                           literal="password",
                                                           value_of_literal=encoded_cb_pass_string)
-        command = "./{}/bin/cbopcfg -backup=true -namespace={}".format(self.couchbase_source_file,
-                                                                       self.settings.get("COUCHBASE_NAMESPACE"))
-        exec_cmd(command, output_file=self.couchbase_operator_dac_file)
+
+        admission_command = "./{}/bin/cbopcfg generate admission --namespace {}".format(self.couchbase_source_file,
+                                                                                        self.settings.get(
+                                                                                            "COUCHBASE_NAMESPACE"))
+        operator_command = "./{}/bin/cbopcfg generate operator --namespace {}".format(self.couchbase_source_file,
+                                                                                      self.settings.get(
+                                                                                          "COUCHBASE_NAMESPACE"))
+        backup_command = "./{}/bin/cbopcfg generate backup --namespace {}".format(self.couchbase_source_file,
+                                                                                  self.settings.get(
+                                                                                      "COUCHBASE_NAMESPACE"))
+        # @TODO: Remove condition and operator_command override after depreciation of couchbase operator 2.0
+        if self.old_couchbase:
+            operator_command = "./{}/bin/cbopcfg -backup=true -namespace={}".format(self.couchbase_source_file,
+                                                                                    self.settings.get(
+                                                                                        "COUCHBASE_NAMESPACE"))
+        exec_cmd(operator_command, output_file=self.couchbase_operator_dac_file)
+        # @TODO: Remove only the condition after depreciation of couchbase operator 2.0
+        if not self.old_couchbase:
+            exec_cmd(backup_command, output_file=self.couchbase_operator_backup_file)
+            exec_cmd(admission_command, output_file=self.couchbase_admission_file)
+
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
@@ -565,6 +592,13 @@ class Couchbase(object):
 
         self.kubernetes.create_objects_from_dict(self.couchbase_operator_dac_file,
                                                  namespace=cb_namespace)
+        # @TODO: Remove only the condition after depreciation of couchbase operator 2.0
+        if not self.old_couchbase:
+            self.kubernetes.create_objects_from_dict(self.couchbase_admission_file,
+                                                     namespace=cb_namespace)
+
+            self.kubernetes.create_objects_from_dict(self.couchbase_operator_backup_file,
+                                                     namespace=cb_namespace)
 
         self.kubernetes.check_pods_statuses(cb_namespace, "app=couchbase-operator", 700)
 
@@ -668,6 +702,7 @@ class Couchbase(object):
         self.kubernetes.delete_custom_resource("couchbasegroups.couchbase.com")
         self.kubernetes.delete_custom_resource("couchbasememcachedbuckets.couchbase.com")
         self.kubernetes.delete_custom_resource("couchbaseusers.couchbase.com")
+        self.kubernetes.delete_custom_resource("couchbaseautoscalers.couchbase.com")
 
         self.kubernetes.delete_service_account("couchbase-operator-admission", self.settings.get("COUCHBASE_NAMESPACE"))
         self.kubernetes.delete_secret("couchbase-operator-admission", self.settings.get("COUCHBASE_NAMESPACE"))
