@@ -217,7 +217,14 @@ class SettingsHandler(object):
                                 GLUU_GATEWAY_UI_IMAGE_TAG="",
                                 UPGRADE_IMAGE_NAME="",
                                 UPGRADE_IMAGE_TAG="",
-                                CONFIRM_PARAMS="N"
+                                CONFIRM_PARAMS="N",                                GLUU_LDAP_MULTI_CLUSTER="",
+                                CN_LDAP_SERF_PORT="",
+                                CN_LDAP_ADVERTISE_ADDRESS="",
+                                CN_LDAP_ADVERTISE_ADMIN_PORT="",
+                                CN_LDAP_ADVERTISE_LDAPS_PORT="",
+                                CN_LDAP_ADVERTISE_REPLICATION_PORT="",
+                                CN_LDAP_SECONDARY_CLUSTER="",
+                                CN_LDAP_SERF_PEERS="",
                                 )
         return default_settings
 
