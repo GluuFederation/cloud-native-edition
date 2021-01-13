@@ -9,13 +9,22 @@ global:
     testEnviroment: false
   upgrade:
     enabled: false
-  provisioner: k8s.io/minikube-hostpath
-  pool: default
-  fsType: ext4
+  storageClass:
+    provisioner: k8s.io/minikube-hostpath
+    parameters:
+      type:
+      fsType:
+      storageAccountType:
+      kind:
+      pool:
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true
+    mountOptions: [debug]
+    volumeBindingMode: WaitForFirstConsumer
+    allowedTopologies:
   gcePdStorageType: pd-standard
   azureStorageAccountType: Standard_LRS
   azureStorageKind: Managed
-  reclaimPolicy: Retain
   lbIp: ""
   domain: demoexample.gluu.org
   isDomainRegistered: "false"
