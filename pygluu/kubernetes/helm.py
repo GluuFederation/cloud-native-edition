@@ -248,7 +248,7 @@ class Helm(object):
             provisioner = "openebs.io/local"
         else:
             provisioner = "microk8s.io/hostpath"
-        values_file_parser["global"]["provisioner"] = provisioner
+        values_file_parser["global"]["storageClass"]["provisioner"] = provisioner
         values_file_parser["global"]["lbIp"] = self.settings.get("HOST_EXT_IP")
         values_file_parser["global"]["domain"] = self.settings.get("GLUU_FQDN")
         values_file_parser["global"]["isDomainRegistered"] = "false"
