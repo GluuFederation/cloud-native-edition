@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - pygluu/kubernetes/__init__.py
+   workflow_dispatch:
 jobs:
   build:
 
@@ -25,7 +26,7 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         sudo apt-get update
-        sudo apt-get install ruby
+        sudo apt-get install ruby-full
 
     - name: Lint with flake8
       run: |
