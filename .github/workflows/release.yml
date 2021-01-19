@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - pygluu/kubernetes/__init__.py
-   workflow_dispatch:
+  workflow_dispatch:
 jobs:
   build:
 
