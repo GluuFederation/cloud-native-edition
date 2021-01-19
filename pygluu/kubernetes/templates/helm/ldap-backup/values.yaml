@@ -4,11 +4,13 @@
 # common ConfigMap values
 cnLdapInit: true
 cnOxtrustConfigGeneration: true
-
-cnLdapInitPort: 1636
+cnLdapSchedule: "*/59 * * * *"
 
 ldapServiceName: opendj
-
+multiCluster:
+  enabled: false
+  serfAdvertiseAddr: "firstldap.gluu.org"
+  ldapAdvertiseAdminPort: 30444
 ldapPass: P@assw0rd
 concurrencyPolicy: Forbid
 

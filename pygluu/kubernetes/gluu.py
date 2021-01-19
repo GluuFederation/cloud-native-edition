@@ -453,6 +453,16 @@ class Gluu(object):
         values_file = Path("./helm/ldap-backup/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
         values_file_parser["ldapPass"] = self.settings.get("LDAP_PW")
+        if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+            values_file_parser["gluuLdapSchedule"] = self.settings.get("LDAP_BACKUP_SCHEDULE")
+        if self.settings.get("CM_LDAP_MULTI_CLUSTER") == "Y":
+            values_file_parser["multiCluster"]["enabled"] = True
+            values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
+                self.settings.get("CN_LDAP_ADVERTISE_ADMIN_PORT")
+            values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
+                self.settings.get("CN_LDAP_ADVERTISE_ADMIN_PORT")
+            values_file_parser["multiCluster"]["serfAdvertiseAddr"] = \
+                self.settings.get("CN_LDAP_ADVERTISE_ADDRESS")[:-6]
         values_file_parser.dump_it()
         exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
             self.ldap_backup_release_name, self.settings.get("CN_NAMESPACE")))

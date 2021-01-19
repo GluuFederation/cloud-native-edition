@@ -30,9 +30,9 @@ def determine_final_official_and_dev_version(tag_list):
         if "dev" in tag and tag[4:5] == highest_major_minor_patch_number:
             dev_image = tag[0:5] + "_dev"
         # Exclude any tag with the following
-        if "dev" not in tag and tag[4:5] == highest_major_minor_patch_number:
+        if "dev" not in tag and "a" not in tag and tag[4:5] == highest_major_minor_patch_number:
             versions_list.append(int(tag[6:8]))
-    # A case were only a dev version of a new patch is avaiable then a lower stable patch should be checked.
+    # A case were only a dev version of a new patch is available then a lower stable patch should be checked.
     # i.e there is no 4.2.2_01 but there is 4.2.2_dev
     if not versions_list:
         highest_major_minor_patch_number = str(int(highest_major_minor_patch_number) - 1)
@@ -40,7 +40,7 @@ def determine_final_official_and_dev_version(tag_list):
             if not dev_image and "dev" in tag and tag[4:5] == highest_major_minor_patch_number:
                 dev_image = tag[0:5] + "_dev"
             # Exclude any tag with the following
-            if "dev" not in tag and tag[4:5] == highest_major_minor_patch_number:
+            if "dev" not in tag and "a" not in tag and tag[4:5] == highest_major_minor_patch_number:
                 versions_list.append(int(tag[6:8]))
 
 
