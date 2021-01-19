@@ -11,9 +11,6 @@ data:
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_CONFIG_ADAPTER: {{ .Values.configAdapterName | quote }}
   GLUU_SECRET_ADAPTER: {{ .Values.configSecretAdapter | quote }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.ldapServiceName }} 
-  GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
-  GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   GLUU_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
   {{- if and (.Values.gluuRedisEnabled) (eq .Values.gluuCacheType "REDIS") }}

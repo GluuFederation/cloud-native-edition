@@ -216,7 +216,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.2_03
+    tag: 4.2.2_05
     pullPolicy: Always
   resources:
     limits:
@@ -231,7 +231,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.2_03
+    tag: 4.2.2_04
     pullPolicy: Always
   resources:
     limits:
@@ -261,7 +261,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.2_02
+    tag: 4.2.2_04
     pullPolicy: Always
   resources:
     limits:

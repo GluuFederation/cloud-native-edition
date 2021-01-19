@@ -2,10 +2,13 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 # opendj Environament Variables
 # common ConfigMap values
-gluuLdapInit: true
+gluuReleaseName: gluu
+gluuLdapSchedule: "*/59 * * * *"
 gluuOxtrustConfigGeneration: true
-
-gluuLdapInitPort: 1636
+multiCluster:
+  enabled: false
+  serfAdvertiseAddr: "firstldap.gluu.org"
+  ldapAdvertiseAdminPort: 30444
 
 ldapServiceName: opendj
 
