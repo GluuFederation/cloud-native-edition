@@ -26,7 +26,7 @@ class PromptCache:
             2: "IN_MEMORY",
             3: "REDIS",
         }
-        if self.settings.get("CN_CACHE_TYPE") not in gluu_cache_map.values():
+        if self.settings.get("config.configmap.cnCacheType") not in gluu_cache_map.values():
             print("|------------------------------------------------------------------|")
             print("|                     Cache layer                                  |")
             print("|------------------------------------------------------------------|")
@@ -35,7 +35,7 @@ class PromptCache:
             print("| [3] REDIS                                                        |")
             print("|------------------------------------------------------------------|")
             choice = click.prompt("Cache layer", default=1)
-            self.settings.set("CN_CACHE_TYPE", gluu_cache_map.get(choice, "NATIVE_PERSISTENCE"))
-        if self.settings.get("CN_CACHE_TYPE") == "REDIS":
+            self.settings.set("config.configmap.cnCacheType", gluu_cache_map.get(choice, "NATIVE_PERSISTENCE"))
+        if self.settings.get("config.configmap.cnCacheType") == "REDIS":
             redis = PromptRedis(self.settings)
             redis.prompt_redis()

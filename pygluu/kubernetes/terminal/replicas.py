@@ -20,32 +20,32 @@ class PromptReplicas:
     def prompt_replicas(self):
         """Prompt number of replicas for Gluu apps
         """
-        if not self.settings.get("AUTH_SERVER_REPLICAS"):
-            self.settings.set("AUTH_SERVER_REPLICAS", click.prompt("Number of Auth-Server replicas", default=1))
+        if self.settings.get("auth-server.replicas") in (None, ''):
+            self.settings.set("auth-server.replicas", click.prompt("Number of Auth-Server replicas", default=1))
 
-        if self.settings.get("ENABLE_FIDO2") == "Y" and not self.settings.get("FIDO2_REPLICAS"):
+        if self.settings.get("global.fido2.enabled") and self.settings.get("fido2.replicas") in (None, ''):
             self.settings.set("FIDO2_REPLICAS", click.prompt("Number of fido2 replicas", default=1))
 
-        if self.settings.get("ENABLE_SCIM") == "Y" and not self.settings.get("SCIM_REPLICAS"):
+        if self.settings.get("global.scim.enabled") and not self.settings.get("scim.replicas") in (None, ''):
             self.settings.set("SCIM_REPLICAS", click.prompt("Number of scim replicas", default=1))
 
-        if not self.settings.get("OXTRUST_REPLICAS"):
-            self.settings.set("OXTRUST_REPLICAS", click.prompt("Number of oxTrust replicas", default=1))
+        if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap") and \
+                self.settings.get("opendj.replicas") in (None, ''):
+            self.settings.set("opendj.replicas", click.prompt("Number of LDAP replicas", default=1))
 
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and not self.settings.get("LDAP_REPLICAS"):
-            self.settings.set("LDAP_REPLICAS", click.prompt("Number of LDAP replicas", default=1))
+        if self.settings.get("global.oxshibboleth.enabled") and \
+                self.settings.get("oxshibboleth.replicas") in (None, ''):
+            self.settings.set("oxshibboleth.replicas", click.prompt("Number of oxShibboleth replicas", default=1))
 
-        if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y" and not self.settings.get("OXSHIBBOLETH_REPLICAS"):
-            self.settings.set("OXSHIBBOLETH_REPLICAS", click.prompt("Number of oxShibboleth replicas", default=1))
+        if self.settings.get("config.configmap.cnPassportEnabled") and \
+                self.settings.get("oxpassport.replicas") in (None, ''):
+            self.settings.set("oxpassport.replicas", click.prompt("Number of oxPassport replicas", default=1))
 
-        if self.settings.get("ENABLE_OXPASSPORT") == "Y" and not self.settings.get("OXPASSPORT_REPLICAS"):
-            self.settings.set("OXPASSPORT_REPLICAS", click.prompt("Number of oxPassport replicas", default=1))
+        if self.settings.get("global.client-api.enabled") and self.settings.get("client-api.replicas") in (None, ''):
+            self.settings.set("client-api.replicas", click.prompt("Number of client-api replicas", default=1))
 
-        if self.settings.get("ENABLE_CLIENT_API") == "Y" and not self.settings.get("CLIENT_API_REPLICAS"):
-            self.settings.set("CLIENT_API_REPLICAS", click.prompt("Number of client-api replicas", default=1))
+        if self.settings.get("config.configmap.cnCasaEnabled") and self.settings.get("casa.replicas") in (None, ''):
+            self.settings.set("casa.replicas", click.prompt("Number of Casa replicas", default=1))
 
-        if self.settings.get("ENABLE_CASA") == "Y" and not self.settings.get("CASA_REPLICAS"):
-            self.settings.set("CASA_REPLICAS", click.prompt("Number of Casa replicas", default=1))
-
-        if self.settings.get("ENABLE_RADIUS") == "Y" and not self.settings.get("RADIUS_REPLICAS"):
-            self.settings.set("RADIUS_REPLICAS", click.prompt("Number of Radius replicas", default=1))
+        if self.settings.get("config.configmap.cnRadiusEnabled") and self.settings.get("radius.replicas"):
+            self.settings.set("radius.replicas", click.prompt("Number of Radius replicas", default=1))

@@ -9,10 +9,9 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 
-from pygluu.kubernetes.settings import SettingsHandler
+from pygluu.kubernetes.settings import ValuesHandler
 from pygluu.kubernetes.terminal.confirmsettings import PromptConfirmSettings
 from pygluu.kubernetes.terminal.volumes import PromptVolumes
-from pygluu.kubernetes.terminal.gke import PromptGke
 from pygluu.kubernetes.terminal.configuration import PromptConfiguration
 from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
@@ -39,10 +38,12 @@ class Prompt:
     """
 
     def __init__(self):
-        self.settings = SettingsHandler()
+        self.settings = ValuesHandler()
+        self.gluu_gateway_settings = ValuesHandler(values_file="./helm/gluu-gateway-ui/values.yaml",
+                                                   values_schema_file="./helm/gluu-gateway-ui/values.schema.json")
 
     def load_settings(self):
-        self.settings = SettingsHandler()
+        self.settings = ValuesHandler()
 
     def license(self):
         self.load_settings()
@@ -69,7 +70,7 @@ class Prompt:
 
     def gluu_gateway(self):
         self.load_settings()
-        gluu_gateway = PromptGluuGateway(self.settings)
+        gluu_gateway = PromptGluuGateway(self.gluu_gateway_settings)
         gluu_gateway.prompt_gluu_gateway()
 
     def jackrabbit(self):
@@ -85,29 +86,20 @@ class Prompt:
     def test_enviornment(self):
         self.load_settings()
         test_environment = PromptTestEnvironment(self.settings)
-        if not self.settings.get("TEST_ENVIRONMENT") and \
-                self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        if not self.settings.get("global.cloud.testEnviroment") and \
+                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath",
+                "k8s.io/minikube-hostpath"):
             test_environment.prompt_test_environment()
 
-        if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "gke", "do", "local", "aks"):
-            if not self.settings.get("NODE_SSH_KEY"):
-                test_environment.prompt_ssh_key()
-
     def network(self):
-        if not self.settings.get("HOST_EXT_IP"):
+        if not self.settings.get("CN_HOST_EXT_IP"):
             ip = gather_ip()
             self.load_settings()
-            self.settings.set("HOST_EXT_IP", ip)
+            self.settings.set("CN_HOST_EXT_IP", ip)
 
-            if self.settings.get("DEPLOYMENT_ARCH") == "eks" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
+            if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and not self.settings.get("global.istio.enabled"):
                 aws = PromptAws(self.settings)
                 aws.prompt_aws_lb()
-
-    def gke(self):
-        self.load_settings()
-        if self.settings.get("DEPLOYMENT_ARCH") == "gke":
-            gke = PromptGke(self.settings)
-            gke.prompt_gke()
 
     def persistence_backend(self):
         self.load_settings()
@@ -116,25 +108,22 @@ class Prompt:
 
     def ldap(self):
         self.load_settings()
-        if self.settings.get("PERSISTENCE_BACKEND") == "hybrid":
+        if self.settings.get("global.cnPersistenceType") == "hybrid":
             ldap = PromptLdap(self.settings)
             ldap.prompt_hybrid_ldap_held_data()
 
     def volumes(self):
         self.load_settings()
         volumes = PromptVolumes(self.settings)
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or \
-                self.settings.get("INSTALL_JACKRABBIT") == "Y":
+        if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap") or \
+                self.settings.get("global.jackrabbit"):
             volumes.prompt_volumes()
         volumes.prompt_storage()
 
     def couchbase(self):
         self.load_settings()
         couchbase = PromptCouchbase(self.settings)
-        if not self.settings.get("DEPLOY_MULTI_CLUSTER") and self.settings.get("PERSISTENCE_BACKEND") in (
-                "hybrid", "couchbase") and self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
-            couchbase.prompt_couchbase_multi_cluster()
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+        if self.settings.get("global.cnPersistenceType") in ("hybrid", "couchbase"):
             couchbase.prompt_couchbase()
 
     def cache(self):
@@ -144,7 +133,8 @@ class Prompt:
 
     def backup(self):
         self.load_settings()
-        if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        if self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath",
+                                                                        "k8s.io/minikube-hostpath"):
             backup = PromptBackup(self.settings)
             backup.prompt_backup()
 
@@ -165,7 +155,7 @@ class Prompt:
 
     def confirm_settings(self):
         self.load_settings()
-        if self.settings.get("CONFIRM_PARAMS") != "Y":
+        if not self.settings.get("installer-settings.confirmSettings"):
             confirm_settings = PromptConfirmSettings(self.settings)
             confirm_settings.confirm_params()
 
@@ -184,7 +174,6 @@ class Prompt:
         self.istio()
         self.test_enviornment()
         self.network()
-        self.gke()
         self.persistence_backend()
         self.ldap()
         self.volumes()
@@ -194,5 +183,4 @@ class Prompt:
         self.configuration()
         self.images()
         self.replicas()
-        self.volumes()
         self.confirm_settings()

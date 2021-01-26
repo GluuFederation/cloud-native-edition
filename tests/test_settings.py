@@ -5,7 +5,7 @@ from pathlib import Path
 
 def test_load_invalid_settings(tmpdir, settings):
     p = Path(tmpdir) / 'test_settings.json'
-    settings.setting_file = p
+    settings.values_file = p
     p.write_text('')
     settings.load()
     assert "Non valid settings.json" in settings.errors[0]
@@ -60,7 +60,7 @@ def test_reset_data_exception(caplog, monkeypatch, settings):
 
 def test_settings_is_not_exist(settings, tmpdir):
     p = Path(tmpdir) / 'test_settings.json'
-    settings.setting_file = p
+    settings.values_file = p
 
     assert settings.is_exist() is False
 
@@ -68,44 +68,44 @@ def test_settings_is_not_exist(settings, tmpdir):
 def test_settings_is_exist(settings, tmpdir):
     p = Path(tmpdir) / 'test_settings.json'
     p.write_text('{}')
-    settings.setting_file = p
+    settings.values_file = p
 
     assert settings.is_exist() is True
 
 
 def test_settings_validation_is_valid(settings, tmpdir):
 
-    settings.set("ACCEPT_CN_LICENSE", "Y")
+    settings.set("CN_ACCEPT_LICENSE", "Y")
     settings_object = json.dumps(settings.db)
     p = Path(tmpdir) / 'test_settings.json'
     p.write_text(settings_object)
-    settings.setting_file = p
+    settings.values_file = p
 
     assert settings.validate() is True
 
 
 def test_settings_validation_is_invalid(settings, tmpdir):
 
-    settings.set("ACCEPT_CN_LICENSE", "true")
-    settings.set("ADMIN_PW", "123123123")
-    settings.set("INSTALL_GLUU_GATEWAY", "Y")
-    settings.db.pop("KONG_NAMESPACE")
+    settings.set("CN_ACCEPT_LICENSE", "true")
+    settings.set("CN_ADMIN_PASSWORD", "123123123")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "Y")
+    settings.db.pop("CN_KONG_NAMESPACE")
     settings_object = json.dumps(settings.db)
     p = Path(tmpdir) / 'test_settings.json'
     p.write_text(settings_object)
-    settings.setting_file = p
+    settings.values_file = p
 
     assert settings.validate() is False
 
 
 def test_settings_validation_not_exist_setting(settings, tmpdir):
     p = Path(tmpdir) / 'test_settings.json'
-    settings.setting_file = p
+    settings.values_file = p
     assert settings.validate() is True
 
 
 def test_settings_validation_not_valid_setting(settings, tmpdir):
     p = Path(tmpdir) / 'test_settings.json'
-    settings.setting_file = p
+    settings.values_file = p
     p.write_text('')
     assert settings.validate() is False

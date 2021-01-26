@@ -6,7 +6,7 @@ def test_license_no_prompt(settings):
 
     prompt = PromptLicense(settings, accept_license=True)
     prompt.prompt_license()
-    assert settings.get("ACCEPT_CN_LICENSE") == "Y"
+    assert settings.get("CN_ACCEPT_LICENSE") == "Y"
 
 
 def test_license_accepted(monkeypatch, settings):
@@ -15,7 +15,7 @@ def test_license_accepted(monkeypatch, settings):
     monkeypatch.setattr("click.confirm", lambda x: True)
 
     PromptLicense(settings)
-    assert settings.get("ACCEPT_CN_LICENSE") == "Y"
+    assert settings.get("CN_ACCEPT_LICENSE") == "Y"
 
 
 def test_license_rejected(monkeypatch, settings):

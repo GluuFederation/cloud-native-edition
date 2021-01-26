@@ -30,7 +30,7 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh
           - -c
@@ -51,7 +51,7 @@ spec:
               mountPath: /etc/gluu/conf/jackrabbit_admin_password
               subPath: jackrabbit_admin_password
           {{- end }}
-          {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+          {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
             - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
               mountPath: /scripts
           {{- end }}
@@ -85,11 +85,11 @@ spec:
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
-      {{- if eq .Values.global.isDomainRegistered "false" }}
+      {{- if eq .Values.global.isFqdnRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.lbIp }}
         hostnames:
-        - {{ .Values.global.domain }}
+        - {{ .Values.global.fqdn }}
       {{- end }}
       volumes:
       {{- if eq .Values.global.cnJackrabbitCluster "true" }}
@@ -97,7 +97,7 @@ spec:
           secret:
             secretName: cn-jackrabbit-admin-pass
       {{- end }}
-      {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+      {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         - name: {{ include "oxshibboleth.fullname" .}}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip

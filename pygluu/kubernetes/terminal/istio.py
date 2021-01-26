@@ -9,7 +9,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 """
 import click
 from pygluu.kubernetes.helpers import get_logger
-from pygluu.kubernetes.terminal.helpers import confirm_yesno
 
 logger = get_logger("gluu-prompt-istio  ")
 
@@ -20,33 +19,30 @@ class PromptIstio:
 
     def __init__(self, settings):
         self.settings = settings
-        self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_istio(self):
         """Prompt for Istio
         """
-        if not self.settings.get("USE_ISTIO_INGRESS") and self.settings.get("DEPLOYMENT_ARCH") not in (
-                "microk8s", "minikube"):
-            self.settings.set("USE_ISTIO_INGRESS", confirm_yesno("[Alpha] Would you like to use "
+        if self.settings.get("global.istio.ingress") in (None, '') \
+                and self.settings.get("global.storageClass.provisioner") not in \
+                ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
+            self.settings.set("global.istio.ingress", click.confirm("[Alpha] Would you like to use "
                                                                  "Istio Ingress with Gluu ?"))
-        if self.settings.get("USE_ISTIO_INGRESS") == "Y":
-            self.settings.set("USE_ISTIO", "Y")
+        if self.settings.get("global.istio.ingress"):
+            self.settings.set("global.istio.enabled", True)
 
-        if not self.settings.get("USE_ISTIO"):
+        if self.settings.get("global.istio.enabled") in (None, ''):
             logger.info("Please follow https://istio.io/latest/docs/ to learn more.")
             logger.info("Istio will auto inject side cars into all pods in Gluus namespace chosen. "
                         "The label istio-injection=enabled will be added to the namespace Gluu will be installed in "
                         "if the namespace does not exist. If it does please run "
                         "kubectl label namespace <namespace> istio-injection=enabled")
-            self.settings.set("USE_ISTIO", confirm_yesno("[Alpha] Would you like to use Istio with Gluu ?"))
+            self.settings.set("global.istio.enabled", click.confirm("[Alpha] Would you like to use Istio with Gluu ?"))
 
-        if not self.settings.get("ISTIO_SYSTEM_NAMESPACE") and self.settings.get("USE_ISTIO") == "Y":
-            self.settings.set("ISTIO_SYSTEM_NAMESPACE", click.prompt("Istio namespace",
+        if self.settings.get("global.istio.namespace") in (None, '') and self.settings.get("global.istio.enabled"):
+            self.settings.set("global.istio.namespace", click.prompt("Istio namespace",
                                                                      default="istio-system"))
-        if self.settings.get("USE_ISTIO_INGRESS") == "Y":
-            self.enabled_services.append("cn-istio-ingress")
-            self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
 
-            if not self.settings.get("LB_ADD"):
-                self.settings.set("LB_ADD", click.prompt("Istio loadbalancer adderss(eks) or "
+            if self.settings.get("config.configmap.lbAddr") in (None, ''):
+                self.settings.set("config.configmap.lbAddr", click.prompt("Istio loadbalancer adderss(eks) or "
                                                          "ip (gke, aks, digital ocean, local)", default=""))

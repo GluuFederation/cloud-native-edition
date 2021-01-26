@@ -3,8 +3,8 @@ import pytest
 
 @pytest.fixture()
 def settings():
-    from pygluu.kubernetes.settings import SettingsHandler, unlink_settings_json
+    from pygluu.kubernetes.settings import ValuesHandler, unlink_values_yaml
 
-    handler = SettingsHandler()
+    handler = ValuesHandler()
     yield handler
-    unlink_settings_json()
+    unlink_values_yaml()

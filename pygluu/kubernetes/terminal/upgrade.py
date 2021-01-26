@@ -20,23 +20,20 @@ class PromptUpgrade:
 
     def __init__(self, settings):
         self.settings = settings
-        self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_upgrade(self):
         """Prompts for upgrade and returns updated settings.
         :return:
         """
         versions, version_number = get_supported_versions()
-        self.enabled_services.append("upgrade")
-        self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
-        if not self.settings.get("CN_UPGRADE_TARGET_VERSION"):
-            self.settings.set("CN_UPGRADE_TARGET_VERSION", click.prompt(
+        if self.settings.get("installer-settings.upgrade.targetVersion") in (None, ''):
+            self.settings.set("installer-settings.upgrade.targetVersion", click.prompt(
                 "Please enter the version to upgrade Gluu to", default=version_number,
             ))
 
-        image_names_and_tags = versions.get(self.settings.get("CN_UPGRADE_TARGET_VERSION"), {})
+        image_names_and_tags = versions.get(self.settings.get("installer-settings.upgrade.targetVersion"), {})
         self.settings.update(image_names_and_tags)
 
         # reset this config to force image prompt
-        self.settings.set("EDIT_IMAGE_NAMES_TAGS", "")
+        self.settings.set("installer-settings.image.edit", '')
         PromptImages(self.settings).prompt_image_name_tag()

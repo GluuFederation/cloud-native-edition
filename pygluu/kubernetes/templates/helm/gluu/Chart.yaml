@@ -38,10 +38,6 @@ dependencies:
       condition: global.scim.enabled
       version: 5.0.0a1
 
-    - name: oxtrust
-      condition: global.oxtrust.enabled
-      version: 5.0.0a1
-  
     - name: nginx-ingress
       condition: global.nginx-ingress.enabled
       version: 5.0.0a1

@@ -15,6 +15,6 @@ def test_prompt_hybrid_ldap_held_data(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given)
 
-    settings.set("HYBRID_LDAP_HELD_DATA", "")
+    settings.set("CN_HYBRID_LDAP_HELD_DATA", "")
     PromptLdap(settings).prompt_hybrid_ldap_held_data()
-    assert settings.get("HYBRID_LDAP_HELD_DATA") == expected
+    assert settings.get("CN_HYBRID_LDAP_HELD_DATA") == expected

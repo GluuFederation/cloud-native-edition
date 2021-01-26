@@ -67,7 +67,7 @@ spec:
           servicePort: use-annotation
       - path: /.well-known/scim-configuration
         backend:
-          serviceName: oxtrust
+          serviceName: scim
           servicePort: 8080
       - path: /.well-known/openid-configuration
         backend:
@@ -96,10 +96,6 @@ spec:
       - path: /auth-server*
         backend:
           serviceName: auth-server
-          servicePort: 8080
-      - path: /identity*
-        backend:
-          serviceName: oxtrust
           servicePort: 8080
       - path: /idp*
         backend:

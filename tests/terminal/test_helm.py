@@ -10,9 +10,9 @@ def test_helm_release_name(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
-    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
-    settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("CN_NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("CN_NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "N")
     settings.set("CN_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
@@ -30,13 +30,13 @@ def test_helm_ingress_release_name(monkeypatch, settings, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
     settings.set("CN_HELM_RELEASE_NAME", "gluu")
-    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
-    settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("CN_NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "N")
     settings.set("CN_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
-    assert settings.get("NGINX_INGRESS_RELEASE_NAME") == expected
+    assert settings.get("CN_NGINX_INGRESS_RELEASE_NAME") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -48,14 +48,14 @@ def test_helm_ingress_namespace(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("CN_NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("CN_HELM_RELEASE_NAME", "gluu")
-    settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "N")
     settings.set("CN_LDAP_MULTI_CLUSTER", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
-    assert settings.get("NGINX_INGRESS_NAMESPACE") == expected
+    assert settings.get("CN_NGINX_INGRESS_NAMESPACE") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -67,15 +67,15 @@ def test_helm_gg_helm_release_name(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
-    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("CN_NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("CN_NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("CN_LDAP_MULTI_CLUSTER", "N")
-    settings.set("INSTALL_GLUU_GATEWAY", "Y")
-    settings.set("GLUU_GATEWAY_UI_HELM_RELEASE_NAME", "gluu-gateway-ui")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "Y")
+    settings.set("CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME", "gluu-gateway-ui")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
-    assert settings.get("KONG_HELM_RELEASE_NAME") == expected
+    assert settings.get("CN_KONG_HELM_RELEASE_NAME") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -87,15 +87,15 @@ def test_helm_gg_ui_helm_release_name(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
-    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
-    settings.set("INSTALL_GLUU_GATEWAY", "Y")
+    settings.set("CN_NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("CN_NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "Y")
     settings.set("CN_LDAP_MULTI_CLUSTER", "N")
-    settings.set("KONG_HELM_RELEASE_NAME", "gluu-gateway")
+    settings.set("CN_KONG_HELM_RELEASE_NAME", "gluu-gateway")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
-    assert settings.get("GLUU_GATEWAY_UI_HELM_RELEASE_NAME") == expected
+    assert settings.get("CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME") == expected
 
 
 def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
@@ -104,9 +104,9 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     monkeypatch.setattr("click.confirm", lambda x, default: True)
 
     settings.set("CN_HELM_RELEASE_NAME", "gluu")
-    settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
-    settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
-    settings.set("INSTALL_GLUU_GATEWAY", "N")
+    settings.set("CN_NGINX_INGRESS_RELEASE_NAME", "ningress")
+    settings.set("CN_NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("CN_INSTALL_GLUU_GATEWAY", "N")
     settings.set("CN_LDAP_MULTI_CLUSTER", "Y")
     settings.set("CN_LDAP_SERF_PORT", "30946")
     settings.set("CN_LDAP_ADVERTISE_ADDRESS", "demoexample.gluu.org:30946")

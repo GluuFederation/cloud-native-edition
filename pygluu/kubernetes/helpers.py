@@ -236,35 +236,35 @@ def prompt_password(password, length=6):
 def analyze_storage_class(settings, storageclass):
     from pygluu.kubernetes.yamlparser import Parser
     parser = Parser(storageclass, "StorageClass")
-    if settings.get("DEPLOYMENT_ARCH") == "eks":
+    if settings.get("CN_DEPLOYMENT_ARCH") == "eks":
         parser["provisioner"] = "kubernetes.io/aws-ebs"
         parser["parameters"]["encrypted"] = "true"
-        parser["parameters"]["type"] = settings.get("LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["parameters"]["type"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
         parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
         parser.dump_it()
-    elif settings.get("DEPLOYMENT_ARCH") == "gke":
+    elif settings.get("CN_DEPLOYMENT_ARCH") == "gke":
         parser["provisioner"] = "kubernetes.io/gce-pd"
         try:
             del parser["parameters"]["encrypted"]
         except KeyError:
             logger.info("Key not deleted as it does not exist inside yaml.")
-        parser["parameters"]["type"] = settings.get("LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["parameters"]["type"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
         parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
         parser.dump_it()
-    elif settings.get("DEPLOYMENT_ARCH") == "aks":
+    elif settings.get("CN_DEPLOYMENT_ARCH") == "aks":
         parser["provisioner"] = "kubernetes.io/azure-disk"
         try:
             del parser["parameters"]["encrypted"]
             del parser["parameters"]["type"]
         except KeyError:
             logger.info("Key not deleted as it does not exist inside yaml.")
-        parser["parameters"]["storageaccounttype"] = settings.get("LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("NODES_ZONES")))
+        parser["parameters"]["storageaccounttype"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
+        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
         parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
         parser.dump_it()
-    elif settings.get("DEPLOYMENT_ARCH") == "do":
+    elif settings.get("CN_DEPLOYMENT_ARCH") == "do":
         parser["provisioner"] = "dobs.csi.digitalocean.com"
         try:
             del parser["parameters"]
@@ -272,7 +272,7 @@ def analyze_storage_class(settings, storageclass):
         except KeyError:
             logger.info("Key not deleted as it does not exist inside yaml.")
         parser.dump_it()
-    elif settings.get('DEPLOYMENT_ARCH') == "microk8s":
+    elif settings.get('CN_DEPLOYMENT_ARCH') == "microk8s":
         try:
             parser["provisioner"] = "microk8s.io/hostpath"
             del parser["allowedTopologies"]
@@ -281,7 +281,7 @@ def analyze_storage_class(settings, storageclass):
         except KeyError:
             logger.info("Key not deleted as it does not exist inside yaml.")
         parser.dump_it()
-    elif settings.get('DEPLOYMENT_ARCH') == "minikube":
+    elif settings.get('CN_DEPLOYMENT_ARCH') == "minikube":
         try:
             parser["provisioner"] = "k8s.io/minikube-hostpath"
             del parser["allowedTopologies"]

@@ -30,7 +30,7 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh
           - -c
@@ -44,7 +44,7 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           - name: {{ include "fido2.fullname" .}}-updatelbip
             mountPath: "/scripts"
         {{- end }}
@@ -78,11 +78,11 @@ spec:
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
-      {{- if eq .Values.global.isDomainRegistered "false" }}
+      {{- if eq .Values.global.isFqdnRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.lbIp }}
         hostnames:
-        - {{ .Values.global.domain }}
+        - {{ .Values.global.fqdn }}
       {{- end }}
       volumes:
       {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
@@ -93,7 +93,7 @@ spec:
           secret:
             secretName: {{ .Release.Name }}-cb-crt 
       {{- end }}
-      {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+      {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         - name: {{ include "fido2.fullname" . }}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip

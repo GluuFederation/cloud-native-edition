@@ -11,7 +11,7 @@ spec:
   gateways:
   - {{ .Release.Name }}-global-gtw
   hosts:
-  - {{ .Values.global.domain }}
+  - {{ .Values.global.fqdn }}
   http:
   - name: {{ .Release.Name }}-istio-casa
     match:

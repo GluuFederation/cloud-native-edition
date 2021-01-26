@@ -49,6 +49,8 @@ setup(
         "gunicorn >= 20.0.4",
         "gevent >= 20.9.0",
         "jsonschema >= 3.2.0",
+        "dotty-dict >= 1.3.0",
+        "PyYAML >= 5.4.1"
     ],
     classifiers=[
         "Intended Audience :: Developers",

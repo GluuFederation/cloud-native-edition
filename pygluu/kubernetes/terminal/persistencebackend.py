@@ -16,7 +16,6 @@ class PromptPersistenceBackend:
 
     def __init__(self, settings):
         self.settings = settings
-        self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_persistence_backend(self):
         """Prompts for persistence backend layer
@@ -27,7 +26,7 @@ class PromptPersistenceBackend:
             3: "hybrid",
         }
 
-        if self.settings.get("PERSISTENCE_BACKEND") not in persistence_map.values():
+        if self.settings.get("CN_PERSISTENCE_BACKEND") not in persistence_map.values():
             print("|------------------------------------------------------------------|")
             print("|                     Persistence layer                            |")
             print("|------------------------------------------------------------------|")
@@ -37,8 +36,5 @@ class PromptPersistenceBackend:
             print("|------------------------------------------------------------------|")
 
             choice = click.prompt("Persistence layer", default=1)
-            self.settings.set("PERSISTENCE_BACKEND", persistence_map.get(choice, "ldap"))
+            self.settings.set("global.cnPersistenceType", persistence_map.get(choice, "ldap"))
 
-        if self.settings.get("PERSISTENCE_BACKEND") == "ldap":
-            self.enabled_services.append("ldap")
-            self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)

@@ -22,64 +22,53 @@ class PromptVolumes:
     def __init__(self, settings):
         self.settings = settings
 
-    def prompt_volumes_identifier(self):
-        """Prompts for Static volume IDs.
-        """
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and \
-                not self.settings.get("LDAP_STATIC_VOLUME_ID"):
-            logger.info("EBS Volume ID example: vol-049df61146c4d7901")
-            logger.info("Persistent Disk Name example: "
-                        "gke-demoexamplegluu-e31985b-pvc-abe1a701-df81-11e9-a5fc-42010a8a00dd")
-            self.settings.set("LDAP_STATIC_VOLUME_ID", click.prompt(
-                "Please enter Persistent Disk Name or EBS Volume ID for LDAP"))
-
-    def prompt_disk_uris(self):
-        """Prompts for static volume Disk URIs (AKS)
-        """
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and not self.settings.get(
-                "LDAP_STATIC_DISK_URI"):
-            logger.info("DiskURI example: /subscriptions/<subscriptionID>/resourceGroups/"
-                        "MC_myAKSCluster_myAKSCluster_westus/providers/Microsoft.Compute/disks/myAKSDisk")
-            self.settings.set("LDAP_STATIC_DISK_URI", click.prompt("Please enter the disk uri for LDAP"))
-
     def prompt_app_volume_type(self):
         """Prompts for volume type
         """
+        gluu_volume_map = {
+            1: "microk8sDynamic",
+            2: "minikubeDynamic",
+            6: "awsOpenEbsHostPathDynamic",
+            7: "awsEbsDynamic",
+            11: "gkeOpenEbsHostPathDynamic",
+            12: "gkePdDynamic",
+            16: "aksOpenEbsHostPathDynamic",
+            17: "aksPdDynamic",
+            21: "DoksOpenEbsHostPathDynamic",
+            22: "DoksPdDynamic",
+            26: "localOpenEbsHostPathDynamic"
+        }
         vol_choice = 0
-        if self.settings.get("DEPLOYMENT_ARCH") == "eks":
+        if self.settings.get("global.storageClass.provisioner") == "kubernetes.io/aws-ebs":
             print("|------------------------------------------------------------------|")
             print("|Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)     |")
             print("|                    MultiAZ - Supported                           |")
             print("|------------------------------------------------------------------|")
-            print("| [6]  volumes on host                                             |")
+            print("| [6]  OpenEBS Local PV Hostpath (OpenEBS must be installed)       |")
             print("| [7]  EBS volumes dynamically provisioned [default]               |")
-            print("| [8]  EBS volumes statically provisioned                          |")
             vol_choice = click.prompt("What type of volume path", default=7)
-        elif self.settings.get("DEPLOYMENT_ARCH") == "gke":
+        elif self.settings.get("global.storageClass.provisioner") == "kubernetes.io/gce-pd":
             print("|------------------------------------------------------------------|")
             print("|Google Cloud Engine - Google Kubernetes Engine                    |")
             print("|------------------------------------------------------------------|")
-            print("| [11]  volumes on host                                            |")
+            print("| [11]  OpenEBS Local PV Hostpath (OpenEBS must be installed)      |")
             print("| [12]  Persistent Disk  dynamically provisioned [default]         |")
-            print("| [13]  Persistent Disk  statically provisioned                    |")
             vol_choice = click.prompt("What type of volume path", default=12)
-        elif self.settings.get("DEPLOYMENT_ARCH") == "aks":
+        elif self.settings.get("global.storageClass.provisioner") == "kubernetes.io/azure-disk":
             print("|------------------------------------------------------------------|")
             print("|Microsoft Azure                                                   |")
             print("|------------------------------------------------------------------|")
-            print("| [16] volumes on host                                             |")
+            print("| [16] OpenEBS Local PV Hostpath (OpenEBS must be installed)       |")
             print("| [17] Persistent Disk  dynamically provisioned                    |")
-            print("| [18] Persistent Disk  statically provisioned                     |")
             vol_choice = click.prompt("What type of volume path", default=17)
-        elif self.settings.get("DEPLOYMENT_ARCH") == "do":
+        elif self.settings.get("global.storageClass.provisioner") == "dobs.csi.digitalocean.com":
             print("|------------------------------------------------------------------|")
             print("|Digital Ocean                                                     |")
             print("|------------------------------------------------------------------|")
-            print("| [21] volumes on host                                             |")
+            print("| [21] OpenEBS Local PV Hostpath (OpenEBS must be installed)       |")
             print("| [22] Persistent Disk  dynamically provisioned                    |")
-            print("| [23] Persistent Disk  statically provisioned                     |")
             vol_choice = click.prompt("What type of volume path", default=22)
-        elif self.settings.get("DEPLOYMENT_ARCH") == "local":
+        elif self.settings.get("global.storageClass.provisioner") == "openebs.io/local":
             print("|------------------------------------------------------------------|")
             print("|Local Deployment                                                  |")
             print("|------------------------------------------------------------------|")
@@ -87,36 +76,35 @@ class PromptVolumes:
             print("|------------------------------------------------------------------|")
             logger.info("OpenEBS must be installed before")
             vol_choice = click.prompt("What type of volume path", default=26)
-        self.settings.set("APP_VOLUME_TYPE", vol_choice)
+        self.settings.set("installer-settings.volumeProvisionStrategy", gluu_volume_map.get(vol_choice))
 
     def prompt_storage(self):
         """Prompt for LDAP storage size
         """
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") and not self.settings.get(
-                "LDAP_STORAGE_SIZE"):
-            self.settings.set("LDAP_STORAGE_SIZE", click.prompt("Size of ldap volume storage", default="4Gi"))
+        if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap") and self.settings.get(
+                "LDAP_STORAGE_SIZE") in (None, ''):
+            self.settings.set("opendj.persistence.size", click.prompt("Size of ldap volume storage", default="4Gi"))
 
     def prompt_volumes(self):
         """Prompts for all info needed for volume creation on cloud or onpremise
         """
-        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s":
-            self.settings.set("APP_VOLUME_TYPE", 1)
 
-        elif self.settings.get("DEPLOYMENT_ARCH") == "minikube":
-            self.settings.set("APP_VOLUME_TYPE", 2)
-
-        if not self.settings.get("APP_VOLUME_TYPE"):
+        if self.settings.get("global.storageClass.provisioner") and \
+                self.settings.get("installer-settings.volumeProvisionStrategy") in (None, ''):
             self.prompt_app_volume_type()
 
-        if self.settings.get("APP_VOLUME_TYPE") in (8, 13):
-            self.prompt_volumes_identifier()
-
-        if self.settings.get("APP_VOLUME_TYPE") == 18:
-            self.prompt_disk_uris()
-
-        if not self.settings.get("LDAP_JACKRABBIT_VOLUME") and \
-                self.settings.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
-            logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
-            logger.info("AWS EKS Options ('gp2', 'io1', 'st1', 'sc1')")
+        if self.settings.get("installer-settings.volumeProvisionStrategy") == "aksPdDynamic":
             logger.info("Azure Options ('Standard_LRS', 'Premium_LRS', 'StandardSSD_LRS', 'UltraSSD_LRS')")
-            self.settings.set("LDAP_JACKRABBIT_VOLUME", click.prompt("Please enter the volume type.", default="io1"))
+            self.settings.set("global.azureStorageAccountType",
+                              click.prompt("Please enter the volume type.", default="StandardSSD_LRS"))
+
+        elif self.settings.get("installer-settings.volumeProvisionStrategy") == "awsEbsDynamic":
+            logger.info("AWS EKS Options ('gp2', 'io1', `io2`, 'st1', 'sc1')")
+            self.settings.set("global.awsStorageType",
+                              click.prompt("Please enter the volume type.", default="io1"))
+        elif self.settings.get("installer-settings.volumeProvisionStrategy") == "gkePdDynamic":
+            logger.info("GCE GKE Options ('pd-standard', 'pd-ssd')")
+            self.settings.set("global.gcePdStorageType",
+                              click.prompt("Please enter the volume type.", default="pd-ssd"))
+        elif "OpenEbsHostPathDynamic" in self.settings.get("installer-settings.volumeProvisionStrategy"):
+            self.settings.set("global.storageClass.provisioner", "openebs.io/local")

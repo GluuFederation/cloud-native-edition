@@ -76,7 +76,7 @@ def initialize():
     else:
         wizard_steps.normal_steps()
 
-    if not gluu_settings.db.get("ACCEPT_CN_LICENSE") and \
+    if not gluu_settings.db.get("CN_ACCEPT_LICENSE") and \
             request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
         return redirect(url_for("wizard.agreement"))
 
@@ -98,7 +98,7 @@ def agreement():
     """
     form = LicenseForm()
     if form.validate_on_submit():
-        gluu_settings.db.set("ACCEPT_CN_LICENSE", "Y" if form.accept_gluu_license.data else "N")
+        gluu_settings.db.set("CN_ACCEPT_LICENSE", "Y" if form.accept_gluu_license.data else "N")
         return redirect(url_for(wizard_steps.next_step()))
 
     with open("./LICENSE", "r") as f:
@@ -106,7 +106,7 @@ def agreement():
 
     if request.method == "GET":
         # populate form data from settings
-        form.accept_gluu_license.data = gluu_settings.db.get("ACCEPT_CN_LICENSE")
+        form.accept_gluu_license.data = gluu_settings.db.get("CN_ACCEPT_LICENSE")
     wizard_steps.current_step = 'license'
     return render_template("wizard/index.html",
                            license=agreement_file,
@@ -148,12 +148,12 @@ def deployment_arch():
     form = DeploymentArchForm()
 
     if form.validate_on_submit():
-        gluu_settings.db.set("DEPLOYMENT_ARCH", form.deployment_arch.data)
+        gluu_settings.db.set("CN_DEPLOYMENT_ARCH", form.deployment_arch.data)
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         # populate form settings
-        form.deployment_arch.data = gluu_settings.db.get("DEPLOYMENT_ARCH")
+        form.deployment_arch.data = gluu_settings.db.get("CN_DEPLOYMENT_ARCH")
     wizard_steps.current_step = 'deployment'
     return render_template("wizard/index.html",
                            form=form,
@@ -253,12 +253,12 @@ def optional_services():
         data["ENABLE_CLIENT_API"] = form.enable_client_api.data
 
         if data["ENABLE_CLIENT_API"] == "Y":
-            data["CLIENT_API_APPLICATION_KEYSTORE_CN"] = form.client_api_application_keystore_cn.data
-            data["CLIENT_API_ADMIN_KEYSTORE_CN"] = form.client_api_admin_keystore_cn.data
+            data["CN_CLIENT_API_APPLICATION_KEYSTORE_CN"] = form.client_api_application_keystore_cn.data
+            data["CN_CLIENT_API_ADMIN_KEYSTORE_CN"] = form.client_api_admin_keystore_cn.data
             service_list['client-api'] = True
         else:
-            data["CLIENT_API_APPLICATION_KEYSTORE_CN"] = ""
-            data["CLIENT_API_ADMIN_KEYSTORE_CN"] = ""
+            data["CN_CLIENT_API_APPLICATION_KEYSTORE_CN"] = ""
+            data["CN_CLIENT_API_ADMIN_KEYSTORE_CN"] = ""
 
         data["ENABLE_OXTRUST_API"] = form.enable_oxtrust_api.data
         if data["ENABLE_OXTRUST_API"] == "Y":
@@ -302,42 +302,42 @@ def gluu_gateway():
     """
     form = GluuGatewayForm()
     if form.validate_on_submit():
-        data = {"INSTALL_GLUU_GATEWAY": form.install_gluu_gateway.data}
+        data = {"CN_INSTALL_GLUU_GATEWAY": form.install_gluu_gateway.data}
 
-        if data["INSTALL_GLUU_GATEWAY"] == "Y":
+        if data["CN_INSTALL_GLUU_GATEWAY"] == "Y":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("gluu-gateway-ui")
             data["ENABLE_CLIENT_API"] = "Y"
-            data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
-            data["POSTGRES_URL"] = form.postgres.postgres_url.data
-            data["KONG_NAMESPACE"] = form.kong_namespace.data
-            data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
-            data["KONG_DATABASE"] = form.kong_database.data
-            data["KONG_PG_USER"] = form.kong_pg_user.data
-            data["KONG_PG_PASSWORD"] = form.kong_pg_password.data
-            data["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
-            data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
-            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
+            data["CN_POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
+            data["CN_POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+            data["CN_POSTGRES_URL"] = form.postgres.postgres_url.data
+            data["CN_KONG_NAMESPACE"] = form.kong_namespace.data
+            data["CN_GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
+            data["CN_KONG_DATABASE"] = form.kong_database.data
+            data["CN_KONG_PG_USER"] = form.kong_pg_user.data
+            data["CN_KONG_PG_PASSWORD"] = form.kong_pg_password.data
+            data["CN_GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
+            data["CN_GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
+            data["CN_GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
             data["ENABLE_CLIENT_API"] = "N"
-            if not gluu_settings.db.get("POSTGRES_NAMESPACE") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_NAMESPACE"] = ""
-            if not gluu_settings.db.get("POSTGRES_REPLICAS") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_REPLICAS"] = ""
-            if not gluu_settings.db.get("POSTGRES_URL") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_URL"] = ""
-            data["KONG_NAMESPACE"] = ""
-            data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
-            data["KONG_DATABASE"] = ""
-            data["KONG_PG_USER"] = ""
-            data["KONG_PG_PASSWORD"] = ""
-            data["GLUU_GATEWAY_UI_DATABASE"] = ""
-            data["GLUU_GATEWAY_UI_PG_USER"] = ""
-            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
+            if not gluu_settings.db.get("CN_POSTGRES_NAMESPACE") and \
+                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+                data["CN_POSTGRES_NAMESPACE"] = ""
+            if not gluu_settings.db.get("CN_POSTGRES_REPLICAS") and \
+                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+                data["CN_POSTGRES_REPLICAS"] = ""
+            if not gluu_settings.db.get("CN_POSTGRES_URL") and \
+                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+                data["CN_POSTGRES_URL"] = ""
+            data["CN_KONG_NAMESPACE"] = ""
+            data["CN_GLUU_GATEWAY_UI_NAMESPACE"] = ""
+            data["CN_KONG_DATABASE"] = ""
+            data["CN_KONG_PG_USER"] = ""
+            data["CN_KONG_PG_PASSWORD"] = ""
+            data["CN_GLUU_GATEWAY_UI_DATABASE"] = ""
+            data["CN_GLUU_GATEWAY_UI_PG_USER"] = ""
+            data["CN_GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -345,16 +345,16 @@ def gluu_gateway():
         form = populate_form_data(form)
         form.postgres = populate_form_data(form.postgres)
         # populate password suggestion
-        if not gluu_settings.db.get("KONG_PG_PASSWORD"):
+        if not gluu_settings.db.get("CN_KONG_PG_PASSWORD"):
             form.kong_pg_password_confirm.data = form.kong_pg_password.data = generate_password()
         else:
-            form.kong_pg_password_confirm.data = gluu_settings.db.get("KONG_PG_PASSWORD")
+            form.kong_pg_password_confirm.data = gluu_settings.db.get("CN_KONG_PG_PASSWORD")
 
-        if not gluu_settings.db.get("GLUU_GATEWAY_UI_PG_PASSWORD"):
+        if not gluu_settings.db.get("CN_GLUU_GATEWAY_UI_PG_PASSWORD"):
             form.gluu_gateway_ui_pg_password.data = \
                 form.gluu_gateway_ui_pg_password_confirm.data = generate_password()
         else:
-            form.gluu_gateway_ui_pg_password_confirm.data = gluu_settings.db.get("GLUU_GATEWAY_UI_PG_PASSWORD")
+            form.gluu_gateway_ui_pg_password_confirm.data = gluu_settings.db.get("CN_GLUU_GATEWAY_UI_PG_PASSWORD")
 
     wizard_steps.current_step = 'gluu_gateway'
     return render_template("wizard/index.html",
@@ -371,22 +371,22 @@ def install_jackrabbit():
     """
     form = JackrabbitForm()
     if form.validate_on_submit():
-        data = {"INSTALL_JACKRABBIT": form.install_jackrabbit.data,
-                "JACKRABBIT_URL": form.jackrabbit_url.data,
-                "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
-                "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
-                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
+        data = {"CN_INSTALL_JACKRABBIT": form.install_jackrabbit.data,
+                "CN_JACKRABBIT_URL": form.jackrabbit_url.data,
+                "CN_JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
+                "CN_JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
+                "CN_JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
 
-        if data["INSTALL_JACKRABBIT"] == "Y":
-            data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
+        if data["CN_INSTALL_JACKRABBIT"] == "Y":
+            data["CN_JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
-        if data["JACKRABBIT_CLUSTER"] == "Y":
-            data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
-            data["POSTGRES_URL"] = form.postgres.postgres_url.data
-            data["JACKRABBIT_PG_USER"] = form.jackrabbit_pg_user.data
-            data["JACKRABBIT_PG_PASSWORD"] = form.jackrabbit_pg_password.data
-            data["JACKRABBIT_DATABASE"] = form.jackrabbit_database.data
+        if data["CN_JACKRABBIT_CLUSTER"] == "Y":
+            data["CN_POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
+            data["CN_POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+            data["CN_POSTGRES_URL"] = form.postgres.postgres_url.data
+            data["CN_JACKRABBIT_PG_USER"] = form.jackrabbit_pg_user.data
+            data["CN_JACKRABBIT_PG_PASSWORD"] = form.jackrabbit_pg_password.data
+            data["CN_JACKRABBIT_DATABASE"] = form.jackrabbit_database.data
 
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
@@ -394,19 +394,19 @@ def install_jackrabbit():
     if request.method == "GET":
         form = populate_form_data(form)
         form.postgres = populate_form_data(form.postgres)
-        if not gluu_settings.db.get("JACKRABBIT_ADMIN_PASSWORD"):
+        if not gluu_settings.db.get("CN_JACKRABBIT_ADMIN_PASSWORD"):
             form.jackrabbit_admin_password.data = \
                 form.jackrabbit_admin_password_confirmation.data = generate_password(24)
         else:
             form.jackrabbit_admin_password.data = \
-                form.jackrabbit_admin_password_confirmation.data = gluu_settings.db.get("JACKRABBIT_ADMIN_PASSWORD")
+                form.jackrabbit_admin_password_confirmation.data = gluu_settings.db.get("CN_JACKRABBIT_ADMIN_PASSWORD")
 
-        if not gluu_settings.db.get("JACKRABBIT_PG_PASSWORD"):
+        if not gluu_settings.db.get("CN_JACKRABBIT_PG_PASSWORD"):
             form.jackrabbit_pg_password.data = \
                 form.jackrabbit_pg_password_confirmation.data = generate_password()
         else:
             form.jackrabbit_pg_password.data = \
-                form.jackrabbit_pg_password_confirmation.data = gluu_settings.db.get("JACKRABBIT_PG_PASSWORD")
+                form.jackrabbit_pg_password_confirmation.data = gluu_settings.db.get("CN_JACKRABBIT_PG_PASSWORD")
 
     wizard_steps.current_step = 'jackrabbit'
     return render_template("wizard/index.html",
@@ -424,7 +424,7 @@ def install_istio():
     use_istio_ingress field will be required except for microk8s and minikube
     """
     form = IstioForm()
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
         del form.use_istio_ingress
         form.lb_add.validators = [Optional()]
     else:
@@ -432,23 +432,23 @@ def install_istio():
 
     if form.validate_on_submit():
         data = {}
-        data["USE_ISTIO"] = form.use_istio.data
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") not in test_arch:
-            data["USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
+        data["CN_USE_ISTIO"] = form.use_istio.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in test_arch:
+            data["CN_USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
-            if data["USE_ISTIO_INGRESS"] == "Y":
+            if data["CN_USE_ISTIO_INGRESS"] == "Y":
                 data["ENABLED_SERVICES_LIST"].append('cn-istio-ingress')
-                data["LB_ADD"] = form.lb_add.data
-                data["USE_ISTIO"] = "Y"
+                data["CN_LB_ADD"] = form.lb_add.data
+                data["CN_USE_ISTIO"] = "Y"
             else:
                 if 'cn-istio-ingress' in data["ENABLED_SERVICES_LIST"]:
                     data["ENABLED_SERVICES_LIST"].remove('cn-istio-ingress')
-                data["LB_ADD"] = ""
+                data["CN_LB_ADD"] = ""
 
-        if data["USE_ISTIO"] == "Y":
-            data["ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
+        if data["CN_USE_ISTIO"] == "Y":
+            data["CN_ISTIO_SYSTEM_NAMESPACE"] = form.istio_system_namespace.data
         else:
-            data["ISTIO_SYSTEM_NAMESPACE"] = ""
+            data["CN_ISTIO_SYSTEM_NAMESPACE"] = ""
 
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
@@ -470,56 +470,56 @@ def environment():
     """
     form = EnvironmentForm()
     # TODO: find a way to apply dynamic validation
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") == "gke":
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "gke":
         form.gmail_account.validators.append(InputRequired())
     else:
         form.gmail_account.validators.append(Optional())
 
     ip_node_data = determine_ip_nodes()
 
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
         form.host_ext_ip.data = ip_node_data['ip']
     else:
         del form.host_ext_ip
 
     if form.validate_on_submit():
         data = {}
-        if not gluu_settings.db.get("TEST_ENVIRONMENT") and \
-                gluu_settings.db.get("DEPLOYMENT_ARCH") not in test_arch:
-            data["TEST_ENVIRONMENT"] = form.test_environment.data
+        if not gluu_settings.db.get("CN_TEST_ENVIRONMENT") and \
+                gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in test_arch:
+            data["CN_TEST_ENVIRONMENT"] = form.test_environment.data
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in cloud_arch or \
-                gluu_settings.db.get("DEPLOYMENT_ARCH") in local_arch:
-            data["NODE_SSH_KEY"] = form.node_ssh_key.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in cloud_arch or \
+                gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in local_arch:
+            data["CN_NODE_SSH_KEY"] = form.node_ssh_key.data
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
-            data["HOST_EXT_IP"] = form.host_ext_ip.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+            data["CN_HOST_EXT_IP"] = form.host_ext_ip.data
         else:
-            data["HOST_EXT_IP"] = ip_node_data["ip"]
+            data["CN_HOST_EXT_IP"] = ip_node_data["ip"]
 
-        data["NODES_NAMES"] = ip_node_data["NODES_NAMES"]
-        data["NODES_ZONES"] = ip_node_data["NODES_ZONES"]
-        data["NODES_IPS"] = ip_node_data["NODES_IPS"]
+        data["CN_NODES_NAMES"] = ip_node_data["CN_NODES_NAMES"]
+        data["CN_NODES_ZONES"] = ip_node_data["CN_NODES_ZONES"]
+        data["CN_NODES_IPS"] = ip_node_data["CN_NODES_IPS"]
 
         # prompt AWS
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") == "eks":
-            data["AWS_LB_TYPE"] = form.aws_lb_type.data
-            data["USE_ARN"] = form.use_arn.data
-            data["ARN_AWS_IAM"] = form.arn_aws_iam.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "eks":
+            data["CN_AWS_LB_TYPE"] = form.aws_lb_type.data
+            data["CN_USE_ARN"] = form.use_arn.data
+            data["CN_ARN_AWS_IAM"] = form.arn_aws_iam.data
 
         # prompt GKE
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") == "gke":
-            data["GMAIL_ACCOUNT"] = form.gmail_account.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "gke":
+            data["CN_GMAIL_ACCOUNT"] = form.gmail_account.data
 
-            if gluu_settings.db.get("APP_VOLUME_TYPE") == 11:
-                for node_name in gluu_settings.db.get("NODES_NAMES"):
-                    for zone in gluu_settings.db.get("NODES_ZONES"):
+            if gluu_settings.db.get("CN_APP_VOLUME_TYPE") == 11:
+                for node_name in gluu_settings.db.get("CN_NODES_NAMES"):
+                    for zone in gluu_settings.db.get("CN_NODES_ZONES"):
                         response, error, retcode = exec_cmd("gcloud compute ssh user@{} --zone={} "
                                                             "--command='echo $HOME'".format(node_name, zone))
-                        data["GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
-                        if data["GOOGLE_NODE_HOME_DIR"]:
+                        data["CN_GOOGLE_NODE_HOME_DIR"] = str(response, "utf-8")
+                        if data["CN_GOOGLE_NODE_HOME_DIR"]:
                             break
-                    if data["GOOGLE_NODE_HOME_DIR"]:
+                    if data["CN_GOOGLE_NODE_HOME_DIR"]:
                         break
 
         gluu_settings.db.update(data)
@@ -532,7 +532,7 @@ def environment():
 
     wizard_steps.current_step = 'environment'
     return render_template("wizard/index.html",
-                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
+                           deployment_arch=gluu_settings.db.get("CN_DEPLOYMENT_ARCH"),
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="environment",
@@ -546,26 +546,26 @@ def persistence_backend():
     """
     form = PersistenceBackendForm()
     if form.validate_on_submit():
-        data = {"PERSISTENCE_BACKEND": form.persistence_backend.data}
+        data = {"CN_PERSISTENCE_BACKEND": form.persistence_backend.data}
 
-        if data["PERSISTENCE_BACKEND"] == "hybrid":
-            data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
+        if data["CN_PERSISTENCE_BACKEND"] == "hybrid":
+            data["CN_HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
-        if data["PERSISTENCE_BACKEND"] == "ldap":
+        if data["CN_PERSISTENCE_BACKEND"] == "ldap":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("ldap")
 
         gluu_settings.db.update(data)
 
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap") or \
-                gluu_settings.db.get("INSTALL_JACKRABBIT") == "Y":
-            if gluu_settings.db.get("DEPLOYMENT_ARCH") == "microk8s":
-                gluu_settings.db.set("APP_VOLUME_TYPE", 1)
-            elif gluu_settings.db.get("DEPLOYMENT_ARCH") == "minikube":
-                gluu_settings.db.set("APP_VOLUME_TYPE", 2)
+        if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "ldap") or \
+                gluu_settings.db.get("CN_INSTALL_JACKRABBIT") == "Y":
+            if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "microk8s":
+                gluu_settings.db.set("CN_APP_VOLUME_TYPE", 1)
+            elif gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "minikube":
+                gluu_settings.db.set("CN_APP_VOLUME_TYPE", 2)
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch and \
-                gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch and \
+                gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "couchbase":
             #skip volumes step
             wizard_steps.current_step = 'couchbase_multicluster'
         return redirect(url_for(wizard_steps.next_step()))
@@ -588,9 +588,9 @@ def volumes():
     """
     form = VolumeForm()
 
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") and \
-            gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
-        volume_type = app_volume_types[gluu_settings.db.get("DEPLOYMENT_ARCH")]
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") and \
+            gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
+        volume_type = app_volume_types[gluu_settings.db.get("CN_DEPLOYMENT_ARCH")]
         form.app_volume_type.label = volume_type["label"]
         form.app_volume_type.choices = volume_type["choices"]
         form.app_volume_type.default = volume_type["default"]
@@ -598,8 +598,8 @@ def volumes():
     else:
         del form.app_volume_type
 
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
-        ldap_volume = volume_types[gluu_settings.db.get("DEPLOYMENT_ARCH")]
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        ldap_volume = volume_types[gluu_settings.db.get("CN_DEPLOYMENT_ARCH")]
         form.ldap_jackrabbit_volume.label = ldap_volume["label"]
         form.ldap_jackrabbit_volume.choices = ldap_volume["choices"]
         form.ldap_jackrabbit_volume.validators = [RequiredIfFieldIn('app_volume_type', [7, 12, 17])]
@@ -607,43 +607,43 @@ def volumes():
         del form.ldap_jackrabbit_volume
 
     # TODO: find a way to apply dynamic validation
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
             form.ldap_static_volume_id.validators = [RequiredIfFieldIn("app_volume_type", [8, 13])]
             form.ldap_static_disk_uri.validators = [RequiredIfFieldIn("app_volume_type", [18])]
         form.ldap_storage_size.validators = [InputRequired()]
     else:
         form.ldap_storage_size.validators = [Optional()]
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke"):
             del form.ldap_static_volume_id
             del form.ldap_static_disk_uri
 
     if form.validate_on_submit():
-        data = {"APP_VOLUME_TYPE": gluu_settings.db.get("APP_VOLUME_TYPE")}
+        data = {"CN_APP_VOLUME_TYPE": gluu_settings.db.get("CN_APP_VOLUME_TYPE")}
         if form.app_volume_type:
-            data["APP_VOLUME_TYPE"] = form.app_volume_type.data
+            data["CN_APP_VOLUME_TYPE"] = form.app_volume_type.data
 
-        if data["APP_VOLUME_TYPE"] in (8, 13):
-            data["LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
+        if data["CN_APP_VOLUME_TYPE"] in (8, 13):
+            data["CN_LDAP_STATIC_VOLUME_ID"] = form.ldap_static_volume_id.data
         else:
-            data["LDAP_STATIC_VOLUME_ID"] = ""
+            data["CN_LDAP_STATIC_VOLUME_ID"] = ""
 
-        if data["APP_VOLUME_TYPE"] == 18:
-            data["LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
+        if data["CN_APP_VOLUME_TYPE"] == 18:
+            data["CN_LDAP_STATIC_DISK_URI"] = form.ldap_static_disk_uri.data
         else:
-            data["LDAP_STATIC_DISK_URI"] = ""
+            data["CN_LDAP_STATIC_DISK_URI"] = ""
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
-                form.ldap_jackrabbit_volume.data and data["APP_VOLUME_TYPE"] in [7, 12, 17]:
-            data["LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+                form.ldap_jackrabbit_volume.data and data["CN_APP_VOLUME_TYPE"] in [7, 12, 17]:
+            data["CN_LDAP_JACKRABBIT_VOLUME"] = form.ldap_jackrabbit_volume.data
         else:
-            data["LDAP_JACKRABBIT_VOLUME"] = ""
+            data["CN_LDAP_JACKRABBIT_VOLUME"] = ""
 
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+        if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             data["LDAP_STORAGE_SIZE"] = form.ldap_storage_size.data
 
         gluu_settings.db.update(data)
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
+        if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "ldap":
             # skip couchbase and jump to cache step
             wizard_steps.current_step = 'couchbase_calculator'
 
@@ -653,8 +653,8 @@ def volumes():
         form = populate_form_data(form)
     wizard_steps.current_step = 'volumes'
     return render_template("wizard/index.html",
-                           deployment_arch=gluu_settings.db.get('DEPLOYMENT_ARCH'),
-                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           deployment_arch=gluu_settings.db.get('CN_DEPLOYMENT_ARCH'),
+                           persistence_backend=gluu_settings.db.get("CN_PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="app_volume_type",
@@ -668,7 +668,7 @@ def couchbase_multi_cluster():
     """
     form = CouchbaseMultiClusterForm()
     if form.validate_on_submit():
-        gluu_settings.db.set("DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
+        gluu_settings.db.set("CN_DEPLOY_MULTI_CLUSTER", form.deploy_multi_cluster.data)
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -678,7 +678,7 @@ def couchbase_multi_cluster():
 
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "wizard.persistence_backend"
-    if gluu_settings.db.get("APP_VOLUME_TYPE") not in (1, 2):
+    if gluu_settings.db.get("CN_APP_VOLUME_TYPE") not in (1, 2):
         prev_step = wizard_steps.prev_step()
 
     return render_template("wizard/index.html",
@@ -700,20 +700,20 @@ def couchbase():
     custom_cb_key = Path("./couchbase_crts_keys/pkey.key")
 
     if form.validate_on_submit():
-        data = {"INSTALL_COUCHBASE": form.install_couchbase.data}
-        if data["INSTALL_COUCHBASE"] == "N":
+        data = {"CN_INSTALL_COUCHBASE": form.install_couchbase.data}
+        if data["CN_INSTALL_COUCHBASE"] == "N":
             filename = secure_filename(form.couchbase_crt.data.filename)
             form.couchbase_crt.data.save('./' + filename)
             with open(Path('./' + filename)) as content_file:
                 ca_crt = content_file.read()
                 encoded_ca_crt_bytes = base64.b64encode(ca_crt.encode("utf-8"))
                 encoded_ca_crt_string = str(encoded_ca_crt_bytes, "utf-8")
-                data["COUCHBASE_CRT"] = encoded_ca_crt_string
+                data["CN_COUCHBASE_CRT"] = encoded_ca_crt_string
         else:
-            data["COUCHBASE_CRT"] = ""
+            data["CN_COUCHBASE_CRT"] = ""
 
-        data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] = form.couchbase_cluster_file_override.data
-        if data["COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
+        data["CN_COUCHBASE_CLUSTER_FILE_OVERRIDE"] = form.couchbase_cluster_file_override.data
+        if data["CN_COUCHBASE_CLUSTER_FILE_OVERRIDE"] == "Y":
 
             for file in form.couchbase_cluster_files.data:
                 filename = secure_filename(file.filename)
@@ -731,49 +731,49 @@ def couchbase():
                                          "there is a missing couchbase file that "
                                          "could not be found at the current path.")
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
-            data["COUCHBASE_USE_LOW_RESOURCES"] = "Y"
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+            data["CN_COUCHBASE_USE_LOW_RESOURCES"] = "Y"
         else:
-            data["COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
+            data["CN_COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
 
-        data["COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
-        data["COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
-        data["COUCHBASE_URL"] = form.couchbase_url.data
-        data["COUCHBASE_BUCKET_PREFIX"] = form.couchbase_bucket_prefix.data
-        data["COUCHBASE_INDEX_NUM_REPLICA"] = form.couchbase_index_num_replica.data
-        data["COUCHBASE_SUPERUSER"] = form.couchbase_superuser.data
-        data["COUCHBASE_SUPERUSER_PASSWORD"] = form.couchbase_superuser_password.data
-        data["COUCHBASE_USER"] = form.couchbase_user.data
-        data["COUCHBASE_PASSWORD"] = form.couchbase_password.data
+        data["CN_COUCHBASE_NAMESPACE"] = form.couchbase_namespace.data
+        data["CN_COUCHBASE_CLUSTER_NAME"] = form.couchbase_cluster_name.data
+        data["CN_COUCHBASE_URL"] = form.couchbase_url.data
+        data["CN_COUCHBASE_BUCKET_PREFIX"] = form.couchbase_bucket_prefix.data
+        data["CN_COUCHBASE_INDEX_NUM_REPLICA"] = form.couchbase_index_num_replica.data
+        data["CN_COUCHBASE_SUPERUSER"] = form.couchbase_superuser.data
+        data["CN_COUCHBASE_SUPERUSER_PASSWORD"] = form.couchbase_superuser_password.data
+        data["CN_COUCHBASE_USER"] = form.couchbase_user.data
+        data["CN_COUCHBASE_PASSWORD"] = form.couchbase_password.data
 
         if not custom_cb_ca_crt.exists() or \
                 not custom_cb_crt.exists() and not custom_cb_key.exists():
-            data['COUCHBASE_SUBJECT_ALT_NAME'] = [
-                "*.{}".format(data["COUCHBASE_CLUSTER_NAME"]),
-                "*.{}.{}".format(data["COUCHBASE_CLUSTER_NAME"],
-                                 data["COUCHBASE_NAMESPACE"]),
-                "*.{}.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
-                                     data["COUCHBASE_NAMESPACE"]),
-                "{}-srv".format(data["COUCHBASE_CLUSTER_NAME"]),
-                "{}-srv.{}".format(data["COUCHBASE_CLUSTER_NAME"],
-                                   data["COUCHBASE_NAMESPACE"]),
-                "{}-srv.{}.svc".format(data["COUCHBASE_CLUSTER_NAME"],
-                                       data["COUCHBASE_NAMESPACE"]),
+            data['CN_COUCHBASE_SUBJECT_ALT_NAME'] = [
+                "*.{}".format(data["CN_COUCHBASE_CLUSTER_NAME"]),
+                "*.{}.{}".format(data["CN_COUCHBASE_CLUSTER_NAME"],
+                                 data["CN_COUCHBASE_NAMESPACE"]),
+                "*.{}.{}.svc".format(data["CN_COUCHBASE_CLUSTER_NAME"],
+                                     data["CN_COUCHBASE_NAMESPACE"]),
+                "{}-srv".format(data["CN_COUCHBASE_CLUSTER_NAME"]),
+                "{}-srv.{}".format(data["CN_COUCHBASE_CLUSTER_NAME"],
+                                   data["CN_COUCHBASE_NAMESPACE"]),
+                "{}-srv.{}.svc".format(data["CN_COUCHBASE_CLUSTER_NAME"],
+                                       data["CN_COUCHBASE_NAMESPACE"]),
                 "localhost"
             ]
-            data["COUCHBASE_CN"] = form.couchbase_cn.data
+            data["CN_COUCHBASE_CN"] = form.couchbase_cn.data
 
         gluu_settings.db.update(data)
 
         # download couchbase
-        if gluu_settings.db.get("INSTALL_COUCHBASE") == "Y" and \
+        if gluu_settings.db.get("CN_INSTALL_COUCHBASE") == "Y" and \
                 not is_couchbase_pkg_exist():
             download_couchbase_pkg(form.package_url.data)
 
         # redirect to couchbase_calculator
-        if gluu_settings.db.get("COUCHBASE_USE_LOW_RESOURCES") == "N" and \
-                gluu_settings.db.get("COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
-                gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
+        if gluu_settings.db.get("CN_COUCHBASE_USE_LOW_RESOURCES") == "N" and \
+                gluu_settings.db.get("CN_COUCHBASE_CLUSTER_FILE_OVERRIDE") == "N" and \
+                gluu_settings.db.get("CN_INSTALL_COUCHBASE") == "Y":
             return redirect(url_for(wizard_steps.next_step()))
 
         #skip couchbase calculator
@@ -783,19 +783,19 @@ def couchbase():
     if request.method == "GET":
         form = populate_form_data(form)
 
-        if not gluu_settings.db.get("COUCHBASE_PASSWORD"):
+        if not gluu_settings.db.get("CN_COUCHBASE_PASSWORD"):
             form.couchbase_password.data = \
                 form.couchbase_password_confirmation.data = generate_password()
         else:
-            form.couchbase_password_confirmation.data = gluu_settings.db.get("COUCHBASE_PASSWORD")
+            form.couchbase_password_confirmation.data = gluu_settings.db.get("CN_COUCHBASE_PASSWORD")
 
-        if not gluu_settings.db.get("COUCHBASE_SUPERUSER_PASSWORD"):
+        if not gluu_settings.db.get("CN_COUCHBASE_SUPERUSER_PASSWORD"):
             form.couchbase_superuser_password.data = \
                 form.couchbase_superuser_password_confirmation.data = generate_password()
         else:
-            form.couchbase_superuser_password_confirmation.data = gluu_settings.db.get("COUCHBASE_SUPERUSER_PASSWORD")
+            form.couchbase_superuser_password_confirmation.data = gluu_settings.db.get("CN_COUCHBASE_SUPERUSER_PASSWORD")
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
             form.couchbase_use_low_resources.validators = [Optional()]
             form.couchbase_use_low_resources.data = "Y"
         else:
@@ -826,9 +826,9 @@ def couchbase_calculator():
 
     # override couchbase_volume_type with
     # dynamic value of volume_type based on deployment arch value
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
-            not gluu_settings.db.get("COUCHBASE_VOLUME_TYPE"):
-        volume_type = volume_types[gluu_settings.db.get("DEPLOYMENT_ARCH")]
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+            not gluu_settings.db.get("CN_COUCHBASE_VOLUME_TYPE"):
+        volume_type = volume_types[gluu_settings.db.get("CN_DEPLOYMENT_ARCH")]
         form.couchbase_volume_type.choices = volume_type["choices"]
         form.couchbase_volume_type.validators = [DataRequired()]
 
@@ -860,27 +860,27 @@ def cache_type():
         data = {"CN_CACHE_TYPE": form.gluu_cache_type.data}
 
         if data["CN_CACHE_TYPE"] == "REDIS":
-            data["REDIS_TYPE"] = form.redis.redis_type.data
-            data["INSTALL_REDIS"] = form.redis.install_redis.data
+            data["CN_REDIS_TYPE"] = form.redis.redis_type.data
+            data["CN_INSTALL_REDIS"] = form.redis.install_redis.data
 
-            if data["INSTALL_REDIS"] == "Y":
-                data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
-                data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
-                data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
-                data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
-                    data["REDIS_NAMESPACE"])
-                data["REDIS_PW"] = ""
+            if data["CN_INSTALL_REDIS"] == "Y":
+                data["CN_REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
+                data["CN_REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
+                data["CN_REDIS_NAMESPACE"] = form.redis.redis_namespace.data
+                data["CN_REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
+                    data["CN_REDIS_NAMESPACE"])
+                data["CN_REDIS_PW"] = ""
             else:
-                data["REDIS_MASTER_NODES"] = ""
-                data["REDIS_NODES_PER_MASTER"] = ""
-                data["REDIS_NAMESPACE"] = ""
-                data["REDIS_URL"] = form.redis.redis_url.data
-                data["REDIS_PW"] = form.redis.redis_pw.data
+                data["CN_REDIS_MASTER_NODES"] = ""
+                data["CN_REDIS_NODES_PER_MASTER"] = ""
+                data["CN_REDIS_NAMESPACE"] = ""
+                data["CN_REDIS_URL"] = form.redis.redis_url.data
+                data["CN_REDIS_PW"] = form.redis.redis_pw.data
 
         gluu_settings.db.update(data)
 
         # skip backup form if deployment_arch is microk8s or minikube
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
             wizard_steps.current_step = 'backup'
 
         return redirect(url_for(wizard_steps.next_step()))
@@ -888,14 +888,14 @@ def cache_type():
     if request.method == "GET":
         form = populate_form_data(form)
         form.redis = populate_form_data(form.redis)
-        form.redis.redis_pw_confirm.data = gluu_settings.db.get("REDIS_PW")
+        form.redis.redis_pw_confirm.data = gluu_settings.db.get("CN_REDIS_PW")
 
     wizard_steps.current_step = 'cache'
 
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = wizard_steps.prev_step()
-    if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get('CN_PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
             prev_step = "wizard.couchbase"
         else:
             prev_step = "wizard.couchbase_multi_cluster"
@@ -909,23 +909,23 @@ def cache_type():
 
 @wizard_blueprint.route("/backup", methods=["GET", "POST"])
 def backup():
-    if not gluu_settings.db.get("PERSISTENCE_BACKEND"):
+    if not gluu_settings.db.get("CN_PERSISTENCE_BACKEND"):
         return redirect(url_for('wizard.setting'))
 
     form = CouchbaseBackupForm()
 
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "ldap":
         form = LdapBackupForm()
 
     if form.validate_on_submit():
         data = {}
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            data["COUCHBASE_INCR_BACKUP_SCHEDULE"] = form.couchbase_incr_backup_schedule.data
-            data["COUCHBASE_FULL_BACKUP_SCHEDULE"] = form.couchbase_full_backup_schedule.data
-            data["COUCHBASE_BACKUP_RETENTION_TIME"] = form.couchbase_backup_retention_time.data
-            data["COUCHBASE_BACKUP_STORAGE_SIZE"] = form.couchbase_backup_storage_size.data
-        elif gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
-            data["LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
+        if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
+            data["CN_COUCHBASE_INCR_BACKUP_SCHEDULE"] = form.couchbase_incr_backup_schedule.data
+            data["CN_COUCHBASE_FULL_BACKUP_SCHEDULE"] = form.couchbase_full_backup_schedule.data
+            data["CN_COUCHBASE_BACKUP_RETENTION_TIME"] = form.couchbase_backup_retention_time.data
+            data["CN_COUCHBASE_BACKUP_STORAGE_SIZE"] = form.couchbase_backup_storage_size.data
+        elif gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "ldap":
+            data["CN_LDAP_BACKUP_SCHEDULE"] = form.ldap_backup_schedule.data
 
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
@@ -935,7 +935,7 @@ def backup():
 
     wizard_steps.current_step = 'backup'
     return render_template("wizard/index.html",
-                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           persistence_backend=gluu_settings.db.get("CN_PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="backup",
@@ -947,7 +947,7 @@ def configuration():
     form = ConfigurationForm()
 
     # override ldap_pw validators
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
         form.ldap_pw.validators = [InputRequired(), password_requirement_check()]
     else:
         form.ldap_pw.validators = [Optional()]
@@ -955,24 +955,24 @@ def configuration():
 
     if form.validate_on_submit():
         data = {"CN_FQDN": form.gluu_fqdn.data,
-                "COUNTRY_CODE": form.country_code.data,
-                "STATE": form.state.data,
-                "CITY": form.city.data,
-                "EMAIL": form.email.data,
-                "ORG_NAME": form.org_name.data,
-                "ADMIN_PW": form.admin_pw.data}
+                "CN_COUNTRY_CODE": form.country_code.data,
+                "CN_STATE": form.state.data,
+                "CN_CITY": form.city.data,
+                "CN_EMAIL": form.email.data,
+                "CN_ORG_NAME": form.org_name.data,
+                "CN_ADMIN_PASSWORD": form.admin_pw.data}
 
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-            data["LDAP_PW"] = form.ldap_pw.data
+        if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
+            data["CN_LDAP_PASSWORD"] = form.ldap_pw.data
         else:
-            data["LDAP_PW"] = gluu_settings.db.get("COUCHBASE_PASSWORD")
+            data["CN_LDAP_PASSWORD"] = gluu_settings.db.get("CN_COUCHBASE_PASSWORD")
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
-            data["IS_CN_FQDN_REGISTERED"] = "N"
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+            data["CN_IS_CN_FQDN_REGISTERED"] = "N"
         else:
-            data["IS_CN_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
+            data["CN_IS_CN_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
 
-        if data["IS_CN_FQDN_REGISTERED"] == "N":
+        if data["CN_IS_CN_FQDN_REGISTERED"] == "N":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("update-lb-ip")
         gluu_settings.db.update(data)
@@ -981,17 +981,17 @@ def configuration():
 
     if request.method == "GET":
         form = populate_form_data(form)
-        if not gluu_settings.db.get("ADMIN_PW"):
+        if not gluu_settings.db.get("CN_ADMIN_PASSWORD"):
             form.admin_pw.data = form.admin_pw_confirm.data = generate_password()
         else:
-            form.admin_pw_confirm.data = gluu_settings.db.get("ADMIN_PW")
+            form.admin_pw_confirm.data = gluu_settings.db.get("CN_ADMIN_PASSWORD")
 
-        if not gluu_settings.db.get("LDAP_PW"):
+        if not gluu_settings.db.get("CN_LDAP_PASSWORD"):
             form.ldap_pw.data = form.ldap_pw_confirm.data = generate_password()
         else:
-            form.ldap_pw_confirm.data = gluu_settings.db.get("LDAP_PW")
+            form.ldap_pw_confirm.data = gluu_settings.db.get("CN_LDAP_PASSWORD")
 
-        if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
             form.is_gluu_fqdn_registered.validators = [Optional()]
             form.is_gluu_fqdn_registered.data = "N"
         else:
@@ -1000,12 +1000,12 @@ def configuration():
     wizard_steps.current_step = 'configuration'
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = wizard_steps.prev_step()
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
         prev_step = "wizard.cache_type"
 
     return render_template("wizard/index.html",
-                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
-                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           deployment_arch=gluu_settings.db.get("CN_DEPLOYMENT_ARCH"),
+                           persistence_backend=gluu_settings.db.get("CN_PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="config",
@@ -1037,7 +1037,7 @@ def images():
             form.cert_manager_image_tag.id,
         ]
 
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
         collapsed_ids += [
             form.ldap_image_name.id,
             form.ldap_image_tag.id,
@@ -1067,7 +1067,7 @@ def images():
             form.radius_image_tag.id,
         ]
 
-    if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
+    if gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") == "N":
         collapsed_ids += [
             form.gluu_gateway_image_name.id,
             form.gluu_gateway_image_tag.id,
@@ -1129,7 +1129,7 @@ def replicas():
         del form.fido2_replicas
     if gluu_settings.db.get("ENABLE_SCIM") == "N":
         del form.scim_replicas
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") not in ("hybrid", "ldap"):
         del form.ldap_replicas
     if gluu_settings.db.get("ENABLE_OXSHIBBOLETH") == "N":
         del form.oxshibboleth_replicas
@@ -1168,19 +1168,19 @@ def helm_config():
     form = HelmForm()
     if form.validate_on_submit():
         data = {"CN_HELM_RELEASE_NAME": form.gluu_helm_release_name.data,
-                "NGINX_INGRESS_RELEASE_NAME": form.nginx_ingress_release_name.data,
-                "NGINX_INGRESS_NAMESPACE": form.nginx_ingress_namespace.data}
+                "CN_NGINX_INGRESS_RELEASE_NAME": form.nginx_ingress_release_name.data,
+                "CN_NGINX_INGRESS_NAMESPACE": form.nginx_ingress_namespace.data}
 
-        if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
-            data["KONG_HELM_RELEASE_NAME"] = form.kong_helm_release_name.data
-            data["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = form.gluu_gateway_ui_helm_release_name.data
+        if gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") == "Y":
+            data["CN_KONG_HELM_RELEASE_NAME"] = form.kong_helm_release_name.data
+            data["CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = form.gluu_gateway_ui_helm_release_name.data
 
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-    install_gluu_gateway = gluu_settings.db.get("INSTALL_GLUU_GATEWAY")
+    install_gluu_gateway = gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY")
     wizard_steps.current_step = 'helm_config'
     return render_template("wizard/index.html",
                            form=form,
@@ -1230,11 +1230,11 @@ def setting_summary():
     Formats output of settings from prompts to the user.
     Passwords are not displayed.
     """
-    hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
-                       "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
-                       "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD",
-                       "GLUU_GATEWAY_UI_PG_PASSWORD", "JACKRABBIT_ADMIN_PASSWORD",
-                       "JACKRABBIT_PG_PASSWORD"]
+    hidden_settings = ["CN_NODES_IPS", "CN_NODES_ZONES", "CN_NODES_NAMES",
+                       "CN_COUCHBASE_PASSWORD", "CN_LDAP_PASSWORD", "CN_ADMIN_PASSWORD", "CN_REDIS_PW",
+                       "CN_COUCHBASE_SUBJECT_ALT_NAME", "CN_KONG_PG_PASSWORD",
+                       "CN_GLUU_GATEWAY_UI_PG_PASSWORD", "CN_JACKRABBIT_ADMIN_PASSWORD",
+                       "CN_JACKRABBIT_PG_PASSWORD"]
 
     return render_template("wizard/setting_summary.html",
                            hidden_settings=hidden_settings,
@@ -1279,16 +1279,16 @@ def generate_main_config():
     Prepare generate.json and output it
     """
     config_settings["hostname"] = gluu_settings.db.get("CN_FQDN")
-    config_settings["country_code"] = gluu_settings.db.get("COUNTRY_CODE")
-    config_settings["state"] = gluu_settings.db.get("STATE")
-    config_settings["city"] = gluu_settings.db.get("CITY")
-    config_settings["admin_pw"] = gluu_settings.db.get("ADMIN_PW")
-    config_settings["ldap_pw"] = gluu_settings.db.get("LDAP_PW")
-    config_settings["redis_pw"] = gluu_settings.db.get("REDIS_PW")
-    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
-        config_settings["ldap_pw"] = gluu_settings.db.get("COUCHBASE_PASSWORD")
-    config_settings["email"] = gluu_settings.db.get("EMAIL")
-    config_settings["org_name"] = gluu_settings.db.get("ORG_NAME")
+    config_settings["country_code"] = gluu_settings.db.get("CN_COUNTRY_CODE")
+    config_settings["state"] = gluu_settings.db.get("CN_STATE")
+    config_settings["city"] = gluu_settings.db.get("CN_CITY")
+    config_settings["admin_pw"] = gluu_settings.db.get("CN_ADMIN_PASSWORD")
+    config_settings["ldap_pw"] = gluu_settings.db.get("CN_LDAP_PASSWORD")
+    config_settings["redis_pw"] = gluu_settings.db.get("CN_REDIS_PW")
+    if gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "couchbase":
+        config_settings["ldap_pw"] = gluu_settings.db.get("CN_COUCHBASE_PASSWORD")
+    config_settings["email"] = gluu_settings.db.get("CN_EMAIL")
+    config_settings["org_name"] = gluu_settings.db.get("CN_ORG_NAME")
 
     with open(Path('./config/base/generate.json'), 'w+') as file:
         current_app.logger.warning("Main configuration settings has been "

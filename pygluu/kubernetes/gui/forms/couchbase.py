@@ -43,7 +43,7 @@ class CouchbaseForm(FlaskForm):
         couchbase_cn (string|optional|default: Couchbase CA)
 
     Note:
-        COUCHBASE_CN will be required when couchbase certs inside couchbase_crts-keys folder not exist
+        CN_COUCHBASE_CN will be required when couchbase certs inside couchbase_crts-keys folder not exist
     """
     install_couchbase = RadioField(
         "Install Couchbase", choices=[("Y", "Yes"), ("N", "No")],

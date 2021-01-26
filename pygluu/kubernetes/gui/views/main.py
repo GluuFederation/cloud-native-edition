@@ -330,30 +330,30 @@ def upload_file():
 def validating_gg_settings():
     status = True
     keys = [
-        "INSTALL_GLUU_GATEWAY",
+        "CN_INSTALL_GLUU_GATEWAY",
         "ENABLED_SERVICES_LIST",
         "ENABLE_CLIENT_API",
-        "POSTGRES_NAMESPACE",
-        "POSTGRES_REPLICAS",
-        "POSTGRES_URL",
-        "KONG_NAMESPACE",
-        "GLUU_GATEWAY_UI_NAMESPACE",
-        "KONG_PG_USER",
-        "KONG_PG_PASSWORD",
-        "GLUU_GATEWAY_UI_PG_USER",
-        "GLUU_GATEWAY_UI_PG_PASSWORD",
-        "KONG_DATABASE",
-        "GLUU_GATEWAY_UI_DATABASE"
+        "CN_POSTGRES_NAMESPACE",
+        "CN_POSTGRES_REPLICAS",
+        "CN_POSTGRES_URL",
+        "CN_KONG_NAMESPACE",
+        "CN_GLUU_GATEWAY_UI_NAMESPACE",
+        "CN_KONG_PG_USER",
+        "CN_KONG_PG_PASSWORD",
+        "CN_GLUU_GATEWAY_UI_PG_USER",
+        "CN_GLUU_GATEWAY_UI_PG_PASSWORD",
+        "CN_KONG_DATABASE",
+        "CN_GLUU_GATEWAY_UI_DATABASE"
     ]
 
     for key in keys:
-        if key == "INSTALL_GLUU_GATEWAY":
-            if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY") or \
-                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
+        if key == "CN_INSTALL_GLUU_GATEWAY":
+            if not gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") or \
+                    gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") == "N":
                 status = False
                 break
 
-        if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
+        if gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") == "Y":
             if key == "ENABLED_SERVICES_LIST":
                 enable_services = gluu_settings.db.get("ENABLED_SERVICES_LIST")
                 if "gluu-gateway-ui" not in enable_services:
@@ -375,13 +375,13 @@ def get_wizard_step():
     Define wizard step based on settings value
     :return:
     """
-    if not gluu_settings.db.get("ACCEPT_CN_LICENSE"):
+    if not gluu_settings.db.get("CN_ACCEPT_LICENSE"):
         return url_for("wizard.agreement")
 
     if not gluu_settings.db.get("CN_VERSION"):
         return url_for("wizard.gluu_version")
 
-    if not gluu_settings.db.get("DEPLOYMENT_ARCH"):
+    if not gluu_settings.db.get("CN_DEPLOYMENT_ARCH"):
         return url_for("wizard.deployment_arch")
 
     if not gluu_settings.db.get("CN_NAMESPACE"):
@@ -390,42 +390,42 @@ def get_wizard_step():
     if not gluu_settings.db.get("ENABLE_CACHE_REFRESH"):
         return url_for("wizard.optional_services")
 
-    if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY"):
+    if not gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY"):
         return url_for("wizard.gluu_gateway")
 
-    if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" and \
-            gluu_settings.db.get("KONG_PG_PASSWORD"):
+    if gluu_settings.db.get("CN_INSTALL_GLUU_GATEWAY") == "Y" and \
+            gluu_settings.db.get("CN_KONG_PG_PASSWORD"):
         return url_for("wizard.gluu_gateway")
 
-    if not gluu_settings.db.get("INSTALL_JACKRABBIT"):
+    if not gluu_settings.db.get("CN_INSTALL_JACKRABBIT"):
         return url_for("wizard.install_jackrabbit")
 
-    if not gluu_settings.db.get("USE_ISTIO"):
+    if not gluu_settings.db.get("CN_USE_ISTIO"):
         return url_for("wizard.install_istio")
 
-    if not gluu_settings.db.get("HOST_EXT_IP"):
+    if not gluu_settings.db.get("CN_HOST_EXT_IP"):
         return url_for("wizard.environment")
 
-    if not gluu_settings.db.get("PERSISTENCE_BACKEND"):
+    if not gluu_settings.db.get("CN_PERSISTENCE_BACKEND"):
         return url_for("wizard.persistence_backend")
 
-    if not gluu_settings.db.get("APP_VOLUME_TYPE"):
+    if not gluu_settings.db.get("CN_APP_VOLUME_TYPE"):
         return url_for("wizard.volumes")
 
-    if not gluu_settings.db.get("INSTALL_COUCHBASE") and \
-            gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
+    if not gluu_settings.db.get("CN_INSTALL_COUCHBASE") and \
+            gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "couchbase":
         return url_for("wizard.couchbase")
 
     if not gluu_settings.db.get("CN_CACHE_TYPE"):
         return url_for("wizard.cache_type")
 
-    if gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
-            gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase") and \
-            not gluu_settings.db.get("COUCHBASE_INCR_BACKUP_SCHEDULE"):
+    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
+            gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "couchbase") and \
+            not gluu_settings.db.get("CN_COUCHBASE_INCR_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
-    elif gluu_settings.db.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
-            gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap" and \
-            not gluu_settings.db.get("LDAP_BACKUP_SCHEDULE"):
+    elif gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
+            gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "ldap" and \
+            not gluu_settings.db.get("CN_LDAP_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
 
     if not gluu_settings.db.get("CN_FQDN"):

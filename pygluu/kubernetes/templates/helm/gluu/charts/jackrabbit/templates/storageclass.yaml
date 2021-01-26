@@ -25,7 +25,7 @@ parameters:
 {{- else }}
 parameters:
   {{- if eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs" }}
-  type: gp2
+  type: {{ .Values.global.awsStorageType }}
   fsType: ext4
   {{- else if eq .Values.global.storageClass.provisioner "kubernetes.io/gce-pd" }}
   type: {{ .Values.global.gcePdStorageType }}

@@ -3,7 +3,7 @@ Settings
 
 .. module:: pygluu.kubernetes.settings
 
-.. autofunction:: unlink_settings_json
+.. autofunction:: unlink_values_yaml
 
 .. autoclass:: SettingsHandler
    :members:

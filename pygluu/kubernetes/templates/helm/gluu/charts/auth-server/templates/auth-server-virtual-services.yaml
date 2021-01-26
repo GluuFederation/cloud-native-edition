@@ -8,7 +8,7 @@ metadata:
   namespace: {{.Release.Namespace}}
 spec:
   hosts:
-  - {{ .Values.global.domain }}
+  - {{ .Values.global.fqdn }}
   gateways:
   - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
   http:

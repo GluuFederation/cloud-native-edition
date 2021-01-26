@@ -16,7 +16,7 @@ def test_arch(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given)
 
-    settings.set("DEPLOYMENT_ARCH", "")
+    settings.set("CN_DEPLOYMENT_ARCH", "")
     prompt = PromptArch(settings)
     prompt.prompt_arch()
-    assert settings.get("DEPLOYMENT_ARCH") == expected
+    assert settings.get("CN_DEPLOYMENT_ARCH") == expected

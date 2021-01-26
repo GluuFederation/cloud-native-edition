@@ -10,9 +10,9 @@ def test_backup_ldap(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("PERSISTENCE_BACKEND", "ldap")
+    settings.set("CN_PERSISTENCE_BACKEND", "ldap")
     PromptBackup(settings).prompt_backup()
-    assert settings.get("LDAP_BACKUP_SCHEDULE") == expected
+    assert settings.get("CN_LDAP_BACKUP_SCHEDULE") == expected
 
 
 @pytest.mark.parametrize("given, expected, type_", [
@@ -26,13 +26,13 @@ def test_backup_not_ldap_incr(monkeypatch, settings, given, expected, type_):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("PERSISTENCE_BACKEND", type_)
-    settings.set("COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
-    settings.set("COUCHBASE_BACKUP_RETENTION_TIME", "168h")
-    settings.set("COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
+    settings.set("CN_PERSISTENCE_BACKEND", type_)
+    settings.set("CN_COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
+    settings.set("CN_COUCHBASE_BACKUP_RETENTION_TIME", "168h")
+    settings.set("CN_COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
 
     PromptBackup(settings).prompt_backup()
-    assert settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE") == expected
+    assert settings.get("CN_COUCHBASE_INCR_BACKUP_SCHEDULE") == expected
 
 
 @pytest.mark.parametrize("given, expected, type_", [
@@ -46,13 +46,13 @@ def test_backup_not_ldap_full(monkeypatch, settings, given, expected, type_):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("PERSISTENCE_BACKEND", type_)
+    settings.set("CN_PERSISTENCE_BACKEND", type_)
     settings.set("COUCHBASE_INC_BACKUP_SCHEDULE", "*/30 * * * *")
-    settings.set("COUCHBASE_BACKUP_RETENTION_TIME", "168h")
-    settings.set("COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
+    settings.set("CN_COUCHBASE_BACKUP_RETENTION_TIME", "168h")
+    settings.set("CN_COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
 
     PromptBackup(settings).prompt_backup()
-    assert settings.get("COUCHBASE_FULL_BACKUP_SCHEDULE") == expected
+    assert settings.get("CN_COUCHBASE_FULL_BACKUP_SCHEDULE") == expected
 
 
 @pytest.mark.parametrize("given, expected, type_", [
@@ -66,13 +66,13 @@ def test_backup_not_ldap_retention(monkeypatch, settings, given, expected, type_
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("PERSISTENCE_BACKEND", type_)
+    settings.set("CN_PERSISTENCE_BACKEND", type_)
     settings.set("COUCHBASE_INC_BACKUP_SCHEDULE", "*/30 * * * *")
-    settings.set("COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
-    settings.set("COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
+    settings.set("CN_COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
+    settings.set("CN_COUCHBASE_BACKUP_STORAGE_SIZE", "20Gi")
 
     PromptBackup(settings).prompt_backup()
-    assert settings.get("COUCHBASE_BACKUP_RETENTION_TIME") == expected
+    assert settings.get("CN_COUCHBASE_BACKUP_RETENTION_TIME") == expected
 
 
 @pytest.mark.parametrize("given, expected, type_", [
@@ -86,10 +86,10 @@ def test_backup_not_ldap_storage(monkeypatch, settings, given, expected, type_):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("PERSISTENCE_BACKEND", type_)
+    settings.set("CN_PERSISTENCE_BACKEND", type_)
     settings.set("COUCHBASE_INC_BACKUP_SCHEDULE", "*/30 * * * *")
-    settings.set("COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
-    settings.set("COUCHBASE_BACKUP_RETENTION_TIME", "168h")
+    settings.set("CN_COUCHBASE_FULL_BACKUP_SCHEDULE", "0 2 * * 6")
+    settings.set("CN_COUCHBASE_BACKUP_RETENTION_TIME", "168h")
 
     PromptBackup(settings).prompt_backup()
-    assert settings.get("COUCHBASE_BACKUP_STORAGE_SIZE") == expected
+    assert settings.get("CN_COUCHBASE_BACKUP_STORAGE_SIZE") == expected
