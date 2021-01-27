@@ -67,6 +67,7 @@ setup(
         "email_validator >= 1.1.0",
         "Flask-SocketIO >= 4.3.1",
         "Pygtail >= 0.11.1",
+        "PyYAML >= 5.4.1",
         "gunicorn >= 20.0.4",
         "gevent >= 20.9.0"
     ],
