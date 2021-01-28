@@ -53,9 +53,11 @@ spec:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
+          {{- if not .Values.global.istio.enabled }}
           - name: cb-crt 
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
+          {{- end }}
         {{- end }}
         livenessProbe:
           exec:
@@ -92,10 +94,12 @@ spec:
         {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
-            secretName: {{ .Release.Name }}-cb-pass 
+            secretName: {{ .Release.Name }}-cb-pass
+        {{- if not .Values.global.istio.enabled }}
         - name: cb-crt 
           secret:
-            secretName: {{ .Release.Name }}-cb-crt          
+            secretName: {{ .Release.Name }}-cb-crt
+        {{- end }}
         {{- end }}
       {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:

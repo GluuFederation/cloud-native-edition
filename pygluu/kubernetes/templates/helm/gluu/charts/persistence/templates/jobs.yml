@@ -40,9 +40,11 @@ spec:
           - name: cb-super-pass
             mountPath: "/etc/gluu/conf/couchbase_superuser_password"
             subPath: couchbase_superuser_password
+          {{- if not .Values.global.istio.enabled }}
           - name: cb-crt 
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
+          {{- end }}
         {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
@@ -54,7 +56,9 @@ spec:
         - name: cb-super-pass
           secret:
             secretName: {{ .Release.Name }}-superuser-cb-pass
+        {{- if not .Values.global.istio.enabled }}
         - name: cb-crt 
           secret:
             secretName: {{ .Release.Name }}-cb-crt
+        {{- end }}
       {{- end }}

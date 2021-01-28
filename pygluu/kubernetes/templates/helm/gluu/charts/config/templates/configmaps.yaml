@@ -85,6 +85,9 @@ data:
   GLUU_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.gluuRedisSslTruststore | quote }}
   GLUU_REDIS_SENTINEL_GROUP: {{ .Values.configmap.gluuRedisSentinelGroup | quote }}
   {{- end }}
+  {{- if .Values.global.istio.enabled }}
+  GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  {{- end }}
 
 ---
 

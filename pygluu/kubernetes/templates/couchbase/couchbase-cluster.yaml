@@ -23,7 +23,6 @@ spec:
   exposedFeatures:
     - xdcr
     - client
-  exposedFeatureServiceType: NodePort
   cluster:
     autoCompaction:
       databaseFragmentationThreshold:
@@ -43,7 +42,6 @@ spec:
     searchServiceMemoryQuota: 1024Mi
     eventingServiceMemoryQuota: 1024Mi
     analyticsServiceMemoryQuota: 1024Mi
-    indexStorageSetting: memory_optimized
     autoFailoverTimeout: 10s
     autoFailoverMaxCount: 3
     autoFailoverOnDataDiskIssues: true
