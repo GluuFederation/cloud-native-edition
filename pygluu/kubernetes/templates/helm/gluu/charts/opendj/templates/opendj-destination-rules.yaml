@@ -4,10 +4,10 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: {{ .Release.Name }}-auth-server-mtls
+  name: {{ .Release.Name }}-opendj-mtls
   namespace: {{.Release.Namespace}}
 spec:
-  host: {{ .Values.service.authServerServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
+  host: {{ .Values.service.ldapServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL

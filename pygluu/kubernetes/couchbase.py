@@ -418,7 +418,7 @@ class Couchbase(object):
         """
         Installs Couchbase
         """
-        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.couchbase.namespace"))
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.namespace"))
         if not self.settings.get("installer-settings.couchbase.customFileOverride"):
             try:
                 self.analyze_couchbase_cluster_yaml()
@@ -477,7 +477,10 @@ class Couchbase(object):
                        ca_key_file="./couchbase_crts_keys/ca.key",
                        cert_file="./couchbase_crts_keys/chain.pem",
                        key_file="./couchbase_crts_keys/pkey.key")
-        self.kubernetes.create_namespace(name=cb_namespace)
+        labels = {"app": "gluu-couchbase"}
+        if self.settings.get("USE_ISTIO") == "Y":
+            labels = {"app": "couchbase", "istio-injection": "enabled"}
+        self.kubernetes.create_namespace(name=cb_namespace, labels=labels)
         chain_pem_filepath = Path("./couchbase_crts_keys/chain.pem")
         pkey_filepath = Path("./couchbase_crts_keys/pkey.key")
         tls_cert_filepath = Path("./couchbase_crts_keys/tls-cert-file")
@@ -557,6 +560,8 @@ class Couchbase(object):
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
+        if self.settings.get("USE_ISTIO") == "Y":
+            couchbase_cluster_parser["spec"]["networking"]["networkPlatform"] = "Istio"
         try:
             couchbase_cluster_parser["spec"]["security"]["rbac"]["selector"]["matchLabels"]["cluster"] = \
                 self.settings.get("installer-settings.couchbase.clusterName")

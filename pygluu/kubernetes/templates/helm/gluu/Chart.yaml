@@ -8,7 +8,7 @@ maintainers:
 email: support@gluu.org
 description: A Helm chart for Gluu IDP
 name: gluu
-version: 5.0.0a1
+version: 5.0.0-a1
 dependencies:
     - name: config
       condition: global.config.enabled

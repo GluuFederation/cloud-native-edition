@@ -87,27 +87,9 @@ data:
   CN_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.cnRedisSslTruststore | quote }}
   CN_REDIS_SENTINEL_GROUP: {{ .Values.configmap.cnRedisSentinelGroup | quote }}
   {{- end }}
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "config.fullname" . }}-gen-json-file
-  namespace: {{ .Release.Namespace }}
-data:
-  generate.json: |-
-    {
-      "hostname": {{ .Values.global.fqdn | quote }},
-      "country_code": {{ .Values.countryCode | quote }},
-      "state": {{ .Values.state | quote }},
-      "city": {{ .Values.city | quote }},
-      "admin_pw": {{ .Values.adminPassword | quote }},
-      "ldap_pw": {{ .Values.ldapPassword | quote }},
-      "redis_pw": {{ .Values.redisPassword | quote }},
-      "email": {{ .Values.email | quote }},
-      "org_name": {{ .Values.orgName | quote }}
-    }
+  {{- if .Values.global.istio.enabled }}
+  GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  {{- end }}
 
 ---
 

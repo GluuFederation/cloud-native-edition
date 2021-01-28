@@ -19,8 +19,8 @@ spec:
     spec:
       volumes:
         - name: {{ include "config.fullname" . }}-mount-gen-file
-          configMap:
-            name: {{ include "config.fullname" . }}-gen-json-file
+          secret:
+            secretName: {{ include "config.fullname" . }}-gen-json-file
         - name: {{ include "config.fullname" . }}-tls-script
           configMap:
             name: {{ include "config.fullname" . }}-tls-script
