@@ -492,7 +492,7 @@ class Couchbase(object):
                        key_file="./couchbase_crts_keys/pkey.key")
         labels = {"app": "gluu-couchbase"}
         if self.settings.get("USE_ISTIO") == "Y":
-            labels = {"app": "couchbase", "istio-injection": "enabled"}
+            labels = {"app": "gluu-couchbase", "istio-injection": "enabled"}
         self.kubernetes.create_namespace(name=cb_namespace, labels=labels)
         chain_pem_filepath = Path("./couchbase_crts_keys/chain.pem")
         pkey_filepath = Path("./couchbase_crts_keys/pkey.key")
