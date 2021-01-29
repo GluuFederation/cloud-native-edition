@@ -34,8 +34,8 @@ class PromptVolumes:
             12: "gkePdDynamic",
             16: "aksOpenEbsHostPathDynamic",
             17: "aksPdDynamic",
-            21: "DoksOpenEbsHostPathDynamic",
-            22: "DoksPdDynamic",
+            21: "doksOpenEbsHostPathDynamic",
+            22: "doksPdDynamic",
             26: "localOpenEbsHostPathDynamic"
         }
         vol_choice = 0

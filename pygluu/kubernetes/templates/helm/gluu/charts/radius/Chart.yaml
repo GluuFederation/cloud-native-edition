@@ -1,10 +1,10 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
-appVersion: "5.0.0a1"
+appVersion: "5.0.0-a1"
 description: Radius Helm chart 
 name: radius
-version: 5.0.0a1
+version: 5.0.0-a1
 maintainers:
 - name: Gluu
 email: support@gluu.org

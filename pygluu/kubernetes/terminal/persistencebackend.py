@@ -26,7 +26,7 @@ class PromptPersistenceBackend:
             3: "hybrid",
         }
 
-        if self.settings.get("CN_PERSISTENCE_BACKEND") not in persistence_map.values():
+        if self.settings.get("global.cnPersistenceType") not in persistence_map.values():
             print("|------------------------------------------------------------------|")
             print("|                     Persistence layer                            |")
             print("|------------------------------------------------------------------|")
