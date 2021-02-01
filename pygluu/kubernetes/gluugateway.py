@@ -68,7 +68,7 @@ class GluuGateway(object):
     def __init__(self):
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "gke":
+        if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
             # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
             user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
             user_account = str(user_account, "utf-8").strip()
@@ -82,17 +82,17 @@ class GluuGateway(object):
 
     def install_gluu_gateway_ui(self):
         self.uninstall_gluu_gateway_ui()
-        self.kubernetes.create_namespace(name=self.settings.get("CN_GLUU_GATEWAY_UI_NAMESPACE"),
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.gluuGateway.uI.namespace"),
                                          labels={"APP_NAME": "gluu-gateway-ui"})
         try:
             # Try to get gluu cert + key
             ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
-                                                              self.settings.get("CN_NAMESPACE")).data["ssl_cert"]
+                                                              self.settings.get("installer-settings.namespace")).data["ssl_cert"]
             ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                             self.settings.get("CN_NAMESPACE")).data["ssl_key"]
+                                                             self.settings.get("installer-settings.namespace")).data["ssl_key"]
 
             self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
-                                                              namespace=self.settings.get("CN_GLUU_GATEWAY_UI_NAMESPACE"),
+                                                              namespace=self.settings.get("installer-settings.gluuGateway.uI.namespace"),
                                                               literal="tls.crt",
                                                               value_of_literal=ssl_cert,
                                                               secret_type="kubernetes.io/tls",
@@ -103,37 +103,39 @@ class GluuGateway(object):
             logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
                          "Please mount crt and key inside gg-ui deployment")
         client_api_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("CN_CLIENT_API_APPLICATION_KEYSTORE_CN"), self.settings.get("CN_NAMESPACE"))
+            self.settings.get("client-api.service.clientApiServerServiceName"), self.settings.get("installer-settings.namespace"))
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
         values_file_parser["cloud"]["isDomainRegistered"] = "false"
-        if self.settings.get("CN_IS_CN_FQDN_REGISTERED") == "Y":
+        if self.settings.get("glopbal.isFqdnRegistered"):
             values_file_parser["cloud"]["isDomainRegistered"] = "true"
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "microk8s" or self.settings.get("CN_DEPLOYMENT_ARCH") == "minikube":
+        if self.settings.get("global.storageClass.provisioner") in \
+                ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             values_file_parser["cloud"]["enabled"] = False
-        values_file_parser["cloud"]["provider"] = self.settings.get("CN_DEPLOYMENT_ARCH")
-        values_file_parser["dbUser"] = self.settings.get("CN_GLUU_GATEWAY_UI_PG_USER")
+        if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy"):
+            values_file_parser["cloud"]["provider"] = "eks"
+        values_file_parser["dbUser"] = self.settings.get("installer-settings.gluuGateway.uI.postgresUser")
         values_file_parser["kongAdminUrl"] = "https://{}-kong-admin.{}.svc.cluster.local:8444".format(
-            self.settings.get("CN_KONG_HELM_RELEASE_NAME"), self.settings.get("CN_KONG_NAMESPACE"))
-        values_file_parser["dbHost"] = self.settings.get("CN_POSTGRES_URL")
-        values_file_parser["dbDatabase"] = self.settings.get("CN_GLUU_GATEWAY_UI_DATABASE")
+            self.settings.get("installer-settings.kong.releaseName"), self.settings.get("installer-settings.kong.namespace"))
+        values_file_parser["dbHost"] = self.settings.get("config.configmap.cnJackrabbitPostgresHost")
+        values_file_parser["dbDatabase"] = self.settings.get("installer-settings.gluuGateway.uI.postgresDatabaseName")
         values_file_parser["clientApiServerUrl"] = client_api_server_url
         values_file_parser["image"]["repository"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_NAME")
         values_file_parser["image"]["tag"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_TAG")
-        values_file_parser["loadBalancerIp"] = self.settings.get("CN_HOST_EXT_IP")
-        values_file_parser["dbPassword"] = self.settings.get("CN_GLUU_GATEWAY_UI_PG_PASSWORD")
-        values_file_parser["opServerUrl"] = "https://" + self.settings.get("CN_FQDN")
-        values_file_parser["ggHost"] = self.settings.get("CN_FQDN") + "/gg-ui/"
-        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("CN_FQDN") + "/gg-ui/"
+        values_file_parser["loadBalancerIp"] = self.settings.get("global.lbIp")
+        values_file_parser["dbPassword"] = self.settings.get("installer-settings.gluuGateway.uI.postgresPassword")
+        values_file_parser["opServerUrl"] = "https://" + self.settings.get("global.fqdn")
+        values_file_parser["ggHost"] = self.settings.get("global.fqdn") + "/gg-ui/"
+        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("global.fqdn") + "/gg-ui/"
         # Register new client if one was not provided
         if not values_file_parser["clientApiId"] or \
                 not values_file_parser["clientId"] or \
                 not values_file_parser["clientSecret"]:
-            client_api_id, client_id, client_secret = register_op_client(self.settings.get("CN_NAMESPACE"),
+            client_api_id, client_id, client_secret = register_op_client(self.settings.get("installer-settings.namespace"),
                                                                          "konga-client",
-                                                                         self.settings.get("CN_FQDN"),
+                                                                         self.settings.get("global.fqdn"),
                                                                          client_api_server_url,
-                                                                         self.settings.get('CN_HELM_RELEASE_NAME'))
+                                                                         self.settings.get('installer-settings.releaseName'))
             if not client_api_id:
                 values_file_parser.dump_it()
                 logger.error("Due to a failure in konga client registration the installation has stopped."
@@ -142,8 +144,8 @@ class GluuGateway(object):
                              "and clientSecret inside ./helm/gluu-gateway-ui/values.yaml then run "
                              "helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui "
                              "--namespace={}".format(
-                    self.settings.get('CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
-                    self.settings.get("CN_GLUU_GATEWAY_UI_NAMESPACE")))
+                    self.settings.get('installer-settings.gluuGateway.uI.releaseName'),
+                    self.settings.get("installer-settings.gluuGateway.uI.namespace")))
                 raise SystemExit(1)
             values_file_parser["clientApiId"] = client_api_id
             values_file_parser["clientId"] = client_id
@@ -151,16 +153,17 @@ class GluuGateway(object):
 
         values_file_parser.dump_it()
         exec_cmd("helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui --namespace={}".format(
-            self.settings.get('CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME'), self.settings.get("CN_GLUU_GATEWAY_UI_NAMESPACE")))
+            self.settings.get('installer-settings.gluuGateway.uI.releaseName'),
+            self.settings.get("installer-settings.gluuGateway.uI.namespace")))
 
     def install_gluu_gateway_dbmode(self):
         self.uninstall_gluu_gateway_dbmode()
-        self.kubernetes.create_namespace(name=self.settings.get("CN_KONG_NAMESPACE"),
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.gluuGateway.kong.namespace"),
                                          labels={"app": "ingress-kong"})
-        encoded_kong_pass_bytes = base64.b64encode(self.settings.get("CN_KONG_PG_PASSWORD").encode("utf-8"))
+        encoded_kong_pass_bytes = base64.b64encode(self.settings.get("installer-settings.gluuGateway.kong.postgresPassword").encode("utf-8"))
         encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
         self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
-                                                          namespace=self.settings.get("CN_KONG_NAMESPACE"),
+                                                          namespace=self.settings.get("installer-settings.gluuGateway.kong.namespace"),
                                                           literal="CN_KONG_PG_PASSWORD",
                                                           value_of_literal=encoded_kong_pass_string)
         exec_cmd("helm repo add kong https://charts.konghq.com")
@@ -176,24 +179,24 @@ class GluuGateway(object):
                  "--set env.pg_host={} "
                  "--set admin.enabled=true "
                  "--set admin.type=ClusterIP "
-                 "--namespace={}".format(self.settings.get("CN_KONG_HELM_RELEASE_NAME"),
-                                         self.settings.get("GLUU_GATEWAY_IMAGE_NAME"),
-                                         self.settings.get("GLUU_GATEWAY_IMAGE_TAG"),
-                                         self.settings.get("CN_KONG_PG_USER"),
-                                         self.settings.get("CN_POSTGRES_URL"),
-                                         self.settings.get("CN_KONG_NAMESPACE")))
+                 "--namespace={}".format(self.settings.get("installer-settings.gluuGateway.kong.releaseName"),
+                                         self.settings.get("installer-settings.gluuGateway.kong.image.repository"),
+                                         self.settings.get("installer-settings.gluuGateway.kong.image.tag"),
+                                         self.settings.get("installer-settings.gluuGateway.kong.postgresUser"),
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresHost"),
+                                         self.settings.get("installer-settings.gluuGateway.kong.namespace")))
 
     def uninstall_gluu_gateway_dbmode(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('CN_KONG_HELM_RELEASE_NAME'),
-                                                        self.settings.get("CN_KONG_NAMESPACE")))
+        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('installer-settings.gluuGateway.kong.releaseName'),
+                                                        self.settings.get("installer-settings.gluuGateway.kong.namespace")))
 
     def uninstall_gluu_gateway_ui(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('CN_GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
-                                                        self.settings.get("CN_GLUU_GATEWAY_UI_NAMESPACE")))
+        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('installer-settings.gluuGateway.uI.releaseName'),
+                                                        self.settings.get("installer-settings.gluuGateway.uI.namespace")))
 
     def uninstall_kong(self):
         logger.info("Removing gluu gateway kong...")
-        self.kubernetes.delete_job(self.settings.get("CN_KONG_NAMESPACE"), "app=kong-migration-job")
+        self.kubernetes.delete_job(self.settings.get("installer-settings.gluuGateway.kong.namespace"), "app=kong-migration-job")
         self.kubernetes.delete_custom_resource("kongconsumers.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongcredentials.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongingresses.configuration.konghq.com")
@@ -201,10 +204,10 @@ class GluuGateway(object):
         self.kubernetes.delete_custom_resource("tcpingresses.configuration.konghq.com")
         self.kubernetes.delete_custom_resource("kongclusterplugins.configuration.konghq.com")
         self.kubernetes.delete_cluster_role("kong-ingress-clusterrole")
-        self.kubernetes.delete_service_account("kong-serviceaccount", self.settings.get("CN_KONG_NAMESPACE"))
+        self.kubernetes.delete_service_account("kong-serviceaccount", self.settings.get("installer-settings.gluuGateway.kong.namespace"))
         self.kubernetes.delete_cluster_role_binding("kong-ingress-clusterrole-nisa-binding")
-        self.kubernetes.delete_config_map_using_name("kong-server-blocks", self.settings.get("CN_KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-proxy", self.settings.get("CN_KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-validation-webhook", self.settings.get("CN_KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-admin", self.settings.get("CN_KONG_NAMESPACE"))
-        self.kubernetes.delete_deployment_using_name("ingress-kong", self.settings.get("CN_KONG_NAMESPACE"))
+        self.kubernetes.delete_config_map_using_name("kong-server-blocks", self.settings.get("installer-settings.gluuGateway.kong.namespace"))
+        self.kubernetes.delete_service("kong-proxy", self.settings.get("installer-settings.gluuGateway.kong.namespace"))
+        self.kubernetes.delete_service("kong-validation-webhook", self.settings.get("installer-settings.gluuGateway.kong.namespace"))
+        self.kubernetes.delete_service("kong-admin", self.settings.get("installer-settings.gluuGateway.kong.namespace"))
+        self.kubernetes.delete_deployment_using_name("ingress-kong", self.settings.get("installer-settings.gluuGateway.kong.namespace"))

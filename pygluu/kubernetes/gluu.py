@@ -28,7 +28,7 @@ class Gluu(object):
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get("installer-settings.releaseName") + "-ldap-backup"
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "gke":
+        if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
             # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
             if self.settings.get("config.configmap.cnCacheType") == "REDIS" or \
                     self.settings.get("installer-settings.gluuGateway.install") or \
@@ -65,7 +65,7 @@ class Gluu(object):
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
-            if self.settings.get("installer-settings.gluuGateway.Ui") and service_name == "gg-kong-ui":
+            if self.settings.get("installer-settings.gluuGateway.uI") and service_name == "gg-kong-ui":
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 

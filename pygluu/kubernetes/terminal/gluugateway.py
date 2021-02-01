@@ -35,8 +35,8 @@ class PromptGluuGateway:
                                   click.prompt("Please enter a namespace for Gluu Gateway(Kong + Gluu plugins)",
                                                default="gluu-gateway"))
 
-            if self.settings.get("installer-settings.gluuGateway.Ui.namespace") in (None, ''):
-                self.settings.set("installer-settings.gluuGateway.Ui.namespace", click.prompt(
+            if self.settings.get("installer-settings.gluuGateway.uI.namespace") in (None, ''):
+                self.settings.set("installer-settings.gluuGateway.uI.namespace", click.prompt(
                     "Please enter a namespace for gluu gateway ui", default="gg-ui"))
 
             if self.settings.get("installer-settings.gluuGateway.kong.postgresUser") in (None, ''):
@@ -48,13 +48,13 @@ class PromptGluuGateway:
                 self.settings.set("installer-settings.gluuGateway.kong.postgresPassword",
                                   prompt_password("gluu-gateway-postgres"))
 
-            if self.settings.get("installer-settings.gluuGateway.Ui.postgresUser") in (None, ''):
+            if self.settings.get("installer-settings.gluuGateway.uI.postgresUser") in (None, ''):
 
-                self.settings.set("installer-settings.gluuGateway.Ui.postgresUser", click.prompt(
+                self.settings.set("installer-settings.gluuGateway.uI.postgresUser", click.prompt(
                     "Please enter a user for gluu-gateway-ui postgres database", default="konga"))
 
-            if self.settings.get("installer-settings.gluuGateway.Ui.postgresPassword") in (None, ''):
-                self.settings.set("installer-settings.gluuGateway.Ui.postgresPassword",
+            if self.settings.get("installer-settings.gluuGateway.uI.postgresPassword") in (None, ''):
+                self.settings.set("installer-settings.gluuGateway.uI.postgresPassword",
                                   prompt_password("gluu-gateway-ui-postgres"))
 
             if self.settings.get("installer-settings.gluuGateway.kong.postgresDatabaseName") in (None, ''):
@@ -62,6 +62,6 @@ class PromptGluuGateway:
                                   click.prompt("Please enter gluu-gateway postgres database name",
                                                default="kong"))
 
-            if self.settings.get("installer-settings.gluuGateway.Ui.postgresDatabaseName") in (None, ''):
-                self.settings.set("installer-settings.gluuGateway.Ui.postgresDatabaseName", click.prompt(
+            if self.settings.get("installer-settings.gluuGateway.uI.postgresDatabaseName") in (None, ''):
+                self.settings.set("installer-settings.gluuGateway.uI.postgresDatabaseName", click.prompt(
                     "Please enter gluu-gateway-ui postgres database name", default="konga"))

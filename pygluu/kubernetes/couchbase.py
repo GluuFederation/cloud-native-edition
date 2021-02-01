@@ -159,18 +159,18 @@ class Couchbase(object):
         """
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-crt",
-                                                          namespace=self.settings.get("CN_NAMESPACE"),
+                                                          namespace=self.settings.get("installer-settings.namespace"),
                                                           literal="couchbase.crt",
                                                           value_of_literal=encoded_ca_crt_string)
 
         # Remove this if its not needed
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-pass",
-                                                          namespace=self.settings.get("CN_NAMESPACE"),
+                                                          namespace=self.settings.get("installer-settings.namespace"),
                                                           literal="couchbase_password",
                                                           value_of_literal=encoded_cb_pass_string)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="cb-super-pass",
-                                                          namespace=self.settings.get("CN_NAMESPACE"),
+                                                          namespace=self.settings.get("installer-settings.namespace"),
                                                           literal="couchbase_superuser_password",
                                                           value_of_literal=encoded_cb_super_pass_string)
 
@@ -440,14 +440,14 @@ class Couchbase(object):
             storage_class_file_parser["parameters"]["type"] = \
                 self.settings.get("installer-settings.couchbase.volumeType")
         storage_class_file_parser["provisioner"] = self.settings.get('global.storageClass.provisioner')
-        if self.settings.get('CN_DEPLOYMENT_ARCH') == "microk8s.io/hostpath":
+        if self.settings.get('global.storageClass.provisioner') == "microk8s.io/hostpath":
             try:
                 del storage_class_file_parser["allowVolumeExpansion"]
                 del storage_class_file_parser["parameters"]
             except KeyError:
                 logger.info("Key not found")
             storage_class_file_parser.dump_it()
-        elif self.settings.get('CN_DEPLOYMENT_ARCH') == "k8s.io/minikube-hostpath":
+        elif self.settings.get('global.storageClass.provisioner') == "k8s.io/minikube-hostpath":
             try:
                 del storage_class_file_parser["allowVolumeExpansion"]
                 del storage_class_file_parser["parameters"]
@@ -478,7 +478,7 @@ class Couchbase(object):
                        cert_file="./couchbase_crts_keys/chain.pem",
                        key_file="./couchbase_crts_keys/pkey.key")
         labels = {"app": "gluu-couchbase"}
-        if self.settings.get("USE_ISTIO") == "Y":
+        if self.settings.get("global.istio.enabled"):
             labels = {"app": "couchbase", "istio-injection": "enabled"}
         self.kubernetes.create_namespace(name=cb_namespace, labels=labels)
         chain_pem_filepath = Path("./couchbase_crts_keys/chain.pem")
@@ -560,7 +560,7 @@ class Couchbase(object):
         couchbase_cluster_parser = Parser(self.couchbase_cluster_file, "CouchbaseCluster")
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["serverSecret"] = "couchbase-server-tls"
         couchbase_cluster_parser["spec"]["networking"]["tls"]["static"]["operatorSecret"] = "couchbase-operator-tls"
-        if self.settings.get("USE_ISTIO") == "Y":
+        if self.settings.get("global.istio.enabled"):
             couchbase_cluster_parser["spec"]["networking"]["networkPlatform"] = "Istio"
         try:
             couchbase_cluster_parser["spec"]["security"]["rbac"]["selector"]["matchLabels"]["cluster"] = \
@@ -575,7 +575,7 @@ class Couchbase(object):
                         "as the gluu user will not be created causing the communication between "
                         "Gluu server and Couchbase to fail.")
             sys.exit()
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "local":
+        if "localOpenEbsHostPathDynamic" in self.settings.get("installer-settings.volumeProvisionStrategy"):
             volume_claims = couchbase_cluster_parser["spec"]["volumeClaimTemplates"]
             for i, volume_claim in enumerate(volume_claims):
                 couchbase_cluster_parser["spec"]["volumeClaimTemplates"][i]["spec"]["storageClassName"] = \

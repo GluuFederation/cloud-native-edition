@@ -54,7 +54,7 @@ installer-settings:
       postgresUser:
       postgresPassword:
       postgresDatabaseName:
-    Ui:
+    uI:
       releaseName:
       namespace:
       postgresUser:

@@ -22,12 +22,12 @@ class Kubedb(object):
         self.upgrade_values_file = Path("./helm/gluu-upgrade/values.yaml").resolve()
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()
-        self.ldap_backup_release_name = self.settings.get('CN_HELM_RELEASE_NAME') + "-ldap-backup"
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "gke":
+        self.ldap_backup_release_name = self.settings.get('installer-settings.releaseName') + "-ldap-backup"
+        if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
             # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
-            if self.settings.get("CN_INSTALL_REDIS") == "Y" or \
-                    self.settings.get("CN_INSTALL_GLUU_GATEWAY") == "Y" or \
-                    self.settings.get("CN_INSTALL_COUCHBASE") == "Y":
+            if self.settings.get("config.configmap.cnCacheType") == "REDIS" or \
+                    self.settings.get("installer-settings.gluuGateway.install") or \
+                    self.settings.get("installer-settings.couchbase.install"):
                 user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
                 user_account = str(user_account, "utf-8").strip()
 

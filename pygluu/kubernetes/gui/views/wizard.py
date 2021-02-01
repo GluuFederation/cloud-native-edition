@@ -76,7 +76,7 @@ def initialize():
     else:
         wizard_steps.normal_steps()
 
-    if not gluu_settings.db.get("CN_ACCEPT_LICENSE") and \
+    if not gluu_settings.db.get("installer-settings.acceptLicense") and \
             request.endpoint not in ("wizard.agreement", "wizard.quit_settings"):
         return redirect(url_for("wizard.agreement"))
 
@@ -106,7 +106,7 @@ def agreement():
 
     if request.method == "GET":
         # populate form data from settings
-        form.accept_gluu_license.data = gluu_settings.db.get("CN_ACCEPT_LICENSE")
+        form.accept_gluu_license.data = gluu_settings.db.get("installer-settings.acceptLicense")
     wizard_steps.current_step = 'license'
     return render_template("wizard/index.html",
                            license=agreement_file,
@@ -174,7 +174,7 @@ def gluu_namespace():
 
     if request.method == "GET":
         # populate form
-        if gluu_settings.db.get("CN_NAMESPACE"):
+        if gluu_settings.db.get("installer-settings.namespace"):
             form.gluu_namespace.data = gluu_settings.db.get("GLUU_NAMESPACE")
     wizard_steps.current_step = 'namespace'
     return render_template("wizard/index.html",
@@ -321,14 +321,14 @@ def gluu_gateway():
             data["CN_GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
         else:
             data["ENABLE_CLIENT_API"] = "N"
-            if not gluu_settings.db.get("CN_POSTGRES_NAMESPACE") and \
-                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+            if not gluu_settings.db.get("installer-settings.postgres.install") and \
+                    not gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 data["CN_POSTGRES_NAMESPACE"] = ""
-            if not gluu_settings.db.get("CN_POSTGRES_REPLICAS") and \
-                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+            if not gluu_settings.db.get("installer-settings.postgres.replicas") and \
+                    not gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 data["CN_POSTGRES_REPLICAS"] = ""
-            if not gluu_settings.db.get("CN_POSTGRES_URL") and \
-                    not gluu_settings.db.get("CN_JACKRABBIT_CLUSTER"):
+            if not gluu_settings.db.get("config.configmap.cnJackrabbitPostgresHost") and \
+                    not gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 data["CN_POSTGRES_URL"] = ""
             data["CN_KONG_NAMESPACE"] = ""
             data["CN_GLUU_GATEWAY_UI_NAMESPACE"] = ""
@@ -424,7 +424,7 @@ def install_istio():
     use_istio_ingress field will be required except for microk8s and minikube
     """
     form = IstioForm()
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
         del form.use_istio_ingress
         form.lb_add.validators = [Optional()]
     else:
@@ -433,7 +433,7 @@ def install_istio():
     if form.validate_on_submit():
         data = {}
         data["CN_USE_ISTIO"] = form.use_istio.data
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") not in test_arch:
             data["CN_USE_ISTIO_INGRESS"] = form.use_istio_ingress.data
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             if data["CN_USE_ISTIO_INGRESS"] == "Y":
@@ -470,29 +470,25 @@ def environment():
     """
     form = EnvironmentForm()
     # TODO: find a way to apply dynamic validation
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "gke":
+    if gke in gluu_settings.db.get("installer-settings.volumeProvisionStrategy"):
         form.gmail_account.validators.append(InputRequired())
     else:
         form.gmail_account.validators.append(Optional())
 
     ip_node_data = determine_ip_nodes()
 
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
         form.host_ext_ip.data = ip_node_data['ip']
     else:
         del form.host_ext_ip
 
     if form.validate_on_submit():
         data = {}
-        if not gluu_settings.db.get("CN_TEST_ENVIRONMENT") and \
+        if not gluu_settings.db.get("global.cloud.testEnviroment") and \
                 gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in test_arch:
             data["CN_TEST_ENVIRONMENT"] = form.test_environment.data
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in cloud_arch or \
-                gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in local_arch:
-            data["CN_NODE_SSH_KEY"] = form.node_ssh_key.data
-
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             data["CN_HOST_EXT_IP"] = form.host_ext_ip.data
         else:
             data["CN_HOST_EXT_IP"] = ip_node_data["ip"]
@@ -502,13 +498,13 @@ def environment():
         data["CN_NODES_IPS"] = ip_node_data["CN_NODES_IPS"]
 
         # prompt AWS
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "eks":
-            data["CN_AWS_LB_TYPE"] = form.aws_lb_type.data
+        if "aws" in gluu_settings.db.get("installer-settings.volumeProvisionStrategy"):
+            data["installer-settings.aws.lbType"] = form.aws_lb_type.data
             data["CN_USE_ARN"] = form.use_arn.data
             data["CN_ARN_AWS_IAM"] = form.arn_aws_iam.data
 
         # prompt GKE
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "gke":
+        if "gke" in gluu_settings.db.get("installer-settings.volumeProvisionStrategy"):
             data["CN_GMAIL_ACCOUNT"] = form.gmail_account.data
 
             if gluu_settings.db.get("CN_APP_VOLUME_TYPE") == 11:
@@ -564,7 +560,7 @@ def persistence_backend():
             elif gluu_settings.db.get("CN_DEPLOYMENT_ARCH") == "minikube":
                 gluu_settings.db.set("CN_APP_VOLUME_TYPE", 2)
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch and \
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch and \
                 gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "couchbase":
             #skip volumes step
             wizard_steps.current_step = 'couchbase_multicluster'
@@ -731,7 +727,7 @@ def couchbase():
                                          "there is a missing couchbase file that "
                                          "could not be found at the current path.")
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             data["CN_COUCHBASE_USE_LOW_RESOURCES"] = "Y"
         else:
             data["CN_COUCHBASE_USE_LOW_RESOURCES"] = form.couchbase_use_low_resources.data
@@ -795,7 +791,7 @@ def couchbase():
         else:
             form.couchbase_superuser_password_confirmation.data = gluu_settings.db.get("CN_COUCHBASE_SUPERUSER_PASSWORD")
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             form.couchbase_use_low_resources.validators = [Optional()]
             form.couchbase_use_low_resources.data = "Y"
         else:
@@ -826,7 +822,7 @@ def couchbase_calculator():
 
     # override couchbase_volume_type with
     # dynamic value of volume_type based on deployment arch value
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in ("aks", "eks", "gke") and \
+    if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in ("aks", "eks", "gke") and \
             not gluu_settings.db.get("CN_COUCHBASE_VOLUME_TYPE"):
         volume_type = volume_types[gluu_settings.db.get("CN_DEPLOYMENT_ARCH")]
         form.couchbase_volume_type.choices = volume_type["choices"]
@@ -880,7 +876,7 @@ def cache_type():
         gluu_settings.db.update(data)
 
         # skip backup form if deployment_arch is microk8s or minikube
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             wizard_steps.current_step = 'backup'
 
         return redirect(url_for(wizard_steps.next_step()))
@@ -895,7 +891,7 @@ def cache_type():
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = wizard_steps.prev_step()
     if gluu_settings.db.get('CN_PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             prev_step = "wizard.couchbase"
         else:
             prev_step = "wizard.couchbase_multi_cluster"
@@ -967,7 +963,7 @@ def configuration():
         else:
             data["CN_LDAP_PASSWORD"] = gluu_settings.db.get("CN_COUCHBASE_PASSWORD")
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             data["CN_IS_CN_FQDN_REGISTERED"] = "N"
         else:
             data["CN_IS_CN_FQDN_REGISTERED"] = form.is_gluu_fqdn_registered.data
@@ -991,7 +987,7 @@ def configuration():
         else:
             form.ldap_pw_confirm.data = gluu_settings.db.get("CN_LDAP_PASSWORD")
 
-        if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+        if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
             form.is_gluu_fqdn_registered.validators = [Optional()]
             form.is_gluu_fqdn_registered.data = "N"
         else:
@@ -1000,7 +996,7 @@ def configuration():
     wizard_steps.current_step = 'configuration'
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = wizard_steps.prev_step()
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") in test_arch:
+    if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") in test_arch:
         prev_step = "wizard.cache_type"
 
     return render_template("wizard/index.html",

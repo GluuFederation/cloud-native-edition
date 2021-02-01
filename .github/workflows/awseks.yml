@@ -128,7 +128,7 @@ jobs:
           "CN_NODE_SSH_KEY": "~/.ssh/id_rsa",
           "CN_HOST_EXT_IP": "",
           "CN_VERIFY_EXT_IP": "",
-          "CN_AWS_LB_TYPE": "clb",
+          "installer-settings.aws.lbType": "clb",
           "CN_USE_ARN": "N",
           "CN_ARN_AWS_IAM": "",
           "CN_LB_ADD": "",

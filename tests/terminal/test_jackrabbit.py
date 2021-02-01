@@ -16,7 +16,7 @@ def test_jackrabbit_enable(monkeypatch, settings):
     assert settings.get("CN_JACKRABBIT_URL") == "http://jackrabbit:8080"
     assert settings.get("CN_JACKRABBIT_ADMIN_ID") == "admin"
     assert settings.get("CN_JACKRABBIT_ADMIN_PASSWORD") == "Test1234#"
-    assert settings.get("CN_JACKRABBIT_CLUSTER") == "N"
+    assert settings.get("installer-settings.jackrabbit.clusterMode")
 
 
 def test_jackrabbit_disable_no_url(monkeypatch, settings):

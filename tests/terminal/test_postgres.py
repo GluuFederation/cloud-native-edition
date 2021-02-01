@@ -15,7 +15,7 @@ def test_postgres_namespace(monkeypatch, settings, given, expected):
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("CN_POSTGRES_NAMESPACE") == expected
+    assert settings.get("installer-settings.postgres.install") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -32,7 +32,7 @@ def test_postgres_replicas(monkeypatch, settings, given, expected):
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("CN_POSTGRES_REPLICAS") == expected
+    assert settings.get("installer-settings.postgres.replicas") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -49,4 +49,4 @@ def test_postgres_url(monkeypatch, settings, given, expected):
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("CN_POSTGRES_URL") == expected
+    assert settings.get("config.configmap.cnJackrabbitPostgresHost") == expected

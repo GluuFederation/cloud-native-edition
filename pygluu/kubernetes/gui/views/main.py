@@ -375,7 +375,7 @@ def get_wizard_step():
     Define wizard step based on settings value
     :return:
     """
-    if not gluu_settings.db.get("CN_ACCEPT_LICENSE"):
+    if not gluu_settings.db.get("installer-settings.acceptLicense"):
         return url_for("wizard.agreement")
 
     if not gluu_settings.db.get("CN_VERSION"):
@@ -384,7 +384,7 @@ def get_wizard_step():
     if not gluu_settings.db.get("CN_DEPLOYMENT_ARCH"):
         return url_for("wizard.deployment_arch")
 
-    if not gluu_settings.db.get("CN_NAMESPACE"):
+    if not gluu_settings.db.get("installer-settings.namespace"):
         return url_for("wizard.gluu_namespace")
 
     if not gluu_settings.db.get("ENABLE_CACHE_REFRESH"):
@@ -419,13 +419,13 @@ def get_wizard_step():
     if not gluu_settings.db.get("CN_CACHE_TYPE"):
         return url_for("wizard.cache_type")
 
-    if gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
+    if gluu_settings.db.get("installer-settings.volumeProvisionStrategy") not in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath") and \
             gluu_settings.db.get("CN_PERSISTENCE_BACKEND") in ("hybrid", "couchbase") and \
             not gluu_settings.db.get("CN_COUCHBASE_INCR_BACKUP_SCHEDULE"):
         return url_for("wizard.backup")
     elif gluu_settings.db.get("CN_DEPLOYMENT_ARCH") not in ("microk8s", "minikube") and \
             gluu_settings.db.get("CN_PERSISTENCE_BACKEND") == "ldap" and \
-            not gluu_settings.db.get("CN_LDAP_BACKUP_SCHEDULE"):
+            not gluu_settings.db.get("installer-settings.ldap.backup.fullSchedule"):
         return url_for("wizard.backup")
 
     if not gluu_settings.db.get("CN_FQDN"):

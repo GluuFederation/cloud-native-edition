@@ -12,7 +12,7 @@ def test_backup_ldap(monkeypatch, settings, given, expected):
 
     settings.set("CN_PERSISTENCE_BACKEND", "ldap")
     PromptBackup(settings).prompt_backup()
-    assert settings.get("CN_LDAP_BACKUP_SCHEDULE") == expected
+    assert settings.get("installer-settings.ldap.backup.fullSchedule") == expected
 
 
 @pytest.mark.parametrize("given, expected, type_", [

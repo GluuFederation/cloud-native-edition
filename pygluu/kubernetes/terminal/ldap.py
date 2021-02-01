@@ -16,7 +16,6 @@ class PromptLdap:
 
     def __init__(self, settings):
         self.settings = settings
-        self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_hybrid_ldap_held_data(self):
         """Prompts for data held in ldap when hybrid mode is chosen in persistence
