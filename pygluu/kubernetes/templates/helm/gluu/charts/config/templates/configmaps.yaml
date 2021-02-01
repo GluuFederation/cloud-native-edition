@@ -92,27 +92,6 @@ data:
 ---
 
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "config.fullname" . }}-gen-json-file
-  namespace: {{ .Release.Namespace }}
-data:
-  generate.json: |-
-    {
-      "hostname": {{ .Values.global.domain | quote }},
-      "country_code": {{ .Values.countryCode | quote }},
-      "state": {{ .Values.state | quote }},
-      "city": {{ .Values.city | quote }},
-      "admin_pw": {{ .Values.adminPass | quote }},
-      "ldap_pw": {{ .Values.ldapPass | quote }},
-      "redis_pw": {{ .Values.redisPass | quote }},
-      "email": {{ .Values.email | quote }},
-      "org_name": {{ .Values.orgName | quote }}
-    }
-
----
-
-apiVersion: v1
 data:
   tls_generator.py: |-
     from pprint import pprint
