@@ -10,7 +10,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 import click
 
 from pygluu.kubernetes.helpers import get_logger
-from pygluu.kubernetes.terminal.helpers import confirm_yesno
 
 logger = get_logger("gluu-prompt-aws    ")
 
@@ -31,7 +30,7 @@ class PromptAws:
             3: "alb",
         }
 
-        if self.settings.get("AWS_LB_TYPE") not in lb_map.values():
+        if self.settings.get("installer-settings.aws.lbType") not in lb_map.values():
             print("|-----------------------------------------------------------------|")
             print("|                     AWS Loadbalancer type                       |")
             print("|-----------------------------------------------------------------|")
@@ -41,22 +40,24 @@ class PromptAws:
             print("|-----------------------------------------------------------------|")
 
             choice = click.prompt("Loadbalancer type", default=1)
-            self.settings.set("AWS_LB_TYPE", lb_map.get(choice, "clb"))
-            if self.settings.get("AWS_LB_TYPE") == "alb":
+            self.settings.set("installer-settings.aws.lbType", lb_map.get(choice, "clb"))
+            if self.settings.get("installer-settings.aws.lbType") == "alb":
                 logger.info("A prompt later during installation will appear to input the ALB DNS address")
 
-        if not self.settings.get("USE_ARN"):
-            self.settings.set("USE_ARN", confirm_yesno(
+        if self.settings.get("installer-settings.aws.arn.enabled") in (None, ''):
+            self.settings.set("installer-settings.aws.arn.enabled", click.confirm(
                 "Are you terminating SSL traffic at LB and using certificate from AWS"))
 
-        if not self.settings.get("VPC_CIDR") and self.settings.get("USE_ARN") == "Y":
-            self.settings.set("AWS_VPC_CIDR", click.prompt(
+        if self.settings.get("installer-settings.aws.vpcCidr") in (None, '') and \
+                self.settings.get("installer-settings.aws.arn.enabled"):
+            self.settings.set("installer-settings.aws.vpcCidr", click.prompt(
                 "Enter VPC CIDR in use for the Kubernetes cluster i.e 192.168.1.1/16", default="0.0.0.0/0"
             ))
 
-        if not self.settings.get("ARN_AWS_IAM") and self.settings.get("USE_ARN") == "Y":
+        if self.settings.get("installer-settings.aws.arn.arnAcmCert") in (None, '') and \
+                self.settings.get("installer-settings.aws.arn.enabled"):
             # no default means it will try to prompt in loop until user inputs
-            self.settings.set("ARN_AWS_IAM", click.prompt(
+            self.settings.set("installer-settings.aws.arn.arnAcmCert", click.prompt(
                 "Enter aws-load-balancer-ssl-cert arn quoted ('arn:aws:acm:us-west-2:XXXXXXXX:"
                 "certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX')"
             ))

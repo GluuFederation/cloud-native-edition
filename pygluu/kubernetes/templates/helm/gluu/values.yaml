@@ -1,161 +1,319 @@
+installer-settings:
+  # Only used by the installer. These settings do not affect nor are used by the chart
+  currentVersion:
+  upgrade:
+    targetVersion:
+    image:
+      repository:
+      tag:
+  acceptLicense:
+  namespace: gluu
+  releaseName: gluu
+  nginxIngress:
+    releaseName:
+    namespace:
+  nodes:
+    names:
+    zones:
+    ips:
+  images:
+    edit:
+  aws:
+    lbType: clb
+    arn:
+      enabled: false
+      arnAcmCert:
+    vpcCidr: "0.0.0.0/0"
+  couchbase:
+    clusterName:
+    namespace:
+    lowResourceInstall:
+    install:
+    customFileOverride:
+    backup:
+      incrementalSchedule:
+      fullSchedule:
+      retentionTime:
+      storageSize:
+    # Couchbase cert related keys
+    subjectAlternativeName:
+    commonName:
+    # Couchbase cluster yaml generator keys
+    totalNumberOfExpectedUsers:
+    totalNumberOfExpectedTransactionsPerSec:
+    volumeType:
+  volumeProvisionStrategy:
+  gluuGateway:
+    install:
+    kong:
+      image:
+        repository:
+        tag:
+      releaseName:
+      namespace:
+      postgresUser:
+      postgresPassword:
+      postgresDatabaseName:
+    uI:
+      releaseName:
+      namespace:
+      postgresUser:
+      postgresPassword:
+      postgresDatabaseName:
+  ldap:
+    subsequentCluster:
+    backup:
+      fullSchedule:
+  jackrabbit:
+    clusterMode:
+  postgres:
+    install:
+    namespace:
+    replicas:
+  redis:
+    install:
+    masterNodes:
+    nodesPerMaster:
+    namespace:
+  confirmSettings: false
+
+auth-server:
+  image:
+    pullPolicy: Always
+    repository: janssenproject/auth-server
+    tag: 1.0.0_dev
+  replicas: 1
+  resources:
+    limits:
+      cpu: 2500m
+      memory: 2500Mi
+    requests:
+      cpu: 2500m
+      memory: 2500Mi
+  service:
+    authServerServiceName: auth-server
+auth-server-key-rotation:
+  image:
+    pullPolicy: Always
+    repository: janssenproject/certmanager
+    tag: 1.0.0_dev
+  keysLife: 23
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+casa:
+  image:
+    pullPolicy: Always
+    repository: gluufederation/casa
+    tag: 5.0.0_dev
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+  service:
+    casaServiceName: casa
+client-api:
+  image:
+    pullPolicy: Always
+    repository: janssenproject/client-api
+    tag: 1.0.0_dev
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+    requests:
+      cpu: 1000m
+      memory: 400Mi
+  service:
+    clientApiServerServiceName: client-api
+config:
+  adminPassword: P@ssw0rd
+  city: Austin
+  configmap:
+    cnAuthServerBackend: "auth-server:8080"
+    cnCacheType: NATIVE_PERSISTENCE
+    cnCasaEnabled: true
+    cnClientApiAdminCertCn: client-api
+    cnClientApiApplicationCertCn: client-api
+    cnClientApiBindIpAddresses: "*"
+    cnClientApiServerUrl: "client-api:8443"
+    cnConfigKubernetesConfigMap: cn
+    cnCouchbaseBucketPrefix: jans
+    cnCouchbaseCertFile: /etc/certs/couchbase.crt
+    cnCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    cnCouchbaseIndexNumReplica: 0
+    cnCouchbasePassword: P@ssw0rd
+    cnCouchbasePasswordFile: /etc/gluu/conf/couchbase_password
+    cnCouchbaseSuperUser: admin
+    cnCouchbaseSuperUserPassword: P@ssw0rd
+    cnCouchbaseSuperUserPasswordFile: /etc/gluu/conf/couchbase_superuser_password
+    cnCouchbaseUrl: cbgluu.default.svc.cluster.local
+    cnCouchbaseUser: gluu
+    cnDocumentStoreType: JCA
+    cnJackrabbitAdminId: admin
+    cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
+    cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
+    cnJackrabbitPostgresDatabaseName: jackrabbit
+    cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
+    cnJackrabbitPostgresPort: 5432
+    cnJackrabbitPostgresUser: jackrabbit
+    cnJackrabbitSyncInterval: 300
+    cnJackrabbitUrl: "http://jackrabbit:8080"
+    cnLdapUrl: "opendj:1636"
+    cnMaxRamPercent: "75.0"
+    cnPassportEnabled: true
+    cnPersistenceLdapMapping: default
+    cnRadiusEnabled: true
+    cnRedisSentinelGroup: ""
+    cnRedisSslTruststore: ""
+    cnRedisType: STANDALONE
+    cnRedisUrl: "redis.redis.svc.cluster.local:6379"
+    cnRedisUseSsl: false
+    cnSamlEnabled: false
+    cnSecretKubernetesSecret: cn
+    cnSyncCasaManifests: false
+    cnSyncShibManifests: false
+    configAdapterName: kubernetes
+    configSecretAdapter: kubernetes
+    containerMetadataName: kubernetes
+    lbAddr: ""
+    ldapServiceName: opendj
+  countryCode: US
+  email: support@gluu.org
+  image:
+    repository: janssenproject/configuration-manager
+    tag: 5.0.0_dev
+  ldapPassword: P@ssw0rds
+  orgName: Gluu
+  redisPassword: P@assw0rd
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+  state: TX
+config-api:
+  image:
+    pullPolicy: Always
+    repository: janssenproject/config-api
+    tag: 1.0.0_dev
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+    requests:
+      cpu: 1000m
+      memory: 400Mi
+  service:
+    configApiServerServiceName: config-api
+cr-rotate:
+  image:
+    pullPolicy: Alwayss
+    repository: gluufederation/cr-rotate
+    tag: 5.0.0_dev
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 200m
+      memory: 200Mi
+  service:
+    crRotateServiceName: cr-rotate
+fido2:
+  image:
+    pullPolicy: Always
+    repository: janssenproject/fido2
+    tag: 1.0.0_dev
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+  service:
+    fido2ServiceName: fido2
 global:
-  istio:
-    ingress: false
-    enabled: false
-    namespace: istio-system
   alb:
     ingress: false
-  cloud:
-    testEnviroment: false
-  upgrade:
-    enabled: false
-  storageClass:
-    provisioner: microk8s.io/hostpath
-    parameters:
-      type:
-      fsType:
-      storageAccountType:
-      kind:
-      pool:
-    reclaimPolicy: Retain
-    allowVolumeExpansion: true
-    mountOptions: [debug]
-    volumeBindingMode: WaitForFirstConsumer
-    allowedTopologies:
-  gcePdStorageType: pd-standard
-  azureStorageAccountType: Standard_LRS
-  azureStorageKind: Managed
-  lbIp: ""
-  domain: demoexample.gluu.org
-  isDomainRegistered: "false"
-  cnPersistenceType: ldap
-  cnJackrabbitCluster: "true"
   auth-server:
     enabled: true
-  fido2:
-    enabled: true
-  scim:
-    enabled: true
+  auth-server-key-rotation:
+    enabled: false
+  awsStorageType: io1
+  azureStorageAccountType: Standard_LRS
+  azureStorageKind: Managed
+  client-api:
+    enabled: false
+  cloud:
+    testEnviroment: false
+  cnJackrabbitCluster: true
+  cnPersistenceType: ldap
   config:
     enabled: true
   config-api:
     enabled: true
+  cr-rotate:
+    enabled: false
+  fqdn: demoexample.gluu.org
+  fido2:
+    enabled: true
+  gcePdStorageType: pd-standard
+  isFqdnRegistered: false
+  istio:
+    enabled: false
+    ingress: false
+    namespace: istio-system
   jackrabbit:
     enabled: true
-  persistence:
-    enabled: true
-  oxtrust:
+  lbIp: ""
+  nginx-ingress:
     enabled: true
   opendj:
     enabled: true
   oxshibboleth:
     enabled: false
-  client-api:
+  persistence:
     enabled: true
-  nginx-ingress:
+  scim:
     enabled: true
-  auth-server-key-rotation:
-    enabled: true
-  cr-rotate:
+  storageClass:
+    allowVolumeExpansion: true
+    allowedTopologies:
+    mountOptions:
+      - debug
+    parameters:
+      fsType:
+      kind:
+      pool:
+      storageAccountType:
+      type:
+    provisioner: microk8s.io/hostpath
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+  upgrade:
     enabled: false
-config:
-  orgName: Gluu
-  email: support@gluu.com
-  adminPass: P@ssw0rd
-  ldapPass: P@ssw0rd
-  redisPass: P@assw0rd
-  countryCode: US
-  state: TX
-  city: Austin
-  secondaryCluster:
-    enabled: false
-  configmap:
-    cnConfigKubernetesConfigMap: cn
-    cnSecretKubernetesSecret: cn
-    cnClientApiApplicationCertCn: client-api
-    cnClientApiAdminCertCn: client-api
-    cnCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-    cnCouchbasePass: P@ssw0rd
-    cnCouchbaseSuperUserPass: P@ssw0rd
-    cnCouchbaseSuperUser: admin
-    cnCouchbaseUrl: cbgluu.default.svc.cluster.local
-    cnCouchbaseBucketPrefix: jans
-    cnCouchbaseIndexNumReplica: 0
-    cnCouchbaseUser: gluu
-    cnCouchbasePassFile: /etc/gluu/conf/couchbase_password
-    cnCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password
-    cnCouchbaseCertFile: /etc/certs/couchbase.crt
-    cnPersistenceLdapMapping: default
-    cnCacheType: NATIVE_PERSISTENCE
-    cnSyncShibManifests: false
-    cnSyncCasaManifests: false
-    cnMaxRamPercent: "75.0"
-    configAdapterName: kubernetes
-    containerMetadataName: kubernetes
-    configSecretAdapter: kubernetes
-    cnRedisUrl: redis:6379
-    cnRedisUseSsl: "false"
-    cnRedisType: STANDALONE
-    cnRedisSslTruststore: ""
-    cnRedisSentinelGroup: ""
-    cnOxtrustBackend: oxtrust:8080
-    cnAuthServerBackend: auth-server:8080
-    cnClientApiServerUrl: client-api:8443
-    cnClientApiBindIpAddresses: "*"
-    cnLdapUrl: opendj:1636
-    cnJackrabbitPostgresUser: jackrabbit
-    cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
-    cnJackrabbitPostgresDatabaseName: jackrabbit
-    cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
-    cnJackrabbitPostgresPort: 5432
-    cnJackrabbitAdminId: admin
-    cnJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
-    cnJackrabbitSyncInterval: 300
-    cnJackrabbitUrl: http://jackrabbit:8080
-    cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
-    cnDocumentStoreType: JCA
-    lbAddr: ""
-    ldapServiceName: opendj
-    cnOxtrustApiEnabled: false
-    cnOxtrustApiTestMode: false
-    cnPassportEnabled: false
-    cnCasaEnabled: false
-    cnRadiusEnabled: false
-    cnSamlEnabled: false
-  image:
-    repository: janssenproject/configuration-manager
-    tag: 5.0.0_dev
-  resources:
-    limits:
-      cpu: 300m
-      memory: 300Mi
-    requests:
-      cpu: 300m
-      memory: 300Mi
-nginx-ingress:
-  ingress:
-    enabled: true
-    path: /
-    hosts:
-    - demoexample.gluu.org
-    tls:
-    - secretName: tls-certificate # DON'T change
-      hosts:
-      - demoexample.gluu.org
-
 jackrabbit:
-  service:
-    jackRabbitServiceName: jackrabbit
-  replicas: 1
-  secrets:
-    cnJackrabbitAdminPass: admin
-    cnJackrabbitPostgresPass: P@ssw0rd
-  storage:
-    size: 5Gi
   image:
+    pullPolicy: Always
     repository: gluufederation/jackrabbit
     tag: 5.0.0_dev
-    pullPolicy: Always
+  replicas: 1
   resources:
     limits:
       cpu: 1500m
@@ -163,184 +321,105 @@ jackrabbit:
     requests:
       cpu: 1500m
       memory: 1000Mi
+  secrets:
+    cnJackrabbitAdminPassword: Test1234#
+    cnJackrabbitPostgresPassword: P@ssw0rd
+  service:
+    jackRabbitServiceName: jackrabbit
+  storage:
+    size: 5Gi
+nginx-ingress:
+  ingress:
+    # /.well-known/openid-configuration
+    openidConfigEnabled: true
+    # /.well-known/uma2-configuration
+    uma2ConfigEnabled: true
+    # /.well-known/webfinger
+    webfingerEnabled: true
+    # /.well-known/simple-web-discovery
+    webdiscoveryEnabled: true
+    # /.well-known/scim-configuration
+    scimConfigEnabled: true
+    # /jans-scim
+    scimEnabled: true
+    # /jans-config-api
+    configApiEnabled: true
+    # /.well-known/fido-configuration
+    u2fConfigEnabled: true
+    # /.well-known/fido2-configuration
+    fido2ConfigEnabled: true
+    # /jans-auth
+    authServerEnabled: true
+    # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
+    additionalAnnotations: {}
+    path: /
+    hosts:
+    - demoexample.jans.io
+    tls:
+    - secretName: tls-certificate
+      hosts:
+      - demoexample.jans.io
 opendj:
+  image:
+    pullPolicy: Always
+    repository: gluufederation/opendj
+    tag: 5.0.0_dev
   multiCluster:
     enabled: false
     serfAdvertiseAddr: "firstldap.gluu.org:30946"
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
-    serfPeers: ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
-  service:
-    ldapServiceName: opendj
-  replicas: 1
+    serfPeers:
+      - "firstldap.gluu.org:30946"
+      - "secondldap.gluu.org:31946"
   persistence:
     size: 5Gi
-  image:
-    repository: gluufederation/opendj
-    tag: 5.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 1500m
-      memory: 2000Mi
-    requests:
-      cpu: 1500m
-      memory: 2000Mi
   ports:
-    tcp-ldaps:
-      port: 1636
-      targetPort: 1636
-      protocol: TCP
-      nodePort: ""
-    tcp-ldap:
-      port: 1389
-      targetPort: 1389
-      protocol: TCP
-      nodePort: ""
-    tcp-repl:
-      port: 8989
-      targetPort: 8989
-      protocol: TCP
-      nodePort: ""
     tcp-admin:
+      nodePort: ""
       port: 4444
+      protocol: TCP
       targetPort: 4444
-      protocol: TCP
+    tcp-ldap:
       nodePort: ""
+      port: 1389
+      protocol: TCP
+      targetPort: 1389
+    tcp-ldaps:
+      nodePort: ""
+      port: 1636
+      protocol: TCP
+      targetPort: 1636
+    tcp-repl:
+      nodePort: ""
+      port: 8989
+      protocol: TCP
+      targetPort: 8989
     tcp-serf:
+      nodePort: ""
       port: 7946
-      targetPort: 7946
       protocol: TCP
-      nodePort: ""
-    udp-serf:
-      port: 7946
       targetPort: 7946
-      protocol: UDP
+    udp-serf:
       nodePort: ""
-persistence:
-  image:
-    repository: janssenproject/persistence-loader
-    tag: 1.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 300m
-      memory: 300Mi
-    requests:
-      cpu: 300m
-      memory: 300Mi
-auth-server:
-  service:
-    authServerServiceName: auth-server
+      port: 7946
+      protocol: UDP
+      targetPort: 7946
   replicas: 1
-  image:
-    repository: janssenproject/auth-server
-    tag: 1.0.0_dev
-    pullPolicy: Always
   resources:
     limits:
-      cpu: 2500m
-      memory: 2500Mi
+      cpu: 1500m
+      memory: 2000Mi
     requests:
-      cpu: 2500m
-      memory: 2500Mi
-oxtrust:
+      cpu: 1500m
+      memory: 2000Mi
   service:
-    oxTrustServiceName: oxtrust
-  replicas: 1
-  image:
-    repository: gluufederation/oxtrust
-    tag: 5.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1000Mi
-    requests:
-      cpu: 1000m
-      memory: 1000Mi
-fido2:
-  service:
-    fido2ServiceName: fido2
-  replicas: 1
-  image:
-    repository: janssenproject/fido2
-    tag: 1.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 500m
-      memory: 500Mi
-    requests:
-      cpu: 500m
-      memory: 500Mi
-scim:
-  service:
-    scimServiceName: scim
-  replicas: 1
-  image:
-    repository: janssenproject/scim
-    tag: 1.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1000Mi
-    requests:
-      cpu: 1000m
-      memory: 1000Mi
-client-api:
-  service:
-    clientApiServerServiceName: client-api
-  replicas: 1
-  image:
-    repository: janssenproject/client-api
-    tag: 1.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 400Mi
-    requests:
-      cpu: 1000m
-      memory: 400Mi
-config-api:
-  service:
-    configApiServerServiceName: config-api
-  replicas: 1
-  image:
-    repository: janssenproject/config-api
-    tag: 1.0.0_dev
-    pullPolicy: Always
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 400Mi
-    requests:
-      cpu: 1000m
-      memory: 400Mi
-casa:
-  service:
-    casaServiceName: casa
-  replicas: 1
-  image:
-    repository: gluufederation/casa
-    tag: 5.0.0_dev
-    pullPolicy: Always
-  resources:
-    requests:
-      memory: "500Mi"
-      cpu: "500m"
-    limits:
-      memory: "500Mi"
-      cpu: "500m"
+    ldapServiceName: opendj
 oxpassport:
-  service:
-    oxPassportServiceName: oxpassport
-  replicas: 1
   image:
+    pullPolicy: Always
     repository: gluufederation/oxpassport
     tag: 5.0.0_dev
-    pullPolicy: Always
+  replicas: 1
   resources:
     limits:
       cpu: 700m
@@ -348,14 +427,14 @@ oxpassport:
     requests:
       cpu: 700m
       memory: 900Mi
-oxshibboleth:
   service:
-    oxShibbolethServiceName: oxshibboleth
-  replicas: 1
+    oxPassportServiceName: oxpassport
+oxshibboleth:
   image:
+    pullPolicy: Always
     repository: gluufederation/oxshibboleth
     tag: 5.0.0_dev
-    pullPolicy: Always
+  replicas: 1
   resources:
     limits:
       cpu: 1000m
@@ -363,14 +442,26 @@ oxshibboleth:
     requests:
       cpu: 1000m
       memory: 1000Mi
-radius:
   service:
-    radiusServiceName: radius
-  replicas: 1
+    oxShibbolethServiceName: oxshibboleth
+persistence:
   image:
+    pullPolicy: Always
+    repository: janssenproject/persistence-loader
+    tag: 1.0.0_dev
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+radius:
+  image:
+    pullPolicy: Always
     repository: gluufederation/radius
     tag: 5.0.0_dev
-    pullPolicy: Always
+  replicas: 1
   resources:
     limits:
       cpu: 700m
@@ -378,31 +469,20 @@ radius:
     requests:
       cpu: 700m
       memory: 700Mi
-cr-rotate:
   service:
-    crRotateServiceName: cr-rotate
+    radiusServiceName: radius
+scim:
   image:
-    repository: gluufederation/cr-rotate
-    tag: 5.0.0_dev
     pullPolicy: Always
-  resources:
-    limits:
-      cpu: 200m
-      memory: 200Mi
-    requests:
-      cpu: 200m
-      memory: 200Mi
-auth-server-key-rotation:
-  keysLife: 48
-  image:
-    repository: janssenproject/certmanager
+    repository: janssenproject/scim
     tag: 1.0.0_dev
-    pullPolicy: Always
+  replicas: 1
   resources:
     limits:
-      cpu: 300m
-      memory: 300Mi
+      cpu: 1000m
+      memory: 1000Mi
     requests:
-      cpu: 300m
-      memory: 300Mi
-
+      cpu: 1000m
+      memory: 1000Mi
+  service:
+    scimServiceName: scim

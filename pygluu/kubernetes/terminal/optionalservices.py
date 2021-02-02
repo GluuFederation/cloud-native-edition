@@ -9,7 +9,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 """
 
 import click
-from pygluu.kubernetes.terminal.helpers import confirm_yesno
 
 
 class PromptOptionalServices:
@@ -18,82 +17,51 @@ class PromptOptionalServices:
 
     def __init__(self, settings):
         self.settings = settings
-        self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_optional_services(self):
-        if not self.settings.get("ENABLE_CACHE_REFRESH"):
-            self.settings.set("ENABLE_CACHE_REFRESH", confirm_yesno("Deploy Cr-Rotate"))
-        if self.settings.get("ENABLE_CACHE_REFRESH") == "Y":
-            self.enabled_services.append("cr-rotate")
+        if self.settings.get("global.cr-rotate.enabled") in (None, ''):
+            self.settings.set("global.cr-rotate.enabled", click.confirm("Deploy Cr-Rotate"))
 
-        if not self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE"):
-            self.settings.set("ENABLE_AUTH_SERVER_KEY_ROTATE", confirm_yesno("Deploy Key-Rotation"))
+        if self.settings.get("global.auth-server-key-rotation.enabled") in (None, ''):
+            self.settings.set("global.auth-server-key-rotation.enabled", click.confirm("Deploy Key-Rotation"))
 
-        if self.settings.get("ENABLE_AUTH_SERVER_KEY_ROTATE") == "Y":
-            self.enabled_services.append("auth-server-key-rotation")
-            if not self.settings.get("AUTH_SERVER_KEYS_LIFE"):
-                self.settings.set("AUTH_SERVER_KEYS_LIFE", click.prompt("Auth-Server keys life in hours", default=48))
+        if self.settings.get("global.auth-server-key-rotation.enabled"):
+            if not self.settings.get("auth-server-key-rotation.keysLife"):
+                self.settings.set("auth-server-key-rotation.keysLife",
+                                  click.prompt("Auth-Server keys life in hours", default=48))
 
-        if not self.settings.get("ENABLE_RADIUS"):
-            self.settings.set("ENABLE_RADIUS", confirm_yesno("Deploy Radius"))
-        if self.settings.get("ENABLE_RADIUS") == "Y":
-            self.enabled_services.append("radius")
-            self.settings.set("ENABLE_RADIUS_BOOLEAN", "true")
+        if not self.settings.get("config.configmap.cnRadiusEnabled") in (None, ''):
+            self.settings.set("config.configmap.cnRadiusEnabled", click.confirm("Deploy Radius"))
 
-        if not self.settings.get("ENABLE_OXPASSPORT"):
-            self.settings.set("ENABLE_OXPASSPORT", confirm_yesno("Deploy Passport"))
-        if self.settings.get("ENABLE_OXPASSPORT") == "Y":
-            self.enabled_services.append("oxpassport")
-            self.settings.set("ENABLE_OXPASSPORT_BOOLEAN", "true")
+        if self.settings.get("config.configmap.cnPassportEnabled") in (None, ''):
+            self.settings.set("config.configmap.cnPassportEnabled", click.confirm("Deploy Passport"))
 
-        if not self.settings.get("ENABLE_OXSHIBBOLETH"):
-            self.settings.set("ENABLE_OXSHIBBOLETH", confirm_yesno("Deploy Shibboleth SAML IDP"))
-        if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
-            self.enabled_services.append("oxshibboleth")
-            self.settings.set("ENABLE_SAML_BOOLEAN", "true")
+        if self.settings.get("global.oxshibboleth.enabled") in (None, ''):
+            self.settings.set("global.oxshibboleth.enabled", click.confirm("Deploy Shibboleth SAML IDP"))
 
-        if not self.settings.get("ENABLE_CASA"):
-            self.settings.set("ENABLE_CASA", confirm_yesno("Deploy Casa"))
-        if self.settings.get("ENABLE_CASA") == "Y":
-            self.enabled_services.append("casa")
-            self.settings.set("ENABLE_CASA_BOOLEAN", "true")
-            self.settings.set("ENABLE_CLIENT_API", "Y")
+        if self.settings.get("config.configmap.cnCasaEnabled") in (None, ''):
+            self.settings.set("config.configmap.cnCasaEnabled", click.confirm("Deploy Casa"))
+        if self.settings.get("config.configmap.cnCasaEnabled"):
+            self.settings.set("global.client-api.enabled", True)
 
-        if not self.settings.get("ENABLE_FIDO2"):
-            self.settings.set("ENABLE_FIDO2", confirm_yesno("Deploy fido2"))
-        if self.settings.get("ENABLE_FIDO2") == "Y":
-            self.enabled_services.append("fido2")
+        if not self.settings.get("global.fido2.enabled"):
+            self.settings.set("global.fido2.enabled", click.confirm("Deploy fido2"))
 
-        if not self.settings.get("ENABLE_CONFIG_API"):
-            self.settings.set("ENABLE_CONFIG_API", confirm_yesno("Deploy Config API"))
-        if self.settings.get("ENABLE_CONFIG_API") == "Y":
-            self.enabled_services.append("config-api")
+        if not self.settings.get("global.config-api.enabled"):
+            self.settings.set("global.config-api.enabled", click.confirm("Deploy Config API"))
 
-        if not self.settings.get("ENABLE_SCIM"):
-            self.settings.set("ENABLE_SCIM", confirm_yesno("Deploy scim"))
-        if self.settings.get("ENABLE_SCIM") == "Y":
-            self.enabled_services.append("scim")
+        if not self.settings.get("global.scim.enabled"):
+            self.settings.set("global.scim.enabled", click.confirm("Deploy scim"))
 
-        if not self.settings.get("ENABLE_CLIENT_API"):
-            self.settings.set("ENABLE_CLIENT_API", confirm_yesno("Deploy Client API"))
+        if not self.settings.get("global.client-api.enabled"):
+            self.settings.set("global.client-api.enabled", click.confirm("Deploy Client API"))
 
-        if self.settings.get("ENABLE_CLIENT_API") == "Y":
-            self.enabled_services.append("client-api")
-            if not self.settings.get("CLIENT_API_APPLICATION_KEYSTORE_CN"):
-                self.settings.set("CLIENT_API_APPLICATION_KEYSTORE_CN",
+        if self.settings.get("global.client-api.enabled"):
+            if self.settings.get("config.configmap.cnClientApiApplicationCertCn") in (None, ''):
+                self.settings.set("config.configmap.cnClientApiApplicationCertCn",
                                   click.prompt("Client API application keystore name",
                                                default="client-api"))
-            if not self.settings.get("CLIENT_API_ADMIN_KEYSTORE_CN"):
-                self.settings.set("CLIENT_API_ADMIN_KEYSTORE_CN", click.prompt("Client API admin keystore name",
-                                                                               default="client-api"))
-
-        if not self.settings.get("ENABLE_OXTRUST_API"):
-            self.settings.set("ENABLE_OXTRUST_API", confirm_yesno("Enable oxTrust API"))
-
-        if self.settings.get("ENABLE_OXTRUST_API"):
-            self.settings.set("ENABLE_OXTRUST_API_BOOLEAN", "true")
-            if not self.settings.get("ENABLE_OXTRUST_TEST_MODE"):
-                self.settings.set("ENABLE_OXTRUST_TEST_MODE", confirm_yesno("Enable oxTrust Test Mode"))
-        if self.settings.get("ENABLE_OXTRUST_TEST_MODE") == "Y":
-            self.settings.set("ENABLE_OXTRUST_TEST_MODE_BOOLEAN", "true")
-        self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
+            if self.settings.get("config.configmap.cnClientApiAdminCertCn") in (None, ''):
+                self.settings.set("config.configmap.cnClientApiAdminCertCn",
+                                  click.prompt("Client API admin keystore name",
+                                               default="client-api"))

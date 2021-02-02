@@ -63,7 +63,7 @@ def test_prompt_replicas_persistence(monkeypatch, settings, type_):
     settings.set("AUTH_SERVER_REPLICAS", 1)
     settings.set("OXTRUST_REPLICAS", 1)
 
-    settings.set("PERSISTENCE_BACKEND", type_)
+    settings.set("CN_PERSISTENCE_BACKEND", type_)
     PromptReplicas(settings).prompt_replicas()
     assert settings.get("LDAP_REPLICAS") == 1
 

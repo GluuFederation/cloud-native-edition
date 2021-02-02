@@ -10,10 +10,10 @@ spec:
   # oxtrust
   - port:
       number: 80
-      name: http-oxtrust
+      name: http-admin-ui
       protocol: HTTP
     hosts:
-      - {{ .Values.global.domain }}
+      - {{ .Values.global.fqdn }}
     tls:
       httpsRedirect: true
   - port:
@@ -21,7 +21,7 @@ spec:
       name: https
       protocol: HTTPS
     hosts:
-      - {{ .Values.global.domain }}
+      - {{ .Values.global.fqdn }}
     tls:
       mode: SIMPLE # enable https on this port
       credentialName: tls-certificate # fetch cert from k8s secret

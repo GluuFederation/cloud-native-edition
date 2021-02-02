@@ -12,17 +12,17 @@ spec:
         - name: kong-migration
           image: gluufederation/gluu-gateway:5.0.0_dev
           env:
-            - name: KONG_DATABASE
+            - name: CN_KONG_DATABASE
               value: "postgres"
             - name: KONG_PG_HOST
               value: postgres.postgres.svc.cluster.local
-            - name: KONG_PG_USER
+            - name: CN_KONG_PG_USER
               value: kong
-            - name: KONG_PG_PASSWORD
+            - name: CN_KONG_PG_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: kong-postgres-pass
-                  key: KONG_PG_PASSWORD
+                  key: CN_KONG_PG_PASSWORD
           command:
             - /bin/sh
             - -c

@@ -21,18 +21,24 @@ class PromptPostgres:
     def prompt_postgres(self):
         """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
         """
-        if not self.settings.get("POSTGRES_NAMESPACE"):
-            namespace = click.prompt("Please enter a namespace for postgres", default="postgres")
-            self.settings.set("POSTGRES_NAMESPACE", namespace)
+        if self.settings.get("installer-settings.postgres.install") in (None, ''):
+            install = click.confirm("Install postgres using the KubeDB operator?)")
+            self.settings.set("installer-settings.postgres.install", install)
 
-        if not self.settings.get("POSTGRES_REPLICAS"):
-            replicas = click.prompt("Please enter number of replicas for postgres", default=3)
-            self.settings.set("POSTGRES_REPLICAS", replicas)
+        if self.settings.get("installer-settings.postgres.install"):
+            if self.settings.get("installer-settings.postgres.namespace") in (None, ''):
+                namespace = click.prompt("Please enter a namespace for postgres.", default="postgres")
+                self.settings.set("installer-settings.postgres.namespace", namespace)
 
-        if not self.settings.get("POSTGRES_URL"):
+            if self.settings.get("installer-settings.postgres.replicas") in (None, ''):
+                replicas = click.prompt("Please enter number of replicas for postgres.", default=3)
+                self.settings.set("installer-settings.postgres.replicas", replicas)
+
+        if self.settings.get("config.configmap.cnJackrabbitPostgresHost") in (None, ''):
             url = click.prompt(
                 "Please enter  postgres (remote or local) "
-                "URL base name. If postgres is to be installed",
-                default=f"postgres.{self.settings.get('POSTGRES_NAMESPACE')}.svc.cluster.local",
+                "URL base name.The recommended approach is to use a "
+                "production grade managed service such as Aurora",
+                default=f"postgres.{self.settings.get('CN_POSTGRES_NAMESPACE')}.svc.cluster.local",
             )
-            self.settings.set("POSTGRES_URL", url)
+            self.settings.set("config.configmap.cnJackrabbitPostgresHost", url)

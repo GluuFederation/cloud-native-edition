@@ -40,15 +40,14 @@ setup(
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
         "kubernetes==12.0.0",
-        "Flask==1.1.2",
         "Click!=7.0,>=6.7",
-        "Flask-WTF >= 0.14.2",
         "email_validator >= 1.1.0",
         "Flask-SocketIO >= 4.3.1",
         "Pygtail >= 0.11.1",
-        "gunicorn >= 20.0.4",
         "gevent >= 20.9.0",
         "jsonschema >= 3.2.0",
+        "dotty-dict >= 1.3.0",
+        "PyYAML >= 5.4.1"
     ],
     classifiers=[
         "Intended Audience :: Developers",

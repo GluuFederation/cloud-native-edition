@@ -24,7 +24,7 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh
           - -c
@@ -45,7 +45,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-config-cm
         volumeMounts:
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           - name: {{ include "radius.fullname" .}}-updatelbip
             mountPath: /scripts
         {{- end }}
@@ -53,9 +53,11 @@ spec:
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
+          {{- if not .Values.global.istio.enabled }}
           - name: cb-crt 
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
+          {{- end }}
         {{- end }}
         livenessProbe:
           exec:
@@ -84,7 +86,7 @@ spec:
 {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
       volumes:
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         - name: {{ include "radius.fullname" .}}-updatelbip
           configMap:
             name: {{ .Release.Name }}-updatelbip
@@ -92,15 +94,17 @@ spec:
         {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
-            secretName: {{ .Release.Name }}-cb-pass 
+            secretName: {{ .Release.Name }}-cb-pass
+        {{- if not .Values.global.istio.enabled }}
         - name: cb-crt 
           secret:
-            secretName: {{ .Release.Name }}-cb-crt          
+            secretName: {{ .Release.Name }}-cb-crt
         {{- end }}
-      {{- if eq .Values.global.isDomainRegistered "false"}}
+        {{- end }}
+      {{- if eq .Values.global.isFqdnRegistered "false"}}
       hostAliases:
         - ip: {{ .Values.global.lbIp }}
           hostnames:
-            - {{ .Values.global.domain }} 
+            - {{ .Values.global.fqdn }}
       {{- end }}
 

@@ -10,8 +10,8 @@ service:
 replicas: 1
 
 secrets:
-  cnJackrabbitAdminPass: admin
-  cnJackrabbitPostgresPass: P@ssw0rd
+  cnJackrabbitAdminPassword: admin
+  cnJackrabbitPostgresPassword: P@ssw0rd
 
 image:
   repository: gluufederation/jackrabbit

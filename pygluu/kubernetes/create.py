@@ -10,7 +10,7 @@ from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
 from pygluu.kubernetes.helpers import get_logger, copy_templates
 from pygluu.kubernetes.gluu import Gluu
-from pygluu.kubernetes.settings import SettingsHandler
+from pygluu.kubernetes.settings import ValuesHandler
 
 logger = get_logger("gluu-create        ")
 
@@ -54,7 +54,7 @@ def main():
         parser.print_help()
         return
     copy_templates()
-    settings = SettingsHandler()
+    settings = ValuesHandler()
     settings.validate()
     if not settings.validate():
         for error in settings.errors:
@@ -63,7 +63,7 @@ def main():
 
     prompts = Prompt()
     prompts.prompt()
-    settings = SettingsHandler()
+    settings = ValuesHandler()
 
     try:
         if args.subparser_name == "install-ldap-backup":
@@ -76,7 +76,8 @@ def main():
             prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
-            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            if settings.get("installer-settings.redis.install") or \
+                    settings.get("installer-settings.gluuGateway.install"):
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
                 kubedb.uninstall_kubedb()
@@ -85,7 +86,8 @@ def main():
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
             # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
             gluu = Gluu()
-            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("installer-settings.jackrabbit.clusterMode") and \
+                    settings.get("installer-settings.postgres.install"):
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
                 kubedb.uninstall_kubedb()
@@ -132,18 +134,18 @@ def main():
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             gluu = Gluu()
-            if settings.get("INSTALL_REDIS") == "Y" or \
-                    settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                    settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("installer-settings.redis.install") or \
+                    settings.get("installer-settings.gluuGateway.install") or \
+                    settings.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
                 kubedb.uninstall_kubedb()
                 kubedb.install_kubedb()
-            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.postgres import Postgres
                 postgres = Postgres()
                 postgres.install_postgres()
-            if settings.get("INSTALL_REDIS") == "Y":
+            if settings.get("installer-settings.redis.install"):
                 from pygluu.kubernetes.redis import Redis
                 redis = Redis()
                 redis.uninstall_redis()
@@ -198,7 +200,6 @@ def main():
             gluugateway = GluuGateway()
             gluugateway.uninstall_gluu_gateway_dbmode()
             gluugateway.uninstall_gluu_gateway_ui()
-
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")

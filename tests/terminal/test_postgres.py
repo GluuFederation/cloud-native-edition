@@ -10,12 +10,12 @@ def test_postgres_namespace(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("POSTGRES_REPLICAS", 3)
-    settings.set("POSTGRES_URL", "postgres.postgres.svc.cluster.local")
+    settings.set("CN_POSTGRES_REPLICAS", 3)
+    settings.set("CN_POSTGRES_URL", "postgres.postgres.svc.cluster.local")
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("POSTGRES_NAMESPACE") == expected
+    assert settings.get("installer-settings.postgres.install") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -27,12 +27,12 @@ def test_postgres_replicas(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("POSTGRES_NAMESPACE", "postgres")
-    settings.set("POSTGRES_URL", "postgres.postgres.svc.cluster.local")
+    settings.set("CN_POSTGRES_NAMESPACE", "postgres")
+    settings.set("CN_POSTGRES_URL", "postgres.postgres.svc.cluster.local")
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("POSTGRES_REPLICAS") == expected
+    assert settings.get("installer-settings.postgres.replicas") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -44,9 +44,9 @@ def test_postgres_url(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("POSTGRES_NAMESPACE", "postgres")
-    settings.set("POSTGRES_REPLICAS", 3)
+    settings.set("CN_POSTGRES_NAMESPACE", "postgres")
+    settings.set("CN_POSTGRES_REPLICAS", 3)
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
-    assert settings.get("POSTGRES_URL") == expected
+    assert settings.get("config.configmap.cnJackrabbitPostgresHost") == expected

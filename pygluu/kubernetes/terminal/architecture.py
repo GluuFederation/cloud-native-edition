@@ -21,7 +21,7 @@ class PromptArch:
         """Prompts for the kubernetes infrastructure used.
         """
         # TODO: This should be auto-detected
-        if not self.settings.get("DEPLOYMENT_ARCH"):
+        if self.settings.get("global.storageClass.provisioner") in (None, ''):
             print("|------------------------------------------------------------------|")
             print("|                     Test Environment Deployments                 |")
             print("|------------------------------------------------------------------|")
@@ -41,13 +41,13 @@ class PromptArch:
             print("|------------------------------------------------------------------|")
 
             arch_map = {
-                1: "microk8s",
-                2: "minikube",
-                3: "eks",
-                4: "gke",
-                5: "aks",
-                6: "do",
-                7: "local",
+                1: "microk8s.io/hostpath",
+                2: "k8s.io/minikube-hostpath",
+                3: "kubernetes.io/aws-ebs",
+                4: "kubernetes.io/gce-pd",
+                5: "kubernetes.io/azure-disk",
+                6: "dobs.csi.digitalocean.com",
+                7: "openebs.io/local",
             }
             choice = click.prompt("Deploy on", default=1)
-            self.settings.set("DEPLOYMENT_ARCH", arch_map.get(choice, "microk8s"))
+            self.settings.set("global.storageClass.provisioner", arch_map.get(choice, "microk8s.io/hostpath"))

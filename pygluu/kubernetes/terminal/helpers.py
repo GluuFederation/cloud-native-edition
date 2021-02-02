@@ -14,19 +14,6 @@ from pygluu.kubernetes.helpers import get_logger
 logger = get_logger("gluu-prompt-common")
 
 
-def confirm_yesno(text, *args, **kwargs):
-    """Like ``click.confirm`` but returns ``Y`` or ``N`` character
-    instead of boolean.
-    """
-    default = "[N]"
-    # Default is always N unless default is set in kwargs
-    if "default" in kwargs and kwargs["default"]:
-        default = "[Y]"
-
-    confirmed = click.confirm(f"{text} {default}", *args, **kwargs)
-    return "Y" if confirmed else "N"
-
-
 def gather_ip():
     """Attempts to detect and return ip automatically.
     Also set node names, zones, and addresses in a cloud deployment.
@@ -34,10 +21,10 @@ def gather_ip():
     :return:
     """
     from pygluu.kubernetes.kubeapi import Kubernetes
-    from pygluu.kubernetes.settings import SettingsHandler
+    from pygluu.kubernetes.settings import ValuesHandler
     import ipaddress
     kubernetes = Kubernetes()
-    settings = SettingsHandler()
+    settings = ValuesHandler()
     logger.info("Determining OS type and attempting to gather external IP address")
     ip = ""
 
@@ -51,7 +38,8 @@ def gather_ip():
         for node in node_list:
             node_name = node.metadata.name
             node_addresses = kubernetes.read_node(name=node_name).status.addresses
-            if settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
+            if settings.get("global.storageClass.provisioner") in ("microk8s.io/hostpath",
+                                                                   "k8s.io/minikube-hostpath"):
                 for add in node_addresses:
                     if add.type == "InternalIP":
                         ip = add.address
@@ -62,16 +50,21 @@ def gather_ip():
                         ip = add.address
                         node_ip_list.append(ip)
                 # Digital Ocean does not provide zone support yet
-                if settings.get("DEPLOYMENT_ARCH") not in ("do", "local"):
+                if settings.get("global.storageClass.provisioner") not in ("dobs.csi.digitalocean.com",
+                                                                           "openebs.io/local"):
                     node_zone = node.metadata.labels["failure-domain.beta.kubernetes.io/zone"]
                     node_zone_list.append(node_zone)
                 node_name_list.append(node_name)
 
-        settings.set("NODES_NAMES", node_name_list)
-        settings.set("NODES_ZONES", node_zone_list)
-        settings.set("NODES_IPS", node_ip_list)
+        settings.set("installer-settings.nodes.names", node_name_list)
+        settings.set("installer-settings.nodes.zones", node_zone_list)
+        settings.set("installer-settings.nodes.ips", node_ip_list)
 
-        if settings.get("DEPLOYMENT_ARCH") in ("eks", "gke", "do", "local", "aks"):
+        if settings.get("global.storageClass.provisioner") in ("kubernetes.io/aws-ebs",
+                                                               "kubernetes.io/gce-pd",
+                                                               "kubernetes.io/azure-disk",
+                                                               "dobs.csi.digitalocean.com",
+                                                               "openebs.io/local"):
             #  Assign random IP. IP will be changed by either the update ip script, GKE external ip or nlb ip
             return "22.22.22.22"
 

@@ -12,9 +12,9 @@ def test_aws_loadbalancer(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("USE_ARN", "N")
+    settings.set("installer-settings.aws.arn.enabled", False)
     PromptAws(settings).prompt_aws_lb()
-    assert settings.get("AWS_LB_TYPE") == expected
+    assert settings.get("installer-settings.aws.lbType") == expected
 
 
 def test_aws_arn(monkeypatch, settings):
@@ -24,8 +24,8 @@ def test_aws_arn(monkeypatch, settings):
 
     fake_arn = "arn:aws:acm:random"
     monkeypatch.setattr("click.prompt", lambda x: fake_arn)
-    settings.set("VPC_CIDR", "192.168.0.0/16")
-    settings.set("AWS_LB_TYPE", "alb")
+    settings.set("installer-settings.aws.vpcCidr", "192.168.0.0/16")
+    settings.set("installer-settings.aws.lbType", "alb")
     PromptAws(settings).prompt_aws_lb()
-    assert settings.get("USE_ARN") == "Y"
-    assert settings.get("ARN_AWS_IAM") == fake_arn
+    assert settings.get("installer-settings.aws.arn.enabled")
+    assert settings.get("installer-settings.aws.arn.arnAcmCert") == fake_arn

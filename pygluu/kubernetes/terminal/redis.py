@@ -10,7 +10,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 import click
 
 from pygluu.kubernetes.helpers import get_logger, prompt_password
-from pygluu.kubernetes.terminal.helpers import confirm_yesno
 
 logger = get_logger("gluu-prompt-redis  ")
 
@@ -25,36 +24,38 @@ class PromptRedis:
     def prompt_redis(self):
         """Prompts for Redis
         """
-        if not self.settings.get("REDIS_TYPE"):
+        if self.settings.get("config.configmap.cnRedisType") in (None, ''):
             logger.info("STANDALONE, CLUSTER")
-            self.settings.set("REDIS_TYPE", click.prompt("Please enter redis type", default="CLUSTER"))
+            self.settings.set("config.configmap.cnRedisType", click.prompt("Please enter redis type", default="CLUSTER"))
 
-        if not self.settings.get("INSTALL_REDIS"):
+        if self.settings.get("installer-settings.redis.install"):
             logger.info("For the following prompt if placed [N] the Redis is assumed to be"
                         " installed or remotely provisioned")
-            self.settings.set("INSTALL_REDIS", confirm_yesno("Install Redis", default=True))
+            self.settings.set("installer-settings.redis.install", click.confirm("Install Redis using KubeDB operator"))
 
-        if self.settings.get("INSTALL_REDIS") == "Y":
-            if not self.settings.get("REDIS_MASTER_NODES"):
-                self.settings.set("REDIS_MASTER_NODES",
-                                  click.prompt("The number of master node. Minimum is 3", default=3))
+        if self.settings.get("installer-settings.redis.install"):
+            if self.settings.get("installer-settings.redis.masterNodes") in (None, ''):
+                self.settings.set("installer-settings.redis.masterNodes",
+                                  click.prompt("The number of master node. Minimum is 3. "
+                                               "Press enter if remote", default=3))
 
-            if not self.settings.get("REDIS_NODES_PER_MASTER"):
-                self.settings.set("REDIS_NODES_PER_MASTER", click.prompt("The number of nodes per master node",
-                                                                         default=2))
+            if self.settings.get("installer-settings.redis.nodesPerMaster") in (None, ''):
+                self.settings.set("installer-settings.redis.nodesPerMaster",
+                                  click.prompt("The number of nodes per master node", default=2))
 
-            if not self.settings.get("REDIS_NAMESPACE"):
-                self.settings.set("REDIS_NAMESPACE", click.prompt("Please enter a namespace for Redis cluster",
-                                                                  default="gluu-redis-cluster"))
+            if self.settings.get("installer-settings.redis.namespace") in (None, ''):
+                self.settings.set("installer-settings.redis.namespace",
+                                  click.prompt("Please enter a namespace for Redis cluster",
+                                               default="gluu-redis-cluster"))
         else:
             # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
-            if not self.settings.get("REDIS_PW"):
-                self.settings.set("REDIS_PW", prompt_password("Redis"))
+            if self.settings.get("config.redisPassword") in (None, ''):
+                self.settings.set("config.redisPassword", prompt_password("Redis"))
 
-        if not self.settings.get("REDIS_URL"):
-            if self.settings.get("INSTALL_REDIS") == "Y":
+        if self.settings.get("config.configmap.cnRedisUrl") in (None, ''):
+            if self.settings.get("installer-settings.redis.install"):
                 redis_url_prompt = "redis-cluster.{}.svc.cluster.local:6379".format(
-                    self.settings.get("REDIS_NAMESPACE"))
+                    self.settings.get("installer-settings.redis.namespace"))
             else:
                 logger.info(
                     "Redis URL can be : redis-cluster.gluu-redis-cluster.svc.cluster.local:6379 in a redis deployment")
@@ -65,4 +66,4 @@ class PromptRedis:
                     "Please enter redis URL. If you are deploying redis",
                     default="redis-cluster.gluu-redis-cluster.svc.cluster.local:6379",
                 )
-            self.settings.set("REDIS_URL", redis_url_prompt)
+            self.settings.set("config.configmap.cnRedisUrl", redis_url_prompt)

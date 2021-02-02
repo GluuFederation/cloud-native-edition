@@ -12,4 +12,4 @@ def test_gluu_namespace(monkeypatch, settings, given, expected):
 
     prompt = PromptNamespace(settings)
     prompt.prompt_gluu_namespace()
-    assert settings.get("CN_NAMESPACE") == expected
+    assert settings.get("installer-settings.namespace") == expected

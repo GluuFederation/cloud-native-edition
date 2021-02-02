@@ -59,7 +59,7 @@ class InstallHandler(object):
             # New feature in 4.2 compared to 4.1 and hence if enabled should make
             # sure kubedb is installed.
             helm = Gluu()
-            if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
+            if gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
                 kubedb.uninstall_kubedb()
@@ -159,18 +159,18 @@ class InstallHandler(object):
         try:
             self.queue.put(('Preparing for installation', 'ONPROGRESS'))
             helm = Gluu()
-            if gluu_settings.db.get("INSTALL_REDIS") == "Y" or \
-                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                    gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
+            if gluu_settings.db.get("installer-settings.redis.install") or \
+                    gluu_settings.db.get("installer-settings.gluuGateway.install") or \
+                    gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.kubedb import Kubedb
                 kubedb = Kubedb()
                 kubedb.uninstall_kubedb()
                 kubedb.install_kubedb()
-            if gluu_settings.db.get("JACKRABBIT_CLUSTER") == "Y":
+            if gluu_settings.db.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.postgres import Postgres
                 postgres = Postgres()
                 postgres.install_postgres()
-            if gluu_settings.db.get("INSTALL_REDIS") == "Y":
+            if gluu_settings.db.get("installer-settings.redis.install"):
                 from pygluu.kubernetes.redis import Redis
                 redis = Redis()
                 redis.uninstall_redis()

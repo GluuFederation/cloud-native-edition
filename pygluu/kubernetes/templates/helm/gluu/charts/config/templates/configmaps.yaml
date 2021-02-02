@@ -1,4 +1,3 @@
-{{- if not .Values.secondaryCluster.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
@@ -19,11 +18,11 @@ data:
   CN_DOCUMENT_STORE_TYPE: {{ .Values.configmap.cnDocumentStoreType | quote }}
   CN_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.cnJackrabbitSyncInterval | quote }}
   CN_JACKRABBIT_URL: {{ .Values.configmap.cnJackrabbitUrl | quote }}
-  DOMAIN: {{ .Values.global.domain | quote }}
+  DOMAIN: {{ .Values.global.fqdn | quote }}
   CN_AUTH_SERVER_BACKEND: {{ .Values.configmap.cnAuthServerBackend | quote }}
   CN_CLIENT_API_SERVER_URL: {{ .Values.configmap.cnClientApiServerUrl | quote }}
   CN_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.cnClientApiBindIpAddresses | quote }}
-  {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+  {{- if and (eq .Values.global.isFqdnRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
   CN_PERSISTENCE_TYPE: {{ .Values.global.cnPersistenceType }}
@@ -37,9 +36,9 @@ data:
   CN_COUCHBASE_INDEX_NUM_REPLICA: {{ .Values.configmap.cnCouchbaseIndexNumReplica | quote }}
   CN_COUCHBASE_USER: {{ .Values.configmap.cnCouchbaseUser }}
   CN_COUCHBASE_CERT_FILE: {{ .Values.configmap.cnCouchbaseCertFile | quote }}
-  CN_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.cnCouchbasePassFile | quote }}
+  CN_COUCHBASE_PASSWORD_FILE: {{ .Values.configmap.cnCouchbasePasswordFile | quote }}
   CN_COUCHBASE_SUPERUSER: {{ .Values.configmap.cnCouchbaseSuperUser }}
-  CN_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.cnCouchbaseSuperUserPassFile | quote }}
+  CN_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.configmap.cnCouchbaseSuperUserPasswordFile | quote }}
   {{- end }}
   CN_KEY_ROTATION_FORCE: "false"
   CN_KEY_ROTATION_CHECK: "3600"
@@ -63,7 +62,7 @@ data:
   CN_OXTRUST_API_TEST_MODE: {{ .Values.configmap.cnOxtrustApiTestMode | quote }}
   {{ if eq .Values.global.cnJackrabbitCluster "true" }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
-  CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPassFile | quote }}
+  CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}
   CN_JACKRABBIT_CLUSTER: {{ .Values.global.cnJackrabbitCluster | quote }}
   CN_JACKRABBIT_POSTGRES_USER: {{ .Values.configmap.cnJackrabbitPostgresUser | quote }}
   CN_JACKRABBIT_POSTGRES_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitPostgresPasswordFile | quote }}
@@ -88,27 +87,9 @@ data:
   CN_REDIS_SSL_TRUSTSTORE: {{ .Values.configmap.cnRedisSslTruststore | quote }}
   CN_REDIS_SENTINEL_GROUP: {{ .Values.configmap.cnRedisSentinelGroup | quote }}
   {{- end }}
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "config.fullname" . }}-gen-json-file
-  namespace: {{ .Release.Namespace }}
-data:
-  generate.json: |-
-    {
-      "hostname": {{ .Values.global.domain | quote }},
-      "country_code": {{ .Values.countryCode | quote }},
-      "state": {{ .Values.state | quote }},
-      "city": {{ .Values.city | quote }},
-      "admin_pw": {{ .Values.adminPass | quote }},
-      "ldap_pw": {{ .Values.ldapPass | quote }},
-      "redis_pw": {{ .Values.redisPass | quote }},
-      "email": {{ .Values.email | quote }},
-      "org_name": {{ .Values.orgName | quote }}
-    }
+  {{- if .Values.global.istio.enabled }}
+  GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  {{- end }}
 
 ---
 
@@ -300,4 +281,3 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-updatelbip
   namespace: {{ .Release.Namespace }}
-{{- end }}

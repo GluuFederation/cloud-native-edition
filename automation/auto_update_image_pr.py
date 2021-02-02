@@ -191,8 +191,6 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             update_dicts_and_yamls("OXPASSPORT", repo, tag_list)
         elif repo == "oxshibboleth":
             update_dicts_and_yamls("OXSHIBBOLETH", repo, tag_list)
-        elif repo == "oxtrust":
-            update_dicts_and_yamls("OXTRUST", repo, tag_list)
         elif repo == "persistence":
             update_dicts_and_yamls("PERSISTENCE", repo, tag_list, janssen_repo=True)
         elif repo == "radius":
@@ -211,10 +209,10 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
 
 def main():
     all_repos_tags = dict()
-    org = os.environ.get("ORG_NAME", "gluufederation")
+    org = os.environ.get("CN_ORG_NAME", "gluufederation")
     gluu_docker_repositories_names_used_in_cn = ["casa",
                                                  "cr-rotate", "opendj", "jackrabbit", "oxpassport", "oxshibboleth",
-                                                 "oxtrust", "radius", "gluu-gateway",
+                                                 "radius", "gluu-gateway",
                                                  "gluu-gateway-ui", "upgrade"]
     jans_docker_repositories_names_used_in_cn = ["fido2", "scim", "configuration-manager",
                                                  "certmanager", "auth-server",

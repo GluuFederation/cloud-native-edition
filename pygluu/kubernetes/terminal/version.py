@@ -16,8 +16,8 @@ class PromptVersion:
 
     def __init__(self, settings, version=""):
         self.settings = settings
-        if not self.settings.get("CN_VERSION"):
-            self.settings.set("CN_VERSION", version)
+        if self.settings.get("installer-settings.currentVersion"):
+            self.settings.set("installer-settings.currentVersion", version)
         self.prompt_version()
 
     def prompt_version(self):
@@ -25,13 +25,13 @@ class PromptVersion:
         """
         versions, version_number = get_supported_versions()
 
-        if not self.settings.get("CN_VERSION"):
-            self.settings.set("CN_VERSION", click.prompt(
+        if self.settings.get("installer-settings.currentVersion") in (None, ''):
+            self.settings.set("installer-settings.currentVersion", click.prompt(
                 "Please enter the current version of Gluu or the version to be installed",
                 default=version_number,
             ))
 
-        image_names_and_tags = versions.get(self.settings.get("CN_VERSION"), {})
+        image_names_and_tags = versions.get(self.settings.get("installer-settings.currentVersion"), {})
         # override non-empty image name and tag
         self.settings.update({
             k: v for k, v in image_names_and_tags.items()

@@ -6,7 +6,6 @@ to handle interaction with user-inputs.
 
 .. module:: pygluu.kubernetes.terminal.helpers
 
-.. autofunction:: confirm_yesno
 
 .. autofunction:: gather_ip
 

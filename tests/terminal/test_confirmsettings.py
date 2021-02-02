@@ -5,7 +5,7 @@ def test_confirmsettings_confirm_params_accepted(monkeypatch, settings):
 
     prompt = PromptConfirmSettings(settings)
     prompt.confirm_params()
-    assert settings.get("CONFIRM_PARAMS") == "Y"
+    assert settings.get("CONFIRM_PARAMS")
 
 
 def test_confirmsettings_confirm_params_rejected(monkeypatch, settings):

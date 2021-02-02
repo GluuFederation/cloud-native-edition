@@ -1,4 +1,4 @@
-{{- if .Values.global.istio.ingress }}
+{{- if .Values.global.istio.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: networking.istio.io/v1alpha3
@@ -11,7 +11,7 @@ spec:
   gateways:
   - {{ .Release.Name }}-global-gtw
   hosts:
-  - {{ .Values.global.domain }}
+  - {{ .Values.global.fqdn }}
   http:
   - name: {{ .Release.Name }}-istio-casa
     match:

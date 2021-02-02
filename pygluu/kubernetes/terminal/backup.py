@@ -20,36 +20,36 @@ class PromptBackup:
     def prompt_backup(self):
         """Prompt for LDAP and or Couchbase backup strategies
         """
-        if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "couchbase"):
-            if not self.settings.get("COUCHBASE_INCR_BACKUP_SCHEDULE"):
-                self.settings.set("COUCHBASE_INCR_BACKUP_SCHEDULE", click.prompt(
+        if self.settings.get("global.cnPersistenceType") in ("hybrid", "couchbase"):
+            if self.settings.get("installer-settings.couchbase.backup.incrementalSchedule") in (None, ''):
+                self.settings.set("installer-settings.couchbase.backup.incrementalSchedule", click.prompt(
                     "Please input couchbase backup cron job schedule for incremental backups. "
                     "This will run backup job every 30 mins by default.",
                     default="*/30 * * * *",
                 ))
 
-            if not self.settings.get("COUCHBASE_FULL_BACKUP_SCHEDULE"):
-                self.settings.set("COUCHBASE_FULL_BACKUP_SCHEDULE", click.prompt(
+            if self.settings.get("installer-settings.couchbase.backup.fullSchedule") in (None, ''):
+                self.settings.set("installer-settings.couchbase.backup.fullSchedule", click.prompt(
                     "Please input couchbase backup cron job schedule for full backups. "
                     "This will run backup job on Saturday at 2am",
                     default="0 2 * * 6",
                 ))
 
-            if not self.settings.get("COUCHBASE_BACKUP_RETENTION_TIME"):
-                self.settings.set("COUCHBASE_BACKUP_RETENTION_TIME", click.prompt(
+            if self.settings.get("installer-settings.couchbase.backup.retentionTime") in (None, ''):
+                self.settings.set("installer-settings.couchbase.backup.retentionTime", click.prompt(
                     "Please enter the time period in which to retain existing backups. "
                     "Older backups outside this time frame are deleted",
                     default="168h",
                 ))
 
-            if not self.settings.get("COUCHBASE_BACKUP_STORAGE_SIZE"):
-                self.settings.set("COUCHBASE_BACKUP_STORAGE_SIZE",
+            if self.settings.get("installer-settings.couchbase.backup.storageSize") in (None, ''):
+                self.settings.set("installer-settings.couchbase.backup.storageSize",
                                   click.prompt("Size of couchbase backup volume storage",
                                                default="20Gi"))
 
-        elif self.settings.get("PERSISTENCE_BACKEND") == "ldap":
-            if not self.settings.get("LDAP_BACKUP_SCHEDULE"):
-                self.settings.set("LDAP_BACKUP_SCHEDULE", click.prompt(
+        elif self.settings.get("global.cnPersistenceType") == "ldap":
+            if self.settings.get("installer-settings.ldap.backup.fullSchedule") in (None, ''):
+                self.settings.set("installer-settings.ldap.backup.fullSchedule", click.prompt(
                     "Please input ldap backup cron job schedule. "
                     "This will run backup job every 30 mins by default.",
                     default="*/30 * * * *",
