@@ -21,7 +21,7 @@ class PromptBackup:
         """Prompt for LDAP and or Couchbase backup strategies
         """
         if self.settings.get("global.cnPersistenceType") in ("hybrid", "couchbase"):
-            if not self.settings.get("installer-settings.couchbase.backup.incrementalSchedule"):
+            if self.settings.get("installer-settings.couchbase.backup.incrementalSchedule") in (None, ''):
                 self.settings.set("installer-settings.couchbase.backup.incrementalSchedule", click.prompt(
                     "Please input couchbase backup cron job schedule for incremental backups. "
                     "This will run backup job every 30 mins by default.",
