@@ -5,8 +5,9 @@ type: application
 version: 1.2.16
 appVersion: 5.0.0
 maintainers:
-- name: Gluu
-email: support@gluu.org
+- name: moabu
+  email: mo@gluu.org
+
 home: https://www.gluu.org
 
 

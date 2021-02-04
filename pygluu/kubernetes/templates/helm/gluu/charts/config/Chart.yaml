@@ -5,7 +5,7 @@ appVersion: "5.0.0-a1"
 home: https://gluu.org/docs/gluu-server
 maintainers:
 - name: gluu
-email: support@gluu.org
+
 description: A Helm chart for Gluu server
 name: config
 version: 5.0.0-a1

@@ -192,7 +192,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 5.0.0_dev
+    tag: 1.0.0_dev
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -294,15 +294,15 @@ global:
     enabled: true
   storageClass:
     allowVolumeExpansion: true
-    allowedTopologies:
+    allowedTopologies: []
     mountOptions:
       - debug
     parameters:
-      fsType:
-      kind:
-      pool:
-      storageAccountType:
-      type:
+      fsType: ""
+      kind: ""
+      pool: ""
+      storageAccountType: ""
+      type: ""
     provisioner: microk8s.io/hostpath
     reclaimPolicy: Retain
     volumeBindingMode: WaitForFirstConsumer

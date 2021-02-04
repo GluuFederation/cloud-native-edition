@@ -6,6 +6,7 @@ description: A Helm chart for persistence layer for Gluu server
 name: persistence
 version: 5.0.0-a1
 maintainers:
-- name: Gluu
-email: support@gluu.org
+- name: moabu
+  email: mo@gluu.org
+
 home: https://gluu.org/docs/gluu-server

@@ -611,8 +611,8 @@
 			"anyOf": [
 				{
 					"type": "string",
-					"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W)[a-zA-Z0-9\\S]{6,}$",
-					"minLength": 6,
+					"minLength": 8,
+					"pattern": "",
 					"description": "Password does not meet requirements. The password must contain one digit, one uppercase letter, one lower case letter and one symbol",
 					"errors": {
 						"minLength": "Password minimum 6 character",
@@ -627,8 +627,8 @@
 		},
 		"password-pattern": {
 			"type": "string",
-			"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W)[a-zA-Z0-9\\S]{6,}$",
 			"minLength": 6,
+			"pattern": "",
 			"errors": {
 				"minLength": "Password minimum 6 character",
 				"pattern": "Password does not meet requirements. The password must contain one digit, one uppercase letter, one lower case letter and one symbol"
@@ -642,9 +642,8 @@
 			"anyOf": [
 				{
 					"type": "string",
-					"pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]){2,}$",
 					"errors": {
-						"pattern": "Setting not FQDN structured. Please enter a FQDN with the format demoexample.gluu.org"
+						"pattern": "Setting not FQDN structured. Please enter a FQDN with the format demoexample.jans.io"
 					}
 				},
 				{
@@ -672,7 +671,7 @@
 			"anyOf": [
 				{
 					"type": "string",
-					"pattern": "^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\\.(?!$)|$)){4}|[*]$",
+					"pattern": "^(\\*|((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$",
 					"errors": {
 						"pattern": "Not a valid IP. You may place "
 					}
@@ -1038,7 +1037,7 @@
 					}
 				}
 			},
-			"else": false
+			"else": true
 		},
 		"config-api-enabled": {
 			"if": {
@@ -1057,14 +1056,14 @@
 				}
 			},
 			"then": {
-				"required": [
+				"properties": {
+					"config-api": {
+										"required": [
 							"image",
 							"replicas",
 							"resources",
 							"service"
 						],
-				"properties": {
-					"config-api": {
 			"type": "object",
 			"properties": {
 				"image": {
@@ -2202,7 +2201,7 @@
 					}
 				}
 			},
-			"else": false
+			"else": true
 		}
 	}
 }

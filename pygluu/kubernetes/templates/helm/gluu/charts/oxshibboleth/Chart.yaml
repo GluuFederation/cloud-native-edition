@@ -6,7 +6,8 @@ description: oxshibboleth Helm chart
 name: oxshibboleth
 version: 5.0.0-a1
 maintainers:
-- name: Gluu
-email: support@gluu.org
+- name: moabu
+  email: mo@gluu.org
+
 home: https://wwwgluu.org
 

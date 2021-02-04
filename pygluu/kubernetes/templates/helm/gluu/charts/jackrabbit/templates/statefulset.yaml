@@ -23,7 +23,7 @@ spec:
       {{- end }}
     spec:
       volumes:
-      {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+      {{- if .Values.global.cnJackrabbitCluster }}
         - name: cn-jackrabbit-admin-pass
           secret:
             secretName: cn-jackrabbit-admin-pass
@@ -43,7 +43,7 @@ spec:
             containerPort: {{ .Values.ports.jackrabbit.port }}
             protocol: TCP
         volumeMounts:
-        {{- if eq .Values.global.cnJackrabbitCluster "true" }}
+        {{- if .Values.global.cnJackrabbitCluster }}
           - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password

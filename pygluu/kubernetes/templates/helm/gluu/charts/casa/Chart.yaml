@@ -6,6 +6,7 @@ description: A Helm chart for casa
 name: casa
 version: 5.0.0-a1
 maintainers:
-- name: Gluu
+- name: moabu
+  email: mo@gluu.org
 home: https://gluu.org/docs/casa/
-email: support@gluu.org
+

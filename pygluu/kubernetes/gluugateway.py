@@ -107,7 +107,7 @@ class GluuGateway(object):
         values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
         values_file_parser["cloud"]["isDomainRegistered"] = "false"
-        if self.settings.get("glopbal.isFqdnRegistered"):
+        if self.settings.get("global.isFqdnRegistered"):
             values_file_parser["cloud"]["isDomainRegistered"] = "true"
         if self.settings.get("global.storageClass.provisioner") in \
                 ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
