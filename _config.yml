@@ -6,5 +6,5 @@ buttons:
     text: Installer
     href: /cloud-native-edition
   - b1:
-    text: Helm Chart
-    href: /cloud-native-edition/pygluu/kubernetes/templates/helm/gluu
+    text: Instructions
+    href: /cloud-native-edition/pygluu/kubernetes/templates/helm

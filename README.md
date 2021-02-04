@@ -4,7 +4,7 @@
 ![googlegke](https://github.com/GluuFederation/cloud-native-edition/workflows/googlegke/badge.svg?branch=5.0)
 ![testcases](https://github.com/GluuFederation/cloud-native-edition/workflows/testcases/badge.svg?branch=5.0)
 [![codecov](https://codecov.io/gh/GluuFederation/cloud-native-edition/branch/master/graph/badge.svg)](https://codecov.io/gh/GluuFederation/cloud-native-edition)
-
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/gluu)](https://artifacthub.io/packages/search?repo=gluu)
 # pygluu-kubernetes
 
 ## Kubernetes recipes
