@@ -2,13 +2,51 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 appVersion: "4.2.2"
+kubeVersion: ">=v1.17.0-0"
+annotations:
+  artifacthub.io/changes: |
+    - Gluu 4.2.2 official chart release
+  artifacthub.io/images: |
+    - name: casa
+      image: gluufederation/casa:4.2.2_02
+    - name: fido2
+      image: gluufederation/fido2:4.2.2_03
+    - name: scim
+      image: gluufederation/scim:4.2.2_05
+    - name: configuration-manager
+      image: gluufederation/config-init:4.2.2_02
+    - name: cr-rotate
+      image: gluufederation/cr-rotatet:4.2.2_02
+    - name: certmanager
+      image: gluufederation/certmanager:4.2.2_02
+    - name: opendj
+      image: gluufederation/opendj:4.2.2_02
+    - name: jackrabbit
+      image: gluufederation/jackrabbit:4.2.2_02
+    - name: oxauth
+      image: gluufederation/oxauth:4.2.2_06
+    - name: oxd-server
+      image: gluufederation/oxd-server:4.2.2_02
+    - name: oxpassport
+      image: gluufederation/oxpassport:4.2.2_02
+    - name: oxshibboleth
+      image: gluufederation/oxshibboleth:4.2.2_02
+    - name: persistence
+      image: gluufederation/persistence:4.2.2_02
+    - name: radius
+      image: gluufederation/radius:4.2.2_03
+  artifacthub.io/license: Apache-2.0
+icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
 home: https://www.gluu.org
+sources:
+  - https://github.com/GluuFederation/cloud-native-edition
 maintainers:
-- name: Gluu
-email: support@gluu.org
-description: A Helm chart for Gluu IDP
+- name: moabu
+  email: mo@gluu.org
+description: Gluu Access and Identity Mangement
 name: gluu
 version: 1.3.3
+
 dependencies:
     - name: config
       condition: global.config.enabled

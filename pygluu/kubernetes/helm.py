@@ -608,13 +608,29 @@ class Helm(object):
     def install_kubedb(self):
         self.uninstall_kubedb()
         self.kubernetes.create_namespace(name="gluu-kubedb", labels={"app": "kubedb"})
+        logger.info("We use the kubedb community edition and it is used to install postgres as an example. "
+                    "You may aquire the enterprise edition or a "
+                    "production grade postgres manages service to serve instead.")
+        logger.info("Follow instructions at https://kubedb.com/docs/v2021.01.26/setup/install/community/ "
+                    "to get a license file")
+        logger.info("Please provide the license file at the same location as the installer under the name license.txt")
+        _ = input("Hit 'enter' or 'return' when ready.")
+        try:
+            with open(Path("./license.txt")) as f:
+                logger.info("KubeDB license file found")
+        except FileNotFoundError:
+            logger.error("KubeDB license file is missing. Follow instructions at "
+                         "https://kubedb.com/docs/v2021.01.26/setup/install/community/ "
+                         "and add the license file under license.txt in the same directory as the installer. "
+                         "Please add it and rerun the installer")
+            raise SystemExit(1)
         try:
             exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
             exec_cmd("helm repo update")
-            exec_cmd("helm install kubedb-operator appscode/kubedb  --version v0.13.0-rc.0 "
-                     "--namespace gluu-kubedb")
+            exec_cmd("helm install kubedb-community appscode/kubedb --version v0.16.2 --namespace gluu-kubedb "
+                     "--set-file license=license.txt")
             self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb")
-            exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.13.0-rc.0 "
+            exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.16.2 "
                      "--namespace gluu-kubedb")
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "

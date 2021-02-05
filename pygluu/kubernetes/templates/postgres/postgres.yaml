@@ -8,16 +8,16 @@ metadata:
 spec:
   version: "11.1"
   init:
-    scriptSource:
+    script:
       secret:
         secretName: pg-init-sql
   monitor:
-    agent: prometheus.io/coreos-operator
+    agent: prometheus.io/operator
     prometheus:
-      interval: 10s
-      labels:
-        app: postgres
-      namespace: postgres
+      serviceMonitor:
+        labels:
+          app: kubedb
+        interval: 10s
   podTemplate:
     spec:
       resources:
@@ -38,5 +38,3 @@ spec:
     storageClassName: postgres-sc
   storageType: Durable
   terminationPolicy: WipeOut
-  updateStrategy:
-    type: RollingUpdate
