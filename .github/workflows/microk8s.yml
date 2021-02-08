@@ -6,6 +6,7 @@ on:
       - "pygluu/**"
       - "tests/**"
       - "setup.py"
+  workflow_dispatch:
 jobs:
   build:
 
