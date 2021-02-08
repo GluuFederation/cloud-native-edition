@@ -118,7 +118,7 @@ config:
     gluuSamlEnabled: false
   image:
     repository: gluufederation/config-init
-    tag: 4.2.2_02
+    tag: 4.2.3_01
   resources: {}
 nginx-ingress:
   ingress:
@@ -142,7 +142,7 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -164,7 +164,7 @@ opendj:
     size: 5Gi
   image:
     repository: gluufederation/opendj
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -207,7 +207,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources: {}
 oxauth:
@@ -216,7 +216,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.2_06
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -231,7 +231,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.2_05
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -246,7 +246,7 @@ fido2:
   replicas: 1
   image:
     repository: gluufederation/fido2
-    tag: 4.2.2_03
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -261,7 +261,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.2_05
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -276,7 +276,7 @@ oxd-server:
   replicas: 1
   image:
     repository: gluufederation/oxd-server
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -291,7 +291,7 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     requests:
@@ -306,7 +306,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -321,7 +321,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.2_03
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -336,7 +336,7 @@ radius:
   replicas: 1
   image:
     repository: gluufederation/radius
-    tag: 4.2.2_03
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -350,7 +350,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:
@@ -363,7 +363,7 @@ oxauth-key-rotation:
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.2.2_02
+    tag: 4.2.3_01
     pullPolicy: Always
   resources:
     limits:

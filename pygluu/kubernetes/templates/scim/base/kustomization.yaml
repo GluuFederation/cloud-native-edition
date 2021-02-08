@@ -9,4 +9,4 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/scim
-    newTag: 4.2.2_02
+    newTag: 4.2.3_01

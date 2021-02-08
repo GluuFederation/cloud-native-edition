@@ -9,4 +9,4 @@ resources:
   - deployments.yaml
 images:
   - name: gluufederation/oxauth
-    newTag: 4.2.2_03
+    newTag: 4.2.3_01

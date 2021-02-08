@@ -11,7 +11,7 @@ generatorOptions:
   disableNameSuffixHash: true
 images:
   - name: gluufederation/config-init
-    newTag: 4.2.2_02
+    newTag: 4.2.3_01
 configMapGenerator:
   - name: gluu-config-cm
     literals:

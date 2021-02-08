@@ -3,7 +3,7 @@
 # Default values for oxauth-key-rotation.
 image:
   repository: gluufederation/certmanager
-  tag: 4.2.2_02
+  tag: 4.2.3_01
   pullPolicy: Always
 keysLife: 48
 nameOverride: ""

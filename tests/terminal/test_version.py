@@ -13,15 +13,15 @@ def test_version_no_prompt(settings):
 
 
 @pytest.mark.parametrize("given, expected", [
-    ("", "4.2.2_02"),  # default if empty
-    ("4.2.2_dev", "4.2.2_dev"),  # non-empty shouldn't be overriden
+    ("", "4.2.3_01"),  # default if empty
+    ("4.2.3_dev", "4.2.3_dev"),  # non-empty shouldn't be overriden
 ])
 def test_version_merge_names_tags(settings, given, expected):
     import json
     from pygluu.kubernetes.terminal.version import PromptVersion
 
     with open("./gluu_versions.json", "w") as f:
-        json.dump({"4.2": {"LDAP_IMAGE_TAG": "4.2.2_02"}}, f)
+        json.dump({"4.2": {"LDAP_IMAGE_TAG": "4.2.3_01"}}, f)
 
     settings.set("GLUU_VERSION", "4.2")
     settings.set("LDAP_IMAGE_TAG", given)

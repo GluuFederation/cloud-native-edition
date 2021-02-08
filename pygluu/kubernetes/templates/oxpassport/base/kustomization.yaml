@@ -9,4 +9,4 @@ resources:
   - services.yaml
 images:
   - name: gluufederation/oxpassport
-    newTag: 4.2.2_02
+    newTag: 4.2.3_01

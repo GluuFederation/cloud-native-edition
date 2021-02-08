@@ -5,7 +5,7 @@ replicaCount: 1
 
 image:
   repository: gluufederation/persistence
-  tag: 4.2.2_02
+  tag: 4.2.3_01
   pullPolicy: Always
 
 imagePullSecrets: []

@@ -17,7 +17,7 @@ spec:
             secretName: tls-certificate
       containers:
         - name: gg-ui-prepareation
-          image: gluufederation/gluu-gateway-ui:4.2.2_02
+          image: gluufederation/gluu-gateway-ui:4.2.3_01
           imagePullPolicy: Always
           env:
             - name: DB_PASSWORD

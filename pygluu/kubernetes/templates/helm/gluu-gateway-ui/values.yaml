@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: gluufederation/gluu-gateway-ui
-  tag: 4.2.2_02
+  tag: 4.2.3_01
   pullPolicy: Always
 cloud:
   enabled: true
