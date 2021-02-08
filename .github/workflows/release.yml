@@ -64,7 +64,7 @@ jobs:
       run: |
         cd /home/runner/work/test/
         sudo gem install github_changelog_generator
-        github_changelog_generator --user ${{ steps.get_version.outputs.gituser }} --project ${{ steps.get_version.outputs.gitproject }} --date-format "%m/%d/%Y" --header-label "# Release Notes" --output release_notes.md --token ${{ secrets.token }} --since-tag v${{ steps.get_version.outputs.pversion }} --author false --exclude-tags 5.0
+        github_changelog_generator --user ${{ steps.get_version.outputs.gituser }} --project ${{ steps.get_version.outputs.gitproject }} --date-format "%m/%d/%Y" --header-label "# Release Notes" --output release_notes.md --token ${{ secrets.token }} --since-tag v${{ steps.get_version.outputs.pversion }} --author false --exclude-labels 'duplicate,question,invalid,wontfix,5.0'
         sed -i '$ d' release_notes.md
         github_changelog_generator --user ${{ steps.get_version.outputs.gituser }} --project ${{ steps.get_version.outputs.gitproject }} --date-format "%m/%d/%Y" --token ${{ secrets.token }} --author false
         sed -i '$ d' CHANGELOG.md
