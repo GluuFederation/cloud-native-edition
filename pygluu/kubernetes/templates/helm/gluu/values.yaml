@@ -151,6 +151,9 @@ jackrabbit:
     requests:
       cpu: 1500m
       memory: 1000Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 opendj:
   multiCluster:
     enabled: false
@@ -204,6 +207,9 @@ opendj:
       targetPort: 7946
       protocol: UDP
       nodePort: ""
+  dnsPolicy: ""
+  dnsConfig: {}
+
 persistence:
   image:
     repository: gluufederation/persistence
@@ -225,6 +231,9 @@ oxauth:
     requests:
       cpu: 2500m
       memory: 2500Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxtrust:
   service:
     oxTrustServiceName: oxtrust
@@ -240,6 +249,9 @@ oxtrust:
     requests:
       cpu: 1000m
       memory: 1000Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 fido2:
   service:
     fido2ServiceName: fido2
@@ -255,6 +267,9 @@ fido2:
     requests:
       cpu: 500m
       memory: 500Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 scim:
   service:
     scimServiceName: scim
@@ -270,6 +285,9 @@ scim:
     requests:
       cpu: 1000m
       memory: 1000Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxd-server:
   service:
     oxdServerServiceName: oxd-server
@@ -285,6 +303,9 @@ oxd-server:
     requests:
       cpu: 1000m
       memory: 400Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 casa:
   service:
     casaServiceName: casa
@@ -300,6 +321,9 @@ casa:
     limits:
       memory: "500Mi"
       cpu: "500m"
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxpassport:
   service:
     oxPassportServiceName: oxpassport
@@ -315,6 +339,9 @@ oxpassport:
     requests:
       cpu: 700m
       memory: 900Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxshibboleth:
   service:
     oxShibbolethServiceName: oxshibboleth
@@ -330,6 +357,9 @@ oxshibboleth:
     requests:
       cpu: 1000m
       memory: 1000Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 radius:
   service:
     radiusServiceName: radius
@@ -345,6 +375,9 @@ radius:
     requests:
       cpu: 700m
       memory: 700Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 cr-rotate:
   service:
     crRotateServiceName: cr-rotate
@@ -359,6 +392,9 @@ cr-rotate:
     requests:
       cpu: 200m
       memory: 200Mi
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxauth-key-rotation:
   keysLife: 48
   image:
@@ -372,3 +408,5 @@ oxauth-key-rotation:
     requests:
       cpu: 300m
       memory: 300Mi
+  dnsPolicy: ""
+  dnsConfig: {}

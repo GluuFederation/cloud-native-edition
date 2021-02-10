@@ -59,3 +59,5 @@ ports:
   admin:
     port: 4444
     targetPort: 4444
+dnsPolicy: ""
+dnsConfig: {}

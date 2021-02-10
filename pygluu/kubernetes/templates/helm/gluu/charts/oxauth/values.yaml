@@ -19,3 +19,8 @@ ports:
 # service
 service:
   oxAuthServiceName: oxauth
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

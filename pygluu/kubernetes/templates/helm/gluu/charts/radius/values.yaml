@@ -39,3 +39,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

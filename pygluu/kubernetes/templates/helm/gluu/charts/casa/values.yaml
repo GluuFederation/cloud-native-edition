@@ -38,3 +38,8 @@ resources:
   requests:
     # cpu: 100m
     memory: 1000Mi # 128Mi
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

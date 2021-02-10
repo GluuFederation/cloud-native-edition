@@ -22,5 +22,8 @@ requests:
 
 #containerPort to connect the container with
 containerPort: 8080
-
-    
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

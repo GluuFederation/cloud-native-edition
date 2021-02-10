@@ -20,3 +20,8 @@ ports:
 service:
   scimServiceName: scim
   name: http-scim
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"
