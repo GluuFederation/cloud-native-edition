@@ -36,11 +36,11 @@ class PromptPostgres:
             if not self.settings.get("POSTGRES_REPLICAS"):
                 replicas = click.prompt("Please enter number of replicas for postgres", default=3)
                 self.settings.set("POSTGRES_REPLICAS", replicas)
-        else:
-            if not self.settings.get("POSTGRES_URL"):
-                url = click.prompt(
-                    "Please enter  postgres (remote or local) "
-                    "URL base name. If postgres is to be installed",
-                    default=f"postgres.{self.settings.get('POSTGRES_NAMESPACE')}.svc.cluster.local",
-                )
-                self.settings.set("POSTGRES_URL", url)
+
+        if not self.settings.get("POSTGRES_URL"):
+            url = click.prompt(
+                "Please enter  postgres (remote or local) "
+                "URL base name. If postgres is to be installed",
+                default=f"postgres.{self.settings.get('POSTGRES_NAMESPACE')}.svc.cluster.local",
+            )
+            self.settings.set("POSTGRES_URL", url)

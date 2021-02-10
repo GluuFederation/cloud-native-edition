@@ -9,7 +9,7 @@ def test_postgres_namespace(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
-
+    settings.set("INSTALL_POSTGRES", "Y")
     settings.set("POSTGRES_REPLICAS", 3)
     settings.set("POSTGRES_URL", "postgres.postgres.svc.cluster.local")
 
@@ -24,9 +24,8 @@ def test_postgres_namespace(monkeypatch, settings, given, expected):
 ])
 def test_postgres_replicas(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
-
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
-
+    settings.set("INSTALL_POSTGRES", "Y")
     settings.set("POSTGRES_NAMESPACE", "postgres")
     settings.set("POSTGRES_URL", "postgres.postgres.svc.cluster.local")
 
@@ -43,9 +42,7 @@ def test_postgres_url(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.postgres import PromptPostgres
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
-
-    settings.set("POSTGRES_NAMESPACE", "postgres")
-    settings.set("POSTGRES_REPLICAS", 3)
+    settings.set("INSTALL_POSTGRES", "N")
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
