@@ -1,10 +1,12 @@
 # The Kubernetes recipes
+    
+Kubernetes 1.17+
 
 ## System Requirements for cloud deployments
 
 !!!note
     For local deployments like `minikube` and `microk8s`  or cloud installations for demoing Gluu may set the resources to the minimum and hence7  can have `8GB RAM`, `4 CPU`, and `50GB disk` in total to run all services.
-  
+
 Please calculate the minimum required resources as per services deployed. The following table contains default recommended resources to start with. Depending on the use of each service the resources may be increased or decreased. 
 
 |Service           | CPU Unit   |    RAM      |   Disk Space     | Processor Type | Required                           |
@@ -187,7 +189,7 @@ Please calculate the minimum required resources as per services deployed. The fo
     
     ### Prerequisites
     
-    - Kubernetes 1.x
+    - Kubernetes 1.17+
     - Persistent volume provisioner support in the underlying infrastructure
     - Install [Helm3](https://helm.sh/docs/using_helm/)
     

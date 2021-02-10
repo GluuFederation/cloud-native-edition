@@ -1293,7 +1293,7 @@ class Kustomize(object):
             redis_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
         redis_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
-            del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
+            del redis_parser["spec"]["resources"]
         redis_parser.dump_it()
         self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
                                                         group="kubedb.com",

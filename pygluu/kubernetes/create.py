@@ -84,8 +84,7 @@ def main():
             kustomize = Kustomize(timeout)
             kustomize.uninstall()
             if settings.get("INSTALL_REDIS") == "Y" or \
-                    settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                    settings.get("JACKRABBIT_CLUSTER") == "Y":
+                    settings.get("INSTALL_POSTGRES") == "Y":
                 helm = Helm()
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
@@ -99,14 +98,14 @@ def main():
             logger.info("Removing all Gluu resources...")
             kustomize = Kustomize(timeout)
             kustomize.uninstall()
-            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_GLUU_GATEWAY") == "Y":
+            if settings.get("INSTALL_REDIS") == "Y" or settings.get("INSTALL_POSTGRES") == "Y":
                 helm = Helm()
                 helm.uninstall_kubedb()
 
         elif args.subparser_name == "upgrade":
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
             # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
-            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("INSTALL_POSTGRES") == "Y":
                 helm = Helm()
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
@@ -120,7 +119,7 @@ def main():
             from pygluu.kubernetes.terminal.upgrade import PromptUpgrade
             # New feature in 4.2 compared to 4.1 and hence if enabled should make sure kubedb is installed.
             helm = Helm()
-            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("INSTALL_POSTGRES") == "Y":
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
             prompt_upgrade = PromptUpgrade(settings)
@@ -183,11 +182,10 @@ def main():
             prompt_helm.prompt_helm()
             helm = Helm()
             if settings.get("INSTALL_REDIS") == "Y" or \
-                    settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
-                    settings.get("JACKRABBIT_CLUSTER") == "Y":
+                    settings.get("INSTALL_POSTGRES") == "Y":
                 helm.uninstall_kubedb()
                 helm.install_kubedb()
-            if settings.get("JACKRABBIT_CLUSTER") == "Y":
+            if settings.get("INSTALL_POSTGRES") == "Y":
                 kustomize = Kustomize(timeout)
                 kustomize.deploy_postgres()
             if settings.get("INSTALL_REDIS") == "Y":
@@ -223,8 +221,9 @@ def main():
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            kustomize = Kustomize(timeout)
-            kustomize.patch_or_deploy_postgres()
+            if settings.get("INSTALL_POSTGRES") == "Y":
+                kustomize = Kustomize(timeout)
+                kustomize.patch_or_deploy_postgres()
             helm = Helm()
             helm.install_gluu_gateway_dbmode()
             helm.install_gluu_gateway_ui()
@@ -233,8 +232,9 @@ def main():
             from pygluu.kubernetes.terminal.helm import PromptHelm
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
-            kustomize = Kustomize(timeout)
-            kustomize.uninstall_postgres()
+            if settings.get("INSTALL_POSTGRES") == "Y":
+                kustomize = Kustomize(timeout)
+                kustomize.uninstall_postgres()
             helm = Helm()
             helm.uninstall_gluu_gateway_dbmode()
             helm.uninstall_gluu_gateway_ui()

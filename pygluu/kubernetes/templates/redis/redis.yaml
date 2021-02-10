@@ -23,18 +23,14 @@ spec:
       labels:
         app: redis-cluster
       interval: 10s
-  configSource:
+  configSecret:
     configMap:
       name: redis-cluster-configmap
-  podTemplate:
-    spec:
-      resources:
-        requests:
-          memory: "1500Mi"
-          cpu: "2500m"
-        limits:
-          memory: "1500Mi"
-          cpu: "2500m"
+  resources:
+    requests:
+      memory: "1500Mi"
+      cpu: "2500m"
+    limits:
+      memory: "1500Mi"
+      cpu: "2500m"
   terminationPolicy: WipeOut
-  updateStrategy:
-    type: RollingUpdate
