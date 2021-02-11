@@ -19,6 +19,11 @@ spec:
           annotations:
             sidecar.istio.io/inject: "false"
         spec:
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+        {{- with .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml . | indent 12 }}
+        {{- end }}
           containers:
             - name: {{ .Chart.Name }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

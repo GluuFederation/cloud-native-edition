@@ -53,3 +53,5 @@ nginxIngress:
   - secretName: tls-certificate
     hosts:
     - demoexample.gluu.org
+dnsPolicy: ""
+dnsConfig: {}

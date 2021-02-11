@@ -13,3 +13,8 @@ service:
   crRotateServiceName: cr-rotate
   port: 8084
   name: http-cr-rotate
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

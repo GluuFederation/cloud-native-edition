@@ -78,6 +78,8 @@ installer-settings:
   confirmSettings: false
 
 auth-server:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
@@ -93,6 +95,8 @@ auth-server:
   service:
     authServerServiceName: auth-server
 auth-server-key-rotation:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
@@ -106,6 +110,8 @@ auth-server-key-rotation:
       cpu: 300m
       memory: 300Mi
 casa:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/casa
@@ -121,6 +127,8 @@ casa:
   service:
     casaServiceName: casa
 client-api:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
@@ -205,6 +213,8 @@ config:
       memory: 300Mi
   state: TX
 config-api:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
@@ -220,6 +230,8 @@ config-api:
   service:
     configApiServerServiceName: config-api
 cr-rotate:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Alwayss
     repository: gluufederation/cr-rotate
@@ -234,6 +246,8 @@ cr-rotate:
   service:
     crRotateServiceName: cr-rotate
 fido2:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
@@ -309,6 +323,8 @@ global:
   upgrade:
     enabled: false
 jackrabbit:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/jackrabbit
@@ -360,6 +376,8 @@ nginx-ingress:
       hosts:
       - demoexample.jans.io
 opendj:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/opendj
@@ -415,6 +433,8 @@ opendj:
   service:
     ldapServiceName: opendj
 oxpassport:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/oxpassport
@@ -430,6 +450,8 @@ oxpassport:
   service:
     oxPassportServiceName: oxpassport
 oxshibboleth:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/oxshibboleth
@@ -445,6 +467,8 @@ oxshibboleth:
   service:
     oxShibbolethServiceName: oxshibboleth
 persistence:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
@@ -457,6 +481,8 @@ persistence:
       cpu: 300m
       memory: 300Mi
 radius:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: gluufederation/radius
@@ -472,6 +498,8 @@ radius:
   service:
     radiusServiceName: radius
 scim:
+  dnsPolicy: ""
+  dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/scim

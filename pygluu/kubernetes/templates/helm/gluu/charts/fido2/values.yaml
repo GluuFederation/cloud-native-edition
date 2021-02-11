@@ -19,3 +19,8 @@ ports:
 service:
   fido2ServiceName: fido2
   name: http-fido2
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

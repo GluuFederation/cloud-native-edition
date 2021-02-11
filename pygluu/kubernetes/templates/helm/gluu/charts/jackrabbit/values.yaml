@@ -39,3 +39,8 @@ volumeMounts:
   workspaces:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

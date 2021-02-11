@@ -19,6 +19,11 @@ spec:
         APP_NAME: gluu-gateway-ui
         app: {{ include "gluu-gateway-ui.name" . }}
     spec:
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+    {{- with .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml . | indent 8 }}
+    {{- end }}
       containers:
       - name: {{ template "gluu-gateway-ui.fullname" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

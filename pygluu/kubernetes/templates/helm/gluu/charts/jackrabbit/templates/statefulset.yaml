@@ -22,6 +22,11 @@ spec:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       {{- end }}
     spec:
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+    {{- with .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml . | indent 8 }}
+    {{- end }}
       volumes:
       {{- if .Values.global.cnJackrabbitCluster }}
         - name: cn-jackrabbit-admin-pass

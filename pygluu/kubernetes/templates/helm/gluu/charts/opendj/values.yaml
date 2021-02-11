@@ -81,3 +81,8 @@ volumeMounts:
   flag: 
     mountPath: /flag
     name: opendj-volume
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"
