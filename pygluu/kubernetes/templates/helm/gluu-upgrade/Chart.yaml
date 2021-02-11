@@ -2,7 +2,7 @@ apiVersion: v2
 name: gluu-upgrade
 description: A Helm chart for upgrading gluu server
 type: application
-version: 1.4.0
+version: 1.4.1
 appVersion: "4.2.3"
 maintainers:
 - name: Gluu
