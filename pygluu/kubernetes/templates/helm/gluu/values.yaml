@@ -113,6 +113,8 @@ config:
     gluuOxtrustApiEnabled: false
     gluuOxtrustApiTestMode: false
     gluuPassportEnabled: false
+    # BELOW TEMP KEY TO BE REMOVED IN 4.3
+    gluuPassportFailureRedirectUrl: ""
     gluuCasaEnabled: false
     gluuRadiusEnabled: false
     gluuSamlEnabled: false

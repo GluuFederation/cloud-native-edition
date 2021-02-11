@@ -77,6 +77,8 @@ configmap:
   gluuOxtrustApiTestMode: false
   gluuCasaEnabled: true
   gluuPassportEnabled: false
+  # BELOW TEMP KEY TO BE REMOVED IN 4.3
+  gluuPassportFailureRedirectUrl: ""
   gluuRadiusEnabled: false
   gluuSamlEnabled: true
 

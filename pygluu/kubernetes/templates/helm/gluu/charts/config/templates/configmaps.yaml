@@ -88,6 +88,8 @@ data:
   {{- if .Values.global.istio.enabled }}
   GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
   {{- end }}
+  # BELOW TEMP ENV. TO BE REMOVED IN 4.3
+  GLUU_PASSPORT_FAILURE_REDIRECT_URL: {{ .Values.configmap.gluuPassportFailureRedirectUrl | quote }}
 
 ---
 
