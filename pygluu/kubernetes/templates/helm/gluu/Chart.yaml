@@ -18,7 +18,7 @@ annotations:
     - name: configuration-manager
       image: gluufederation/config-init:4.2.3_01
     - name: cr-rotate
-      image: gluufederation/cr-rotatet:4.2.3_01
+      image: gluufederation/cr-rotate:4.2.3_01
     - name: certmanager
       image: gluufederation/certmanager:4.2.3_01
     - name: opendj

@@ -401,7 +401,7 @@ oxauth-key-rotation:
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.2.3_01
+    tag: 4.2.3_02
     pullPolicy: Always
   resources:
     limits:
