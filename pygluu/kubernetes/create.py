@@ -43,6 +43,7 @@ def create_parser():
                                                "This assumes nginx-ingress is installed")
     subparsers.add_parser("uninstall-gluu", help="Uninstall Gluu Cloud Native Edition using helm."
                                                  "This only uninstalls Gluu")
+    subparsers.add_parser("version", help="Outputs version of pygluu installer.")
     return parser
 
 
@@ -53,6 +54,12 @@ def main():
     if not args.subparser_name:
         parser.print_help()
         return
+
+    if args.subparser_name == "version":
+        from pygluu.kubernetes import __version__
+        logger.info(f"pygluu installer version is : {__version__}")
+        return
+
     copy_templates()
     settings = ValuesHandler()
     settings.validate()
