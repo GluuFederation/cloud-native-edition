@@ -56,7 +56,8 @@ jobs:
     - name: Test 1 settings(LDAP)
       id: test1_settings
       run: |
-        ip=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+        default_iface=$(awk '$2 == 00000000 { print $1 }' /proc/net/route)
+        ip=$(ip addr show dev "$default_iface" | awk '$1 == "inet" { sub("/.*", "", $2); print $2 }')
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
