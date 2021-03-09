@@ -578,16 +578,16 @@ class Kustomize(object):
 
             if app == "ldap":
                 if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
-                    command = self.kubectl + " kustomize " + str(
-                        self.ldap_kustomize_yaml_directory.resolve())
+                    command = self.kubectl + " kustomize " "\"" + str(
+                        self.ldap_kustomize_yaml_directory.resolve()) + "\""
                     self.build_manifest(app, kustomization_file, command,
                                         "LDAP_IMAGE_NAME", "LDAP_IMAGE_TAG", app_file)
                     self.adjust_ldap_jackrabbit(app_file)
                     self.remove_resources(app_file, "StatefulSet")
 
             if app == "jackrabbit" and self.settings.get("INSTALL_JACKRABBIT") == "Y":
-                command = self.kubectl + " kustomize " + str(
-                    self.jcr_kustomize_yaml_directory.resolve())
+                command = self.kubectl + " kustomize " "\"" + str(
+                    self.jcr_kustomize_yaml_directory.resolve()) + "\""
                 self.build_manifest(app, kustomization_file, command,
                                     "JACKRABBIT_IMAGE_NAME", "JACKRABBIT_IMAGE_TAG", app_file)
                 self.adjust_ldap_jackrabbit(app_file)
