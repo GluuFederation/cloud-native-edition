@@ -64,7 +64,6 @@ jobs:
     - name: Test 1 settings(LDAP)
       id: test1_settings
       run: |
-        sudo chmod -R 777 /etc/kubernetes
         minikube addons enable ingress
         ip=$(minikube ip)
         kubectl describe nodes
