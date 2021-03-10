@@ -220,7 +220,7 @@ jobs:
       run: |
           cd /home/runner/work/test/
           wget ${{ secrets.cbpackage }}
-          sudo ./pygluu-kubernetes.pyz install-couchbase || rm -rf ./couchbase && sudo ./pygluu-kubernetes.pyz install-couchbase
+          sudo ./pygluu-kubernetes.pyz install-couchbase || sudo rm -rf ./couchbase && sudo ./pygluu-kubernetes.pyz install-couchbase
           COUCHBASE_IP=$(sudo microk8s.kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
 
