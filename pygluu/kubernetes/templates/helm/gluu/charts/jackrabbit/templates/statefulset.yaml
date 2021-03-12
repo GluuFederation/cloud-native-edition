@@ -90,4 +90,8 @@ spec:
       resources:
         requests:
           storage: {{ .Values.storage.size }}
+      {{- if eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath" }}
+      storageClassName: standard
+      {{- else }}
       storageClassName: {{ include "jackrabbit.fullname" . | quote }}
+      {{- end }}
