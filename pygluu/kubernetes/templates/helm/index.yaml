@@ -8,6 +8,127 @@ entries:
         - Add dnsConfig and dnsPolicy parse
       artifacthub.io/images: |
         - name: casa
+          image: gluufederation/casa:4.2.3_02
+        - name: fido2
+          image: gluufederation/fido2:4.2.3_02
+        - name: scim
+          image: gluufederation/scim:4.2.3_02
+        - name: configuration-manager
+          image: gluufederation/config-init:4.2.3_02
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.2.3_02
+        - name: certmanager
+          image: gluufederation/certmanager:4.2.3_03
+        - name: opendj
+          image: gluufederation/opendj:4.2.3_02
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.2.3_02
+        - name: oxauth
+          image: gluufederation/oxauth:4.2.3_03
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.2.3_02
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.2.3_03
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.2.3_04
+        - name: persistence
+          image: gluufederation/persistence:4.2.3_02
+        - name: radius
+          image: gluufederation/radius:4.2.3_02
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.2.3
+    created: "2021-03-15T03:53:47.3182746-04:00"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.4.2
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.4.2
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.4.2
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.4.2
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.4.2
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.4.2
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.4.2
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.4.2
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.4.2
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.4.2
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.4.2
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.4.2
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.4.2
+    - condition: config.configmap.gluuRadiusEnabled
+      name: radius
+      repository: ""
+      version: 1.4.2
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.4.2
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.4.2
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.4.2
+    description: Gluu Access and Identity Mangement
+    digest: e936057cde80189425dad3fe2124f776f5143dcd894c9b39eaba6caebda893a7
+    home: https://www.gluu.org
+    icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
+    kubeVersion: '>=v1.17.0-0'
+    maintainers:
+    - email: mo@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.4.2.tgz
+    version: 1.4.2
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.2.3 official chart release
+        - Allow to inject gluu passport redirect url
+        - Add dnsConfig and dnsPolicy parse
+      artifacthub.io/images: |
+        - name: casa
           image: gluufederation/casa:4.2.3_01
         - name: fido2
           image: gluufederation/fido2:4.2.3_01
@@ -364,7 +485,7 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - Gluu 4.2.2 official chart release
-      artifacthub.io/images: "- name: casa\n  image: gluufederation/casa:4.2.2_02\n- name: fido2\n  image: gluufederation/fido2:4.2.2_03\n- name: scim\n  image: gluufederation/scim:4.2.2_05\n- name: configuration-manager\n  image: gluufederation/config-init:4.2.2_02   \n- name: cr-rotate\n  image: gluufederation/cr-rotatet:4.2.2_02\n- name: certmanager\n  image: gluufederation/certmanager:4.2.2_02\n- name: opendj\n  image: gluufederation/opendj:4.2.2_02\n- name: jackrabbit\n  image: gluufederation/jackrabbit:4.2.2_02\n- name: oxauth\n  image: gluufederation/oxauth:4.2.2_06\n- name: oxd-server\n  image: gluufederation/oxd-server:4.2.2_02\n- name: oxpassport\n  image: gluufederation/oxpassport:4.2.2_02\n- name: oxshibboleth\n  image: gluufederation/oxshibboleth:4.2.2_02\n- name: persistence\n  image: gluufederation/persistence:4.2.2_02\n- name: radius\n  image: gluufederation/radius:4.2.2_03      \n"
+      artifacthub.io/images: "- name: casa\n  image: gluufederation/casa:4.2.2_02\n- name: fido2\n  image: gluufederation/fido2:4.2.2_03\n- name: scim\n  image: gluufederation/scim:4.2.2_05\n- name: configuration-manager\n  image: gluufederation/config-init:4.2.2_02   \n- name: cr-rotate\n  image: gluufederation/cr-rotate:4.2.2_02\n- name: certmanager\n  image: gluufederation/certmanager:4.2.2_02\n- name: opendj\n  image: gluufederation/opendj:4.2.2_02\n- name: jackrabbit\n  image: gluufederation/jackrabbit:4.2.2_02\n- name: oxauth\n  image: gluufederation/oxauth:4.2.2_06\n- name: oxd-server\n  image: gluufederation/oxd-server:4.2.2_02\n- name: oxpassport\n  image: gluufederation/oxpassport:4.2.2_02\n- name: oxshibboleth\n  image: gluufederation/oxshibboleth:4.2.2_02\n- name: persistence\n  image: gluufederation/persistence:4.2.2_02\n- name: radius\n  image: gluufederation/radius:4.2.2_03      \n"
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.2
@@ -541,6 +662,24 @@ entries:
     - gluu-5.0.0-a1.tgz
     version: 5.0.0-a1
   ldap-backup:
+  - apiVersion: v2
+    appVersion: 4.2.3
+    created: "2021-03-15T03:52:32.9054553-04:00"
+    description: A backup strategy for LDAP
+    digest: c2756f96c6d5a94a3f0c3c4a0e60252ea40950a4078ff5d89140b4b1570e3820
+    home: https://www.gluu.org
+    icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
+    kubeVersion: '>=v1.17.0-0'
+    maintainers:
+    - email: mo@gluu.org
+      name: moabu
+    name: ldap-backup
+    sources:
+    - https://github.com/GluuFederation/cloud-native-edition
+    type: application
+    urls:
+    - ldap-backup-1.4.2.tgz
+    version: 1.4.2
   - apiVersion: v2
     appVersion: 4.2.3
     created: "2021-03-12T09:41:09.0404341-05:00"
