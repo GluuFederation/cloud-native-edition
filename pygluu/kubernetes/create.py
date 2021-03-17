@@ -74,7 +74,7 @@ def main():
         return
     
     if args.subparser_name == "version":
-        from pygluu.kubernetes import __version__
+        from pygluu.kubernetes.version import __version__
         logger.info(f"pygluu installer version is : {__version__}")
         return
 

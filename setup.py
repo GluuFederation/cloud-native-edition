@@ -31,7 +31,7 @@ def get_k8s_pkg():
 
 setup(
     name="pygluu-kubernetes",
-    version=find_version("pygluu", "kubernetes", "__init__.py"),
+    version=find_version("pygluu", "kubernetes", "version.py"),
     url="",
     copyright="Copyright 2020, Gluu Cloud Native Edition",
     license="Apache 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
