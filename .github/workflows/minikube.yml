@@ -32,6 +32,7 @@ jobs:
         sudo pip3 install setuptools --upgrade
         sudo pip3 install pyOpenSSL --upgrade
         sudo pip3 install requests --upgrade
+        sudo pip3 install cffi --upgrade
 
     - name: Lint with flake8
       run: |
