@@ -120,7 +120,7 @@ config:
     gluuSamlEnabled: false
   image:
     repository: gluufederation/config-init
-    tag: 4.2.3_02
+    tag: 4.2.3_03
   resources: {}
 nginx-ingress:
   ingress:
@@ -144,7 +144,7 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.2.3_02
+    tag: 4.2.3_03
     pullPolicy: Always
   resources:
     limits:
@@ -215,7 +215,7 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.2.3_02
+    tag: 4.2.3_03
     pullPolicy: Always
   resources: {}
 oxauth:
@@ -385,7 +385,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.2.3_02
+    tag: 4.2.3_03
     pullPolicy: Always
   resources:
     limits:
@@ -401,7 +401,7 @@ oxauth-key-rotation:
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.2.3_04
+    tag: 4.2.3_05
     pullPolicy: Always
   resources:
     limits:
