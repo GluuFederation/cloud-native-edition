@@ -1,11 +1,11 @@
 name: minikube
 # This builds, packages and tests pygluu-kubernetes
 on:
-  push:
-    paths:
-      - "pygluu/**"
-      - "tests/**"
-      - "setup.py"
+  #push:
+  #  paths:
+  #    - "pygluu/**"
+  #    - "tests/**"
+  #    - "setup.py"
   workflow_dispatch:
 jobs:
   build:
