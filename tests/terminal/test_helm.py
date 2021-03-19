@@ -114,7 +114,7 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     settings.set("GLUU_LDAP_ADVERTISE_LDAPS_PORT", "30636")
     settings.set("GLUU_LDAP_ADVERTISE_REPLICATION_PORT", "30989")
     settings.set("GLUU_LDAP_SECONDARY_CLUSTER", "Y")
-    settings.set("GLUU_LDAP_SERF_PEERS", "[firstldap.gluu.org:30946]")
+    settings.set("GLUU_LDAP_SERF_PEERS", ["firstldap.gluu.org:30946","secondldap.gluu.org:31946"])
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
     assert settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y"
@@ -124,5 +124,5 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     assert settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT") == "30636"
     assert settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT") == "30989"
     assert settings.get("GLUU_LDAP_SECONDARY_CLUSTER") == "Y"
-    assert settings.get("GLUU_LDAP_SERF_PEERS") == "[firstldap.gluu.org:30946]"
+    assert settings.get("GLUU_LDAP_SERF_PEERS") == ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
 
