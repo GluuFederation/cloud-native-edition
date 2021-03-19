@@ -8,4 +8,4 @@ maintainers:
 email: support@gluu.org
 description: Helm chart for oxauth service
 name: oxauth
-version: 1.4.2
+version: 1.4.4
