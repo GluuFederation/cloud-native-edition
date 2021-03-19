@@ -28,10 +28,10 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       volumes:
-      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
         - name: gluu-jackrabbit-admin-pass
           secret:
             secretName: gluu-jackrabbit-admin-pass
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
         - name: gluu-jackrabbit-postgres-pass
           secret:
             secretName: gluu-jackrabbit-postgres-pass
