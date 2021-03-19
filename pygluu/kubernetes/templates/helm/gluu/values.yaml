@@ -12,11 +12,11 @@ global:
   storageClass:
     provisioner: k8s.io/minikube-hostpath
     parameters:
-      type:
-      fsType:
-      storageAccountType:
-      kind:
-      pool:
+      #type:
+      #fsType:
+      #storageAccountType:
+      #kind:
+      #pool:
     reclaimPolicy: Retain
     allowVolumeExpansion: true
     mountOptions: [debug]
