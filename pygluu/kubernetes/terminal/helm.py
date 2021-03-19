@@ -50,11 +50,16 @@ class PromptHelm:
                                                default="30989"))
             if not self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER"):
                 self.settings.set("GLUU_LDAP_SECONDARY_CLUSTER",
-                                  confirm_yesno("ALPHA-FEATURE-Is this not the first kubernetes cluster"))
-            if not self.settings.get("GLUU_LDAP_SERF_PEERS"):
-                self.settings.set("GLUU_LDAP_SERF_PEERS",
-                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers as an array",
-                                               default="['firstldap.gluu.org:30946', 'secondldap.gluu.org:31946']"))
+                                  confirm_yesno("ALPHA-FEATURE-Is this a subsequent kubernetes cluster "
+                                                "(2nd and above)"))
+            if not self.settings.get("GLUU_LDAP_SERF_PEERS") or \
+                    not isinstance(self.settings.get("GLUU_LDAP_SERF_PEERS"), list):
+                temp = click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers seperated by a comma with "
+                                    "no quotes , or brackets",
+                             default="firstldap.gluu.org:30946,secondldap.gluu.org:31946")
+                temp = temp.replace(" ", "")
+                serf_peers_array = temp.split(",")
+                self.settings.set("GLUU_LDAP_SERF_PEERS", list(serf_peers_array))
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))
