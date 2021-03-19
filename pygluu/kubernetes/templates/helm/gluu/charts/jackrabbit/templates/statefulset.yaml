@@ -28,10 +28,10 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       volumes:
-      {{- if .Values.global.cnJackrabbitCluster }}
         - name: cn-jackrabbit-admin-pass
           secret:
             secretName: cn-jackrabbit-admin-pass
+      {{- if .Values.global.cnJackrabbitCluster }}
         - name: cn-jackrabbit-postgres-pass
           secret:
             secretName: cn-jackrabbit-postgres-pass
