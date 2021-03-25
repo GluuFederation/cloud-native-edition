@@ -23,7 +23,7 @@ spec:
 {{ toYaml . | indent 12 }}
         {{- end }}
           containers:
-            - name: {{ .Chart.Name }}
+            - name: {{ include "oxauth-key-rotation.name" . }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
