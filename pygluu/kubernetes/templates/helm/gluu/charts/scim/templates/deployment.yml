@@ -29,7 +29,7 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       containers:
-      - name: {{ template "cn.fullname" . }}
+      - name: {{ include "scim.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         securityContext:

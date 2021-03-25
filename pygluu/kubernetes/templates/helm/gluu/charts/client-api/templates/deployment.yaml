@@ -31,7 +31,7 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "oxd-server.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
             runAsUser: 1000

@@ -37,7 +37,7 @@ spec:
             secretName: cn-jackrabbit-postgres-pass
       {{- end }}
       containers:
-      - name: {{ include "jackrabbit.fullname" . }}
+      - name: {{ include "jackrabbit.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
