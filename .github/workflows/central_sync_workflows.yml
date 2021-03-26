@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+      - 4.2
     paths:
       - ".github/**"
 
