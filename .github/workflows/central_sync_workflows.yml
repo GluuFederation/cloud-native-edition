@@ -1,0 +1,60 @@
+name: Workflow Sync
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - ".github/**"
+
+jobs:
+  All_Repos_Common_Workflows:
+    runs-on: ubuntu-latest
+    env:
+      DRY_RUN: false
+      REPOSITORIES: |
+        GluuFederation/gluu-admin-ui
+        GluuFederation/gluu-passport
+        GluuFederation/casa
+        GluuFederation/cloud-native-edition
+        GluuFederation/docker-oxd
+        GluuFederation/docker-radius
+        GluuFederation/docker-cr-rotate
+        GluuFederation/docker-fido2
+        GluuFederation/docker-scim
+        GluuFederation/docker-opendj
+        GluuFederation/docker-oxshibboleth
+        GluuFederation/docker-oxauth
+        GluuFederation/docker-oxtrust
+        GluuFederation/cluster-mgr
+        GluuFederation/docker-persistence
+        GluuFederation/pygluu-containerlib
+        GluuFederation/docker-config-init
+        GluuFederation/community-edition-setup
+        GluuFederation/oxTrust
+        GluuFederation/oxAuth
+        GluuFederation/docker-certmanager
+        GluuFederation/docker-jackrabbit
+        GluuFederation/gluu-passport-testing
+        GluuFederation/openbanking
+        GluuFederation/community-edition-containers
+        GluuFederation/guru-app
+        GluuFederation/docker-upgrade
+        GluuFederation/gluu-admin-ui-api
+        GluuFederation/oxtrust-api
+        GluuFederation/scim
+      WORKFLOW_FILES: |
+        .github/workflows/commit-check.yml
+      COMMIT_MESSAGE: 'ci(workflows): sync workflows'
+    steps:
+      - name: Fetching Local Repository
+        uses: actions/checkout@master
+      - name: Running Workflow Sync
+        uses: mo-auto/actions-sync-workflows@main
+        with:
+          DRY_RUN: ${{ env.DRY_RUN }}
+          REPOSITORIES: ${{ env.REPOSITORIES }}
+          WORKFLOW_FILES: ${{ env.WORKFLOW_FILES }}
+          GITHUB_TOKEN: ${{ secrets.MOWORKFLOWTOKEN }}
+          COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}
