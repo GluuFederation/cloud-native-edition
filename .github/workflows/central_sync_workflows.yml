@@ -44,6 +44,7 @@ jobs:
         GluuFederation/gluu-admin-ui-api
         GluuFederation/oxtrust-api
         GluuFederation/scim
+        
       WORKFLOW_FILES: |
         .github/workflows/commit-check.yml
       COMMIT_MESSAGE: 'ci(workflows): sync workflows'
