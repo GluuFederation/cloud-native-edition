@@ -1,7 +1,7 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
-appVersion: "4.2.3"
+appVersion: "4.3.0"
 description: oxpassport Helm chart
 name: oxpassport
 version: 1.4.4

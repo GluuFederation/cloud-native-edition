@@ -4,8 +4,8 @@ replicas: 1
 
 image:
   repository: gluufederation/casa
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""

@@ -3,7 +3,7 @@ name: gluu-upgrade
 description: A Helm chart for upgrading gluu server
 type: application
 version: 1.4.2
-appVersion: "4.2.3"
+appVersion: "4.3.0"
 maintainers:
 - name: Gluu
 email: support@gluu.org

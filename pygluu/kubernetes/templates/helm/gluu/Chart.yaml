@@ -1,42 +1,42 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
-appVersion: "4.2.3"
+appVersion: "4.3.0"
 kubeVersion: ">=v1.17.0-0"
 annotations:
   artifacthub.io/changes: |
-    - Gluu 4.2.3 official chart release
+    - Gluu 4.3.0 official chart release
     - Allow to inject gluu passport redirect url
     - Add dnsConfig and dnsPolicy parse
   artifacthub.io/images: |
     - name: casa
-      image: gluufederation/casa:4.2.3_02
+      image: gluufederation/casa:4.3.0_01
     - name: fido2
-      image: gluufederation/fido2:4.2.3_02
+      image: gluufederation/fido2:4.3.0_01
     - name: scim
-      image: gluufederation/scim:4.2.3_02
+      image: gluufederation/scim:4.3.0_01
     - name: configuration-manager
-      image: gluufederation/config-init:4.2.3_03
+      image: gluufederation/config-init:4.3.0_01
     - name: cr-rotate
-      image: gluufederation/cr-rotate:4.2.3_03
+      image: gluufederation/cr-rotate:4.3.0_01
     - name: certmanager
-      image: gluufederation/certmanager:4.2.3_05
+      image: gluufederation/certmanager:4.3.0_01
     - name: opendj
-      image: gluufederation/opendj:4.2.3_02
+      image: gluufederation/opendj:4.3.0_01
     - name: jackrabbit
-      image: gluufederation/jackrabbit:4.2.3_03
+      image: gluufederation/jackrabbit:4.3.0_01
     - name: oxauth
-      image: gluufederation/oxauth:4.2.3_03
+      image: gluufederation/oxauth:4.3.0_01
     - name: oxd-server
-      image: gluufederation/oxd-server:4.2.3_02
+      image: gluufederation/oxd-server:4.3.0_01
     - name: oxpassport
-      image: gluufederation/oxpassport:4.2.3_03
+      image: gluufederation/oxpassport:4.3.0_01
     - name: oxshibboleth
-      image: gluufederation/oxshibboleth:4.2.3_04
+      image: gluufederation/oxshibboleth:4.3.0_01
     - name: persistence
-      image: gluufederation/persistence:4.2.3_03
+      image: gluufederation/persistence:4.3.0_01
     - name: radius
-      image: gluufederation/radius:4.2.3_02
+      image: gluufederation/radius:4.3.0_01
   artifacthub.io/license: Apache-2.0
 icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
 home: https://www.gluu.org

@@ -15,8 +15,8 @@ secrets:
 
 image:
   repository: gluufederation/jackrabbit
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
   
 storage:
   size: 5Gi

@@ -35,8 +35,8 @@ fullnameOverride: ""
 restartPolicy: Never
 image:
   repository: gluufederation/opendj
-  tag: 4.2.3_02
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 
 serviceAccount:
   # Specifies whether a service account should be created

@@ -3,8 +3,8 @@
 
 image:
   repository: gluufederation/fido2
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 replicas: 1
 #Resources for the deployment
 requests:

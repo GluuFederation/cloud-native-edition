@@ -3,8 +3,8 @@
 replicas: 1
 image:
   repository: gluufederation/scim
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 
 #Resources for the deployment
 requests:

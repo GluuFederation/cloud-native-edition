@@ -5,8 +5,8 @@ replicas: 1
 
 image:
   repository: gluufederation/oxtrust
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP

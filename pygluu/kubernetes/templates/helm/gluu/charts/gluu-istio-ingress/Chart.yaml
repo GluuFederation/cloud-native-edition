@@ -3,4 +3,4 @@ name: gluu-istio-ingress
 description: Istio ingress integration files
 type: application
 version: 1.4.4
-appVersion: "4.2.3"
+appVersion: "4.3.0"

@@ -1,8 +1,8 @@
 replicaCount: 1
 image:
   repository: gluufederation/gluu-gateway-ui
-  tag: 4.2.3_01
-  pullPolicy: Always
+  tag: 4.3.0_01
+  pullPolicy: IfNotPresent
 cloud:
   enabled: true
   isDomainRegistered: "false"
@@ -34,7 +34,7 @@ opServerUrl: "demoexample.gluu.org"
 oxdId:
 clientId:
 clientSecret:
-oxdServerVersion: "4.2"
+oxdServerVersion: "4.3"
 ggHost: "https://demoexample.gluu.org/gg-ui"
 ggUiRedirectUrlHost: ""
 explicitHost: "0.0.0.0"
