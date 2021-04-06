@@ -49,7 +49,7 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
-        {{- if .Values.global.cnJackrabbitCluster }}
+        {{- if .Values.global.jackrabbit.enabled }}
           - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
@@ -99,7 +99,7 @@ spec:
         - {{ .Values.global.fqdn }}
       {{- end }}
       volumes:
-      {{- if .Values.global.cnJackrabbitCluster }}
+      {{- if .Values.global.jackrabbit.enabled }}
         - name: cn-jackrabbit-admin-pass
           secret:
             secretName: cn-jackrabbit-admin-pass
