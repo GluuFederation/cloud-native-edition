@@ -58,7 +58,7 @@ spec:
             - configMapRef: 
                 name: {{ .Release.Name }}-config-cm
           volumeMounts:
-          {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+          {{- if .Values.global.jackrabbit.enabled }}
             - name: gluu-jackrabbit-admin-pass
               mountPath: /etc/gluu/conf/jackrabbit_admin_password
               subPath: jackrabbit_admin_password
@@ -100,7 +100,7 @@ spec:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
       volumes:
-      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+      {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
           secret:
             secretName: gluu-jackrabbit-admin-pass
