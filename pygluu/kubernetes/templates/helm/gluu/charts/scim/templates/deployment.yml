@@ -49,7 +49,8 @@ spec:
 {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
         ports:
-        - containerPort: {{ .Values.ports.containerPort }}
+        - name: {{ .Values.service.name }}
+          containerPort: {{ .Values.service.port }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
@@ -69,19 +70,9 @@ spec:
           {{- end }}
         {{- end }}
         livenessProbe:
-          httpGet:
-            path: /scim/restv1/scim/v2/ServiceProviderConfig
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe:
-          httpGet:
-            path: /scim/restv1/scim/v2/ServiceProviderConfig
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 25
-          periodSeconds: 25
-          timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 10 }}
       {{- if eq .Values.global.isDomainRegistered "false" }}
       hostAliases:
       - ip: {{ .Values.global.lbIp }}

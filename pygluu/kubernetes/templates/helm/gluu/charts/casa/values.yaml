@@ -7,6 +7,22 @@ image:
   tag: 4.3.0_01
   pullPolicy: IfNotPresent
 
+
+livenessProbe:
+  httpGet:
+    path: /casa/health-check
+    port: http-casa
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /casa/health-check
+    port: http-casa
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

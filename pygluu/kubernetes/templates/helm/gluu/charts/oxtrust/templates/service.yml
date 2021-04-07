@@ -15,6 +15,6 @@ spec:
   {{- end }}
   ports:
   - port: {{ .Values.service.port }}
-    name: http-oxtrust
+    name: {{ .Values.service.name }}
   selector:
     app: {{ include "oxtrust.name" . }}
