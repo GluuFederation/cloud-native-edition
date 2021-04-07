@@ -44,8 +44,8 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         ports:
-          - name: {{ .Values.service.jackRabbitServiceName }}
-            containerPort: {{ .Values.ports.jackrabbit.port }}
+          - name: {{ .Values.service.name }}
+            containerPort: {{ .Values.service.port }}
             protocol: TCP
         volumeMounts:
           - name: cn-jackrabbit-admin-pass
@@ -62,17 +62,9 @@ spec:
             subPath: {{$key}}
         {{- end }}
         readinessProbe:
-          tcpSocket: 
-            port: 8080
-          initialDelaySeconds: 25
-          periodSeconds: 25
-          timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 10 }}
         livenessProbe:
-          tcpSocket:
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 10 }}
         {{- if or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath") }}
         resources: {}
         {{- else if .Values.global.cloud.testEnviroment }}

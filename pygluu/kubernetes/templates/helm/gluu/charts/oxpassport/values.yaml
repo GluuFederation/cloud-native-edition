@@ -16,6 +16,23 @@ service:
   port: 8090
   name: http-oxpassport
 
+livenessProbe:
+  httpGet:
+    path: /passport/token
+    port: http-passport
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 20
+readinessProbe:
+  httpGet:
+    path: /passport/token
+    port: http-passport
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+  failureThreshold: 20
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

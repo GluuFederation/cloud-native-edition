@@ -52,7 +52,8 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.port}}
               protocol: TCP
           envFrom:
             - configMapRef: 
@@ -78,19 +79,9 @@ spec:
             {{- end }}
           {{- end }}
           livenessProbe:
-            httpGet:
-              path: /casa/health-check
-              port: 8080
-            initialDelaySeconds: 25
-            periodSeconds: 25
-            timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            httpGet:
-              path: /casa/health-check
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 12 }}
           {{- if or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath") }}
           resources: {}
           {{- else if .Values.global.cloud.testEnviroment }}

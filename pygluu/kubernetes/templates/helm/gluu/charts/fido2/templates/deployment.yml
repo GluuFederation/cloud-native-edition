@@ -44,7 +44,8 @@ spec:
               /app/scripts/entrypoint.sh
         {{- end}}
         ports:
-        - containerPort: {{ .Values.ports.containerPort }}
+        - name: {{ .Values.service.name }}
+          containerPort: {{ .Values.service.port }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
@@ -64,19 +65,9 @@ spec:
           {{- end }}
         {{- end }}
         livenessProbe:
-          httpGet:
-            path: /jans-fido2/sys/health-check
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe:
-          httpGet:
-            path:  /jans-fido2/sys/health-check
-            port: {{ .Values.ports.containerPort }}
-          initialDelaySeconds: 25
-          periodSeconds: 25
-          timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 10 }}
         {{- if or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath") }}
         resources: {}
         {{- else if .Values.global.cloud.testEnviroment }}

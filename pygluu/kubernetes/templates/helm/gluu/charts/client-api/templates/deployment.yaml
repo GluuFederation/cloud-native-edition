@@ -52,23 +52,9 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-cm
           livenessProbe:
-            exec:
-              command:
-                - curl
-                - -k
-                - https://localhost:8443/health-check
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            exec:
-              command:
-                - curl
-                - -k
-                - https://localhost:8443/health-check
-            initialDelaySeconds: 25
-            periodSeconds: 25
-            timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 12 }}
           volumeMounts:
           {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
             - name: cb-pass

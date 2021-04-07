@@ -27,6 +27,21 @@ resources:
   requests:
    memory: 1000Mi # "1536Mi"
 
+livenessProbe:
+  httpGet:
+    path: /idp
+    port: http-oxshibboleth
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /idp
+    port: http-oxshibboleth
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+
 nodeSelector: {}
 
 tolerations: []
