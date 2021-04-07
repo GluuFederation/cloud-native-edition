@@ -25,7 +25,7 @@ spec:
 {{ toYaml . | indent 12 }}
         {{- end }}
           containers:
-            - name: {{ include "oxauth-key-rotation.name" . }}
+            - name: {{ include "auth-server-key-rotation.name" . }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
