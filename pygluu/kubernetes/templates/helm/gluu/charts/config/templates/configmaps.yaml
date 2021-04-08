@@ -148,7 +148,7 @@ data:
             return False
 
     # check if gluu secret exists
-    def get_certs(namespace):
+    def get_certs(secret_name, namespace):
         """
 
         :param namespace:
@@ -156,16 +156,17 @@ data:
         """
         ssl_cert = None
         ssl_key = None
-        if core_cli.read_namespaced_secret('gluu', namespace):
-            ssl_cert = core_cli.read_namespaced_secret('gluu', namespace).data['ssl_cert']
-            ssl_key = core_cli.read_namespaced_secret("gluu", namespace).data['ssl_key']
+        if core_cli.read_namespaced_secret(secret_name, namespace):
+            ssl_cert = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_cert']
+            ssl_key = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_key']
 
         return ssl_cert, ssl_key
 
 
     def main():
         namespace = {{.Release.Namespace | quote}}
-        cert, key = get_certs(namespace)
+        secret_name = {{ .Values.configmap.cnSecretKubernetesSecret | quote }}
+        cert, key = get_certs(secret_name, namespace)
         # global vars
         name = "tls-certificate"
 
