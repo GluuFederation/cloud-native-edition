@@ -15,7 +15,7 @@ def test_set_exception(caplog, settings):
     settings.db = str
 
     with caplog.at_level(logging.INFO):
-        assert settings.set("GLUU_VERSION", "4.2") is False
+        assert settings.set("GLUU_VERSION", "4.3") is False
         assert "Uncaught error" in caplog.text
 
 

@@ -32,7 +32,7 @@ spec:
             name: updatelbip
       containers:
         - name: gg-kong-ui
-          image: gluufederation/gluu-gateway-ui:4.2.3_01
+          image: gluufederation/gluu-gateway-ui:4.3.0_01
           command:
             - /bin/sh
             - -c

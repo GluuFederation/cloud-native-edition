@@ -11,7 +11,7 @@ resources:
   - ingress.yaml
 images:
   - name: gluufederation/gluu-gateway-ui
-    newTag: 4.2.3_01
+    newTag: 4.3.0_01
 configMapGenerator:
   - name: gg-ui-cm
     literals:
@@ -32,7 +32,7 @@ configMapGenerator:
       - OXD_ID=""
       - CLIENT_ID=""
       - CLIENT_SECRET=""
-      - OXD_SERVER_VERSION="4.2"
+      - OXD_SERVER_VERSION="4.3"
       - GG_HOST="https://demoexample.gluu.org/gg-ui"
       - GG_UI_REDIRECT_URL_HOST=""
       - EXPLICIT_HOST="0.0.0.0"

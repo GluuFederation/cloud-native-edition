@@ -8,4 +8,4 @@ resources:
   - cronjobs.yaml
 images:
   - name: gluufederation/certmanager
-    newTag: 4.2.3_01
+    newTag: 4.3.0_01

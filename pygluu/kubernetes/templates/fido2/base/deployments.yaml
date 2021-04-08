@@ -21,7 +21,7 @@ spec:
       containers:
       - name: fido2
         imagePullPolicy: Always
-        image: gluufederation/fido2:4.2.3_01
+        image: gluufederation/fido2:4.3.0_01
         command:
           - /bin/sh
           - -c
