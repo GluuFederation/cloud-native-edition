@@ -6,6 +6,8 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
+  # Distribution
+  CN_DISTRIBUTION: {{ .Values.global.distribution | quote }}
   # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
   GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}

@@ -556,6 +556,10 @@
 						}
 					}
 				},
+				"distribution": {
+					"type": "string",
+					"pattern": "^(default|openbanking)$"
+				},
 				"persistence": {
 					"type": "object",
 					"properties": {
