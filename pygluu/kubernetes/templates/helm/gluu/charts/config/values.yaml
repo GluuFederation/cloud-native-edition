@@ -20,6 +20,14 @@ cnLdapInit: true
 cnLdapInitPort: 1636
 cnOxtrustConfigGeneration: true
 configmap:
+  cnSqlDbDialect: mysql
+  cnSqlDbHost: my-release-mysql.default.svc.cluster.local
+  cnSqlDbPort: 3306
+  cnSqlDbName: jans
+  cnSqlDbUser: root
+  cnSqlDbTimezone: UTC
+  cnSqlPasswordFile: /etc/jans/conf/sql_password
+  cnSqldbUserPassword: Test1234#
   cnConfigKubernetesConfigMap: cn
   cnSecretKubernetesSecret: cn
   cnClientApiApplicationCertCn: client-api
@@ -43,9 +51,7 @@ configmap:
   cnSyncShibManifests: false
   cnSyncCasaManifests: false
   cnMaxRamPercent: "75.0"
-  configAdapterName: kubernetes
   containerMetadataName: kubernetes
-  configSecretAdapter: kubernetes
   # If REDIS is the Cache Type or if going to be used with clientApi
   cnRedisUrl: redis:6379
   cnRedisUseSsl: "false"
@@ -80,4 +86,4 @@ fullNameOverride: ""
 
 image:
   repository: janssenproject/configuration-manager
-  tag: 5.0.0_dev
+  tag: 1.0.0_dev

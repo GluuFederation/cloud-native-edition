@@ -56,6 +56,16 @@ spec:
           readinessProbe:
 {{- toYaml .Values.readinessProbe | nindent 12 }}
           volumeMounts:
+          {{ if eq .Values.global.configSecretAdapter "google" }}
+            - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
+              name: google-secret-manager-sa
+              subPath: google-credentials.json
+          {{- end }}
+          {{- if eq .Values.global.cnPersistenceType "sql" }}
+            - name: sql-pass
+              mountPath: "/etc/jans/conf/sql_password"
+              subPath: sql_password
+          {{- end }}
           {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
@@ -79,6 +89,16 @@ spec:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
       volumes:
+      {{ if eq .Values.global.configSecretAdapter "google" }}
+        - name: google-secret-manager-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-secret-manager-sa
+      {{- end }}
+      {{- if eq .Values.global.cnPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
+      {{- end }}
       {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
