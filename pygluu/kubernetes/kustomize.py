@@ -1509,9 +1509,6 @@ class Kustomize(object):
                                                                  self.settings.get("GLUU_NAMESPACE"),
                                                                  "GLUU_CONFIG_ADAPTER=kubernetes",
                                                                  "GLUU_SECRET_ADAPTER=kubernetes",
-                                                                 "GLUU_LDAP_INIT='true'",
-                                                                 "GLUU_LDAP_INIT_HOST='opendj'",
-                                                                 "GLUU_LDAP_INIT_PORT='1636'",
                                                                  "GLUU_CERT_ALT_NAME='opendj'",
                                                                  "GLUU_PERSISTENCE_LDAP_MAPPING=" + self.settings.get(
                                                                      "HYBRID_LDAP_HELD_DATA"),

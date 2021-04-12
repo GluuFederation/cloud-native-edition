@@ -17,8 +17,6 @@ state: TX
 city: SLC
 secondaryCluster:
   enabled: false
-gluuLdapInit: true
-gluuLdapInitPort: 1636
 gluuOxtrustConfigGeneration: true
 configmap:
   gluuOxdApplicationCertCn: oxd-server

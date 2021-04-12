@@ -47,9 +47,6 @@ data:
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
   {{- end }}
-  GLUU_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
-  GLUU_LDAP_INIT: {{ .Values.gluuLdapInit | quote }} # TODO: To be removed
-  GLUU_LDAP_INIT_PORT: {{ .Values.gluuLdapInitPort | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
   GLUU_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
@@ -87,6 +84,7 @@ data:
   {{- end }}
   {{- if .Values.global.istio.enabled }}
   GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  GLUU_LDAP_USE_SSL: "false"
   {{- end }}
   # BELOW TEMP ENV. TO BE REMOVED IN 4.3
   GLUU_PASSPORT_FAILURE_REDIRECT_URL: {{ .Values.configmap.gluuPassportFailureRedirectUrl | quote }}
