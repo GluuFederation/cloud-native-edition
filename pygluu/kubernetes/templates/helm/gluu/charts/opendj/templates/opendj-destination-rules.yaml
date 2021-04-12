@@ -1,10 +1,10 @@
-{{- if .Values.global.istio.ingress }}
+{{- if .Values.global.istio.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: {{ .Release.Name }}-ldap-mtls
+  name: {{ .Release.Name }}-opendj-mtls
   namespace: {{.Release.Namespace}}
 spec:
   host: {{ .Values.service.ldapServiceName }}.{{ .Release.Namespace }}.svc.cluster.local

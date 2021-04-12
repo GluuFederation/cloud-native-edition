@@ -18,7 +18,7 @@ service:
 
 livenessProbe:
   httpGet:
-    path: /passport/token
+    path: /passport/health-check
     port: http-passport
   initialDelaySeconds: 30
   periodSeconds: 30
@@ -26,7 +26,7 @@ livenessProbe:
   failureThreshold: 20
 readinessProbe:
   httpGet:
-    path: /passport/token
+    path: /passport/health-check
     port: http-passport
   initialDelaySeconds: 25
   periodSeconds: 25
