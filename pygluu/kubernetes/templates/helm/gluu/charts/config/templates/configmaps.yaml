@@ -67,9 +67,6 @@ data:
   {{- if or (eq .Values.global.cnPersistenceType "hybrid") (eq .Values.global.cnPersistenceType "ldap") }}
   CN_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.cnPersistenceLdapMapping | quote }}
   {{- end }}
-  CN_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
-  CN_LDAP_INIT: {{ .Values.cnLdapInit | quote }} # TODO: To be removed
-  CN_LDAP_INIT_PORT: {{ .Values.cnLdapInitPort | quote }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
   CN_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
@@ -107,6 +104,7 @@ data:
   {{- end }}
   {{- if .Values.global.istio.enabled }}
   CN_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  CN_LDAP_USE_SSL: "false"
   {{- end }}
 
 ---

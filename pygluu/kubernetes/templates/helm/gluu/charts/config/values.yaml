@@ -16,8 +16,6 @@ redisPassword: P@assw0rd
 countryCode: US
 state: TX
 city: SLC
-cnLdapInit: true
-cnLdapInitPort: 1636
 cnOxtrustConfigGeneration: true
 configmap:
   cnSqlDbDialect: mysql
