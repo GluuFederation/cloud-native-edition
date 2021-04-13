@@ -34,6 +34,9 @@ spec:
                 name: {{ .Release.Name }}-config-cm
           {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
@@ -53,6 +56,9 @@ spec:
           {{- end }}
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass

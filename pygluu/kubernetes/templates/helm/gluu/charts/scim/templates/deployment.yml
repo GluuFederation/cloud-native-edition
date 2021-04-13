@@ -55,6 +55,9 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
+        {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           - name: {{ include "scim.fullname" .}}-updatelbip
             mountPath: "/scripts"
@@ -80,6 +83,9 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:

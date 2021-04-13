@@ -51,6 +51,9 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
         volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.global.jackrabbit.enabled }}
             - name: gluu-jackrabbit-admin-pass
               mountPath: /etc/gluu/conf/jackrabbit_admin_password
@@ -89,6 +92,9 @@ spec:
         - {{ .Values.global.domain }}
       {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
           secret:

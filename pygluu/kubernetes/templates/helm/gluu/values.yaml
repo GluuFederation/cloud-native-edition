@@ -122,6 +122,12 @@ config:
   image:
     repository: gluufederation/config-init
     tag: 4.3.0_01
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+  dnsPolicy: ""
+  dnsConfig: {}
   resources: {}
 nginx-ingress:
   ingress:
@@ -158,6 +164,10 @@ jackrabbit:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -218,6 +228,10 @@ opendj:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -227,6 +241,13 @@ persistence:
     tag: 4.3.0_01
     pullPolicy: IfNotPresent
   resources: {}
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+  dnsPolicy: ""
+  dnsConfig: {}
+
 oxauth:
   service:
     oxAuthServiceName: oxauth
@@ -246,6 +267,10 @@ oxauth:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -268,6 +293,10 @@ oxtrust:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -290,6 +319,10 @@ fido2:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -312,6 +345,10 @@ scim:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -334,6 +371,10 @@ oxd-server:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -356,6 +397,10 @@ casa:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -378,6 +423,10 @@ oxpassport:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -400,6 +449,10 @@ oxshibboleth:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -422,6 +475,10 @@ radius:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -439,6 +496,10 @@ cr-rotate:
     requests:
       cpu: 200m
       memory: 200Mi
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -455,5 +516,9 @@ oxauth-key-rotation:
     requests:
       cpu: 300m
       memory: 300Mi
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
   dnsPolicy: ""
   dnsConfig: {}
