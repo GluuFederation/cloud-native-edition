@@ -29,6 +29,9 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.multiCluster.enabled }}
         - name: serfkey
           secret:
@@ -76,10 +79,13 @@ spec:
             name: {{ $key }}
         {{- end }}
         volumeMounts:
-        {{- range $key, $values := .Values.volumeMounts }}
+        {{- range $key, $values := .Values.OpenDjVolumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}
             subPath: {{$key}}
+        {{- end }}
+        {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
         {{- end }}
         {{- if .Values.multiCluster.enabled }}
           - mountPath: "/etc/gluu/conf/serf-key"

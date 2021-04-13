@@ -61,6 +61,9 @@ spec:
               name: {{ .Release.Name }}-global-user-custom-envs
           {{- end }}
         volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+          {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           - name: {{ include "radius.fullname" .}}-updatelbip
             mountPath: /scripts
@@ -88,6 +91,9 @@ spec:
 {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         - name: {{ include "radius.fullname" .}}-updatelbip
           configMap:

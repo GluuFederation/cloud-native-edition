@@ -94,3 +94,22 @@ fullNameOverride: ""
 image:
   repository: gluufederation/config-init
   tag: 4.2.3_01
+
+
+volumes: []
+  # Configure any additional volumes that need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+
+
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
+
+dnsPolicy: ""
+dnsConfig: {}
+  # options:
+  #   - name: ndots
+  #     value: "5"

@@ -54,6 +54,9 @@ spec:
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
         {{- end }}
+        {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
@@ -70,6 +73,9 @@ spec:
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
           secret:

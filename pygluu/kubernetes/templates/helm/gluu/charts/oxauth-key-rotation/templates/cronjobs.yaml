@@ -29,8 +29,11 @@ spec:
                 {{- include "oxauth-key-rotation.usr-envs" . | indent 16 }}
                 {{- include "oxauth-key-rotation.usr-secret-envs" . | indent 16 }}
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
               volumeMounts:
+              {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
                 - name: cb-pass
                   mountPath: "/etc/gluu/conf/couchbase_password"
                   subPath: couchbase_password
@@ -72,8 +75,11 @@ spec:
               {{- else }}
               args: ["patch", "oxauth", "--opts", "interval:{{ .Values.keysLife }}"]
               {{- end }}
-          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumes:
+          {{- with .Values.volumes }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
             - name: cb-pass
               secret:
                 secretName: {{ .Release.Name }}-cb-pass

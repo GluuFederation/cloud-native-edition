@@ -15,7 +15,15 @@ spec:
       labels:
         app: {{ include "config.name" . }}-init-load
     spec:
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+    {{- with .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml . | indent 8 }}
+    {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         - name: {{ include "config.fullname" . }}-mount-gen-file
           secret:
             secretName: {{ include "config.fullname" . }}-gen-json-file
@@ -29,6 +37,9 @@ spec:
           {{- include "config.usr-envs" . | indent 12 }}
           {{- include "config.usr-secret-envs" . | indent 12 }}
         volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+          {{- end }}
           - mountPath: /opt/config-init/db/generate.json
             name: {{ include "config.fullname" . }}-mount-gen-file
             subPath: generate.json
