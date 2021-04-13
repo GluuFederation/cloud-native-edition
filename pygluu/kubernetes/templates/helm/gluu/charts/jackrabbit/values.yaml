@@ -40,7 +40,7 @@ readinessProbe:
 
 # VolumeMounts for StatefulSet
 # jackrabbit-init vm
-volumeMounts:
+jackrabbitVolumeMounts:
   repository:
     mountPath: /opt/jackrabbit/repository
     name: jackrabbit-volume
@@ -50,6 +50,15 @@ volumeMounts:
   workspaces:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

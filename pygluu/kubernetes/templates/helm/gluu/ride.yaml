@@ -98,10 +98,15 @@ auth-server:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 auth-server-key-rotation:
   dnsPolicy: ""
   dnsConfig: {}
@@ -121,10 +126,15 @@ auth-server-key-rotation:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 casa:
   dnsPolicy: ""
   dnsConfig: {}
@@ -146,10 +156,15 @@ casa:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 client-api:
   dnsPolicy: ""
   dnsConfig: {}
@@ -171,10 +186,15 @@ client-api:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 config:
   adminPassword: Test1234#
   city: Austin
@@ -237,7 +257,7 @@ config:
     cnRedisType: STANDALONE
     cnRedisUrl: "redis.redis.svc.cluster.local:6379"
     cnRedisUseSsl: false
-    cnSamlEnabled: false
+    cnSamlEnabled: true
     cnSecretKubernetesSecret: cn
     cnSyncCasaManifests: false
     cnSyncShibManifests: false
@@ -266,10 +286,15 @@ config:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
@@ -293,10 +318,15 @@ config-api:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 cr-rotate:
   dnsPolicy: ""
   dnsConfig: {}
@@ -317,10 +347,15 @@ cr-rotate:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 fido2:
   dnsPolicy: ""
   dnsConfig: {}
@@ -342,10 +377,15 @@ fido2:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 global:
   alb:
     ingress: false
@@ -443,10 +483,15 @@ jackrabbit:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 nginx-ingress:
   ingress:
     # /.well-known/openid-configuration
@@ -564,10 +609,15 @@ oxpassport:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 oxshibboleth:
   dnsPolicy: ""
   dnsConfig: {}
@@ -589,10 +639,15 @@ oxshibboleth:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 persistence:
   dnsPolicy: ""
   dnsConfig: {}
@@ -607,10 +662,15 @@ persistence:
     requests:
       cpu: 300m
       memory: 300Mi
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 radius:
   dnsPolicy: ""
   dnsConfig: {}
@@ -632,10 +692,15 @@ radius:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs
 scim:
   dnsPolicy: ""
   dnsConfig: {}
@@ -657,7 +722,12 @@ scim:
 #    initialDelaySeconds: 25
 #  readinessProbe:
 #    initialDelaySeconds: 30
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
+  volumes:
+    # Configure any additional volumes need to be attached to the pod
+    - name: mycustomcert
+     secret:
+       secretName: mycustomsecret
+  volumeMounts:
     # Configure any additional volumesMounts that need to be attached to the containers
+    - name: mycustomcert
+      mountPath: /etc/certs

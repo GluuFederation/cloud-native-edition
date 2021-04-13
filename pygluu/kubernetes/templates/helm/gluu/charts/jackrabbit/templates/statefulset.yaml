@@ -28,6 +28,9 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         - name: cn-jackrabbit-admin-pass
           secret:
             secretName: cn-jackrabbit-admin-pass
@@ -48,6 +51,9 @@ spec:
             containerPort: {{ .Values.service.port }}
             protocol: TCP
         volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+          {{- end }}
           - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
@@ -56,7 +62,7 @@ spec:
             mountPath: /etc/gluu/conf/postgres_password
             subPath: postgres_password
         {{- end }}
-        {{- range $key, $values := .Values.volumeMounts }}
+        {{- range $key, $values := .Values.jackrabbitVolumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}
             subPath: {{$key}}
