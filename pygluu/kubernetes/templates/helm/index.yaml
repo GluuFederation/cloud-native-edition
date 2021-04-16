@@ -29,7 +29,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-04-16T04:56:57.0949394-04:00"
+    created: "2021-04-16T07:24:54.3414124-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -100,7 +100,7 @@ entries:
       repository: ""
       version: 5.0.0
     description: Gluu Access and Identity Mangement OpenBanking distribution
-    digest: 0e0858aab9d87c61202fdaa9346f63357571074d4f7acd91db05e665a2d1ac50
+    digest: 1e77440bf5cf0ff7bef3c5b10525c0cd5a810229f8b352dac10fbe45453cdf3a
     home: https://www.gluu.org
     icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
     kubeVersion: '>=v1.17.0-0'
@@ -1149,4 +1149,4 @@ entries:
     urls:
     - ldap-backup-1.3.3.tgz
     version: 1.3.3
-generated: "2021-04-16T04:56:57.0769876-04:00"
+generated: "2021-04-16T07:24:54.3284079-04:00"
