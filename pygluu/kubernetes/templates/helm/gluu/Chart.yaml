@@ -75,7 +75,7 @@ dependencies:
       version: 5.0.0
       repository: ""
 
-    - name: nginx
+    - name: nginx-ingress
       condition: global.nginx-ingress.enabled
       version: 5.0.0
       repository: ""

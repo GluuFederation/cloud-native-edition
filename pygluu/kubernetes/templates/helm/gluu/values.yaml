@@ -475,11 +475,11 @@ nginx-ingress:
     additionalAnnotations: {}
     path: /
     hosts:
-    - demoexample.jans.io
+    - demoexample.gluu.org
     tls:
     - secretName: tls-certificate
       hosts:
-      - demoexample.jans.io
+      - demoexample.gluu.org
 opendj:
   dnsPolicy: ""
   dnsConfig: {}

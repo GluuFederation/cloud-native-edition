@@ -59,6 +59,11 @@ config:
     cnRedisUseSsl: false
     cnSecretKubernetesSecret: cn
     containerMetadataName: kubernetes
+  # Below values should always remain intact
+    cnCasaEnabled: false
+    cnPassportEnabled: false
+    cnRadiusEnabled: false
+
   countryCode: US
   email: support@gluu.org
   image:
@@ -157,6 +162,21 @@ global:
     volumeBindingMode: WaitForFirstConsumer
   upgrade:
     enabled: false
+  # Below values should always remain intact
+  opendj:
+    enabled: false
+  jackrabbit:
+    enabled: false
+  fido2:
+    enabled: false
+  scim:
+    enabled: false
+  oxshibboleth:
+    enabled: false
+  cr-rotate:
+    enabled: false
+  client-api:
+    enabled: false
 
 nginx-ingress:
   ingress:
@@ -188,11 +208,11 @@ nginx-ingress:
       #nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
     path: /
     hosts:
-    - demoexample.jans.io
+    - demoexample.gluu.org
     tls:
     - secretName: tls-certificate
       hosts:
-      - demoexample.jans.io
+      - demoexample.gluu.org
 persistence:
   dnsPolicy: ""
   dnsConfig: {}
