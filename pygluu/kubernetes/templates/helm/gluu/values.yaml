@@ -83,7 +83,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   replicas: 1
   resources:
     limits:
@@ -108,7 +108,7 @@ auth-server-key-rotation:
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   keysLife: 23
   resources:
     limits:
@@ -156,7 +156,7 @@ client-api:
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   replicas: 1
   resources:
     limits:
@@ -189,7 +189,7 @@ config:
     cnSqlPasswordFile: /etc/jans/conf/sql_password
     cnSqldbUserPassword: Test1234#
     cnCacheType: NATIVE_PERSISTENCE
-    cnCasaEnabled: true
+    cnCasaEnabled: false
     cnClientApiAdminCertCn: client-api
     cnClientApiApplicationCertCn: client-api
     cnClientApiBindIpAddresses: "*"
@@ -232,9 +232,9 @@ config:
     # [google_secret_manager_envs] END
     cnLdapUrl: "opendj:1636"
     cnMaxRamPercent: "75.0"
-    cnPassportEnabled: true
+    cnPassportEnabled: false
     cnPersistenceLdapMapping: default
-    cnRadiusEnabled: true
+    cnRadiusEnabled: false
     cnRedisSentinelGroup: ""
     cnRedisSslTruststore: ""
     cnRedisType: STANDALONE
@@ -244,8 +244,6 @@ config:
     cnSecretKubernetesSecret: cn
     cnSyncCasaManifests: false
     cnSyncShibManifests: false
-    configAdapterName: kubernetes
-    configSecretAdapter: kubernetes
     containerMetadataName: kubernetes
     lbAddr: ""
     ldapServiceName: opendj
@@ -253,7 +251,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -281,7 +279,7 @@ config-api:
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   replicas: 1
   resources:
     limits:
@@ -330,7 +328,7 @@ fido2:
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   replicas: 1
   resources:
     limits:
@@ -395,7 +393,7 @@ global:
   nginx-ingress:
     enabled: true
   opendj:
-    enabled: true
+    enabled: false
   oxshibboleth:
     enabled: false
   # distributions supported are: default|openbanking
@@ -462,15 +460,15 @@ nginx-ingress:
     # /.well-known/simple-web-discovery
     webdiscoveryEnabled: true
     # /.well-known/scim-configuration
-    scimConfigEnabled: true
+    scimConfigEnabled: false
     # /jans-scim
-    scimEnabled: true
+    scimEnabled: false
     # /jans-config-api
     configApiEnabled: true
     # /.well-known/fido-configuration
     u2fConfigEnabled: true
     # /.well-known/fido2-configuration
-    fido2ConfigEnabled: true
+    fido2ConfigEnabled: false
     # /jans-auth
     authServerEnabled: true
     # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
@@ -603,7 +601,7 @@ persistence:
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   resources:
     limits:
       cpu: 300m
@@ -646,7 +644,7 @@ scim:
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_dev
+    tag: 1.0.0_b1
   replicas: 1
   resources:
     limits:

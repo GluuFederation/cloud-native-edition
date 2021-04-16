@@ -77,7 +77,7 @@ spec:
         {{- end }}
         {{- if eq .Values.global.cnPersistenceType "sql" }}
           - name: sql-pass
-            mountPath: "/etc/gluu/conf/sql_password"
+            mountPath: "/etc/jans/conf/sql_password"
             subPath: sql_password
         {{- end }}
         {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
