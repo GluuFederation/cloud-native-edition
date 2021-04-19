@@ -24,11 +24,33 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 sudo microk8s config > config
-sudo microk8s.kubectl create namespace gluu --kubeconfig="$PWD/config" || echo "namespace exists"
+KUBECONFIG="$PWD"/config
+sudo microk8s.kubectl create namespace gluu --kubeconfig="$KUBECONFIG" || echo "namespace exists"
 sudo helm repo add bitnami https://charts.bitnami.com/bitnami
-sudo microk8s.kubectl get po --kubeconfig="$PWD/config"
-sudo helm install my-release --set auth.rootPassword=Test1234#,auth.database=jans bitnami/mysql -n gluu --kubeconfig="$PWD/config"
+sudo microk8s.kubectl get po --kubeconfig="$KUBECONFIG"
+sudo helm install my-release --set auth.rootPassword=Test1234#,auth.database=jans bitnami/mysql -n gluu --kubeconfig="$KUBECONFIG"
+# Create and patch certs and keys. This will also generate the client crt and key to be used to access protected endpoints
+mkdir certs
+cd certs
+wget https://raw.githubusercontent.com/GluuFederation/cloud-native-edition/master/pygluu/kubernetes/pycert.py
+wget https://raw.githubusercontent.com/GluuFederation/cloud-native-edition/master/pygluu/kubernetes/helpers.py
+sudo sed -i 's/from pygluu.kubernetes.helpers import get_logger/from helpers import get_logger/g' pycert.py
+cat << EOF > generate.py
+from pycert import setup_crts
+setup_crts("Gluu Openbanking CA", "gluu-openbanking", ["demoexample.gluu.org"], key_file="./server.key")
+EOF
+sudo python3 generate.py
+# load the certificate into a variable
+sudo sed -ne '
+   /-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p
+   /-END CERTIFICATE-/q
+' $PWD/chain.pem > server.crt
+sudo openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Openbanking'
+sudo openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
+sudo microk8s.kubectl create secret generic cn -n gluu --from-file=ssl_cert=client.crt --from-file=ssl_key=client.key --kubeconfig="$KUBECONFIG"
+cd ..
+# done with cert and key job
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm
 sudo helm repo update
-sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 --set config.configmap.cnSqlDbHost="my-release-mysql.gluu.svc" --set global.provisioner="microk8s.io/hostpath" --set config.configmap.cnSqlDbUser="root" --kubeconfig="$PWD/config"
+sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 --set config.configmap.cnSqlDbHost="my-release-mysql.gluu.svc" --set global.provisioner="microk8s.io/hostpath" --set config.configmap.cnSqlDbUser="root" --kubeconfig="$KUBECONFIG"
 
