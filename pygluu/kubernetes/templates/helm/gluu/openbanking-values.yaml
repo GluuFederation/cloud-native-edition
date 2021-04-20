@@ -201,7 +201,7 @@ nginx-ingress:
       # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
     additionalAnnotations:
       # Enable client certificate authentication
-      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
       # Create the secret containing the trusted ca certificates
       nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
       # Specify the verification depth in the client certificates chain
