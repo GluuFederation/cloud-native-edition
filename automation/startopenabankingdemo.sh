@@ -48,6 +48,7 @@ sudo sed -ne '
 sudo openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Openbanking'
 sudo openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
 sudo microk8s.kubectl create secret generic cn -n gluu --from-file=ssl_cert=client.crt --from-file=ssl_key=client.key --kubeconfig="$KUBECONFIG"
+sudo microk8s kubectl create secret generic ca-secret -n gluu --from-file=tls.crt=server.crt --from-file=tls.key=server.key --from-file=ca.crt=ca.crt --kubeconfig="$KUBECONFIG"
 cd ..
 # done with cert and key job
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm

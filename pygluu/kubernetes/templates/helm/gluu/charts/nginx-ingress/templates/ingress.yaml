@@ -430,4 +430,332 @@ spec:
               serviceName: auth-server
               servicePort: 8080
   {{- end }}
+
+---
+
+{{ if .Values.ingress.authServerProtectedToken -}}
+{{ $fullName := include "nginx-ingress.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-auth-server-protected-token
+  labels:
+    app: auth-server
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "auth-server"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
+    # Issues when using the server snippet to force ssl on path level with some browsers such as Safari and Chrome-on-Android may arise where the client cert on path is not honored and prompted never the less.
+    nginx.ingress.kubernetes.io/server-snippet: |
+        location ~* "^/jans-auth/restv1/token" {
+                if ($ssl_client_verify != "SUCCESS") { return 403; }
+                set $namespace      "{{ .Release.Namespace }}";
+                set $ingress_name   "nginx";
+                set $service_name   "auth-server";
+                set $service_port   "8080";
+                set $location_path  "/jans-auth/restv1/token";
+                set $global_rate_limit_exceeding n;
+
+                rewrite_by_lua_block {
+                        lua_ingress.rewrite({
+                                force_ssl_redirect = false,
+                                ssl_redirect = true,
+                                force_no_ssl_redirect = false,
+                                use_port_in_redirects = false,
+                        global_throttle = { namespace = "", limit = 0, window_size = 0, key = { }, ignored_cidrs = { } },
+                        })
+                        balancer.rewrite()
+                        plugins.run()
+                }
+
+                # be careful with `access_by_lua_block` and `satisfy any` directives as satisfy any
+                # will always succeed when there's `access_by_lua_block` that does not have any lua code doing `ngx.exit(ngx.DECLINED)`
+                # other authentication method such as basic auth or external auth useless - all requests will be allowed.
+                #access_by_lua_block {
+                #}
+
+                header_filter_by_lua_block {
+                        lua_ingress.header()
+                        plugins.run()
+                }
+
+                body_filter_by_lua_block {
+                        plugins.run()
+                }
+
+                log_by_lua_block {
+                        balancer.log()
+
+                        monitor.call()
+
+                        plugins.run()
+                }
+
+                port_in_redirect off;
+
+                set $balancer_ewma_score -1;
+                set $proxy_upstream_name "gluu-auth-server-8080";
+                set $proxy_host          $proxy_upstream_name;
+                set $pass_access_scheme  $scheme;
+
+                set $pass_server_port    $server_port;
+
+                set $best_http_host      $http_host;
+                set $pass_port           $pass_server_port;
+
+                set $proxy_alternative_upstream_name "";
+
+                client_max_body_size                    1m;
+
+                proxy_set_header Host                   $best_http_host;
+
+                # Pass the extracted client certificate to the backend
+
+                proxy_set_header ssl-client-cert        $ssl_client_escaped_cert;
+
+                proxy_set_header ssl-client-verify      $ssl_client_verify;
+                proxy_set_header ssl-client-subject-dn  $ssl_client_s_dn;
+                proxy_set_header ssl-client-issuer-dn   $ssl_client_i_dn;
+
+                # Allow websocket connections
+                proxy_set_header                        Upgrade           $http_upgrade;
+
+                proxy_set_header                        Connection        $connection_upgrade;
+
+                proxy_set_header X-Request-ID           $req_id;
+                proxy_set_header X-Real-IP              $remote_addr;
+
+                proxy_set_header X-Forwarded-For        $remote_addr;
+
+                proxy_set_header X-Forwarded-Host       $best_http_host;
+                proxy_set_header X-Forwarded-Port       $pass_port;
+                proxy_set_header X-Forwarded-Proto      $pass_access_scheme;
+
+                proxy_set_header X-Scheme               $pass_access_scheme;
+
+                # Pass the original X-Forwarded-For
+                proxy_set_header X-Original-Forwarded-For $http_x_forwarded_for;
+
+                # mitigate HTTPoxy Vulnerability
+                # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
+                proxy_set_header Proxy                  "";
+
+                # Custom headers to proxied server
+
+                proxy_connect_timeout                   5s;
+                proxy_send_timeout                      60s;
+                proxy_read_timeout                      60s;
+
+                proxy_buffering                         off;
+                proxy_buffer_size                       4k;
+                proxy_buffers                           4 4k;
+
+                proxy_max_temp_file_size                1024m;
+
+                proxy_request_buffering                 on;
+                proxy_http_version                      1.1;
+
+                proxy_cookie_domain                     off;
+                proxy_cookie_path                       off;
+
+                # In case of errors try the next upstream server before returning an error
+                proxy_next_upstream                     error timeout;
+                proxy_next_upstream_timeout             0;
+                proxy_next_upstream_tries               3;
+
+                proxy_pass http://upstream_balancer;
+
+                proxy_redirect                          off;
+
+        }
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /jans-auth/restv1/token
+            pathType: Exact
+            backend:
+              serviceName: auth-server
+              servicePort: 8080
+  {{- end }}
+
+---
+
+{{ if .Values.ingress.authServerProtectedRegister -}}
+{{ $fullName := include "nginx-ingress.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-auth-server-protected-register
+  labels:
+    app: auth-server
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "auth-server"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
+    # Issues when using the server snippet to force ssl on path level with some browsers such as Safari and Chrome-on-Android may arise where the client cert on path is not honored and prompted never the less.
+    nginx.ingress.kubernetes.io/server-snippet: |
+        location ~* "^/jans-auth/restv1/register" {
+                if ($ssl_client_verify != "SUCCESS") { return 403; }
+                set $namespace      "{{ .Release.Namespace }}";
+                set $ingress_name   "nginx";
+                set $service_name   "auth-server";
+                set $service_port   "8080";
+                set $location_path  "/jans-auth/restv1/register";
+                set $global_rate_limit_exceeding n;
+
+                rewrite_by_lua_block {
+                        lua_ingress.rewrite({
+                                force_ssl_redirect = false,
+                                ssl_redirect = true,
+                                force_no_ssl_redirect = false,
+                                use_port_in_redirects = false,
+                        global_throttle = { namespace = "", limit = 0, window_size = 0, key = { }, ignored_cidrs = { } },
+                        })
+                        balancer.rewrite()
+                        plugins.run()
+                }
+
+                # be careful with `access_by_lua_block` and `satisfy any` directives as satisfy any
+                # will always succeed when there's `access_by_lua_block` that does not have any lua code doing `ngx.exit(ngx.DECLINED)`
+                # other authentication method such as basic auth or external auth useless - all requests will be allowed.
+                #access_by_lua_block {
+                #}
+
+                header_filter_by_lua_block {
+                        lua_ingress.header()
+                        plugins.run()
+                }
+
+                body_filter_by_lua_block {
+                        plugins.run()
+                }
+
+                log_by_lua_block {
+                        balancer.log()
+
+                        monitor.call()
+
+                        plugins.run()
+                }
+
+                port_in_redirect off;
+
+                set $balancer_ewma_score -1;
+                set $proxy_upstream_name "gluu-auth-server-8080";
+                set $proxy_host          $proxy_upstream_name;
+                set $pass_access_scheme  $scheme;
+
+                set $pass_server_port    $server_port;
+
+                set $best_http_host      $http_host;
+                set $pass_port           $pass_server_port;
+
+                set $proxy_alternative_upstream_name "";
+
+                client_max_body_size                    1m;
+
+                proxy_set_header Host                   $best_http_host;
+
+                # Pass the extracted client certificate to the backend
+
+                proxy_set_header ssl-client-cert        $ssl_client_escaped_cert;
+
+                proxy_set_header ssl-client-verify      $ssl_client_verify;
+                proxy_set_header ssl-client-subject-dn  $ssl_client_s_dn;
+                proxy_set_header ssl-client-issuer-dn   $ssl_client_i_dn;
+
+                # Allow websocket connections
+                proxy_set_header                        Upgrade           $http_upgrade;
+
+                proxy_set_header                        Connection        $connection_upgrade;
+
+                proxy_set_header X-Request-ID           $req_id;
+                proxy_set_header X-Real-IP              $remote_addr;
+
+                proxy_set_header X-Forwarded-For        $remote_addr;
+
+                proxy_set_header X-Forwarded-Host       $best_http_host;
+                proxy_set_header X-Forwarded-Port       $pass_port;
+                proxy_set_header X-Forwarded-Proto      $pass_access_scheme;
+
+                proxy_set_header X-Scheme               $pass_access_scheme;
+
+                # Pass the original X-Forwarded-For
+                proxy_set_header X-Original-Forwarded-For $http_x_forwarded_for;
+
+                # mitigate HTTPoxy Vulnerability
+                # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
+                proxy_set_header Proxy                  "";
+
+                # Custom headers to proxied server
+
+                proxy_connect_timeout                   5s;
+                proxy_send_timeout                      60s;
+                proxy_read_timeout                      60s;
+
+                proxy_buffering                         off;
+                proxy_buffer_size                       4k;
+                proxy_buffers                           4 4k;
+
+                proxy_max_temp_file_size                1024m;
+
+                proxy_request_buffering                 on;
+                proxy_http_version                      1.1;
+
+                proxy_cookie_domain                     off;
+                proxy_cookie_path                       off;
+
+                # In case of errors try the next upstream server before returning an error
+                proxy_next_upstream                     error timeout;
+                proxy_next_upstream_timeout             0;
+                proxy_next_upstream_tries               3;
+
+                proxy_pass http://upstream_balancer;
+
+                proxy_redirect                          off;
+
+        }
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /jans-auth/restv1/register
+            pathType: Exact
+            backend:
+              serviceName: auth-server
+              servicePort: 8080
+  {{- end }}
 {{- end -}}

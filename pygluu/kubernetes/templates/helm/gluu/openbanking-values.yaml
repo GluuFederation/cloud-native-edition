@@ -194,18 +194,22 @@ nginx-ingress:
     u2fConfigEnabled: true
     # /jans-auth
     authServerEnabled: true
+    #/jans-auth/restv1/token
+    authServerProtectedToken: true
+    #/jans-auth/restv1/register
+    authServerProtectedRegister: true
       # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
-    additionalAnnotations: {}
+    additionalAnnotations:
       # Enable client certificate authentication
-      #nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
       # Create the secret containing the trusted ca certificates
-      #nginx.ingress.kubernetes.io/auth-tls-secret: "default/ca-secret"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
       # Specify the verification depth in the client certificates chain
-      #nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       # Specify an error page to be redirected to verification errors
-      #nginx.ingress.kubernetes.io/auth-tls-error-page: "http://www.mysite.com/error-cert.html"
+      nginx.ingress.kubernetes.io/auth-tls-error-page: "http://www.mysite.com/error-cert.html"
       # Specify if certificates are passed to upstream server
-      #nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
     path: /
     hosts:
     - demoexample.gluu.org

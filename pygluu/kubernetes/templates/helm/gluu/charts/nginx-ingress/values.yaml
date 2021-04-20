@@ -28,6 +28,10 @@ ingress:
   fido2ConfigEnabled: false
   # /jans-auth
   authServerEnabled: true
+  #/jans-auth/restv1/token
+  authServerProtectedToken: true
+  #/jans-auth/restv1/register
+  authServerProtectedRegister: true
   # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
   additionalAnnotations: {}
   annotations: {}
