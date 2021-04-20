@@ -455,7 +455,7 @@ metadata:
         location ~* "^/jans-auth/restv1/token" {
                 if ($ssl_client_verify != "SUCCESS") { return 403; }
                 set $namespace      "{{ .Release.Namespace }}";
-                set $ingress_name   "nginx";
+                set $ingress_name   "{{ $fullName }}-auth-server-protected-token";
                 set $service_name   "auth-server";
                 set $service_port   "8080";
                 set $location_path  "/jans-auth/restv1/token";
@@ -573,6 +573,7 @@ metadata:
                 proxy_redirect                          off;
 
         }
+
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -620,7 +621,7 @@ metadata:
         location ~* "^/jans-auth/restv1/register" {
                 if ($ssl_client_verify != "SUCCESS") { return 403; }
                 set $namespace      "{{ .Release.Namespace }}";
-                set $ingress_name   "nginx";
+                set $ingress_name   "{{ $fullName }}-auth-server-protected-register";
                 set $service_name   "auth-server";
                 set $service_port   "8080";
                 set $location_path  "/jans-auth/restv1/register";

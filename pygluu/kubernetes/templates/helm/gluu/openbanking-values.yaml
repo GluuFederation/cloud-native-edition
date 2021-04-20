@@ -195,19 +195,19 @@ nginx-ingress:
     # /jans-auth
     authServerEnabled: true
     #/jans-auth/restv1/token
-    authServerProtectedToken: true
+    authServerProtectedToken: false
     #/jans-auth/restv1/register
-    authServerProtectedRegister: true
+    authServerProtectedRegister: false
       # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
-    additionalAnnotations:
+    additionalAnnotations: {}
       # Enable client certificate authentication
-      nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
+      # nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
       # Create the secret containing the trusted ca certificates
-      nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
+      # nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
       # Specify the verification depth in the client certificates chain
-      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      # nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       # Specify if certificates are passed to upstream server
-      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+      # nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
     path: /
     hosts:
     - demoexample.gluu.org

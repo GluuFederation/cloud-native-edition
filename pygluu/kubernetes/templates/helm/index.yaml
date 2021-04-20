@@ -20,7 +20,7 @@ entries:
         - name: fido2
           image: janssenproject/fido2:1.0.0_b1
         - name: opendj
-          image: janssenproject/opendj:5.0.0_dev
+          image: gluufederation/opendj:5.0.0_dev
         - name: persistence
           image: janssenproject/persistence-loader:1.0.0_b1
         - name: scim
@@ -29,7 +29,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-04-20T09:53:51.6264241-04:00"
+    created: "2021-04-20T11:51:55.3621066-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -100,7 +100,7 @@ entries:
       repository: ""
       version: 5.0.0
     description: Gluu Access and Identity Mangement OpenBanking distribution
-    digest: d21fbd255156205b3f0609cff66dee7ea85b5d9a2a7c3e586efb5d5a890b4542
+    digest: fb9bfea6c1925caf7487f94e7d1f759629a3df120a79585264f6961da4578e6b
     home: https://www.gluu.org
     icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
     kubeVersion: '>=v1.17.0-0'
@@ -1149,4 +1149,4 @@ entries:
     urls:
     - ldap-backup-1.3.3.tgz
     version: 1.3.3
-generated: "2021-04-20T09:53:51.61844-04:00"
+generated: "2021-04-20T11:51:55.3540954-04:00"
