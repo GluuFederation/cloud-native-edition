@@ -430,7 +430,7 @@ spec:
               serviceName: auth-server
               servicePort: 8080
   {{- end }}
-{{- end -}}
+{{- end }}
 
 ---
 
@@ -520,4 +520,4 @@ spec:
               serviceName: auth-server
               servicePort: 8080
   {{- end }}
-{{- end -}}
+{{- end }}
