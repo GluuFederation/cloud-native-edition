@@ -177,6 +177,8 @@ global:
     enabled: false
   client-api:
     enabled: false
+  auth-server-key-rotation:
+    enabled: false
 
 nginx-ingress:
   ingress:

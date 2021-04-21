@@ -3,7 +3,7 @@
 kubeVersion: ">=v1.17.0-0"
 annotations:
   artifacthub.io/changes: |
-    - Gluu 5.0 Openbanking Distribution
+    - Gluu 5.0 Openbanking Distribution. Auth-server and config-api.
     - https://gluu.org/docs/openbanking
   artifacthub.io/containsSecurityUpdates: "true"
   artifacthub.io/images: |
@@ -20,7 +20,7 @@ annotations:
     - name: fido2
       image: janssenproject/fido2:1.0.0_b1
     - name: opendj
-      image: janssenproject/opendj:5.0.0_dev
+      image: gluufederation/opendj:5.0.0_dev
     - name: persistence
       image: janssenproject/persistence-loader:1.0.0_b1
     - name: scim
