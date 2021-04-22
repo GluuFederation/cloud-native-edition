@@ -84,7 +84,7 @@ ports:
     nodePort: 30946
 # VolumeMounts for StatefulSet
 # opendj-init vm
-OpenDjVolumeMounts:
+openDjVolumeMounts:
   config:
     mountPath: /opt/opendj/config
     name: opendj-volume

@@ -84,7 +84,7 @@ spec:
             name: google-secret-manager-sa
             subPath: google-credentials.json
         {{- end }}
-        {{- range $key, $values := .Values.OpenDjVolumeMounts }}
+        {{- range $key, $values := .Values.openDjVolumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}
             subPath: {{$key}}
