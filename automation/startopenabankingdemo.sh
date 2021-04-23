@@ -29,29 +29,56 @@ sudo microk8s.kubectl create namespace gluu --kubeconfig="$KUBECONFIG" || echo "
 sudo helm repo add bitnami https://charts.bitnami.com/bitnami
 sudo microk8s.kubectl get po --kubeconfig="$KUBECONFIG"
 sudo helm install my-release --set auth.rootPassword=Test1234#,auth.database=jans bitnami/mysql -n gluu --kubeconfig="$KUBECONFIG"
-# Create and patch certs and keys. This will also generate the client crt and key to be used to access protected endpoints
-mkdir certs
-cd certs
-wget https://raw.githubusercontent.com/GluuFederation/cloud-native-edition/master/pygluu/kubernetes/pycert.py
-wget https://raw.githubusercontent.com/GluuFederation/cloud-native-edition/master/pygluu/kubernetes/helpers.py
-sudo sed -i 's/from pygluu.kubernetes.helpers import get_logger/from helpers import get_logger/g' pycert.py
-cat << EOF > generate.py
-from pycert import setup_crts
-setup_crts("Gluu Openbanking CA", "gluu-openbanking", ["demoexample.gluu.org"], key_file="./server.key")
+cat << EOF > override.yaml
+config:
+  configmap:
+    cnSqlDbHost: my-release-mysql.gluu.svc
+    cnSqlDbUser: root
+nginx-ingress:
+  ingress:
+    #/jans-auth/restv1/token
+    authServerProtectedToken: true
+    #/jans-auth/restv1/register
+    authServerProtectedRegister: true
+      # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
+    additionalAnnotations:
+      # Enable client certificate authentication
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
+      # Create the secret containing the trusted ca certificates
+      nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
+      # Specify the verification depth in the client certificates chain
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      # Specify if certificates are passed to upstream server
+      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
 EOF
-sudo python3 generate.py
-# load the certificate into a variable
-sudo sed -ne '
-   /-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p
-   /-END CERTIFICATE-/q
-' $PWD/chain.pem > server.crt
-sudo openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Openbanking'
-sudo openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
-sudo microk8s.kubectl create secret generic cn -n gluu --from-file=ssl_cert=server.crt --from-file=ssl_key=server.key --kubeconfig="$KUBECONFIG"
-sudo microk8s kubectl create secret generic ca-secret -n gluu --from-file=tls.crt=server.crt --from-file=tls.key=server.key --from-file=ca.crt=ca.crt --kubeconfig="$KUBECONFIG"
-cd ..
-# done with cert and key job
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm
 sudo helm repo update
-sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 --set config.configmap.cnSqlDbHost="my-release-mysql.gluu.svc" --set global.provisioner="microk8s.io/hostpath" --set config.configmap.cnSqlDbUser="root" --kubeconfig="$KUBECONFIG"
-
+sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 -f override.yaml --kubeconfig="$KUBECONFIG"
+echo "Waiting for auth-server to come up....Please do not cancel out"
+sleep 5
+sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" ||
+# get certs and keys. This will also generate the client crt and key to be used to access protected endpoints
+mkdir certs
+cd certs
+sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_ca_cert":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > ca.crt
+sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_ca_key":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > ca.key
+sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_cert":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > server.crt
+sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_key":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > server.key
+openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Openbanking'
+openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
+sudo microk8s.kubectl create secret generic ca-secret -n gluu --from-file=tls.crt=server.crt --from-file=tls.key=server.key --from-file=ca.crt=ca.crt
+EXT_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+sudo echo "$EXT_IP demoexample.gluu.org" >> /etc/hosts
+echo -e "Testing openid-configuration endpoint.. \n"
+curl -k https://demoexample.gluu.org/.well-known/openid-configuration
+TESTCLIENT=$(microk8s.kubectl get cm cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"jca_client_id":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]')
+TESTCLIENTSECRET=$(microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"jca_client_pw":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d)
+echo -e "Testing protected endpoint /token without client crt and key. This should show a 403, showing mTLS works \n"
+curl -X POST -k -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/token -d grant_type=client_credentials
+echo -e "Testing protected endpoint /token with client crt and key. This should recieve a token, showing mTLS works \n"
+curl -X POST -k --cert client.crt --key client.key -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/token -d grant_type=client_credentials
+echo -e "Testing protected endpoint /register without client crt and key. This should show a 403, showing mTLS works \n"
+curl -X POST -k -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/register
+echo -e "Testing protected endpoint /register with client crt and key. This should still recieve an error but from the AS showing mTLS works \n"
+curl -X POST -k --cert client.crt --key client.key -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/register
+cd ..
