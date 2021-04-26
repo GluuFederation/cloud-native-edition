@@ -31,8 +31,8 @@ class PromptRedis:
 
         if not self.settings.get("INSTALL_REDIS"):
             logger.info("For the following prompt if placed [N] the Redis is assumed to be"
-                        " installed or remotely provisioned")
-            self.settings.set("INSTALL_REDIS", confirm_yesno("Install Redis", default=True))
+                        " installed or remotely provisioned which is recommended")
+            self.settings.set("INSTALL_REDIS", confirm_yesno("Install Redis", default=False))
 
         if self.settings.get("INSTALL_REDIS") == "Y":
             if not self.settings.get("REDIS_MASTER_NODES"):

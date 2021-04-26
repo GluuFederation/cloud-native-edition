@@ -25,9 +25,10 @@ class PromptPostgres:
         if not self.settings.get("INSTALL_POSTGRES"):
             self.settings.set("INSTALL_POSTGRES", confirm_yesno("For the following prompt if N is placed "
                                                                 "Postgres is assumed to be"
-                                                                " installed or remotely provisioned. "
-                                                                "Install Postgres using KubeDB?",
-                                                                default=True))
+                                                                " installed or remotely provisioned "
+                                                                "which is recommended. "
+                                                                "Install Postgres using KubeDB(Depreciated)?",
+                                                                default=False))
         if self.settings.get("INSTALL_POSTGRES") == "Y":
             if not self.settings.get("POSTGRES_NAMESPACE"):
                 namespace = click.prompt("Please enter a namespace for postgres", default="postgres")

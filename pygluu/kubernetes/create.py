@@ -39,7 +39,7 @@ def create_parser():
                                                   "be waiting for hierarchy "
                                                   "pods to be running")
     subparsers.add_parser("install-ldap-backup", help="Install ldap backup cronjob only.")
-    subparsers.add_parser("install-kubedb", help="Install KubeDB for redis or postgres")
+    subparsers.add_parser("install-kubedb", help="Install KubeDB for redis or postgres. Depreciated.")
     subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database")
     subparsers.add_parser("uninstall-gg-dbmode", help="Unnstall Gluu Gateway with Postgres database")
     subparsers.add_parser("restore", help="Install Gluu Cloud Native Edition with a "
