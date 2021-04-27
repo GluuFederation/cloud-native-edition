@@ -29,6 +29,8 @@ sudo microk8s.kubectl create namespace gluu --kubeconfig="$KUBECONFIG" || echo "
 sudo helm repo add bitnami https://charts.bitnami.com/bitnami
 sudo microk8s.kubectl get po --kubeconfig="$KUBECONFIG"
 sudo helm install my-release --set auth.rootPassword=Test1234#,auth.database=jans bitnami/mysql -n gluu --kubeconfig="$KUBECONFIG"
+EXT_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+sudo echo "$EXT_IP demoexample.gluu.org" >> /etc/hosts
 cat << EOF > override.yaml
 config:
   configmap:
@@ -50,13 +52,16 @@ nginx-ingress:
       nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       # Specify if certificates are passed to upstream server
       nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+global:
+  isFqdnRegistered: false
+  lbIp: $EXT_IP
 EOF
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm
 sudo helm repo update
 sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 -f override.yaml --kubeconfig="$KUBECONFIG"
 echo "Waiting for auth-server to come up....Please do not cancel out"
 sleep 5
-sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" ||
+sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" || sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-config-api --kubeconfig="$KUBECONFIG"
 # get certs and keys. This will also generate the client crt and key to be used to access protected endpoints
 mkdir certs
 cd certs
@@ -67,8 +72,6 @@ sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" |
 openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=Openbanking'
 openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
 sudo microk8s.kubectl create secret generic ca-secret -n gluu --from-file=tls.crt=server.crt --from-file=tls.key=server.key --from-file=ca.crt=ca.crt
-EXT_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-sudo echo "$EXT_IP demoexample.gluu.org" >> /etc/hosts
 echo -e "Starting simple test to endpoints. \n"
 sleep 10
 echo -e "Testing openid-configuration endpoint.. \n"
