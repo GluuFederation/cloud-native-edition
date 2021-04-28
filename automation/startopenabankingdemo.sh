@@ -61,7 +61,7 @@ sudo helm repo update
 sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 -f override.yaml --kubeconfig="$KUBECONFIG"
 echo "Waiting for auth-server to come up....Please do not cancel out"
 sleep 5
-sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" || sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-config-api --kubeconfig="$KUBECONFIG"
+cat << EOF > testendpoints.sh
 # get certs and keys. This will also generate the client crt and key to be used to access protected endpoints
 mkdir certs
 cd certs
@@ -87,3 +87,6 @@ curl -X POST -k -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/ja
 echo -e "Testing protected endpoint /register with client crt and key. This should still recieve an error but from the AS showing mTLS works \n"
 curl -X POST -k --cert client.crt --key client.key -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/register
 cd ..
+EOF
+sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" || echo -e "Please execute bash testendpoints.sh to do a quick test to protected endpoints and openid-configuration endpoint."
+sudo bash testendpoints.sh
