@@ -7,9 +7,7 @@ pygluu.kubernetes.redis
  Handles Redis installation for testing.
 """
 
-from pathlib import Path
-from pygluu.kubernetes.yamlparser import Parser
-from pygluu.kubernetes.helpers import get_logger, exec_cmd, analyze_storage_class
+from pygluu.kubernetes.helpers import get_logger, exec_cmd
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import ValuesHandler
 
@@ -35,47 +33,22 @@ class Redis(object):
 
     def install_redis(self):
         self.uninstall_redis()
-        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.redis.namespace"), labels={"app": "redis"})
-        if self.settings.get("CN_DEPLOYMENT_ARCH") != "local":
-            redis_storage_class = Path("./redis/storageclasses.yaml")
-            analyze_storage_class(self.settings, redis_storage_class)
-            self.kubernetes.create_objects_from_dict(redis_storage_class)
-
-        redis_configmap = Path("./redis/configmaps.yaml")
-        redis_conf_parser = Parser(redis_configmap, "ConfigMap")
-        redis_conf_parser["metadata"]["namespace"] = self.settings.get("installer-settings.redis.namespace")
-        redis_conf_parser.dump_it()
-        self.kubernetes.create_objects_from_dict(redis_configmap)
-
-        redis_yaml = Path("./redis/redis.yaml")
-        redis_parser = Parser(redis_yaml, "Redis")
-        redis_parser["spec"]["cluster"]["master"] = self.settings.get("installer-settings.redis.masterNodes")
-        redis_parser["spec"]["cluster"]["replicas"] = self.settings.get("installer-settings.redis.nodesPerMaster")
-        redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("installer-settings.redis.namespace")
-        if self.settings.get("CN_DEPLOYMENT_ARCH") == "local":
-            redis_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
-        redis_parser["metadata"]["namespace"] = self.settings.get("installer-settings.redis.namespace")
-        if self.settings.get("global.storageClass.provisioner") in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
-            del redis_parser["spec"]["podTemplate"]["spec"]["resources"]
-        redis_parser.dump_it()
-        self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="redises",
-                                                        namespace=self.settings.get("installer-settings.redis.namespace"))
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.redis.namespace"),
+                                         labels={"app": "redis"})
+        exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
+        exec_cmd("helm repo update")
+        exec_cmd("helm install {} bitnami/redis-cluster "
+                 "--set global.redis.password={} "
+                 "--namespace={}".format("redis-cluster",
+                                         self.settings.get("config.redisPassword"),
+                                         self.settings.get("installer-settings.redis.namespace")))
 
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.namespace"), "app=redis-cluster", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.namespace"), "app=redis-cluster",
+                                                self.timeout)
 
     def uninstall_redis(self):
         logger.info("Removing gluu-redis-cluster...")
         logger.info("Removing redis...")
-        redis_yaml = Path("./redis/redis.yaml")
-        self.kubernetes.delete_namespaced_custom_object(filepath=redis_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="redises",
-                                                        namespace=self.settings.get("installer-settings.redis.namespace"))
-        self.kubernetes.delete_storage_class("redis-sc")
-        self.kubernetes.delete_service("kubedb", self.settings.get("installer-settings.redis.namespace"))
-
+        exec_cmd("helm delete {} --namespace={}".format("redis-cluster",
+                                                        self.settings.get("installer-settings.redis.namespace")))
