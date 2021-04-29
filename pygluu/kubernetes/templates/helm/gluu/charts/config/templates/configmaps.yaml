@@ -6,8 +6,29 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
-  CN_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
-  CN_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
+  # Distribution
+  CN_DISTRIBUTION: {{ .Values.global.distribution | quote }}
+  {{ if .Values.global.cnExtSigningJwksUri }}
+  CN_EXT_SIGNING_JWKS_URI: {{ .Values.global.cnExtSigningJwksUri | quote }}
+  {{- end }}
+  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+  GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
+  GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
+  CN_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnSecretGoogleSecretVersionId | quote }}
+  CN_SECRET_GOOGLE_SECRET_MANAGER_PASSPHRASE: {{ .Values.configmap.cnGoogleSecretManagerPassPhrase | quote }}
+  CN_SECRET_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnSecretGoogleSecretNamePrefix | quote }}
+  CN_CONFIG_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnConfigGoogleSecretVersionId | quote }}
+  CN_CONFIG_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnConfigGoogleSecretNamePrefix | quote }}
+  # [google_secret_manager_envs] END
+  CN_SQL_DB_DIALECT: {{ .Values.configmap.cnSqlDbDialect }}
+  CN_SQL_DB_HOST: {{ .Values.configmap.cnSqlDbHost }}
+  CN_SQL_DB_PORT: {{ .Values.configmap.cnSqlDbPort | quote }}
+  CN_SQL_DB_NAME: {{ .Values.configmap.cnSqlDbName }}
+  CN_SQL_DB_USER: {{ .Values.configmap.cnSqlDbUser }}
+  CN_SQL_DB_TIMEZONE: {{ .Values.configmap.cnSqlDbTimezone }}
+  CN_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
+  CN_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
+  CN_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
   CN_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   CN_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   CN_CONFIG_KUBERNETES_CONFIGMAP: {{ .Values.configmap.cnConfigKubernetesConfigMap }}
@@ -49,17 +70,11 @@ data:
   {{- if or (eq .Values.global.cnPersistenceType "hybrid") (eq .Values.global.cnPersistenceType "ldap") }}
   CN_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.cnPersistenceLdapMapping | quote }}
   {{- end }}
-  CN_LDAP_INIT_HOST: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
-  CN_LDAP_INIT: {{ .Values.configmap.cnLdapInit | quote }} # TODO: To be removed
-  CN_LDAP_INIT_PORT: {{ .Values.configmap.cnLdapInitPort | quote }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
   CN_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   CN_SYNC_CASA_MANIFESTS: {{ .Values.configmap.cnSyncCasaManifests | quote }}
-  CN_OXTRUST_BACKEND: {{ .Values.configmap.cnOxtrustBackend | quote }}
   CN_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.cnSyncShibManifests | quote }}
-  CN_OXTRUST_API_ENABLED: {{ .Values.configmap.cnOxtrustApiEnabled | quote }}
-  CN_OXTRUST_API_TEST_MODE: {{ .Values.configmap.cnOxtrustApiTestMode | quote }}
   {{ if .Values.global.cnJackrabbitCluster }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
   CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}
@@ -88,7 +103,8 @@ data:
   CN_REDIS_SENTINEL_GROUP: {{ .Values.configmap.cnRedisSentinelGroup | quote }}
   {{- end }}
   {{- if .Values.global.istio.enabled }}
-  GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  CN_COUCHBASE_TRUSTSTORE_ENABLE: "false"
+  CN_LDAP_USE_SSL: "false"
   {{- end }}
 
 ---
@@ -96,95 +112,95 @@ data:
 apiVersion: v1
 data:
   tls_generator.py: |-
-    from pprint import pprint
     from kubernetes import config, client
     import logging
 
-    #use the serviceAccount k8s gives to pods
+    log_format = '%(asctime)s - %(name)8s - %(levelname)5s - %(message)s'
+    logging.basicConfig(format=log_format, level=logging.INFO)
+    logger = logging.getLogger("tls-generator")
+
+    # use the serviceAccount k8s gives to pods
     config.load_incluster_config()
-    v1 = client.CoreV1Api()
+    core_cli = client.CoreV1Api()
 
-    #global vars
-    name = "tls-certificate"
-    namespace = {{ .Release.Namespace | quote }}
-
-    # if istio is enabled
-    istio_ns = {{ .Values.global.istio.namespace | quote }}
-
-    # create cert in istio-system
-    def create_tls_in_istio(cert, key):
-
-        v1 = client.CoreV1Api()
+    def patch_or_create_namespaced_secret(name, literal, value_of_literal, namespace="default",
+                                          secret_type="Opaque", second_literal=None, value_of_second_literal=None,
+                                          data=None):
+        """Patch secret and if not exist create
+        :param name:
+        :param literal:
+        :param value_of_literal:
+        :param namespace:
+        :param secret_type:
+        :param second_literal:
+        :param value_of_second_literal:
+        :param data:
+        :return:
+        """
+        # Instantiate the Secret object
+        body = client.V1Secret()
+        metadata = client.V1ObjectMeta(name=name)
+        body.data = data
+        if not data:
+            body.data = {literal: value_of_literal}
+        body.metadata = metadata
+        body.type = secret_type
+        if second_literal:
+            body.data = {literal: value_of_literal, second_literal: value_of_second_literal}
         try:
-            secret = v1.read_namespaced_secret(name, istio_ns)
+            core_cli.patch_namespaced_secret(name, namespace, body)
+            logger.info('Secret  {} in namespace {} has been patched'.format(name, namespace))
+            return
         except client.rest.ApiException as e:
-            if e.status == 404:
-                print('secret/{} in ns/{} does not exist. Creating...'.format(
-                    name, istio_ns))
-                metadata = {
-                    'name': name,
-                    'namespace': istio_ns
-                }
-                data = {
-                    'tls.crt': cert,
-                    'tls.key' : key,
-                }
-                api_version = 'v1'
-                kind = 'Secret'
-                body = client.V1Secret(api_version, data , kind, metadata,
-                    type='kubernetes.io/tls')
-                api_response = v1.create_namespaced_secret(istio_ns, body )
-            else:
-                logging.exception(e)
+            if e.status == 404 or not e.status:
+                try:
+                    core_cli.create_namespaced_secret(namespace=namespace, body=body)
+                    logger.info('Created secret {} of type {} in namespace {}'.format(name, secret_type, namespace))
+                    return True
+                except client.rest.ApiException as e:
+                    logger.exception(e)
+                    return False
+            logger.exception(e)
             return False
-        else:
-            print('tls-certificate already exists.')
 
+    # check if gluu secret exists
+    def get_certs(secret_name, namespace):
+        """
 
-    # check if cn secret exists
-    def get_certs():
-        if ( v1.read_namespaced_secret( 'cn', namespace ) ):
-            ssl_cert = v1.read_namespaced_secret( 'cn', namespace ).data['ssl_cert']
-            ssl_key = v1.read_namespaced_secret( "cn", namespace ).data['ssl_key']
+        :param namespace:
+        :return:  ssl cert and key from gluu secrets
+        """
+        ssl_cert = None
+        ssl_key = None
+        if core_cli.read_namespaced_secret(secret_name, namespace):
+            ssl_cert = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_cert']
+            ssl_key = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_key']
 
         return ssl_cert, ssl_key
 
-    def create_tls(cert, key):
-
-        v1 = client.CoreV1Api()
-        try:
-            secret = v1.read_namespaced_secret(name, namespace)
-        except client.rest.ApiException as e:
-            if e.status == 404:
-                print('secret/{} in ns/{} does not exist. Creating...'.format(
-                    name, namespace))
-                metadata = {
-                    'name': name,
-                    'namespace': namespace
-                }
-                data = {
-                    'tls.crt': cert,
-                    'tls.key' : key,
-                }
-                api_version = 'v1'
-                kind = 'Secret'
-                body = client.V1Secret(api_version, data , kind, metadata,
-                    type='kubernetes.io/tls')
-                api_response = v1.create_namespaced_secret(namespace, body )
-            else:
-                logging.exception(e)
-            return False
-        else:
-            print('tls-certificate already exists.')
 
     def main():
-        cert, key = get_certs()
-        create_tls(cert, key)
+        namespace = {{.Release.Namespace | quote}}
+        secret_name = {{ .Values.configmap.cnSecretKubernetesSecret | quote }}
+        cert, key = get_certs(secret_name, namespace)
+        # global vars
+        name = "tls-certificate"
 
-        # create or check cert if istio is enabled
-        {{- if .Values.global.istio.ingress }}
-        create_tls_in_istio(cert, key)
-        {{- end }}
+        # if istio is enabled
+        {{- if.Values.global.istio.ingress}}
+        namespace = {{.Values.global.istio.namespace | quote}}
+        {{- end}}
+
+        if cert and key:
+            patch_or_create_namespaced_secret(name=name,
+                                              namespace=namespace,
+                                              literal="tls.crt",
+                                              value_of_literal=cert,
+                                              secret_type="kubernetes.io/tls",
+                                              second_literal="tls.key",
+                                              value_of_second_literal=key)
+        else:
+            logger.error("No certificate or key was found in secrets.")
 
     if __name__ == "__main__":
         main()
