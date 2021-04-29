@@ -34,9 +34,6 @@ def create_parser():
                                           "This also installs the nginx-ingress chart")
     subparsers.add_parser("uninstall", help="Uninstall Gluu Cloud Native Edition using helm. "
                                             "This also uninstalls the nginx-ingress chart")
-    subparsers.add_parser("install-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
-    subparsers.add_parser("uninstall-gg-dbmode", help="Install Gluu Gateway with Postgres database using helm")
-
     subparsers.add_parser("install-gluu", help="Install Gluu Cloud Native Edition using helm. "
                                                "This assumes nginx-ingress is installed")
     subparsers.add_parser("uninstall-gluu", help="Uninstall Gluu Cloud Native Edition using helm."
@@ -154,22 +151,6 @@ def main():
             gluu = Gluu()
             gluu.uninstall_gluu()
             gluu.install_gluu(install_ingress=False)
-
-        elif args.subparser_name == "install-gg-dbmode":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            from pygluu.kubernetes.postgres import Postgres
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
-            postgres = Postgres()
-            postgres.patch_or_install_postgres()
-
-        elif args.subparser_name == "uninstall-gg-dbmode":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            from pygluu.kubernetes.postgres import Postgres
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
-            postgres = Postgres()
-            postgres.uninstall_postgres()
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")
