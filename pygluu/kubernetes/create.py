@@ -57,11 +57,6 @@ def main():
 
     copy_templates()
     settings = ValuesHandler()
-    # settings.validate()
-    # if not settings.validate():
-    #     for error in settings.errors:
-    #         logger.error(error)
-    #     sys.exit()
 
     prompts = Prompt()
     prompts.prompt()

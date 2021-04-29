@@ -51,7 +51,7 @@ class ValuesHandler(object):
 
     def load_schema(self):
         try:
-            with open(self.values_schema) as f:
+            with open(self.values_schema, 'r') as f:
                 try:
                     self.schema = json.load(f)
                     jsonschema.Draft7Validator.check_schema(self.schema)
@@ -141,39 +141,3 @@ class ValuesHandler(object):
             return False
         else:
             return True
-
-    # def validate(self):
-    #     self.errors = []
-    #     try:
-    #         with open(self.values_file) as f:
-    #             try:
-    #                 settings = json.load(f)
-    #                 validator = jsonschema.Draft7Validator(self.schema)
-    #                 errors = sorted(validator.iter_errors(settings),
-    #                                 key=lambda e: e.path)
-
-    #                 for error in errors:
-    #                     if "errors" in error.schema and \
-    #                             error.validator != 'required':
-    #                         key = error.path[0]
-    #                         error_msg = error.schema.get('errors').get(
-    #                             error.validator)
-    #                         message = f"{key} : {error_msg}"
-    #                     else:
-    #                         if error.path:
-    #                             key = error.path[0]
-    #                             message = f"{key} : {error.message}"
-    #                         else:
-    #                             message = error.message
-
-    #                     self.errors.append(message)
-
-    #             except json.decoder.JSONDecodeError as e:
-    #                 self.errors.append(f"Not a valid values.yaml : {str(e)}")
-    #                 return False
-
-    #     except FileNotFoundError:
-    #         # skip validating file does not exist
-    #         return True
-
-    #     return len(self.errors) == 0
