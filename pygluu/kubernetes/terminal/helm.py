@@ -71,11 +71,3 @@ class PromptHelm:
             self.settings.set("installer-settings.nginxIngress.namespace", click.prompt("Please enter nginx-ingress helm namespace",
                                                                          default="ingress-nginx"))
 
-        if self.settings.get("installer-settings.gluuGateway.install"):
-            if self.settings.get("installer-settings.gluuGateway.kong.releaseName") in (None, ''):
-                self.settings.set("installer-settings.gluuGateway.kong.releaseName", click.prompt("Please enter Gluu Gateway helm name",
-                                                                            default="gluu-gateway"))
-
-            if self.settings.get("installer-settings.gluuGateway.uI.releaseName") in (None, ''):
-                self.settings.set("installer-settings.gluuGateway.uI.releaseName", click.prompt(
-                    "Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui"))

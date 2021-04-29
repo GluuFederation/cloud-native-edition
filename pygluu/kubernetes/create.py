@@ -140,15 +140,11 @@ def main():
 
         elif args.subparser_name == "uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
-            from pygluu.kubernetes.gluugateway import GluuGateway
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             gluu = Gluu()
-            gluugateway = GluuGateway()
             gluu.uninstall_gluu()
             gluu.uninstall_nginx_ingress()
-            gluugateway.uninstall_gluu_gateway_dbmode()
-            gluugateway.uninstall_gluu_gateway_ui()
             logger.info("Please wait...")
 
         elif args.subparser_name == "install-gluu":
@@ -162,26 +158,18 @@ def main():
         elif args.subparser_name == "install-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
-            from pygluu.kubernetes.gluugateway import GluuGateway
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             postgres = Postgres()
             postgres.patch_or_install_postgres()
-            gluugateway = GluuGateway()
-            gluugateway.install_gluu_gateway_dbmode()
-            gluugateway.install_gluu_gateway_ui()
 
         elif args.subparser_name == "uninstall-gg-dbmode":
             from pygluu.kubernetes.terminal.helm import PromptHelm
             from pygluu.kubernetes.postgres import Postgres
-            from pygluu.kubernetes.gluugateway import GluuGateway
             prompt_helm = PromptHelm(settings)
             prompt_helm.prompt_helm()
             postgres = Postgres()
             postgres.uninstall_postgres()
-            gluugateway = GluuGateway()
-            gluugateway.uninstall_gluu_gateway_dbmode()
-            gluugateway.uninstall_gluu_gateway_ui()
 
     except KeyboardInterrupt:
         print("\n[I] Canceled by user; exiting ...")

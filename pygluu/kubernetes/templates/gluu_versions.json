@@ -28,10 +28,6 @@
     "persistence.image.tag": "1.0.0_01",
     "radius.image.repository": "gluufederation/radius",
     "radius.image.tag": "5.0.0_01",
-    "installer-settings.gluuGateway.kong.image.repository": "gluufederation/gluu-gateway",
-    "installer-settings.gluuGateway.kong.image.tag": "4.2.1_03",
-    "installer-settings.gluuGateway.uI.image.repository": "gluufederation/gluu-gateway-ui",
-    "installer-settings.gluuGateway.uI.image.tag": "5.0.0_01",
     "installer-settings.upgrade.image.repository": "gluufederation/upgrade",
     "installer-settings.upgrade.image.tag": "5.0.0_01"
   },
@@ -64,10 +60,6 @@
     "persistence.image.tag": "1.0.0_dev",
     "radius.image.repository": "gluufederation/radius",
     "radius.image.tag": "5.0.0_dev",
-    "installer-settings.gluuGateway.kong.image.repository": "gluufederation/gluu-gateway",
-    "installer-settings.gluuGateway.kong.image.tag": "5.0.0_dev",
-    "installer-settings.gluuGateway.uI.image.repository": "gluufederation/gluu-gateway-ui",
-    "installer-settings.gluuGateway.uI.image.tag": "5.0.0_dev",
     "installer-settings.upgrade.image.repository": "gluufederation/upgrade",
     "installer-settings.upgrade.image.tag": "5.0.0_dev"
   }
