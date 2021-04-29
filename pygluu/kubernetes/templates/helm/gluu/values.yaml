@@ -43,23 +43,6 @@ installer-settings:
     totalNumberOfExpectedTransactionsPerSec:
     volumeType:
   volumeProvisionStrategy:
-  gluuGateway:
-    install:
-    kong:
-      image:
-        repository:
-        tag:
-      releaseName:
-      namespace:
-      postgresUser:
-      postgresPassword:
-      postgresDatabaseName:
-    uI:
-      releaseName:
-      namespace:
-      postgresUser:
-      postgresPassword:
-      postgresDatabaseName:
   ldap:
     subsequentCluster:
     backup:
