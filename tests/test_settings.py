@@ -92,7 +92,6 @@ def test_settings_validation_is_invalid(settings, tmpdir):
     
     settings.set("installer-settings.acceptLicense", "Y")
     settings.set("CN_ADMIN_PASSWORD", "123123123")
-    settings.set("CN_INSTALL_GLUU_GATEWAY", "Y")
     settings_object = json.dumps(settings.db)
     p = Path(tmpdir) / 'test_settings.json'
     p.write_text(settings_object)

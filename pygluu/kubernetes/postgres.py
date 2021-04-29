@@ -30,9 +30,6 @@ class Postgres(object):
         services_using_postgres = []
         if self.settings.get("installer-settings.jackrabbit.clusterMode"):
             services_using_postgres.append("JACKRABBIT")
-        if self.settings.get("installer-settings.gluuGateway.install"):
-            services_using_postgres.append("KONG")
-            services_using_postgres.append("GLUU_GATEWAY_UI")
         # Generate init sql
         postgres_init_sql = ""
         for service in services_using_postgres:

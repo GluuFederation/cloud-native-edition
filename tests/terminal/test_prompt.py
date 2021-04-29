@@ -40,11 +40,6 @@ def test_jackrabbit():
     var1 = var0.load_settings()
     var2 = var0.jackrabbit()
 
-def test_gluu_gateway():
-    var0 = module0.Prompt()
-    var1 = var0.load_settings()
-    var2 = var0.gluu_gateway()
-
 def test_optional_services():
     var0 = module0.Prompt()
     var1 = var0.load_settings()
