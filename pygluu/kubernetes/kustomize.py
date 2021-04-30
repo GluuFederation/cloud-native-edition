@@ -794,7 +794,7 @@ class Kustomize(object):
                 ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
                                                                   self.settings.get("GLUU_NAMESPACE")).data["ssl_cert"]
                 ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                                 self.settings.get("c")).data["ssl_key"]
+                                                                 self.settings.get("GLUU_NAMESPACE")).data["ssl_key"]
                 break
             except (KeyError, Exception):
                 logger.info("Waiting for Gluu secret...")

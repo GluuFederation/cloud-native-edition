@@ -60,8 +60,6 @@ class SettingsHandler(object):
                                 REDIS_USE_SSL="false",
                                 REDIS_SSL_TRUSTSTORE="",
                                 REDIS_SENTINEL_GROUP="",
-                                REDIS_MASTER_NODES="",
-                                REDIS_NODES_PER_MASTER="",
                                 REDIS_NAMESPACE="",
                                 INSTALL_REDIS="",
                                 INSTALL_POSTGRES="",

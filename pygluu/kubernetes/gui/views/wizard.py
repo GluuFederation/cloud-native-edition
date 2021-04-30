@@ -801,8 +801,6 @@ def cache_type():
                     data["REDIS_NAMESPACE"])
                 data["REDIS_PW"] = form.redis.redis_pw.data
             else:
-                data["REDIS_MASTER_NODES"] = ""
-                data["REDIS_NODES_PER_MASTER"] = ""
                 data["REDIS_NAMESPACE"] = ""
                 data["REDIS_URL"] = form.redis.redis_url.data
                 data["REDIS_PW"] = form.redis.redis_pw.data

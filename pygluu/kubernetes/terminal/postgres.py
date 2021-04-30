@@ -33,10 +33,6 @@ class PromptPostgres:
                 namespace = click.prompt("Please enter a namespace for postgres", default="postgres")
                 self.settings.set("POSTGRES_NAMESPACE", namespace)
 
-            if not self.settings.get("POSTGRES_REPLICAS"):
-                replicas = click.prompt("Please enter number of replicas for postgres", default=3)
-                self.settings.set("POSTGRES_REPLICAS", replicas)
-
         if not self.settings.get("POSTGRES_URL"):
             url = click.prompt(
                 "Please enter  postgres (remote or local) "

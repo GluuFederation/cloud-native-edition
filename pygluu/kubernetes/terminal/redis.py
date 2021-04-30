@@ -35,14 +35,6 @@ class PromptRedis:
             self.settings.set("INSTALL_REDIS", confirm_yesno("Install Redis", default=True))
 
         if self.settings.get("INSTALL_REDIS") == "Y":
-            if not self.settings.get("REDIS_MASTER_NODES"):
-                self.settings.set("REDIS_MASTER_NODES",
-                                  click.prompt("The number of master node. Minimum is 3", default=3))
-
-            if not self.settings.get("REDIS_NODES_PER_MASTER"):
-                self.settings.set("REDIS_NODES_PER_MASTER", click.prompt("The number of nodes per master node",
-                                                                         default=2))
-
             if not self.settings.get("REDIS_NAMESPACE"):
                 self.settings.set("REDIS_NAMESPACE", click.prompt("Please enter a namespace for Redis cluster",
                                                                   default="gluu-redis-cluster"))
