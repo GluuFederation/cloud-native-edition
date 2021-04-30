@@ -13,6 +13,8 @@ import click
 class PromptImages:
     """Prompt is used for prompting users for input used in deploying Gluu.
     """
+    def __init__(self, settings):
+        self.settings = settings
 
     def prompt_image_name_tag(self):
         """Manual prompts for image names and tags if changed from default or at a different repository.
