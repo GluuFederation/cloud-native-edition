@@ -16,8 +16,6 @@ redisPassword: P@assw0rd
 countryCode: US
 state: TX
 city: SLC
-cnLdapInit: true
-cnLdapInitPort: 1636
 cnOxtrustConfigGeneration: true
 configmap:
   cnConfigKubernetesConfigMap: cn
@@ -69,7 +67,6 @@ configmap:
   # Options LOCAL / JCA (jackrabbit)
   cnDocumentStoreType: JCA
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
-  ldapServiceName: opendj
   cnCasaEnabled: true
   cnPassportEnabled: false
   cnRadiusEnabled: false

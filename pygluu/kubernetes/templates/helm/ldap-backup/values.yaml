@@ -3,6 +3,7 @@
 # opendj Environament Variables
 # common ConfigMap values
 cnLdapInit: true
+cnLdapInitPort: 1636
 cnOxtrustConfigGeneration: true
 cnLdapSchedule: "*/59 * * * *"
 
