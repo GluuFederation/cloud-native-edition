@@ -89,9 +89,6 @@ class Prompt:
             self.load_settings()
             self.settings.set("CN_HOST_EXT_IP", ip)
 
-            if self.settings.get("installer-settings.volumeProvisionStrategy") in (None, ''):
-                print("VolumeProvisionStrategy hasn't been set yet")
-            
             if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and not self.settings.get("global.istio.enabled"):
                 aws = PromptAws(self.settings)
                 aws.prompt_aws_lb()
@@ -150,7 +147,7 @@ class Prompt:
 
     def confirm_settings(self):
         self.load_settings()
-        if not self.settings.get("installer-settings.confirmSettings") == True:
+        if not self.settings.get("installer-settings.confirmSettings"):
             confirm_settings = PromptConfirmSettings(self.settings)
             confirm_settings.confirm_params()
 
