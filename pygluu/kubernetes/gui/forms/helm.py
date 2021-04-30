@@ -22,9 +22,3 @@ class HelmForm(FlaskForm):
     nginx_ingress_namespace = StringField("Please enter nginx-ingress helm namespace",
                                           default="ingress-nginx",
                                           validators=[InputRequired()])
-    kong_helm_release_name = StringField("Please enter Gluu Gateway helm name",
-                                         default="gluu-gateway",
-                                         validators=[Optional()])
-    gluu_gateway_ui_helm_release_name = StringField("Please enter Gluu Gateway UI helm name",
-                                                    default="gluu-gateway-ui",
-                                                    validators=[Optional()])

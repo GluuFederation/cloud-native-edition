@@ -15,9 +15,7 @@
 
 
   {{ forms.radio(form.redis.install_redis) }}
-  <div id="redisNodes" class="collapse {{ 'show' if form.redis.install_redis.data == 'Y' else '' }}">
-    {{ forms.text(form.redis.redis_master_nodes) }}
-    {{ forms.text(form.redis.redis_nodes_per_master) }}
+  <div id="redisInstall" class="collapse {{ 'show' if form.redis.install_redis.data == 'Y' else '' }}">
     {{ forms.text(form.redis.redis_namespace) }}
   </div>
   <div id="redisPassword" class="collapse {{ 'show' if form.redis.install_redis.data == 'N' else '' }}">

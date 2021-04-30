@@ -67,12 +67,3 @@ class PromptHelm:
         if not self.settings.get("NGINX_INGRESS_NAMESPACE") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_NAMESPACE", click.prompt("Please enter nginx-ingress helm namespace",
                                                                       default="ingress-nginx"))
-
-        if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-            if not self.settings.get("KONG_HELM_RELEASE_NAME"):
-                self.settings.set("KONG_HELM_RELEASE_NAME", click.prompt("Please enter Gluu Gateway helm name",
-                                                                         default="gluu-gateway"))
-
-            if not self.settings.get("GLUU_GATEWAY_UI_HELM_RELEASE_NAME"):
-                self.settings.set("GLUU_GATEWAY_UI_HELM_RELEASE_NAME", click.prompt(
-                    "Please enter Gluu Gateway UI helm name", default="gluu-gateway-ui"))

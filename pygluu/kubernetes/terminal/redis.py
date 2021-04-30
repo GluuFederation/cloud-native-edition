@@ -47,7 +47,6 @@ class PromptRedis:
                 self.settings.set("REDIS_NAMESPACE", click.prompt("Please enter a namespace for Redis cluster",
                                                                   default="gluu-redis-cluster"))
         else:
-            # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
             if not self.settings.get("REDIS_PW"):
                 self.settings.set("REDIS_PW", prompt_password("Redis"))
 

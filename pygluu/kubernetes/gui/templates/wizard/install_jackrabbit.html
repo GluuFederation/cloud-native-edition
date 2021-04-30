@@ -12,9 +12,10 @@
 {{ forms.password(form.jackrabbit_admin_password) }}
 {{ forms.password(form.jackrabbit_admin_password_confirmation) }}
 {{ forms.radio_toggle(form.jackrabbit_cluster) }}
-<div id="jackrabbitCluster" class="collapse {{ 'show' if form.jackrabbit_cluster.data == 'Y' else ''}}">
+<div id="postgresInstall" class="collapse {{ 'show' if form.postgres.install_postgres.data == 'Y' else '' }}">
     {{ forms.text(form.postgres.postgres_namespace) }}
-    {{ forms.text(form.postgres.postgres_replicas) }}
+</div>
+<div id="jackrabbitCluster" class="collapse {{ 'show' if form.jackrabbit_cluster.data == 'Y' else ''}}">
     {{ forms.text(form.postgres.postgres_url) }}
     {{ forms.text(form.jackrabbit_pg_user) }}
     {{ forms.password(form.jackrabbit_pg_password) }}

@@ -15,7 +15,6 @@ from pygluu.kubernetes.terminal.volumes import PromptVolumes
 from pygluu.kubernetes.terminal.gke import PromptGke
 from pygluu.kubernetes.terminal.configuration import PromptConfiguration
 from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
-from pygluu.kubernetes.terminal.gluugateway import PromptGluuGateway
 from pygluu.kubernetes.terminal.istio import PromptIstio
 from pygluu.kubernetes.terminal.replicas import PromptReplicas
 from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
@@ -66,11 +65,6 @@ class Prompt:
         self.load_settings()
         optional_services = PromptOptionalServices(self.settings)
         optional_services.prompt_optional_services()
-
-    def gluu_gateway(self):
-        self.load_settings()
-        gluu_gateway = PromptGluuGateway(self.settings)
-        gluu_gateway.prompt_gluu_gateway()
 
     def jackrabbit(self):
         self.load_settings()
@@ -178,7 +172,6 @@ class Prompt:
         self.versions()
         self.arch()
         self.namespace()
-        self.gluu_gateway()
         self.optional_services()
         self.jackrabbit()
         self.istio()

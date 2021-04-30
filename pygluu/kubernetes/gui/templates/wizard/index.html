@@ -184,14 +184,6 @@
         });
       {% endif %}
 
-      {% if template == "gluu_gateway" %}
-        $('input[name="install_gluu_gateway').on('change', function(){
-          showHideOption($('#oxd-alert'), $(this).val());
-          showHideOption($('#postgresSetup'), $(this).val());
-          showHideOption($('#gluuGatewaySetup'), $(this).val());
-        });
-      {% endif %}
-
       {% if template == "install_istio" %}
         $('input[name="use_istio"]').on('change', function(){
           if($(this).val() == 'Y'){
@@ -324,29 +316,29 @@
           if($(this).val() == "N"){
             $('#redisPassword').collapse('show');
             var inputs = $('#redisPassword').find('input'),
-                redisNodes = $('#redisNodes').find('input');
+                redisInstall = $('#redisInstall').find('input');
 
             inputs.each(function(k, el){
               $(el).prop("disabled", false);
             });
 
-            redisNodes.each(function(k, el){
+            redisInstall.each(function(k, el){
               $(el).prop("disabled", true);
             });
-            $('#redisNodes').collapse('hide');
+            $('#redisInstall').collapse('hide');
           }else{
             $('#redisPassword').collapse('hide');
             var inputs = $('#redisPassword').find('input'),
-                redisNodes = $('#redisNodes').find('input');
+                redisInstall = $('#redisInstall').find('input');
 
             inputs.each(function(k, el){
               $(el).prop("disabled", true);
             });
 
-            redisNodes.each(function(k, el){
+            redisInstall.each(function(k, el){
               $(el).prop("disabled", false);
             });
-            $('#redisNodes').collapse('show');
+            $('#redisInstall').collapse('show');
           }
         });
       {% endif %}
