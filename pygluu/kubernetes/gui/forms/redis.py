@@ -43,11 +43,11 @@ class RedisForm(FlaskForm):
     redis_pw = StringField(
         "Redis Password",
         widget=PasswordInput(hide_value=False),
-        validators=[RequiredIfFieldEqualTo("install_redis", "N")])
+        validators=[])
     redis_pw_confirm = StringField(
         "Redis Password Confirmation",
         widget=PasswordInput(hide_value=False),
-        validators=[RequiredIfFieldEqualTo("install_redis", "N"),
+        validators=[
                     EqualTo('redis_pw', message='Passwords do not match')])
     redis_url = StringField(
         "Please enter redis URL. If you are deploying redis",

@@ -43,6 +43,6 @@ class Postgres(object):
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
-        logger.info("Removing postgresql...")
-        exec_cmd("helm delete {} --namespace={}".format("postgresql",
+        logger.info("Removing postgres...")
+        exec_cmd("helm delete {} --namespace={}".format("postgres",
                                                         self.settings.get("POSTGRES_NAMESPACE")))

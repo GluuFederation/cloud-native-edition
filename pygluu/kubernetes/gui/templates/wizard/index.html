@@ -226,6 +226,16 @@
             $('#jackrabbitCluster').collapse('hide');
            }
         });
+
+        $('input[name="postgres-install_postgres"').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#postgresInstall').collapse('show');
+            $('#postgresNoInstall').collapse('hide');
+           }else{
+            $('#postgresInstall').collapse('hide');
+            $('#postgresNoInstall').collapse('show');
+           }
+        });
       {% endif %}
 
       {% if template == "environment" %}

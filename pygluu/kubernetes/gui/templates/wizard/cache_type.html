@@ -20,8 +20,7 @@
   </div>
   <div id="redisPassword" class="collapse {{ 'show' if form.redis.install_redis.data == 'N' else '' }}">
     {{ forms.text(form.redis.redis_url) }}
+  </div>
     {{ forms.password(form.redis.redis_pw) }}
     {{ forms.password(form.redis.redis_pw_confirm) }}
-  </div>
-
 </div>

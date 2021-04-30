@@ -64,6 +64,7 @@ class SettingsHandler(object):
                                 REDIS_NODES_PER_MASTER="",
                                 REDIS_NAMESPACE="",
                                 INSTALL_REDIS="",
+                                INSTALL_POSTGRES="",
                                 INSTALL_JACKRABBIT="",
                                 JACKRABBIT_STORAGE_SIZE="",
                                 JACKRABBIT_URL="",

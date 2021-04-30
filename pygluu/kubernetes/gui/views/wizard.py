@@ -305,14 +305,16 @@ def install_jackrabbit():
                 "JACKRABBIT_URL": form.jackrabbit_url.data,
                 "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
                 "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
-                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
+                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data,
+                "INSTALL_POSTGRES": form.postgres.install_postgres.data}
 
         if data["INSTALL_JACKRABBIT"] == "Y":
             data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
-        if data["JACKRABBIT_CLUSTER"] == "Y":
+        if data["INSTALL_POSTGRES"] == "Y":
             data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+
+        if data["JACKRABBIT_CLUSTER"] == "Y":
             data["POSTGRES_URL"] = form.postgres.postgres_url.data
             data["JACKRABBIT_PG_USER"] = form.jackrabbit_pg_user.data
             data["JACKRABBIT_PG_PASSWORD"] = form.jackrabbit_pg_password.data
@@ -797,7 +799,7 @@ def cache_type():
                 data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
                 data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
                     data["REDIS_NAMESPACE"])
-                data["REDIS_PW"] = ""
+                data["REDIS_PW"] = form.redis.redis_pw.data
             else:
                 data["REDIS_MASTER_NODES"] = ""
                 data["REDIS_NODES_PER_MASTER"] = ""
