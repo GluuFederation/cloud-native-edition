@@ -105,7 +105,6 @@ jobs:
           "CN_NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "CN_HELM_RELEASE_NAME": "helm",
           "CN_NGINX_INGRESS_RELEASE_NAME": "ningress",
-          "CN_INSTALL_c": "N",
           "CN_POSTGRES_NAMESPACE": "postgres",
           "CN_KONG_NAMESPACE": "gluu-gateway",
           "CN_KONG_PG_USER": "kong",
