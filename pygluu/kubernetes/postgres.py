@@ -7,10 +7,8 @@ pygluu.kubernetes.postgres
  Handles  Postgres operations
 """
 
-from pathlib import Path
-from psycopg2 import connect, sql
-from pygluu.kubernetes.yamlparser import Parser
-from pygluu.kubernetes.helpers import get_logger, analyze_storage_class
+from psycopg2 import sql
+from pygluu.kubernetes.helpers import get_logger, exec_cmd
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.settings import ValuesHandler
 import time
@@ -69,51 +67,31 @@ class Postgres(object):
 
     def install_postgres(self):
         self.uninstall_postgres()
-        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.postgres.install"), labels={"app": "postgres"})
-        self.create_patch_secret_init_sql()
-        if "OpenEbs" in self.settings.get("installer-settings.volumeProvisionStrategy"):
-            postgres_storage_class = Path("./postgres/storageclasses.yaml")
-            analyze_storage_class(self.settings, postgres_storage_class)
-            self.kubernetes.create_objects_from_dict(postgres_storage_class)
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.postgres.install"), 
+                                         labels={"app": "postgres"})
 
-        postgres_yaml = Path("./postgres/postgres.yaml")
-        postgres_parser = Parser(postgres_yaml, "Postgres")
-        postgres_parser["spec"]["replicas"] = self.settings.get("installer-settings.postgres.replicas")
-        postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("installer-settings.postgres.install")
-        if "OpenEbs" in self.settings.get("installer-settings.volumeProvisionStrategy"):
-            postgres_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
-        postgres_parser["metadata"]["namespace"] = self.settings.get("installer-settings.postgres.install")
-        if self.settings.get("global.storageClass.provisioner") in \
-                ("microk8s.io/hostpath", "k8s.io/minikube-hostpath") or \
-                self.settings.get("global.cloud.testEnviroment"):
-            try:
-                del postgres_parser["spec"]["podTemplate"]["spec"]["resources"]
-            except KeyError:
-                logger.info("Resources not deleted as they are not found inside yaml.")
+        exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
+        exec_cmd("helm repo update")
+        exec_cmd("helm install {} bitnami/postgresql "
+                 "--set global.postgresql.postgresqlDatabase={} "
+                 "--set --host={} "
+                 "--set usePasswordFile={} "
+                 "--set global.postgresql.servicePort={} "
+                 "--set global.postgresql.postgresqlUsername={} "
+                 "--namespace={}".format("postgresql",
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresDatabaseName"),
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresHost"),
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresPasswordFile"),
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresPort"),
+                                         self.settings.get("config.configmap.cnJackrabbitPostgresUser"),
+                                         self.settings.get("installer-settings.postgres.namespace")))
 
-        postgres_parser.dump_it()
-        self.kubernetes.create_namespaced_custom_object(filepath=postgres_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="postgreses",
-                                                        namespace=self.settings.get("installer-settings.postgres.install"))
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.postgres.install"), "app=postgres", self.timeout)
+            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.postgres.install"), "app=postgres", 
+                                                self.timeout)
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
-        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
-                                                                version="v1alpha1",
-                                                                plural="postgreses",
-                                                                name="postgres",
-                                                                namespace=self.settings.get("installer-settings.postgres.install"))
-        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
-                                                                version="v1alpha1",
-                                                                plural="postgresversions",
-                                                                name="postgres",
-                                                                namespace=self.settings.get("installer-settings.postgres.install"))
-        self.kubernetes.delete_storage_class("postgres-sc")
-        self.kubernetes.delete_service("kubedb", self.settings.get("installer-settings.postgres.install"))
-        self.kubernetes.delete_service("postgres", self.settings.get("installer-settings.postgres.install"))
-        self.kubernetes.delete_service("postgres-replicas", self.settings.get("installer-settings.postgres.install"))
-        self.kubernetes.delete_service("postgres-stats", self.settings.get("installer-settings.postgres.install"))
+        logger.info("Removing postgresql...")
+        exec_cmd("helm delete {} --namespace={}".format("postgresql",
+                                                        self.settings.get("installer-settings.postgres.namespace")))
