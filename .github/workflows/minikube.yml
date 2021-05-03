@@ -43,15 +43,12 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         sudo flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Build Zipapp
+    - name: Install pygluu
       run: |
-        sudo apt-get update
-        sudo apt-get install build-essential
-        sudo pip3 install shiv
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/
-        sudo make zipapp
+        sudo make install
 
     - name: Install Minikube
       id: minikube
@@ -217,7 +214,7 @@ jobs:
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
-          ./pygluu-kubernetes.pyz install
+          sudo pygluu-kubernetes install
           cat /home/runner/work/test/settings.json
           kubectl get po -n gluu
           kubectl get po -n cbns
