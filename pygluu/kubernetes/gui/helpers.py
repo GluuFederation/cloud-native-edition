@@ -126,10 +126,6 @@ class WizardHandler(object):
                 "title": "Optional Services",
                 "endpoint": "wizard.optional_services"
             },
-            'gluu_gateway': {
-                "title": "Gluu gateway",
-                "endpoint": "wizard.gluu_gateway"
-            },
             'jackrabbit': {
                 "title": "Install jackrabbit",
                 "endpoint": "wizard.install_jackrabbit"

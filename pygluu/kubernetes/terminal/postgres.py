@@ -20,22 +20,18 @@ class PromptPostgres:
         self.settings = settings
 
     def prompt_postgres(self):
-        """Prompts for Postgres. Injected in a file postgres.yaml used with kubedb
+        """Prompts for Postgres.
         """
         if not self.settings.get("INSTALL_POSTGRES"):
             self.settings.set("INSTALL_POSTGRES", confirm_yesno("For the following prompt if N is placed "
                                                                 "Postgres is assumed to be"
                                                                 " installed or remotely provisioned. "
-                                                                "Install Postgres using KubeDB?",
+                                                                "Install Bitnami Postgres chart?",
                                                                 default=True))
         if self.settings.get("INSTALL_POSTGRES") == "Y":
             if not self.settings.get("POSTGRES_NAMESPACE"):
                 namespace = click.prompt("Please enter a namespace for postgres", default="postgres")
                 self.settings.set("POSTGRES_NAMESPACE", namespace)
-
-            if not self.settings.get("POSTGRES_REPLICAS"):
-                replicas = click.prompt("Please enter number of replicas for postgres", default=3)
-                self.settings.set("POSTGRES_REPLICAS", replicas)
 
         if not self.settings.get("POSTGRES_URL"):
             url = click.prompt(

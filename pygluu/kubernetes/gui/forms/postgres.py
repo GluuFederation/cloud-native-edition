@@ -8,8 +8,8 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField
-from wtforms.validators import InputRequired
+from wtforms import StringField, IntegerField, RadioField
+from wtforms.validators import InputRequired, DataRequired
 
 
 class PostgresForm(FlaskForm):
@@ -17,17 +17,20 @@ class PostgresForm(FlaskForm):
     Postgres Form
 
     Fields :
+    install_postgres (string|required|default: Y)
     postgres_namespace (string|required|default: postgres)
-    postgres_replicas (integer|required|default: 3)
     postgres_url (string|required|default: postgres.postgres.svc.cluster.local  )
     """
+    install_postgres = RadioField(
+        "Install Postgres", choices=[("Y", "Yes"), ("N", "No")], default="Y",
+        description="For the following prompt if N is placed "
+                    "Postgres is assumed to be"
+                    " installed or remotely provisioned. "
+                    "Install Bitnami Postgres chart?",
+        validators=[DataRequired()])
     postgres_namespace = StringField(
         "Please enter a namespace for postgres",
         default="postgres",
-        validators=[InputRequired()])
-    postgres_replicas = IntegerField(
-        "Please enter number of replicas for postgres",
-        default=3,
         validators=[InputRequired()])
     postgres_url = StringField(
         "Please enter  postgres (remote or local) URL base name. "
