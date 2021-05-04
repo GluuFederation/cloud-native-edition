@@ -1,5 +1,70 @@
 import pygluu.kubernetes.gluu as module0
+import pytest
+from pygluu.kubernetes.yamlparser import Parser
 
+
+def test_prompt1(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("installer-settings.volumeProvisionStrategy", "gke")
+    settings.set("config.configmap.cnCacheType", "REDIS")
+    settings.set("installer-settings.couchbase.install")
+    prompt = Gluu(settings)
+    prompt.__init__()
+    assert exec_cmd("gcloud config get-value core/account")
+
+def test_prep_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("installer-settings.aws.arn.enabled")
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ngress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"] is False
+
+def test_prep2_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("config.configmap.cnCasaEnabled", "casa")
+    path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index] is False
+
+def test_prep3_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("global.oxshibboleth.enabled", "oxshibboleth")
+    path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index] is False
+
+def test_prep4_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("config.configmap.cnPassportEnabled", "oxpassport")
+    path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index] is False
+
+def test_prep5_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("installer-settings.global.scim.enabled", "jans-scim")
+    path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index] is False
+
+def test_prep6_alb(settings):
+    from pygluu.kubernetes.gluu import Gluu
+
+    settings.set("installer-settings.config-api.enabled", "config-api")
+    path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+    prompt = Gluu(settings)
+    prompt.prepare_alb()
+    assert ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index] is False
 
 def test_install_ldap_backup():
     var0 = module0.Gluu()

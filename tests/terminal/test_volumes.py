@@ -142,18 +142,6 @@ def test_prompt_volumes_misc_vol_type(settings, vol_type):
     PromptVolumes(settings).prompt_volumes()
 
 
-@pytest.mark.parametrize("arch", ["kubernetes.io/azure-disk", "kubernetes.io/aws-ebs", "kubernetes.io/gce-pd"])
-def test_prompt_volumes_jackrabbit(monkeypatch, settings, arch):
-    from pygluu.kubernetes.terminal.volumes import PromptVolumes
-
-    monkeypatch.setattr("click.prompt", lambda x, default: "io1")
-
-    settings.set("CN_DEPLOYMENT_ARCH", arch)
-    settings.set("CN_APP_VOLUME_TYPE", 7)
-    PromptVolumes(settings).prompt_volumes()
-    assert settings.get("CN_LDAP_JACKRABBIT_VOLUME") == "io1"
-
-
 def test_prompt_volumes_global_azure_type(monkeypatch, settings):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
 

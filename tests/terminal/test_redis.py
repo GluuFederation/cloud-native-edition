@@ -1,4 +1,5 @@
 import pytest
+import pygluu.kubernetes.terminal.redis as module0
 
 def test_prompt_redis_type(monkeypatch, settings):
     from pygluu.kubernetes.terminal.redis import PromptRedis
@@ -9,28 +10,6 @@ def test_prompt_redis_type(monkeypatch, settings):
     prompt = PromptRedis(settings)
     prompt.prompt_redis()
     assert settings.get("config.configmap.cnRedisType") == "CLUSTER"
-
-def test_prompt_redis_master_nodes(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.redis import PromptRedis
-
-    monkeypatch.setattr("click.prompt", lambda x, default: 3)
-
-    settings.set("installer-settings.redis.install", True)
-    settings.set("installer-settings.redis.masterNodes", "")
-    prompt = PromptRedis(settings)
-    prompt.prompt_redis()
-    assert settings.get("installer-settings.redis.masterNodes") == 3
-
-def test_prompt_redis_nodes(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.redis import PromptRedis
-
-    monkeypatch.setattr("click.prompt", lambda x, default: 2)
-
-    settings.set("installer-settings.redis.install", True)
-    settings.set("installer-settings.redis.nodesPerMaster", "")
-    prompt = PromptRedis(settings)
-    prompt.prompt_redis()
-    assert settings.get("installer-settings.redis.nodesPerMaster") == 2
 
 def test_prompt_redis_namepsace(monkeypatch, settings):
     from pygluu.kubernetes.terminal.redis import PromptRedis
@@ -50,8 +29,9 @@ def test_prompt_redis_namepsace(monkeypatch, settings):
 def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.redis import PromptRedis
 
-    monkeypatch.setattr("click.confirm", lambda x: given)
-    settings.set("installer-settings.redis.install", False)
+    monkeypatch.setattr("click.confirm", lambda x, default: given)
+
+    settings.set("installer-settings.redis.install", True)
     settings.set("config.redisPassword", "")
     prompt = PromptRedis(settings)
     prompt.prompt_redis()

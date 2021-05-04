@@ -1,12 +1,6 @@
 import pygluu.kubernetes.pycert as module0
 
 
-def test_check_cert_with_private_key():
-    var0 = '>_6<Z\\a~'
-    var1 = '|\ntEaF}d5{T< 9'
-    var2 = module0.check_cert_with_private_key(var0, var1)
-
-
 def test_setup_crts():
     try:
         var0 = False

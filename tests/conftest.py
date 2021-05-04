@@ -10,6 +10,13 @@ def settings():
     unlink_values_yaml()
 
 @pytest.fixture()
+def create():
+    from pygluu.kubernetes.create import create_parser, main
+
+    create_parser()
+    main()
+
+@pytest.fixture()
 def kubeapi():
     from pygluu.kubernetes.kubeapi import Kubernetes, load_kubernetes_config
 
@@ -21,6 +28,6 @@ def kubeapi():
 def gluu():
     from pygluu.kubernetes.gluu import Gluu
 
-    handler = Gluu
+    handler = Gluu()
     yield handler
 

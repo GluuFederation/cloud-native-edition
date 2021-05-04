@@ -19,10 +19,10 @@ class PromptPostgres:
         self.settings = settings
 
     def prompt_postgres(self):
-        """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
+        """Prompts for PostGres Install.
         """
         if self.settings.get("installer-settings.postgres.install") in (None, ''):
-            install = click.confirm("Install postgres using the KubeDB operator?)")
+            install = click.confirm("Install postgres using the Bitnami helm chart?)")
             self.settings.set("installer-settings.postgres.install", install)
 
         if self.settings.get("installer-settings.postgres.install"):

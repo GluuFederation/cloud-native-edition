@@ -40,7 +40,7 @@ def test_jackrabbit_disable_no_url(monkeypatch, settings):
     assert settings.get("config.configmap.cnJackrabbitUrl") == "http://jackrabbit:8080"
 
 
-def test_jackrabit_adminid_(monkeypatch, settings):
+def test_jackrabit_adminid(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.prompt", lambda x, default: "admin")
@@ -58,7 +58,8 @@ def test_jackrabit_adminid_(monkeypatch, settings):
 def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
-    monkeypatch.setattr("click.confirm", lambda x: given)
+    monkeypatch.setattr("click.confirm", lambda x, default: given)
+
     settings.set("installer-settings.jackrabbit.clusterMode", "")
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
@@ -75,18 +76,3 @@ def test_jackrabit_postgresdb(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
     assert settings.get("config.configmap.cnJackrabbitPostgresDatabaseName") == "jackrabbit"
-
-
-@pytest.mark.parametrize("given, expected", [
-(False, False),
-(True, True),
-])
-def test_testenv_prompt_test_jackrabbit_postgres(monkeypatch, settings, given, expected):
-    from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
-
-    monkeypatch.setattr("click.confirm", lambda x: given)
-    settings.set("installer-settings.jackrabbit.clusterMode", True)
-    settings.set("jackrabbit.secrets.cnJackrabbitPostgresPassword", "")
-    prompt = PromptJackrabbit(settings)
-    prompt.prompt_jackrabbit()
-    assert settings.get("jackrabbit.secrets.cnJackrabbitPostgresPassword") == expected

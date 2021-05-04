@@ -99,15 +99,3 @@ def test_settings_validation_is_invalid(settings, tmpdir):
 
     assert settings.validate() is False
 
-
-def test_settings_validation_not_exist_setting(settings, tmpdir):
-    p = Path(tmpdir) / 'test_settings.json'
-    settings.values_file = p
-    assert settings.validate() is True
-
-
-def test_settings_validation_not_valid_setting(settings, tmpdir):
-    p = Path(tmpdir) / 'test_settings.json'
-    settings.values_file = p
-    p.write_text('')
-    assert settings.validate() is False

@@ -6,7 +6,7 @@ def test_prompt_key_rotation(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: 48)
 
     settings.set("global.auth-server-key-rotation.enabled", True)
-    settings.set("auth-server-key-rotation.keysLife", False)
+    settings.set("auth-server-key-rotation.keysLife", "")
     prompt = PromptOptionalServices(settings)
     prompt.prompt_optional_services()
     assert settings.get("auth-server-key-rotation.keysLife") == 48
@@ -14,29 +14,33 @@ def test_prompt_key_rotation(monkeypatch, settings):
 def test_prompt_app_cert(monkeypatch, settings):
     from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
 
-    monkeypatch.setattr("click.prompt", lambda x, default: "client-api")
+    monkeypatch.setattr("click.prompt", lambda x, default: ccn)
 
+
+    ccn = "client-api"
     settings.set("global.client-api.enabled", True)
     settings.set("config.configmap.cnClientApiApplicationCertCn", "")
     prompt = PromptOptionalServices(settings)
     prompt.prompt_optional_services()
-    assert settings.get("config.configmap.cnClientApiApplicationCertCn") == "client-api"
+    assert settings.get("config.configmap.cnClientApiApplicationCertCn") == ccn
 
 def test_prompt_admin_cert(monkeypatch, settings):
     from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
 
-    monkeypatch.setattr("click.prompt", lambda x, default: "client-api")
+    monkeypatch.setattr("click.prompt", lambda x, default: ccn)
 
+    ccn = "client-api"
     settings.set("global.client-api.enabled", True)
     settings.set("config.configmap.cnClientApiAdminCertCn", "")
     prompt = PromptOptionalServices(settings)
     prompt.prompt_optional_services()
-    assert settings.get("config.configmap.cnClientApiAdminCertCn") == "client-api"
+    assert settings.get("config.configmap.cnClientApiAdminCertCn") == ccn
 
 def test_prompt_casa(settings):
     from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
 
     settings.set("config.configmap.cnCasaEnabled", True)
+    settings.set("global.client-api.enabled", "")
     prompt = PromptOptionalServices(settings)
     prompt.prompt_optional_services()
     assert settings.get("global.client-api.enabled") == True

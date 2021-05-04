@@ -29,7 +29,7 @@ class Gluu(object):
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get("installer-settings.releaseName") + "-ldap-backup"
         if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
-            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            # Clusterrolebinding needs to be created for gke with CB installed
             if self.settings.get("config.configmap.cnCacheType") == "REDIS" or \
                     self.settings.get("installer-settings.couchbase.install"):
                 user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
