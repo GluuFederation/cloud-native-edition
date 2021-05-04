@@ -63,8 +63,12 @@ echo "Waiting for auth-server to come up....Please do not cancel out"
 sleep 5
 cat << EOF > testendpoints.sh
 # get certs and keys. This will also generate the client crt and key to be used to access protected endpoints
-mkdir certs
-cd certs
+mkdir quicktestcerts || echo "directory exists"
+cd quicktestcerts
+sudo microk8s config > config
+KUBECONFIG="$PWD"/config
+rm ca.crt ca.key server.crt server.key client.csr client.crt client.key
+sudo microk8s.kubectl delete secret generic ca-secret -n gluu --kubeconfig="$KUBECONFIG" || echo "secret ca-secret does not exist and will be created."
 sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_ca_cert":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > ca.crt
 sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_ca_key":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > ca.key
 sudo microk8s.kubectl get secret cn -o json -n gluu --kubeconfig="$KUBECONFIG" | grep '"ssl_cert":' | sed -e 's#.*:\(\)#\1#' | tr -d '"' | tr -d "," | tr -d '[:space:]' | base64 -d > server.crt
