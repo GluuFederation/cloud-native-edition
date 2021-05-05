@@ -69,9 +69,4 @@ class PromptImages:
             # RADIUS
             if self.settings.get("ENABLE_RADIUS") == "Y":
                 prompt_and_set_setting("Radius", "RADIUS_IMAGE_NAME", "RADIUS_IMAGE_TAG")
-            # Gluu-Gateway
-            if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-                prompt_and_set_setting("Gluu-Gateway", "GLUU_GATEWAY_IMAGE_NAME", "GLUU_GATEWAY_IMAGE_TAG")
-                # Gluu-Gateway-UI
-                prompt_and_set_setting("Gluu-Gateway-UI", "GLUU_GATEWAY_UI_IMAGE_NAME", "GLUU_GATEWAY_UI_IMAGE_TAG")
             self.settings.set("EDIT_IMAGE_NAMES_TAGS", "N")

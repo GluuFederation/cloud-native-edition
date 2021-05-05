@@ -20,6 +20,8 @@ from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.pycert import check_cert_with_private_key
 from pygluu.kubernetes.yamlparser import Parser
 from pygluu.kubernetes.settings import SettingsHandler
+from pygluu.kubernetes.redis import Redis
+from pygluu.kubernetes.postgres import Postgres
 
 logger = get_logger("gluu-kustomize     ")
 
@@ -60,58 +62,14 @@ static_jcr_do_folder = Path("./jackrabbit/overlays/do/static-dn/")
 hostpath_ldap_local_folder = Path("./ldap/overlays/local/hostpath/")
 hostpath_jcr_local_folder = Path("./jackrabbit/overlays/local/hostpath/")
 
-
-def register_op_client(namespace, client_name, op_host, oxd_url):
-    """Registers an op client using oxd.
-
-    :param namespace:
-    :param client_name:
-    :param op_host:
-    :param oxd_url:
-    :return:
-    """
-    kubernetes = Kubernetes()
-    logger.info("Registering a client : {}".format(client_name))
-    oxd_id, client_id, client_secret = "", "", ""
-
-    data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
-           '", "post_logout_redirect_uris": ["https://' + op_host + \
-           '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
-           '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
-
-    exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                         "{}/register-site".format(oxd_url), "--header",
-                         "Content-Type: application/json", "--data-raw",
-                         data]
-    try:
-        client_registration_response = \
-            kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                       app_label="app=oxauth",
-                                                       container="oxauth",
-                                                       namespace=namespace,
-                                                       stdout=False)
-
-        client_registration_response_dict = literal_eval(client_registration_response)
-        oxd_id = client_registration_response_dict["oxd_id"]
-        client_id = client_registration_response_dict["client_id"]
-        client_secret = client_registration_response_dict["client_secret"]
-    except (IndexError, Exception):
-        exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                             "{}/register-site".format(oxd_url), "--header",
-                             "'Content-Type: application/json'", "--data-raw",
-                             "'" + data + "'"]
-        manual_curl_command = " ".join(exec_curl_command)
-        logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
-            client_name, manual_curl_command))
-    return oxd_id, client_id, client_secret
-
-
 class Kustomize(object):
     def __init__(self, timeout=300):
 
         self.settings = SettingsHandler()
         self.all_apps = self.settings.get("ENABLED_SERVICES_LIST")
         self.kubernetes = Kubernetes()
+        self.redis = Redis()
+        self.postgres = Postgres()
         self.timeout = timeout
         self.kubectl = self.detect_kubectl
         self.output_yaml_directory, self.ldap_kustomize_yaml_directory, self.jcr_kustomize_yaml_directory \
@@ -133,7 +91,6 @@ class Kustomize(object):
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
         self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
-        self.gg_ui_yaml = str(self.output_yaml_directory.joinpath("gluu-gateway-ui.yaml").resolve())
         self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("gluu-istio-ingress.yaml").resolve())
         self.ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
         self.adjust_yamls_for_fqdn_status = dict()
@@ -141,9 +98,8 @@ class Kustomize(object):
         self.gluu_config = ""
         self.gluu_install_envs = ""
         if self.settings.get("DEPLOYMENT_ARCH") == "gke":
-            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            # Clusterrolebinding needs to be created for gke with CB
             if self.settings.get("INSTALL_REDIS") == "Y" or \
-                    self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     self.settings.get("INSTALL_COUCHBASE") == "Y":
                 user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
                 user_account = str(user_account, "utf-8").strip()
@@ -789,32 +745,6 @@ class Kustomize(object):
 
         self.adjust_yamls_for_fqdn_status[self.gluu_upgrade_yaml] = "Job"
 
-    def kustomize_gluu_gateway_ui(self):
-        if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-            command = self.kubectl + " kustomize gluu-gateway-ui/base"
-            kustomization_file = "./gluu-gateway-ui/base/kustomization.yaml"
-            self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                           namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                           image_name_key="GLUU_GATEWAY_UI_IMAGE_NAME",
-                                           image_tag_key="GLUU_GATEWAY_UI_IMAGE_TAG")
-            exec_cmd(command, output_file=self.gg_ui_yaml)
-            self.parse_gluu_gateway_ui_configmap()
-            postgres_full_add = "'postgresql://" + self.settings.get("GLUU_GATEWAY_UI_PG_USER") + ":" + \
-                                self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD") + "@" + \
-                                self.settings.get("POSTGRES_URL") + \
-                                ":5432/" + self.settings.get("GLUU_GATEWAY_UI_DATABASE") + "'"
-            gg_ui_job_parser = Parser(self.gg_ui_yaml, "Job")
-            gg_ui_job_parser["spec"]["template"]["spec"]["containers"][0]["command"] = \
-                ["/bin/sh", "-c", "./entrypoint.sh -c prepare -a postgres -u " + postgres_full_add]
-            gg_ui_job_parser.dump_it()
-
-            gg_ui_ingress_parser = Parser(self.gg_ui_yaml, "Ingress")
-            gg_ui_ingress_parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("GLUU_FQDN")
-            gg_ui_ingress_parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
-            gg_ui_ingress_parser.dump_it()
-            self.remove_resources(self.gg_ui_yaml, "Deployment")
-            self.adjust_yamls_for_fqdn_status[self.gg_ui_yaml] = "Deployment"
-
     def prepare_alb(self):
         services = [self.oxauth_yaml, self.oxtrust_yaml, self.casa_yaml,
                     self.oxpassport_yaml, self.oxshibboleth_yaml, self.fido2_yaml, self.scim_yaml]
@@ -848,9 +778,6 @@ class Kustomize(object):
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
-            if self.settings.get("INSTALL_GLUU_GATEWAY") != "Y" and service_name == "gg-kong-ui":
-                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
-                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
         ingress_parser.dump_it()
 
     def update_kustomization_yaml(self, kustomization_yaml, namespace, image_name_key, image_tag_key):
@@ -876,7 +803,7 @@ class Kustomize(object):
                 running_time = end_time - starting_time
                 if running_time > 600:
                     logger.error("Could not read Gluu secret. Please check config job pod logs.")
-                    if namespace != self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"):
+                    if namespace != self.settings.get("GLUU_NAMESPACE"):
                         raise SystemExit(1)
 
         self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
@@ -904,34 +831,6 @@ class Kustomize(object):
                     logger.info("Waiting for loadbalancer address..")
                     time.sleep(10)
             self.settings.set("LB_ADD", lb_hostname)
-
-    def parse_gluu_gateway_ui_configmap(self):
-        oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("OXD_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
-        gg_ui_cm_parser = Parser(self.gg_ui_yaml, "ConfigMap")
-        gg_ui_cm_parser["data"]["DB_USER"] = self.settings.get("GLUU_GATEWAY_UI_PG_USER")
-        gg_ui_cm_parser["data"]["KONG_ADMIN_URL"] = "https://kong-admin.{}.svc.cluster.local:8444".format(
-            self.settings.get("KONG_NAMESPACE"))
-        gg_ui_cm_parser["data"]["DB_HOST"] = self.settings.get("POSTGRES_URL")
-        gg_ui_cm_parser["data"]["DB_DATABASE"] = self.settings.get("GLUU_GATEWAY_UI_DATABASE")
-        gg_ui_cm_parser["data"]["OXD_SERVER_URL"] = oxd_server_url
-        # Register new client if one was not provided
-        if not gg_ui_cm_parser["data"]["CLIENT_ID"] or \
-                not gg_ui_cm_parser["data"]["OXD_ID"] or \
-                not gg_ui_cm_parser["data"]["CLIENT_SECRET"]:
-            oxd_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
-                                                                  "konga-client",
-                                                                  self.settings.get("GLUU_FQDN"),
-                                                                  oxd_server_url)
-            gg_ui_cm_parser["data"]["OXD_ID"] = oxd_id
-            gg_ui_cm_parser["data"]["CLIENT_ID"] = client_id
-            gg_ui_cm_parser["data"]["CLIENT_SECRET"] = client_secret
-        gg_ui_cm_parser["data"]["OP_SERVER_URL"] = "https://" + self.settings.get("GLUU_FQDN")
-
-        gg_ui_cm_parser["data"]["GG_HOST"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        gg_ui_cm_parser["data"]["GG_UI_REDIRECT_URL_HOST"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-
-        gg_ui_cm_parser.dump_it()
 
     def adjust_ldap_jackrabbit(self, app_file):
         statefulset_parser = Parser(app_file, "StatefulSet")
@@ -1068,241 +967,6 @@ class Kustomize(object):
             parser["spec"]["tls"][0]["hosts"][0] = self.settings.get("GLUU_FQDN")
             parser["spec"]["rules"][0]["host"] = self.settings.get("GLUU_FQDN")
             parser.dump_it()
-
-    @property
-    def generate_postgres_init_sql(self):
-        services_using_postgres = []
-        if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-            services_using_postgres.append("JACKRABBIT")
-        if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-            services_using_postgres.append("KONG")
-            services_using_postgres.append("GLUU_GATEWAY_UI")
-        # Generate init sql
-        postgres_init_sql = ""
-        for service in services_using_postgres:
-            pg_user = self.settings.get("{}_PG_USER".format(service))
-            pg_password = self.settings.get("{}_PG_PASSWORD".format(service))
-            pg_database = self.settings.get("{}_DATABASE".format(service))
-            postgres_init_sql_jackrabbit = "CREATE USER {};\nALTER USER {} PASSWORD '{}';\nCREATE DATABASE {};\n" \
-                                           "GRANT ALL PRIVILEGES ON DATABASE {} TO {};\n" \
-                .format(pg_user, pg_user, pg_password, pg_database, pg_database, pg_user)
-            postgres_init_sql = postgres_init_sql + postgres_init_sql_jackrabbit
-        return postgres_init_sql
-
-    def create_patch_secret_init_sql(self):
-        postgres_init_sql = self.generate_postgres_init_sql
-        encoded_postgers_init_bytes = base64.b64encode(postgres_init_sql.encode("utf-8"))
-        encoded_postgers_init_string = str(encoded_postgers_init_bytes, "utf-8")
-        self.kubernetes.patch_or_create_namespaced_secret(name="pg-init-sql",
-                                                          namespace=self.settings.get("POSTGRES_NAMESPACE"),
-                                                          literal="data.sql",
-                                                          value_of_literal=encoded_postgers_init_string)
-
-    def patch_or_deploy_postgres(self):
-
-        # Jackrabbit Cluster would have installed postgres
-        if self.settings.get("JACKRABBIT_CLUSTER") == "N":
-            self.deploy_postgres()
-        else:
-            self.create_patch_secret_init_sql()
-            logger.info("Restarting postgres...please wait 2mins..")
-            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                replicas=0,
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-            time.sleep(120)
-            self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                replicas=3,
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
-
-    def deploy_postgres(self):
-        self.uninstall_postgres()
-        self.kubernetes.create_namespace(name=self.settings.get("POSTGRES_NAMESPACE"), labels={"app": "postgres"})
-        self.create_patch_secret_init_sql()
-        if self.settings.get("DEPLOYMENT_ARCH") != "local":
-            postgres_storage_class = Path("./postgres/storageclasses.yaml")
-            self.analyze_storage_class(postgres_storage_class)
-            self.kubernetes.create_objects_from_dict(postgres_storage_class)
-
-        postgres_yaml = Path("./postgres/postgres.yaml")
-        postgres_parser = Parser(postgres_yaml, "Postgres")
-        postgres_parser["spec"]["replicas"] = self.settings.get("POSTGRES_REPLICAS")
-        postgres_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") == "local":
-            postgres_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
-        postgres_parser["metadata"]["namespace"] = self.settings.get("POSTGRES_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") or \
-                self.settings.get("TEST_ENVIRONMENT") == "Y":
-            try:
-                del postgres_parser["spec"]["podTemplate"]["spec"]["resources"]
-            except KeyError:
-                logger.info("Resources not deleted as they are not found inside yaml.")
-
-        postgres_parser.dump_it()
-        self.kubernetes.create_namespaced_custom_object(filepath=postgres_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="postgreses",
-                                                        namespace=self.settings.get("POSTGRES_NAMESPACE"))
-        if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres", self.timeout)
-
-    def deploy_kong_init(self):
-        self.kubernetes.create_namespace(name=self.settings.get("KONG_NAMESPACE"), labels={"app": "ingress-kong"})
-        encoded_kong_pass_bytes = base64.b64encode(self.settings.get("KONG_PG_PASSWORD").encode("utf-8"))
-        encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
-        self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
-                                                          namespace=self.settings.get("KONG_NAMESPACE"),
-                                                          literal="KONG_PG_PASSWORD",
-                                                          value_of_literal=encoded_kong_pass_string)
-        kong_init_job = Path("./gluu-gateway-ui/kong-init-job.yaml")
-        kong_init_job_parser = Parser(kong_init_job, "Job")
-        kong_init_job_parser["spec"]["template"]["spec"]["containers"][0]["env"] = [
-            {"name": "KONG_DATABASE", "value": "postgres"},
-            {"name": "KONG_PG_HOST", "value": self.settings.get("POSTGRES_URL")},
-            {"name": "KONG_PG_USER", "value": self.settings.get("KONG_PG_USER")},
-            {"name": "KONG_PG_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "kong-postgres-pass",
-                                                                        "key": "KONG_PG_PASSWORD"}}}
-        ]
-        kong_init_job_parser["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_init_job_parser["spec"]["template"]["spec"]["containers"][0]["image"] = \
-            self.settings.get("GLUU_GATEWAY_IMAGE_NAME") + ":" + self.settings.get("GLUU_GATEWAY_IMAGE_TAG")
-        kong_init_job_parser.dump_it()
-        self.kubernetes.create_objects_from_dict(kong_init_job)
-
-    def deploy_kong(self):
-        self.uninstall_kong()
-        self.deploy_kong_init()
-        kong_all_in_one_db = Path("./gluu-gateway-ui/kong-all-in-one-db.yaml")
-
-        kong_all_in_one_db_parser_sa = Parser(kong_all_in_one_db, "ServiceAccount")
-        kong_all_in_one_db_parser_sa["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_all_in_one_db_parser_sa.dump_it()
-
-        kong_all_in_one_db_parser_crb = Parser(kong_all_in_one_db, "ClusterRoleBinding")
-        kong_all_in_one_db_parser_crb["subjects"][0]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_all_in_one_db_parser_crb.dump_it()
-
-        kong_all_in_one_db_parser_svc_proxy = Parser(kong_all_in_one_db, "Service", "kong-proxy")
-        kong_all_in_one_db_parser_svc_proxy["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_all_in_one_db_parser_svc_proxy.dump_it()
-
-        kong_all_in_one_db_parser_svc_webhook = Parser(kong_all_in_one_db, "Service", "kong-validation-webhook")
-        kong_all_in_one_db_parser_svc_webhook["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_all_in_one_db_parser_svc_webhook.dump_it()
-
-        kong_all_in_one_db_parser_svc_admin = Parser(kong_all_in_one_db, "Service", "kong-admin")
-        kong_all_in_one_db_parser_svc_admin["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        kong_all_in_one_db_parser_svc_admin.dump_it()
-
-        kong_all_in_one_db_parser_deploy = Parser(kong_all_in_one_db, "Deployment")
-        kong_containers = kong_all_in_one_db_parser_deploy["spec"]["template"]["spec"]["containers"]
-        kong_all_in_one_db_parser_deploy["metadata"]["namespace"] = self.settings.get("KONG_NAMESPACE")
-        proxy_index = 0
-        ingress_controller_index = 1
-        for container in kong_containers:
-            if container["name"] == "proxy":
-                proxy_index = kong_containers.index(container)
-            if container["name"] == "ingress-controller":
-                ingress_controller_index = kong_containers.index(container)
-        # Adjust proxy container envs
-        env_list = kong_all_in_one_db_parser_deploy["spec"]["template"]["spec"]["containers"][proxy_index]["env"]
-        for env in env_list:
-            if env["name"] == "KONG_PG_HOST":
-                env_list.remove(env)
-            if env["name"] == "KONG_PG_USER":
-                env_list.remove(env)
-        env_list.append({"name": "KONG_PG_HOST", "value": self.settings.get("POSTGRES_URL")})
-        env_list.append({"name": "KONG_PG_USER", "value": self.settings.get("KONG_PG_USER")})
-        # Adjust kong ingress controller envs
-        env_list = \
-            kong_all_in_one_db_parser_deploy["spec"]["template"]["spec"]["containers"][ingress_controller_index]["env"]
-        for env in env_list:
-            if env["name"] == "CONTROLLER_PUBLISH_SERVICE":
-                env_list.remove(env)
-        env_list.append(
-            {"name": "CONTROLLER_PUBLISH_SERVICE", "value": self.settings.get("KONG_NAMESPACE") + "/kong-proxy"})
-        kong_all_in_one_db_parser_deploy["spec"]["template"]["spec"]["containers"][ingress_controller_index]["env"] \
-            = env_list
-        for container in kong_containers:
-            if container["name"] == "proxy":
-                container["image"] = self.settings.get("GLUU_GATEWAY_IMAGE_NAME") + ":" + \
-                                     self.settings.get("GLUU_GATEWAY_IMAGE_TAG")
-        kong_all_in_one_db_parser_deploy.dump_it()
-        self.kubernetes.create_objects_from_dict(kong_all_in_one_db)
-        if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("KONG_NAMESPACE"), "app=ingress-kong", self.timeout)
-
-    def deploy_gluu_gateway_ui(self):
-        self.kubernetes.create_namespace(name=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                         labels={"APP_NAME": "gluu-gateway-ui"})
-
-        self.setup_tls(namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
-
-        encoded_gg_ui_pg_pass_bytes = base64.b64encode(self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD").encode("utf-8"))
-        encoded_gg_ui_pg_pass_string = str(encoded_gg_ui_pg_pass_bytes, "utf-8")
-
-        self.kubernetes.patch_or_create_namespaced_secret(name="gg-ui-postgres-pass",
-                                                          namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                                          literal="DB_PASSWORD",
-                                                          value_of_literal=encoded_gg_ui_pg_pass_string)
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
-            if self.settings.get("DEPLOYMENT_ARCH") in ("eks", "local"):
-                self.kubernetes = Kubernetes()
-                self.kubernetes.create_objects_from_dict(self.update_lb_ip_yaml,
-                                                         self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
-        self.kubernetes.create_objects_from_dict(self.gg_ui_yaml)
-        if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                                "app=gg-kong-ui", self.timeout)
-
-    def uninstall_gluu_gateway_ui(self):
-        self.kubernetes.delete_deployment_using_label(self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"), "app=gg-kong-ui")
-        self.kubernetes.delete_config_map_using_label(self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"), "app=gg-kong-ui")
-        self.kubernetes.delete_job(self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"), "app=gg-kong-ui")
-        self.kubernetes.delete_service("gg-kong-ui", self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
-        self.kubernetes.delete_ingress("gluu-gg-ui", self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"))
-
-    def install_gluu_gateway_dbmode(self):
-        self.patch_or_deploy_postgres()
-        self.deploy_kong()
-        self.kustomize_gluu_gateway_ui()
-        self.adjust_fqdn_yaml_entries()
-        self.deploy_gluu_gateway_ui()
-
-    def deploy_redis(self):
-        self.uninstall_redis()
-        self.kubernetes.create_namespace(name=self.settings.get("REDIS_NAMESPACE"), labels={"app": "redis"})
-        if self.settings.get("DEPLOYMENT_ARCH") != "local":
-            redis_storage_class = Path("./redis/storageclasses.yaml")
-            self.analyze_storage_class(redis_storage_class)
-            self.kubernetes.create_objects_from_dict(redis_storage_class)
-
-        redis_configmap = Path("./redis/configmaps.yaml")
-        redis_conf_parser = Parser(redis_configmap, "ConfigMap")
-        redis_conf_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
-        redis_conf_parser.dump_it()
-        self.kubernetes.create_objects_from_dict(redis_configmap)
-
-        redis_yaml = Path("./redis/redis.yaml")
-        redis_parser = Parser(redis_yaml, "Redis")
-        redis_parser["spec"]["cluster"]["master"] = self.settings.get("REDIS_MASTER_NODES")
-        redis_parser["spec"]["cluster"]["replicas"] = self.settings.get("REDIS_NODES_PER_MASTER")
-        redis_parser["spec"]["monitor"]["prometheus"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") == "local":
-            redis_parser["spec"]["storage"]["storageClassName"] = "openebs-hostpath"
-        redis_parser["metadata"]["namespace"] = self.settings.get("REDIS_NAMESPACE")
-        if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
-            del redis_parser["spec"]["resources"]
-        redis_parser.dump_it()
-        self.kubernetes.create_namespaced_custom_object(filepath=redis_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="redises",
-                                                        namespace=self.settings.get("REDIS_NAMESPACE"))
-
-        if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=redis-cluster", self.timeout)
 
     def deploy_config(self):
         self.kubernetes.create_objects_from_dict(self.config_yaml)
@@ -1550,21 +1214,7 @@ class Kustomize(object):
         if not self.settings.get("AWS_LB_TYPE") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=gluu-upgrade", self.timeout)
         self.kubernetes = Kubernetes()
-        if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-            if self.settings.get("INSTALL_GLUU_GATEWAY") == "N":
-                self.deploy_postgres()
-            else:
-                self.create_patch_secret_init_sql()
-                logger.info("Restarting postgres...please wait 2mins..")
-                self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                    replicas=0,
-                                                                    namespace=self.settings.get("POSTGRES_NAMESPACE"))
-                time.sleep(120)
-                self.kubernetes.patch_namespaced_stateful_set_scale(name="postgres",
-                                                                    replicas=3,
-                                                                    namespace=self.settings.get("POSTGRES_NAMESPACE"))
-                self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
-                                                    self.timeout)
+
         self.def_jackrabbit_secret()
         if self.settings.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             self.kubernetes.create_objects_from_dict("ldap/base/101-ox.yaml",
@@ -1668,7 +1318,7 @@ class Kustomize(object):
         if self.settings.get("INSTALL_JACKRABBIT") == "Y" and not restore:
             self.kubernetes = Kubernetes()
             if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-                self.deploy_postgres()
+                self.postgres.install_postgres()
 
             self.deploy_jackrabbit()
 
@@ -1677,7 +1327,7 @@ class Kustomize(object):
 
         if self.settings.get("INSTALL_REDIS") == "Y":
             self.kubernetes = Kubernetes()
-            self.deploy_redis()
+            self.redis.install_redis()
 
         if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                 self.settings.get("PERSISTENCE_BACKEND") == "ldap":
@@ -1745,9 +1395,6 @@ class Kustomize(object):
         if self.settings.get("ENABLE_RADIUS") == "Y":
             self.deploy_radius()
 
-        if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-            self.kubernetes = Kubernetes()
-            self.install_gluu_gateway_dbmode()
 
     def uninstall_ingress(self):
         nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
@@ -1805,13 +1452,9 @@ class Kustomize(object):
             self.kubernetes.delete_network_policy(network_policy, self.settings.get("GLUU_NAMESPACE"))
         if not restore:
             if self.settings.get("INSTALL_REDIS") == "Y":
-                self.uninstall_redis()
-            if self.settings.get("INSTALL_GLUU_GATEWAY") == "Y":
-                self.uninstall_postgres()
-                self.uninstall_kong()
-                self.uninstall_gluu_gateway_ui()
+                self.redis.uninstall_redis()
             elif self.settings.get("JACKRABBIT_CLUSTER") == "Y":
-                self.uninstall_postgres()
+                self.postgres.uninstall_postgres()
 
             self.kubernetes.delete_service(nginx_service_name, "ingress-nginx")
         self.kubernetes.delete_cronjob(self.settings.get("GLUU_NAMESPACE"), "app=oxauth-key-rotation")
@@ -1898,50 +1541,3 @@ class Kustomize(object):
                 time_str = time.strftime("_created_%d-%m-%Y_%H-%M-%S")
                 shutil.copy(Path("./settings.json"), Path("./settings" + time_str + ".json"))
 
-    def uninstall_redis(self):
-        logger.info("Removing gluu-redis-cluster...")
-        logger.info("Removing redis...")
-        redis_yaml = Path("./redis/redis.yaml")
-        self.kubernetes.delete_namespaced_custom_object(filepath=redis_yaml,
-                                                        group="kubedb.com",
-                                                        version="v1alpha1",
-                                                        plural="redises",
-                                                        namespace=self.settings.get("REDIS_NAMESPACE"))
-        self.kubernetes.delete_storage_class("redis-sc")
-        self.kubernetes.delete_service("kubedb", self.settings.get("REDIS_NAMESPACE"))
-
-    def uninstall_kong(self):
-        logger.info("Removing gluu gateway kong...")
-        self.kubernetes.delete_job(self.settings.get("KONG_NAMESPACE"), "app=kong-migration-job")
-        self.kubernetes.delete_custom_resource("kongconsumers.configuration.konghq.com")
-        self.kubernetes.delete_custom_resource("kongcredentials.configuration.konghq.com")
-        self.kubernetes.delete_custom_resource("kongingresses.configuration.konghq.com")
-        self.kubernetes.delete_custom_resource("kongplugins.configuration.konghq.com")
-        self.kubernetes.delete_custom_resource("tcpingresses.configuration.konghq.com")
-        self.kubernetes.delete_custom_resource("kongclusterplugins.configuration.konghq.com")
-        self.kubernetes.delete_cluster_role("kong-ingress-clusterrole")
-        self.kubernetes.delete_service_account("kong-serviceaccount", self.settings.get("KONG_NAMESPACE"))
-        self.kubernetes.delete_cluster_role_binding("kong-ingress-clusterrole-nisa-binding")
-        self.kubernetes.delete_config_map_using_name("kong-server-blocks", self.settings.get("KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-proxy", self.settings.get("KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-validation-webhook", self.settings.get("KONG_NAMESPACE"))
-        self.kubernetes.delete_service("kong-admin", self.settings.get("KONG_NAMESPACE"))
-        self.kubernetes.delete_deployment_using_name("ingress-kong", self.settings.get("KONG_NAMESPACE"))
-
-    def uninstall_postgres(self):
-        logger.info("Removing gluu-postgres...")
-        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
-                                                                version="v1alpha1",
-                                                                plural="postgreses",
-                                                                name="postgres",
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-        self.kubernetes.delete_namespaced_custom_object_by_name(group="kubedb.com",
-                                                                version="v1alpha1",
-                                                                plural="postgresversions",
-                                                                name="postgres",
-                                                                namespace=self.settings.get("POSTGRES_NAMESPACE"))
-        self.kubernetes.delete_storage_class("postgres-sc")
-        self.kubernetes.delete_service("kubedb", self.settings.get("POSTGRES_NAMESPACE"))
-        self.kubernetes.delete_service("postgres", self.settings.get("POSTGRES_NAMESPACE"))
-        self.kubernetes.delete_service("postgres-replicas", self.settings.get("POSTGRES_NAMESPACE"))
-        self.kubernetes.delete_service("postgres-stats", self.settings.get("POSTGRES_NAMESPACE"))

@@ -139,8 +139,6 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
     # Gluus main values.yaml
     gluu_values_file = Path("../pygluu/kubernetes/templates/helm/gluu/values.yaml").resolve()
     gluu_values_file_parser = Parser(gluu_values_file, True)
-    gluu_gateway_values_file = Path("../pygluu/kubernetes/templates/helm/gluu-gateway-ui/values.yaml").resolve()
-    gluu_gateway_values_file_parser = Parser(gluu_gateway_values_file, True)
     dev_version = ""
 
     def update_dicts_and_yamls(name, rep, tags_list, helm_name=None):
@@ -149,11 +147,7 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
         final_dev_version_dict[name + "_IMAGE_NAME"] = "gluufederation/" + rep
         final_official_version_dict[name + "_IMAGE_TAG"], final_dev_version_dict[name + "_IMAGE_TAG"] \
             = final_tag, final_dev_tag
-        if rep == "gluu-gateway-ui":
-            gluu_gateway_values_file_parser["image"]["repository"] = "gluufederation/" + rep
-            gluu_gateway_values_file_parser["image"]["tag"] = final_tag
-            gluu_gateway_values_file_parser.dump_it()
-        elif rep != "gluu-gateway" and rep != "upgrade":
+        if rep != "upgrade":
             if helm_name:
                 gluu_values_file_parser[helm_name]["image"]["repository"] = "gluufederation/" + rep
                 gluu_values_file_parser[helm_name]["image"]["tag"] = final_tag
@@ -193,10 +187,6 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             update_dicts_and_yamls("PERSISTENCE", repo, tag_list)
         elif repo == "radius":
             update_dicts_and_yamls("RADIUS", repo, tag_list)
-        elif repo == "gluu-gateway":
-            update_dicts_and_yamls("GLUU_GATEWAY", repo, tag_list)
-        elif repo == "gluu-gateway-ui":
-            update_dicts_and_yamls("GLUU_GATEWAY_UI", repo, tag_list)
         elif repo == "upgrade":
             update_dicts_and_yamls("UPGRADE", repo, tag_list)
     gluu_versions_dict = {major_official_version: final_official_version_dict,
@@ -211,8 +201,7 @@ def main():
     gluu_docker_repositories_names_used_in_cn = ["casa", "fido2", "scim", "config-init",
                                                  "cr-rotate", "certmanager", "opendj", "jackrabbit", "oxauth",
                                                  "oxd-server", "oxpassport", "oxshibboleth",
-                                                 "oxtrust", "persistence", "radius", "gluu-gateway",
-                                                 "gluu-gateway-ui", "upgrade"]
+                                                 "oxtrust", "persistence", "radius", "upgrade"]
 
     for repo in gluu_docker_repositories_names_used_in_cn:
         all_repos_tags.update(get_docker_repo_tag(org, repo))
