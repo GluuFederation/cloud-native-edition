@@ -11,32 +11,6 @@ def test_prompt_redis_type(monkeypatch, settings):
     prompt.prompt_redis()
     assert settings.get("config.configmap.cnRedisType") == "CLUSTER"
 
-def test_prompt_redis_namepsace(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.redis import PromptRedis
-
-    monkeypatch.setattr("click.prompt", lambda x, default: "gluu-redis-cluster")
-
-    settings.set("installer-settings.redis.install", True)
-    settings.set("installer-settings.redis.namespace", "")
-    prompt = PromptRedis(settings)
-    prompt.prompt_redis()
-    assert settings.get("installer-settings.redis.namespace") == "gluu-redis-cluster"
-
-@pytest.mark.parametrize("given, expected", [
-(False, False),
-(True, True),
-])
-def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected):
-    from pygluu.kubernetes.terminal.redis import PromptRedis
-
-    monkeypatch.setattr("click.confirm", lambda x, default: given)
-
-    settings.set("installer-settings.redis.install", True)
-    settings.set("config.redisPassword", "")
-    prompt = PromptRedis(settings)
-    prompt.prompt_redis()
-    assert settings.get("config.redisPassword") == expected
-
 def test_redis_object_prompt():
     var0 = None
     var1 = module0.PromptRedis(var0)

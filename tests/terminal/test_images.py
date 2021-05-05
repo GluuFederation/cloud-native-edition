@@ -1,18 +1,5 @@
 import pytest
 
-@pytest.mark.parametrize("given, expected", [
-    (True, True),
-])
-def test_testenv_prompt_test_edit_images(monkeypatch, settings, given, expected):
-    from pygluu.kubernetes.terminal.images import PromptImages
-
-    monkeypatch.setattr("click.confirm", lambda x, default: given)
-    settings.set("installer-settings.images.edit", "")
-    settings.set("installer-settings.images.edit", "")
-    prompt = PromptImages(settings)
-    prompt.prompt_image_name_tag()
-    assert settings.get("installer-settings.images.edit") == expected
-
 
 @pytest.mark.parametrize("given, expected", [
     (True, True),
@@ -24,8 +11,7 @@ def test_testenv_prompt_test_edit_casa(monkeypatch, settings, given, expected):
     settings.set("installer-settings.images.edit", True)
     settings.set("config.configmap.cnCasaEnabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("Casa", "casa") == expected
+    assert settings.get("casa.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -38,8 +24,7 @@ def test_testenv_prompt_test_edit_crrotate(monkeypatch, settings, given, expecte
     settings.set("installer-settings.images.edit", True)
     settings.set("global.cr-rotate.enabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("CR-rotate", "cr-rotate") == expected
+    assert settings.get("cr-rotate.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -52,8 +37,20 @@ def test_testenv_prompt_test_edit_keyauth(monkeypatch, settings, given, expected
     settings.set("installer-settings.images.edit", True)
     settings.set("global.auth-server-key-rotation.enabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("Key rotate", "auth-server-key-rotation") == expected
+    assert settings.get("auth-server-key-rotation.image.tag") == expected
+
+
+@pytest.mark.parametrize("given, expected", [
+    (True, True),
+])
+def test_testenv_prompt_test_edit_hybrid(monkeypatch, settings, given, expected):
+    from pygluu.kubernetes.terminal.images import PromptImages
+
+    monkeypatch.setattr("click.prompt", lambda x, default: given)
+    settings.set("installer-settings.images.edit", True)
+    settings.set("config.configmap.cnCacheType", "hybrid")
+    prompt = PromptImages(settings).prompt_image_name_tag()
+    assert settings.get("opendj.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -64,10 +61,9 @@ def test_testenv_prompt_test_edit_ldap(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given)
     settings.set("installer-settings.images.edit", True)
-    settings.set("config.configmap.cnCacheType", True)
+    settings.set("config.configmap.cnCacheType", "ldap")
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("OpenDJ", "opendj") == expected
+    assert settings.get("opendj.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -80,8 +76,7 @@ def test_testenv_prompt_test_edit_clientapi(monkeypatch, settings, given, expect
     settings.set("installer-settings.images.edit", True)
     settings.set("global.client-api.enabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("CLIENT_API server", "client-api") == expected
+    assert settings.get("client-api.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -94,8 +89,7 @@ def test_testenv_prompt_test_edit_oxpassport(monkeypatch, settings, given, expec
     settings.set("installer-settings.images.edit", True)
     settings.set("config.configmap.cnPassportEnabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("oxPassport", "oxpassport") == expected
+    assert settings.get("oxpassport.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -108,8 +102,7 @@ def test_testenv_prompt_test_edit_oxshiboleth(monkeypatch, settings, given, expe
     settings.set("installer-settings.images.edit", True)
     settings.set("global.oxshibboleth.enabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("oxShibboleth", "oxshibboleth") == expected
+    assert settings.get("oxshibboleth.image.tag") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
@@ -122,5 +115,5 @@ def test_testenv_prompt_test_edit_radius(monkeypatch, settings, given, expected)
     settings.set("installer-settings.images.edit", True)
     settings.set("config.configmap.cnRadiusEnabled", True)
     prompt = PromptImages(settings).prompt_image_name_tag()
-    prompt.prompt_and_set_setting()
-    assert prompt_and_set_setting("Radius", "radius") == expected
+    assert settings.get("radius.image.tag") == expected
+

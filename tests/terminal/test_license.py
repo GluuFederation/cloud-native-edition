@@ -1,14 +1,6 @@
 import pytest
 
 
-def test_license_no_prompt(settings):
-    from pygluu.kubernetes.terminal.license import PromptLicense
-
-    prompt = PromptLicense(settings, accept_license=True)
-    prompt.prompt_license()
-    assert settings.get("installer-settings.acceptLicense")
-
-
 def test_license_accepted(monkeypatch, settings):
     from pygluu.kubernetes.terminal.license import PromptLicense
 

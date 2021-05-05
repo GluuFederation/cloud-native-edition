@@ -98,18 +98,6 @@ def test_tcp_serf_nodeport(monkeypatch, settings):
     assert settings.get("opendj.ports.tcp-serf.nodePort") == 30946
 
 
-def test_multicluster_serfadvertise_addr(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.helm import PromptHelm
-
-    monkeypatch.setattr("click.prompt", lambda x, default: "demoexample.gluu.org:30946")
-
-    settings.set("opendj.multiCluster.enabled", True)
-    settings.set("opendj.multiCluster.serfAdvertiseAddr", "")
-    prompt = PromptHelm(settings)
-    prompt.prompt_helm()
-    assert settings.get("opendj.multiCluster.serfAdvertiseAddr") == int("demoexample.gluu.org:30946")
-
-
 def test_tcp_admin_nodeport(monkeypatch, settings):
     from pygluu.kubernetes.terminal.helm import PromptHelm
 
@@ -165,23 +153,8 @@ def test_aws_arn(monkeypatch, settings):
 
     fake_arn = "ALPHA-FEATURE-Are you setting up a multi kubernetes cluster"
     monkeypatch.setattr("click.prompt", lambda x: fake_arn)
-    ettings.set("global.cnPersistenceType", "ldap")
+    settings.set("global.cnPersistenceType", "ldap")
     settings.set("opendj.multiCluster.enabled", False)
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
     assert settings.get("opendj.multiCluster.enabled") == fake_arn
-
-
-def test_aws_arn(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.helm import PromptHelm
-
-    monkeypatch.setattr("click.confirm", lambda x: True)
-
-    fake_arn = "ALPHA-FEATURE-Is this a subsequent kubernetes cluster "
-    
-    monkeypatch.setattr("click.prompt", lambda x: fake_arn)
-    settings.set("opendj.multiCluster.enabled", True)
-    settings.set("installer-settings.ldap.subsequentCluster", "")
-    prompt = PromptHelm(settings)
-    prompt.prompt_helm()
-    assert settings.get("installer-settings.ldap.subsequentCluster") == fake_arn

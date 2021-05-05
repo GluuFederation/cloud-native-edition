@@ -19,7 +19,7 @@ def test_postgres_install_exception():
         pass
 
 
-def test_case_6():
+def test_install_postgres():
     try:
         var0 = module0.Postgres()
         assert var0 is not None
@@ -28,25 +28,7 @@ def test_case_6():
         pass
 
 
-def test_case_0():
-    try:
-        var0 = module0.Postgres()
-        assert var0 is not None
-        var1 = var0.install_postgres()
-    except BaseException:
-        pass
-
-
-def test_case_1():
-    try:
-        var0 = module0.Postgres()
-        assert var0 is not None
-        var1 = var0.install_postgres()
-    except BaseException:
-        pass
-
-
-def test_case_2():
+def test_uninstall_install_prompt():
     try:
         var0 = module0.Postgres()
         assert var0 is not None
@@ -63,19 +45,7 @@ def test_case_2():
         pass
 
 
-def test_case_10():
-    var0 = module0.Postgres()
-    assert var0 is not None
-
-
-def test_case_11():
-    var0 = module0.Postgres()
-    assert var0 is not None
-    var1 = module0.Postgres()
-    assert var1 is not None
-
-
-def test_case_12():
+def test_uninstall_postgres():
     var0 = module0.Postgres()
     assert var0 is not None
     var1 = module0.Postgres()

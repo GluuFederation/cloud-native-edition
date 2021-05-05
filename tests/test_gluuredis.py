@@ -1,9 +1,5 @@
 import pygluu.kubernetes.redis as module0
 
-def test_redis_class_object():
-    var0 = module0.Redis()
-
-
 def test_base_exception():
     try:
         var0 = module0.Redis()

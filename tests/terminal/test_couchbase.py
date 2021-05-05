@@ -9,17 +9,6 @@ def test_prompt_couchbase_ip(monkeypatch, settings):
     prompt.prompt_couchbase()
     assert settings.get("global.lbIp") == gather_ip
 
-def test_prompt_couchbase_install(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
-
-    monkeypatch.setattr("click.prompt", lambda x, default: encoded_ca_crt_string)
-
-    settings.set("installer-settings.couchbase.install", False)
-    settings.set("config.configmap.cnCouchbaseCrt", "")
-    prompt = PromptCouchbase(settings)
-    prompt.prompt_couchbase()
-    assert settings.get("config.configmap.cnCouchbaseCrt") == encoded_ca_crt_string
-
 def test_prompt_couchbase_namespace(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 

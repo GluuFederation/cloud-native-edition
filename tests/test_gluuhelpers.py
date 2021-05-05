@@ -231,7 +231,7 @@ def test_update_settings_json():
     assert var17 is None
 
 
-def test_e2e_get_version():
+def test_updated_get_version():
     var0 = module0.get_supported_versions()
     assert var0 is not None
     var1 = None
