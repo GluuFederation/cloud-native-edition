@@ -59,58 +59,6 @@ def install_no_wait():
                            setting_exist=gluu_settings.db.is_exist())
 
 
-@main_blueprint.route("/install-ldap-backup", methods=["GET", "POST"])
-def install_ldap_backup():
-    if request.method == "POST":
-        if request.form["confirm_params"] == "Y":
-            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            return render_template("installation.html", target="install-ldap-backup")
-        else:
-            gluu_settings.db.reset_data()
-            return redirect(url_for("main.index"))
-
-    session["finish_endpoint"] = request.endpoint
-    return render_template("preinstall.html",
-                           title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
-
-
-@main_blueprint.route("/install-kubedb", methods=["GET", "POST"])
-def install_kubedb():
-    if request.method == "POST":
-        if request.form["confirm_params"] == "Y":
-            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            return render_template("installation.html", target="install-kubedb")
-        else:
-            gluu_settings.db.reset_data()
-            return redirect(url_for("main.index"))
-
-    session["finish_endpoint"] = request.endpoint
-    return render_template("preinstall.html",
-                           title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
-
-
-@main_blueprint.route("/install-gg-dbmode", methods=["GET", "POST"])
-def install_gg_dbmode():
-    if request.method == "POST":
-        if request.form["confirm_params"] == "Y":
-            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            return render_template("installation.html", target="install-gg-dbmode")
-        else:
-            gluu_settings.db.reset_data()
-            return redirect(url_for("main.index"))
-
-    session["finish_endpoint"] = request.endpoint
-
-    if validating_gg_settings():
-        return render_template("preinstall.html",
-                               title="Setup install Settings",
-                               setting_exist=gluu_settings.db.is_exist())
-    else:
-        return redirect(url_for("wizard.gluu_gateway"))
-
-
 @main_blueprint.route("/install-couchbase", methods=["GET", "POST"])
 def install_couchbase():
     if request.method == "POST":
@@ -133,22 +81,6 @@ def install_couchbase_backup():
         if request.form["confirm_params"] == "Y":
             gluu_settings.db.set("CONFIRM_PARAMS", "Y")
             return render_template("installation.html", target="install-couchbase-backup")
-        else:
-            gluu_settings.db.reset_data()
-            return redirect(url_for("main.index"))
-
-    session["finish_endpoint"] = request.endpoint
-    return render_template("preinstall.html",
-                           title="Setup install Settings",
-                           setting_exist=gluu_settings.db.is_exist())
-
-
-@main_blueprint.route("/helm-install-gg-dbmode", methods=["GET", "POST"])
-def helm_install_gg_dbmode():
-    if request.method == "POST":
-        if request.form["confirm_params"] == "Y":
-            gluu_settings.db.set("CONFIRM_PARAMS", "Y")
-            return render_template("installation.html", target="helm-install-gg-dbmode")
         else:
             gluu_settings.db.reset_data()
             return redirect(url_for("main.index"))
@@ -285,49 +217,6 @@ def upload_file():
             return jsonify({"success": False, 'message': 'File type not supported'})
 
 
-def validating_gg_settings():
-    status = True
-    keys = [
-        "INSTALL_GLUU_GATEWAY",
-        "ENABLED_SERVICES_LIST",
-        "ENABLE_OXD",
-        "POSTGRES_NAMESPACE",
-        "POSTGRES_REPLICAS",
-        "POSTGRES_URL",
-        "KONG_NAMESPACE",
-        "GLUU_GATEWAY_UI_NAMESPACE",
-        "KONG_PG_USER",
-        "KONG_PG_PASSWORD",
-        "GLUU_GATEWAY_UI_PG_USER",
-        "GLUU_GATEWAY_UI_PG_PASSWORD",
-        "KONG_DATABASE",
-        "GLUU_GATEWAY_UI_DATABASE"
-    ]
-
-    for key in keys:
-        if key == "INSTALL_GLUU_GATEWAY":
-            if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY") or \
-                    gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
-                status = False
-                break
-
-        if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
-            if key == "ENABLED_SERVICES_LIST":
-                enable_services = gluu_settings.db.get("ENABLED_SERVICES_LIST")
-                if "gluu-gateway-ui" not in enable_services:
-                    status = False
-                    break
-
-            if key == "ENABLE_OXD" and gluu_settings.db.get("ENABLE_OXD") == "N":
-                status = False
-                break
-
-            if not gluu_settings.db.get(key):
-                status = False
-                break
-    return status
-
-
 def get_wizard_step():
     """
     Define wizard step based on settings value
@@ -347,13 +236,6 @@ def get_wizard_step():
 
     if not gluu_settings.db.get("ENABLE_CACHE_REFRESH"):
         return url_for("wizard.optional_services")
-
-    if not gluu_settings.db.get("INSTALL_GLUU_GATEWAY"):
-        return url_for("wizard.gluu_gateway")
-
-    if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y" and \
-            gluu_settings.db.get("KONG_PG_PASSWORD"):
-        return url_for("wizard.gluu_gateway")
 
     if not gluu_settings.db.get("INSTALL_JACKRABBIT"):
         return url_for("wizard.install_jackrabbit")

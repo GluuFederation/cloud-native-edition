@@ -29,7 +29,6 @@ from ..forms.configuration import ConfigurationForm
 from ..forms.couchbase import CouchbaseForm, \
     CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
-from ..forms.gluugateway import GluuGatewayForm
 from ..forms.helpers import volume_types, app_volume_types, \
     RequiredIfFieldIn, password_requirement_check
 from ..forms.images import ImageNameTagForm
@@ -295,75 +294,6 @@ def optional_services():
                            prev_step=wizard_steps.prev_step())
 
 
-@wizard_blueprint.route("/gluu-gateway", methods=["GET", "POST"])
-def gluu_gateway():
-    """
-    Input for Gluu Gateway
-    """
-    form = GluuGatewayForm()
-    if form.validate_on_submit():
-        data = {"INSTALL_GLUU_GATEWAY": form.install_gluu_gateway.data}
-
-        if data["INSTALL_GLUU_GATEWAY"] == "Y":
-            data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
-            data["ENABLED_SERVICES_LIST"].append("gluu-gateway-ui")
-            data["ENABLE_OXD"] = "Y"
-            data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
-            data["POSTGRES_URL"] = form.postgres.postgres_url.data
-            data["KONG_NAMESPACE"] = form.kong_namespace.data
-            data["GLUU_GATEWAY_UI_NAMESPACE"] = form.gluu_gateway_ui_namespace.data
-            data["KONG_DATABASE"] = form.kong_database.data
-            data["KONG_PG_USER"] = form.kong_pg_user.data
-            data["KONG_PG_PASSWORD"] = form.kong_pg_password.data
-            data["GLUU_GATEWAY_UI_DATABASE"] = form.gluu_gateway_ui_database.data
-            data["GLUU_GATEWAY_UI_PG_USER"] = form.gluu_gateway_ui_pg_user.data
-            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = form.gluu_gateway_ui_pg_password.data
-        else:
-            data["ENABLE_OXD"] = "N"
-            if not gluu_settings.db.get("POSTGRES_NAMESPACE") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_NAMESPACE"] = ""
-            if not gluu_settings.db.get("POSTGRES_REPLICAS") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_REPLICAS"] = ""
-            if not gluu_settings.db.get("POSTGRES_URL") and \
-                    not gluu_settings.db.get("JACKRABBIT_CLUSTER"):
-                data["POSTGRES_URL"] = ""
-            data["KONG_NAMESPACE"] = ""
-            data["GLUU_GATEWAY_UI_NAMESPACE"] = ""
-            data["KONG_DATABASE"] = ""
-            data["KONG_PG_USER"] = ""
-            data["KONG_PG_PASSWORD"] = ""
-            data["GLUU_GATEWAY_UI_DATABASE"] = ""
-            data["GLUU_GATEWAY_UI_PG_USER"] = ""
-            data["GLUU_GATEWAY_UI_PG_PASSWORD"] = ""
-        gluu_settings.db.update(data)
-        return redirect(url_for(wizard_steps.next_step()))
-
-    if request.method == "GET":
-        form = populate_form_data(form)
-        form.postgres = populate_form_data(form.postgres)
-        # populate password suggestion
-        if not gluu_settings.db.get("KONG_PG_PASSWORD"):
-            form.kong_pg_password_confirm.data = form.kong_pg_password.data = generate_password()
-        else:
-            form.kong_pg_password_confirm.data = gluu_settings.db.get("KONG_PG_PASSWORD")
-
-        if not gluu_settings.db.get("GLUU_GATEWAY_UI_PG_PASSWORD"):
-            form.gluu_gateway_ui_pg_password.data = \
-                form.gluu_gateway_ui_pg_password_confirm.data = generate_password()
-        else:
-            form.gluu_gateway_ui_pg_password_confirm.data = gluu_settings.db.get("GLUU_GATEWAY_UI_PG_PASSWORD")
-
-    wizard_steps.current_step = 'gluu_gateway'
-    return render_template("wizard/index.html",
-                           form=form,
-                           current_step=wizard_steps.step_number(),
-                           template="gluu_gateway",
-                           prev_step=wizard_steps.prev_step())
-
-
 @wizard_blueprint.route("/install-jackrabbit", methods=["GET", "POST"])
 def install_jackrabbit():
     """
@@ -375,14 +305,16 @@ def install_jackrabbit():
                 "JACKRABBIT_URL": form.jackrabbit_url.data,
                 "JACKRABBIT_ADMIN_ID": form.jackrabbit_admin_id.data,
                 "JACKRABBIT_ADMIN_PASSWORD": form.jackrabbit_admin_password.data,
-                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data}
+                "JACKRABBIT_CLUSTER": form.jackrabbit_cluster.data,
+                "INSTALL_POSTGRES": form.postgres.install_postgres.data}
 
         if data["INSTALL_JACKRABBIT"] == "Y":
             data["JACKRABBIT_STORAGE_SIZE"] = form.jackrabbit_storage_size.data
 
-        if data["JACKRABBIT_CLUSTER"] == "Y":
+        if data["INSTALL_POSTGRES"] == "Y":
             data["POSTGRES_NAMESPACE"] = form.postgres.postgres_namespace.data
-            data["POSTGRES_REPLICAS"] = form.postgres.postgres_replicas.data
+
+        if data["JACKRABBIT_CLUSTER"] == "Y":
             data["POSTGRES_URL"] = form.postgres.postgres_url.data
             data["JACKRABBIT_PG_USER"] = form.jackrabbit_pg_user.data
             data["JACKRABBIT_PG_PASSWORD"] = form.jackrabbit_pg_password.data
@@ -864,15 +796,11 @@ def cache_type():
             data["INSTALL_REDIS"] = form.redis.install_redis.data
 
             if data["INSTALL_REDIS"] == "Y":
-                data["REDIS_MASTER_NODES"] = form.redis.redis_master_nodes.data
-                data["REDIS_NODES_PER_MASTER"] = form.redis.redis_nodes_per_master.data
                 data["REDIS_NAMESPACE"] = form.redis.redis_namespace.data
                 data["REDIS_URL"] = "redis-cluster.{}.svc.cluster.local:6379".format(
                     data["REDIS_NAMESPACE"])
-                data["REDIS_PW"] = ""
+                data["REDIS_PW"] = form.redis.redis_pw.data
             else:
-                data["REDIS_MASTER_NODES"] = ""
-                data["REDIS_NODES_PER_MASTER"] = ""
                 data["REDIS_NAMESPACE"] = ""
                 data["REDIS_URL"] = form.redis.redis_url.data
                 data["REDIS_PW"] = form.redis.redis_pw.data
@@ -1067,14 +995,6 @@ def images():
             form.radius_image_tag.id,
         ]
 
-    if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "N":
-        collapsed_ids += [
-            form.gluu_gateway_image_name.id,
-            form.gluu_gateway_image_tag.id,
-            form.gluu_gateway_ui_image_name.id,
-            form.gluu_gateway_ui_image_tag.id,
-        ]
-
     if gluu_settings.db.get("ENABLE_FIDO2") == "N":
         collapsed_ids += [
             form.fido2_image_name.id,
@@ -1171,22 +1091,16 @@ def helm_config():
                 "NGINX_INGRESS_RELEASE_NAME": form.nginx_ingress_release_name.data,
                 "NGINX_INGRESS_NAMESPACE": form.nginx_ingress_namespace.data}
 
-        if gluu_settings.db.get("INSTALL_GLUU_GATEWAY") == "Y":
-            data["KONG_HELM_RELEASE_NAME"] = form.kong_helm_release_name.data
-            data["GLUU_GATEWAY_UI_HELM_RELEASE_NAME"] = form.gluu_gateway_ui_helm_release_name.data
-
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-    install_gluu_gateway = gluu_settings.db.get("INSTALL_GLUU_GATEWAY")
     wizard_steps.current_step = 'helm_config'
     return render_template("wizard/index.html",
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="helm",
-                           install_gluu_gateway=install_gluu_gateway,
                            prev_step=wizard_steps.next_step())
 
 
@@ -1232,8 +1146,7 @@ def setting_summary():
     """
     hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                        "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
-                       "COUCHBASE_SUBJECT_ALT_NAME", "KONG_PG_PASSWORD",
-                       "GLUU_GATEWAY_UI_PG_PASSWORD", "JACKRABBIT_ADMIN_PASSWORD",
+                       "COUCHBASE_SUBJECT_ALT_NAME", "JACKRABBIT_ADMIN_PASSWORD",
                        "JACKRABBIT_PG_PASSWORD"]
 
     return render_template("wizard/setting_summary.html",

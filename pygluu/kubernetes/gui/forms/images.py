@@ -36,10 +36,6 @@ class ImageNameTagForm(FlaskForm):
         persistence_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
         radius_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
         radius_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
-        gluu_gateway_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
-        gluu_gateway_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
-        gluu_gateway_ui_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
-        gluu_gateway_ui_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
     """
     # TODO: find a way to generate dynamic fields
 
@@ -124,18 +120,6 @@ class ImageNameTagForm(FlaskForm):
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     radius_image_tag = StringField(
         "Radius image tag",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    gluu_gateway_image_name = StringField(
-        "Gluu-Gateway image name",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    gluu_gateway_image_tag = StringField(
-        "Gluu-Gateway image tag",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    gluu_gateway_ui_image_name = StringField(
-        "Gluu-Gateway-UI image name",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    gluu_gateway_ui_image_tag = StringField(
-        "Gluu-Gateway-UI image tag",
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     fido2_image_name = StringField(
         "FIDO2 image name",

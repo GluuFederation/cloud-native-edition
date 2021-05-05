@@ -13,59 +13,12 @@ from pygluu.kubernetes.helpers import get_logger, exec_cmd
 from pygluu.kubernetes.kubeapi import Kubernetes
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.settings import SettingsHandler
-from ast import literal_eval
 import time
 import socket
 import base64
 import secrets
 
 logger = get_logger("gluu-helm          ")
-
-
-def register_op_client(namespace, client_name, op_host, oxd_url, release_name):
-    """Registers an op client using oxd.
-
-    :param namespace:
-    :param client_name:
-    :param op_host:
-    :param oxd_url:
-    :param release_name:
-    :return:
-    """
-    kubernetes = Kubernetes()
-    logger.info("Registering a client : {}".format(client_name))
-    oxd_id, client_id, client_secret = "", "", ""
-
-    data = '{"redirect_uris": ["https://' + op_host + '/gg-ui/"], "op_host": "' + op_host + \
-           '", "post_logout_redirect_uris": ["https://' + op_host + \
-           '/gg-ui/"], "scope": ["openid", "oxd", "permission", "username"], ' \
-           '"grant_types": ["authorization_code", "client_credentials"], "client_name": "' + client_name + '"}'
-
-    exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                         "{}/register-site".format(oxd_url), "--header",
-                         "Content-Type: application/json", "--data-raw",
-                         data]
-    try:
-        client_registration_response = \
-            kubernetes.connect_get_namespaced_pod_exec(exec_command=exec_curl_command,
-                                                       app_label="app=oxauth",
-                                                       container=release_name + "-oxauth",
-                                                       namespace=namespace,
-                                                       stdout=False)
-
-        client_registration_response_dict = literal_eval(client_registration_response)
-        oxd_id = client_registration_response_dict["oxd_id"]
-        client_id = client_registration_response_dict["client_id"]
-        client_secret = client_registration_response_dict["client_secret"]
-    except (IndexError, Exception):
-        exec_curl_command = ["curl", "-k", "-s", "--location", "--request", "POST",
-                             "{}/register-site".format(oxd_url), "--header",
-                             "'Content-Type: application/json'", "--data-raw",
-                             "'" + data + "'"]
-        manual_curl_command = " ".join(exec_curl_command)
-        logger.error("Registration of client : {} failed. Please do so manually by calling\n{}".format(
-            client_name, manual_curl_command))
-    return oxd_id, client_id, client_secret
 
 
 class Helm(object):
@@ -75,9 +28,8 @@ class Helm(object):
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get('GLUU_HELM_RELEASE_NAME') + "-ldap-backup"
         if self.settings.get("DEPLOYMENT_ARCH") == "gke":
-            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            # Clusterrolebinding needs to be created for gke with CB
             if self.settings.get("INSTALL_REDIS") == "Y" or \
-                    self.settings.get("INSTALL_GLUU_GATEWAY") == "Y" or \
                     self.settings.get("INSTALL_COUCHBASE") == "Y":
                 user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
                 user_account = str(user_account, "utf-8").strip()
@@ -111,9 +63,6 @@ class Helm(object):
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
-            if self.settings.get("INSTALL_GLUU_GATEWAY") != "Y" and service_name == "gg-kong-ui":
-                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
-                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
         ingress_parser.dump_it()
 
     def deploy_alb(self):
@@ -274,8 +223,10 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
             values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseBucketPrefix"] = self.settings.get("COUCHBASE_BUCKET_PREFIX")
-            values_file_parser["config"]["configmap"]["gluuCouchbaseIndexNumReplica"] = self.settings.get("COUCHBASE_INDEX_NUM_REPLICA")
+            values_file_parser["config"]["configmap"]["gluuCouchbaseBucketPrefix"] = self.settings.get(
+                "COUCHBASE_BUCKET_PREFIX")
+            values_file_parser["config"]["configmap"]["gluuCouchbaseIndexNumReplica"] = self.settings.get(
+                "COUCHBASE_INDEX_NUM_REPLICA")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUser"] = \
                 self.settings.get("COUCHBASE_SUPERUSER")
             values_file_parser["config"]["configmap"]["gluuCouchbaseCrt"] = self.settings.get("COUCHBASE_CRT")
@@ -497,162 +448,6 @@ class Helm(object):
 
                 exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
                     self.ldap_backup_release_name, self.settings.get("GLUU_NAMESPACE")))
-        except FileNotFoundError:
-            logger.error("Helm v3 is not installed. Please install it to continue "
-                         "https://helm.sh/docs/intro/install/")
-            raise SystemExit(1)
-
-    def install_gluu_gateway_ui(self):
-        self.uninstall_gluu_gateway_ui()
-        self.kubernetes.create_namespace(name=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                         labels={"APP_NAME": "gluu-gateway-ui"})
-        try:
-            # Try to get gluu cert + key
-            ssl_cert = self.kubernetes.read_namespaced_secret("gluu",
-                                                              self.settings.get("GLUU_NAMESPACE")).data["ssl_cert"]
-            ssl_key = self.kubernetes.read_namespaced_secret("gluu",
-                                                             self.settings.get("GLUU_NAMESPACE")).data["ssl_key"]
-
-            self.kubernetes.patch_or_create_namespaced_secret(name="tls-certificate",
-                                                              namespace=self.settings.get("GLUU_GATEWAY_UI_NAMESPACE"),
-                                                              literal="tls.crt",
-                                                              value_of_literal=ssl_cert,
-                                                              secret_type="kubernetes.io/tls",
-                                                              second_literal="tls.key",
-                                                              value_of_second_literal=ssl_key)
-
-        except (KeyError, Exception):
-            logger.error("Could not read Gluu secret. Please check config job pod logs. GG-UI will deploy but fail. "
-                         "Please mount crt and key inside gg-ui deployment")
-        oxd_server_url = "https://{}.{}.svc.cluster.local:8443".format(
-            self.settings.get("OXD_APPLICATION_KEYSTORE_CN"), self.settings.get("GLUU_NAMESPACE"))
-        values_file = Path("./helm/gluu-gateway-ui/values.yaml").resolve()
-        values_file_parser = Parser(values_file, True)
-        values_file_parser["cloud"]["isDomainRegistered"] = "false"
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") == "Y":
-            values_file_parser["cloud"]["isDomainRegistered"] = "true"
-        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s" or self.settings.get("DEPLOYMENT_ARCH") == "minikube":
-            values_file_parser["cloud"]["enabled"] = False
-        values_file_parser["cloud"]["provider"] = self.settings.get("DEPLOYMENT_ARCH")
-        values_file_parser["dbUser"] = self.settings.get("GLUU_GATEWAY_UI_PG_USER")
-        values_file_parser["kongAdminUrl"] = "https://{}-kong-admin.{}.svc.cluster.local:8444".format(
-            self.settings.get("KONG_HELM_RELEASE_NAME"), self.settings.get("KONG_NAMESPACE"))
-        values_file_parser["dbHost"] = self.settings.get("POSTGRES_URL")
-        values_file_parser["dbDatabase"] = self.settings.get("GLUU_GATEWAY_UI_DATABASE")
-        values_file_parser["oxdServerUrl"] = oxd_server_url
-        values_file_parser["image"]["repository"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_NAME")
-        values_file_parser["image"]["tag"] = self.settings.get("GLUU_GATEWAY_UI_IMAGE_TAG")
-        values_file_parser["loadBalancerIp"] = self.settings.get("HOST_EXT_IP")
-        values_file_parser["dbPassword"] = self.settings.get("GLUU_GATEWAY_UI_PG_PASSWORD")
-        values_file_parser["opServerUrl"] = "https://" + self.settings.get("GLUU_FQDN")
-        values_file_parser["ggHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        values_file_parser["ggUiRedirectUrlHost"] = self.settings.get("GLUU_FQDN") + "/gg-ui/"
-        # Register new client if one was not provided
-        if not values_file_parser["oxdId"] or \
-                not values_file_parser["clientId"] or \
-                not values_file_parser["clientSecret"]:
-            oxd_id, client_id, client_secret = register_op_client(self.settings.get("GLUU_NAMESPACE"),
-                                                                  "konga-client",
-                                                                  self.settings.get("GLUU_FQDN"),
-                                                                  oxd_server_url,
-                                                                  self.settings.get('GLUU_HELM_RELEASE_NAME'))
-            if not oxd_id:
-                values_file_parser.dump_it()
-                logger.error("Due to a failure in konga client registration the installation has stopped."
-                             " Please register as suggested above manually and enter the values returned"
-                             " for oxdId, clientId, "
-                             "and clientSecret inside ./helm/gluu-gateway-ui/values.yaml then run "
-                             "helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui "
-                             "--namespace={}".format(
-                                                self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
-                                                self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
-                raise SystemExit(1)
-            values_file_parser["oxdId"] = oxd_id
-            values_file_parser["clientId"] = client_id
-            values_file_parser["clientSecret"] = client_secret
-
-        values_file_parser.dump_it()
-        exec_cmd("helm install {} -f ./helm/gluu-gateway-ui/values.yaml ./helm/gluu-gateway-ui --namespace={}".format(
-            self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'), self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
-
-    def install_gluu_gateway_dbmode(self):
-        self.uninstall_gluu_gateway_dbmode()
-        self.kubernetes.create_namespace(name=self.settings.get("KONG_NAMESPACE"),
-                                         labels={"app": "ingress-kong"})
-        encoded_kong_pass_bytes = base64.b64encode(self.settings.get("KONG_PG_PASSWORD").encode("utf-8"))
-        encoded_kong_pass_string = str(encoded_kong_pass_bytes, "utf-8")
-        self.kubernetes.patch_or_create_namespaced_secret(name="kong-postgres-pass",
-                                                          namespace=self.settings.get("KONG_NAMESPACE"),
-                                                          literal="KONG_PG_PASSWORD",
-                                                          value_of_literal=encoded_kong_pass_string)
-        exec_cmd("helm repo add kong https://charts.konghq.com")
-        exec_cmd("helm repo update")
-        exec_cmd("helm install {} kong/kong "
-                 "--set ingressController.installCRDs=false "
-                 "--set image.repository={} "
-                 "--set image.tag={} "
-                 "--set env.database=postgres "
-                 "--set env.pg_user={} "
-                 "--set env.pg_password.valueFrom.secretKeyRef.name=kong-postgres-pass "
-                 "--set env.pg_password.valueFrom.secretKeyRef.key=KONG_PG_PASSWORD "
-                 "--set env.pg_host={} "
-                 "--set admin.enabled=true "
-                 "--set admin.type=ClusterIP "
-                 "--namespace={}".format(self.settings.get("KONG_HELM_RELEASE_NAME"),
-                                         self.settings.get("GLUU_GATEWAY_IMAGE_NAME"),
-                                         self.settings.get("GLUU_GATEWAY_IMAGE_TAG"),
-                                         self.settings.get("KONG_PG_USER"),
-                                         self.settings.get("POSTGRES_URL"),
-                                         self.settings.get("KONG_NAMESPACE")))
-
-    def install_kubedb(self):
-        self.uninstall_kubedb()
-        self.kubernetes.create_namespace(name="gluu-kubedb", labels={"app": "kubedb"})
-        logger.info("We use the kubedb community edition and it is used to install postgres as an example. "
-                    "You may aquire the enterprise edition or a "
-                    "production grade postgres manages service to serve instead.")
-        logger.info("Follow instructions at https://kubedb.com/docs/v2021.01.26/setup/install/community/ "
-                    "to get a license file")
-        logger.info("Please provide the license file at the same location as the installer under the name license.txt")
-        _ = input("Hit 'enter' or 'return' when ready.")
-        try:
-            with open(Path("./license.txt")) as f:
-                logger.info("KubeDB license file found")
-        except FileNotFoundError:
-            logger.error("KubeDB license file is missing. Follow instructions at "
-                         "https://kubedb.com/docs/v2021.01.26/setup/install/community/ "
-                         "and add the license file under license.txt in the same directory as the installer. "
-                         "Please add it and rerun the installer")
-            raise SystemExit(1)
-        try:
-            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-            exec_cmd("helm repo update")
-            exec_cmd("helm install kubedb-community appscode/kubedb --version v0.16.2 --namespace gluu-kubedb "
-                     "--set-file license=license.txt")
-            self.kubernetes.check_pods_statuses("gluu-kubedb", "app=kubedb")
-            exec_cmd("helm install kubedb-catalog appscode/kubedb-catalog  --version v0.16.2 "
-                     "--namespace gluu-kubedb")
-        except FileNotFoundError:
-            logger.error("Helm v3 is not installed. Please install it to continue "
-                         "https://helm.sh/docs/intro/install/")
-            raise SystemExit(1)
-
-    def uninstall_gluu_gateway_dbmode(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('KONG_HELM_RELEASE_NAME'),
-                                                        self.settings.get("KONG_NAMESPACE")))
-
-    def uninstall_gluu_gateway_ui(self):
-        exec_cmd("helm delete {} --namespace={}".format(self.settings.get('GLUU_GATEWAY_UI_HELM_RELEASE_NAME'),
-                                                        self.settings.get("GLUU_GATEWAY_UI_NAMESPACE")))
-
-    def uninstall_kubedb(self):
-        logger.info("Deleting KubeDB...This may take a little while.")
-        try:
-            exec_cmd("helm repo add appscode https://charts.appscode.com/stable/")
-            exec_cmd("helm repo update")
-            exec_cmd("helm delete kubedb-operator --namespace gluu-kubedb")
-            exec_cmd("helm delete kubedb-catalog --namespace gluu-kubedb")
-            time.sleep(20)
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")

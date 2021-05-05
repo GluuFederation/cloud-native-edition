@@ -18,15 +18,6 @@
       <div class="tab-content mt-3 pl-5 pr-5">
         <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="home-tab">
           {{ forms.install_card(
-                title="Install Gluu",
-                description="Install Gluu Cloud Native Edition",
-                install_url=url_for('main.install'),
-                uninstall_target="uninstall") }}
-          {{ forms.install_card(
-                title="Install Gluu with no wait",
-                description="Install Gluu Cloud Native Edition. There will be no wait time between installing services. Pods may look like they are restarting but they will be waiting for hierarchy pods to be running",
-                install_url=url_for('main.install_no_wait')) }}
-          {{ forms.install_card(
                 title="Helm Install",
                 description="Install Gluu Cloud Native Edition using helm. This also installs the nginx-ingress chart",
                 install_url=url_for('main.helm_install'),
@@ -39,20 +30,6 @@
         </div>
         <div class="tab-pane" id="components" role="tabpanel" aria-labelledby="components-tab">
           {{ forms.install_card(
-                title="Install LDAP backup",
-                description="Install LDAP backup cronjob only",
-                install_url=url_for('main.install_ldap_backup')) }}
-          {{ forms.install_card(
-                title="Install KubeDB",
-                description="Install KubeDB for Redis or Postgres",
-                install_url=url_for('main.install_kubedb'),
-                notes="KubeDB will be auto installed when it's necessary.") }}
-          {{ forms.install_card(
-                title="Install Gluu Gateway DB mode",
-                description="Install Gluu Gateway with Postgres database",
-                install_url=url_for('main.install_gg_dbmode'),
-                uninstall_target="uninstall-gg-dbmode") }}
-          {{ forms.install_card(
                 title="Install Couchbase",
                 description="Install Couchbase only. Used with installation of Gluu with Helm",
                 install_url=url_for('main.install_couchbase'),
@@ -61,11 +38,6 @@
                 title="Install Couchbase backup",
                 description="Install Couchbase backup only.",
                 install_url=url_for('main.install_couchbase_backup')) }}
-          {{ forms.install_card(
-                title="Helm install Gluu Gateway DB mode",
-                description="Install Gluu Gateway with Postgres database using helm",
-                install_url=url_for('main.helm_install_gg_dbmode'),
-                uninstall_target="helm-uninstall-gg-dbmode") }}
         </div>
         <div class="tab-pane" id="utilities" role="tabpanel" aria-labelledby="utilities-tab">
           {{ forms.install_card(
@@ -79,11 +51,6 @@
                 install_url=url_for('main.upgrade'),
                 button_text="Not Available",
                 disabled=True) }}
-          {{ forms.install_card(
-                title="Restore",
-                description="Install Gluu Cloud Native Edition with a running database and previous configuration",
-                install_url=url_for('main.restore'),
-                button_text="Run") }}
         </div>
       </div>
     </div>

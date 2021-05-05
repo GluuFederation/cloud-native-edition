@@ -30,10 +30,6 @@
     "PERSISTENCE_IMAGE_TAG": "4.2.3_03",
     "RADIUS_IMAGE_NAME": "gluufederation/radius",
     "RADIUS_IMAGE_TAG": "4.2.3_02",
-    "GLUU_GATEWAY_IMAGE_NAME": "gluufederation/gluu-gateway",
-    "GLUU_GATEWAY_IMAGE_TAG": "4.2.2_01",
-    "GLUU_GATEWAY_UI_IMAGE_NAME": "gluufederation/gluu-gateway-ui",
-    "GLUU_GATEWAY_UI_IMAGE_TAG": "4.2.2_01",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
     "UPGRADE_IMAGE_TAG": "4.2.3_03"
   },
@@ -68,10 +64,6 @@
     "PERSISTENCE_IMAGE_TAG": "4.2.3_dev",
     "RADIUS_IMAGE_NAME": "gluufederation/radius",
     "RADIUS_IMAGE_TAG": "4.2.3_dev",
-    "GLUU_GATEWAY_IMAGE_NAME": "gluufederation/gluu-gateway",
-    "GLUU_GATEWAY_IMAGE_TAG": "4.2.2_dev",
-    "GLUU_GATEWAY_UI_IMAGE_NAME": "gluufederation/gluu-gateway-ui",
-    "GLUU_GATEWAY_UI_IMAGE_TAG": "4.2.2_dev",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
     "UPGRADE_IMAGE_TAG": "4.2.3_dev"
   }
