@@ -53,13 +53,19 @@ spec:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{ if .Values.global.cnExtSigningJwksUri }}
-          - name: cn-ext-signing-jwks-key
-            mountPath: /etc/certs/ext-signing.key
-            subPath: ext-signing.key
-          - name: cn-ext-signing-jwks-crt
-            mountPath: /etc/certs/ext-signing.crt
-            subPath: ext-signing.crt
+        {{ if .Values.global.cnObExtSigningJwksUri }}
+          - name: cn-ob-ext-signing-jwks-key
+            mountPath: /etc/certs/ob-ext-signing.key
+            subPath: ob-ext-signing.key
+          - name: cn-ob-ext-signing-jwks-crt
+            mountPath: /etc/certs/ob-ext-signing.crt
+            subPath: ob-ext-signing.crt
+          - name: cn-ob-transport-key
+            mountPath: /etc/certs/ob-transport.key
+            subPath: ob-transport.key
+          - name: cn-ob-transport-crt
+            mountPath: /etc/certs/ob-transport.crt
+            subPath: ob-transport.crt
         {{- end }}
         {{- if .Values.global.jackrabbit.enabled }}
           - name: cn-jackrabbit-admin-pass
@@ -112,13 +118,19 @@ spec:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{ if .Values.global.cnExtSigningJwksUri }}
-        - name: cn-ext-signing-jwks-crt
+      {{ if .Values.global.cnObExtSigningJwksUri }}
+        - name: cn-ob-ext-signing-jwks-crt
           secret:
-            secretName: {{ .Release.Name }}-ext-signing-jwks-crt
-        - name: cn-ext-signing-jwks-key
+            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-crt
+        - name: cn-ob-ext-signing-jwks-key
           secret:
-            secretName: {{ .Release.Name }}-ext-signing-jwks-key
+            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-key
+        - name: cn-ob-transport-crt
+          secret:
+            secretName: {{ .Release.Name }}-ob-transport-crt
+        - name: cn-ob-transport-key
+          secret:
+            secretName: {{ .Release.Name }}-ob-transport-key
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: cn-jackrabbit-admin-pass

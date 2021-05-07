@@ -168,13 +168,23 @@
 							"type": "string",
 							"pattern": "^[a-z]+$"
 						},
-						"cnExtSigningJwksCrt": {
-							"description": "External signing jwks certificate authority string. This must be encoded using base64.",
+						"cnObExtSigningJwksCrt": {
+							"description": "Open banking external signing jwks certificate authority string. Used in SSA Validation. This must be encoded using base64.",
 							"type": "string",
 							"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 						},
-						"cnExtSigningJwksKey": {
-							"description": "External signing jwks key string. This must be encoded using base64.",
+						"cnObExtSigningJwksKey": {
+							"description": "Open banking external signing jwks key string. Used in SSA Validation. This must be encoded using base64.",
+							"type": "string",
+							"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+						},
+						"cnObTransportCrt": {
+							"description": "Open banking transport crt. Used in SSA Validation. This must be encoded using base64.",
+							"type": "string",
+							"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+						},
+						"cnObTransportKey": {
+							"description": "Open banking transport key. Used in SSA Validation. This must be encoded using base64.",
 							"type": "string",
 							"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 						},
