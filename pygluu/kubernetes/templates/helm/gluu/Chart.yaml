@@ -9,7 +9,7 @@ annotations:
   artifacthub.io/containsSecurityUpdates: "true"
   artifacthub.io/images: |
     - name: auth-server
-      image: janssenproject/auth-server:1.0.0_b3
+      image: janssenproject/auth-server:1.0.0_b4
     - name: auth-server-key-rotation
       image: janssenproject/certmanager:1.0.0_b3
     - name:  client-api

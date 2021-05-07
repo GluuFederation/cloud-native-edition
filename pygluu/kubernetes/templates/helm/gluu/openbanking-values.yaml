@@ -4,7 +4,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b3
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -38,9 +38,6 @@ config:
     cnSqldbUserPassword: Test1234#
     cnCacheType: NATIVE_PERSISTENCE
     cnConfigKubernetesConfigMap: cn
-    # base64 string for the external signing jwks. Used when .global.cnExtSigningJwksUri is set.
-    cnExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-    cnExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
     # Base64 encode service account. The sa must have roles/secretmanager.admin
     cnGoogleSecretManagerServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
@@ -126,7 +123,16 @@ global:
   cloud:
     testEnviroment: false
   cnPersistenceType: sql
-  cnExtSigningJwksUri: ""
+  cnObExtSigningJwksUri: ""
+  # base64 string for the open banking external signing jwks. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking transport crt and keys. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObTransportKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking truststore crt and keys. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTrustStoreCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObTrustStoreKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
   config:
     enabled: true
   #google/kubernetes

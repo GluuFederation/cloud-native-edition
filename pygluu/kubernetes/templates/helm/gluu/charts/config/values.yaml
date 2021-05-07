@@ -41,9 +41,6 @@ configmap:
   cnCouchbasePasswordFile:  /etc/gluu/conf/couchbase_password
   # cnCouchbaseCertFile location of
   cnCouchbaseCertFile: /etc/certs/couchbase.crt
-  # base64 string for the external signing jwks crt and key
-  cnExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
   # options: default/user/site/cache/statistic
   # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
   cnPersistenceLdapMapping: default

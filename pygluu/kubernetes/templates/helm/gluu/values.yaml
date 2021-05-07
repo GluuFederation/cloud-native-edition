@@ -207,9 +207,6 @@ config:
     cnCouchbaseUrl: cbgluu.default.svc.cluster.local
     cnCouchbaseUser: gluu
     cnDocumentStoreType: JCA
-    # base64 string for the external signing jwks. Used when .global.cnExtSigningJwksUri is set.
-    cnExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-    cnExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     cnJackrabbitAdminId: admin
     cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
@@ -363,7 +360,16 @@ global:
     testEnviroment: false
   cnJackrabbitCluster: true
   cnPersistenceType: ldap
-  cnExtSigningJwksUri: ""
+  cnObExtSigningJwksUri: ""
+  # base64 string for the open banking external signing jwks. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking transport crt and keys. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObTransportKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking truststore crt and keys. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTrustStoreCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObTrustStoreKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
   config:
     enabled: true
   #google/kubernetes
