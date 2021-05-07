@@ -130,6 +130,9 @@ global:
   # base64 string for the open banking transport crt and keys. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
   cnObTransportKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking truststore crt and keys. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTrustStoreCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  cnObTrustStoreKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
   config:
     enabled: true
   #google/kubernetes
