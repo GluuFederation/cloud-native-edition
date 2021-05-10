@@ -83,7 +83,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -108,7 +108,7 @@ auth-server-key-rotation:
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   keysLife: 23
   resources:
     limits:
@@ -156,7 +156,7 @@ client-api:
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -248,7 +248,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -276,7 +276,7 @@ config-api:
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -325,7 +325,7 @@ fido2:
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -361,15 +361,19 @@ global:
   cnJackrabbitCluster: true
   cnPersistenceType: ldap
   cnObExtSigningJwksUri: ""
-  # base64 string for the open banking external signing jwks. Used when .global.cnObExtSigningJwksUri is set.
-  cnObExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  # base64 string for the open banking transport crt and keys. Used when .global.cnObExtSigningJwksUri is set.
-  cnObTransportCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObTransportKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  # base64 string for the open banking truststore crt and keys. Used when .global.cnObExtSigningJwksUri is set.
-  cnObTrustStoreCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObTrustStoreKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking AS external signing jwks crt, keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: ""
+  cnObExtSigningJwksKey: ""
+  cnObExtSigningJwksKeyPassPhrase: ""
+
+  # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: ""
+  cnObTransportKey: ""
+  cnObTransportKeyPassPhrase: ""
+  # base64 string for the open banking AS truststore crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTrustStoreCrt: ""
+  cnObTrustStoreKey: ""
+  cnObTrustStoreKeyPassPhrase: ""
   config:
     enabled: true
   #google/kubernetes
@@ -611,7 +615,7 @@ persistence:
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   resources:
     limits:
       cpu: 300m
@@ -654,7 +658,7 @@ scim:
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
