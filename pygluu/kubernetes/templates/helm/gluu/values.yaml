@@ -279,7 +279,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.3_03
+    tag: 4.2.3_04
     pullPolicy: Always
   resources:
     limits:
