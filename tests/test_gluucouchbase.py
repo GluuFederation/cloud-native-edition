@@ -19,7 +19,7 @@ def test_uninstall_parameters():
         pass
 
 
-def test_uninstall_pars():
+def test_uninstall_modules():
     try:
         var0 = module0.Couchbase()
         assert var0 is not None

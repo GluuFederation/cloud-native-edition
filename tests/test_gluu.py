@@ -17,7 +17,7 @@ def test_uninstall_nginx_ingress():
         pass
 
 
-def test_exception():
+def test_install_exception():
     try:
         var0 = module0.Gluu()
     except BaseException:

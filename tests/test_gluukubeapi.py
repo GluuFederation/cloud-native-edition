@@ -1,4 +1,32 @@
 import pygluu.kubernetes.kubeapi as module0
+from pygluu.kubernetes.kubeapi import load_kubernetes_config, Kubernetes
+from kubernetes import client, utils, config
+import logging
+import pytest
+from pathlib import Path
+
+def test_kubernetes_version(kind_cluster):
+    assert kind_cluster.api.version == ('1', '20')
+
+
+def test_load_configfile(kind_cluster):
+    kubeconfig = '~/.kube/config'
+    load_kubernetes_config()
+    assert kubeconfig == '~/.kube/config'
+
+
+def test_load_kube_config(tmpdir):
+
+    config_loaded = False
+
+    configfile = '~/.kube/config'
+    load_kubernetes_config()
+    config.load_kube_config()
+    config_loaded = True
+
+    assert config_loaded is True
+    assert configfile == '~/.kube/config'
+
 
 def test_patch_or_create_namespaced_secret():
     try:
