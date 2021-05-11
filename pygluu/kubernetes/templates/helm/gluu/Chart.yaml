@@ -25,7 +25,7 @@ annotations:
     - name: persistence
       image: janssenproject/persistence-loader:1.0.0_b4
     - name: scim
-      image: janssenproject/scim:1.0.0_b4cker
+      image: janssenproject/scim:1.0.0_b4
   artifacthub.io/license: Apache-2.0
   artifacthub.io/prerelease: "true"
 apiVersion: v2
