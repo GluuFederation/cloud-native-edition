@@ -53,6 +53,11 @@ spec:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{ if .Values.global.cnObExtSigningJwksKeyPassPhrase }}
+          - name: cn-ob-ext-signing-jwks-key-passphrase
+            mountPath: /etc/certs/ob-ext-signing.pin
+            subPath: ob-ext-signing.pin
+        {{- end }}
         {{ if .Values.global.cnObExtSigningJwksKey }}
           - name: cn-ob-ext-signing-jwks-key
             mountPath: /etc/certs/ob-ext-signing.key
@@ -63,6 +68,11 @@ spec:
             mountPath: /etc/certs/ob-ext-signing.crt
             subPath: ob-ext-signing.crt
         {{- end }}
+        {{ if .Values.global.cnObTransportKeyPassPhrase }}
+          - name: cn-ob-transport-key-passphrase
+            mountPath: /etc/certs/ob-transport.pin
+            subPath: ob-transport.pin
+        {{- end }}
         {{ if .Values.global.cnObTransportKey }}
           - name: cn-ob-transport-key
             mountPath: /etc/certs/ob-transport.key
@@ -72,6 +82,11 @@ spec:
           - name: cn-ob-transport-crt
             mountPath: /etc/certs/ob-transport.crt
             subPath: ob-transport.crt
+        {{- end }}
+        {{ if .Values.global.cnObTrustStoreKeyPassPhrase }}
+          - name: cn-ob-truststore-key-passphrase
+            mountPath: /etc/certs/ob-truststore.pin
+            subPath: ob-truststore.pin
         {{- end }}
         {{ if .Values.global.cnObTrustStoreKey }}
           - name: cn-ob-truststore-key
@@ -137,32 +152,74 @@ spec:
       {{ if .Values.global.cnObExtSigningJwksCrt }}
         - name: cn-ob-ext-signing-jwks-crt
           secret:
-            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-crt
+            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-crt-key-pin
+            items:
+              - key: ob-ext-signing.crt
+                path: ob-ext-signing.crt
       {{- end }}
       {{ if .Values.global.cnObExtSigningJwksKey }}
         - name: cn-ob-ext-signing-jwks-key
           secret:
-            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-key
+            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-crt-key-pin
+            items:
+              - key: ob-ext-signing.key
+                path: ob-ext-signing.key
+      {{- end }}
+      {{ if .Values.global.cnObExtSigningJwksKeyPassPhrase }}
+        - name: cn-ob-ext-signing-jwks-key-passphrase
+          secret:
+            secretName: {{ .Release.Name }}-ob-ext-signing-jwks-crt-key-pin
+            items:
+              - key: ob-ext-signing.pin
+                path: ob-ext-signing.pin
       {{- end }}
       {{ if .Values.global.cnObTransportCrt }}
         - name: cn-ob-transport-crt
           secret:
-            secretName: {{ .Release.Name }}-ob-transport-crt
+            secretName: {{ .Release.Name }}-ob-transport-crt-key-pin
+            items:
+              - key: ob-transport.crt
+                path: ob-transport.crt
       {{- end }}
       {{ if .Values.global.cnObTransportKey }}
         - name: cn-ob-transport-key
           secret:
-            secretName: {{ .Release.Name }}-ob-transport-key
+            secretName: {{ .Release.Name }}-ob-transport-crt-key-pin
+            items:
+              - key: ob-transport.key
+                path: ob-transport.key
+      {{- end }}
+      {{ if .Values.global.cnObTransportKeyPassPhrase }}
+        - name: cn-ob-transport-key-passphrase
+          secret:
+            secretName: {{ .Release.Name }}-ob-transport-crt-key-pin
+            items:
+              - key: ob-transport.pin
+                path: ob-transport.pin
       {{- end }}
       {{ if .Values.global.cnObTrustStoreCrt }}
         - name: cn-ob-truststore-crt
           secret:
-            secretName: {{ .Release.Name }}-ob-truststore-crt
+            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
+            items:
+              - key: ob-truststore.crt
+                path: ob-truststore.crt
       {{- end }}
       {{ if .Values.global.cnObTrustStoreKey }}
         - name: cn-ob-truststore-key
           secret:
-            secretName: {{ .Release.Name }}-ob-truststore-key
+            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
+            items:
+              - key: ob-truststore.key
+                path: ob-truststore.key
+      {{- end }}
+      {{ if .Values.global.cnObTrustStoreKeyPassPhrase }}
+        - name: cn-ob-truststore-key-passphrase
+          secret:
+            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
+            items:
+              - key: ob-truststore.pin
+                path: ob-truststore.pin
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: cn-jackrabbit-admin-pass

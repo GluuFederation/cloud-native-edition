@@ -453,12 +453,17 @@
 					"type": "string"
 				},
 				"cnObExtSigningJwksCrt": {
-					"description": "Open banking external signing jwks certificate authority string. Used in SSA Validation. This must be encoded using base64.",
+					"description": "Open banking external signing jwks AS certificate authority string. Used in SSA Validation. This must be encoded using base64.",
 					"type": "string",
 					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 				},
 				"cnObExtSigningJwksKey": {
-					"description": "Open banking external signing jwks key string. Used in SSA Validation. This must be encoded using base64.",
+					"description": "Open banking external signing jwks AS key string. Used in SSA Validation. This must be encoded using base64.",
+					"type": "string",
+					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+				},
+				"cnObExtSigningJwksKeyPassPhrase": {
+					"description": "Open banking external signing jwks AS key passphrase. Used in SSA Validation. This must be encoded using base64.",
 					"type": "string",
 					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 				},
@@ -472,6 +477,11 @@
 					"type": "string",
 					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 				},
+				"cnObTransportKeyPassPhrase": {
+					"description": "Open banking transport key passphrase. Used in SSA Validation. This must be encoded using base64.",
+					"type": "string",
+					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+				},
 				"cnObTrustStoreCrt": {
 					"description": "Open banking truststore crt. Used in SSA Validation. This must be encoded using base64.",
 					"type": "string",
@@ -479,6 +489,11 @@
 				},
 				"cnObTrustStoreKey": {
 					"description": "Open banking truststore key. Used in SSA Validation. This must be encoded using base64.",
+					"type": "string",
+					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+				},
+				"cnObTrustStoreKeyPassPhrase": {
+					"description": "Open banking truststore key passphrase. Used in SSA Validation. This must be encoded using base64.",
 					"type": "string",
 					"pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
 				},

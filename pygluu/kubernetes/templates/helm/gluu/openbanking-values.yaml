@@ -65,7 +65,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b3
+    tag: 1.0.0_b4
   orgName: Gluu
   redisPassword: P@assw0rd
   resources:
@@ -88,7 +88,7 @@ config-api:
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/config-api
-    tag: 1.0.0_b3
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -124,15 +124,19 @@ global:
     testEnviroment: false
   cnPersistenceType: sql
   cnObExtSigningJwksUri: ""
-  # base64 string for the open banking external signing jwks. Used when .global.cnObExtSigningJwksUri is set.
-  cnObExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  # base64 string for the open banking transport crt and keys. Used when .global.cnObExtSigningJwksUri is set.
-  cnObTransportCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObTransportKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  # base64 string for the open banking truststore crt and keys. Used when .global.cnObExtSigningJwksUri is set.
-  cnObTrustStoreCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-  cnObTrustStoreKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+  # base64 string for the open banking AS external signing jwks crt, keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: ""
+  cnObExtSigningJwksKey: ""
+  cnObExtSigningJwksKeyPassPhrase: ""
+
+  # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: ""
+  cnObTransportKey: ""
+  cnObTransportKeyPassPhrase: ""
+  # base64 string for the open banking AS truststore crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTrustStoreCrt: ""
+  cnObTrustStoreKey: ""
+  cnObTrustStoreKeyPassPhrase: ""
   config:
     enabled: true
   #google/kubernetes
@@ -217,7 +221,7 @@ nginx-ingress:
       # Enable client certificate authentication
       # nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
       # Create the secret containing the trusted ca certificates
-      # nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/ca-secret"
+      # nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate"
       # Specify the verification depth in the client certificates chain
       # nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       # Specify if certificates are passed to upstream server
@@ -235,7 +239,7 @@ persistence:
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b3
+    tag: 1.0.0_b4
   resources:
     limits:
       cpu: 300m
