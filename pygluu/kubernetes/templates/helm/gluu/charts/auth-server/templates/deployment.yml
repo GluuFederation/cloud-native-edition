@@ -83,20 +83,10 @@ spec:
             mountPath: /etc/certs/ob-transport.crt
             subPath: ob-transport.crt
         {{- end }}
-        {{ if .Values.global.cnObTrustStoreKeyPassPhrase }}
-          - name: cn-ob-truststore-key-passphrase
-            mountPath: /etc/certs/ob-truststore.pin
-            subPath: ob-truststore.pin
-        {{- end }}
-        {{ if .Values.global.cnObTrustStoreKey }}
-          - name: cn-ob-truststore-key
-            mountPath: /etc/certs/ob-truststore.key
-            subPath: ob-truststore.key
-        {{- end }}
-        {{ if .Values.global.cnObTrustStoreCrt }}
-          - name: cn-ob-truststore-crt
-            mountPath: /etc/certs/ob-truststore.crt
-            subPath: ob-truststore.crt
+        {{ if .Values.global.cnObTransportTrustStore }}
+          - name: cn-ob-transport-truststore
+            mountPath: /etc/certs/ob-transport-truststore.p12
+            subPath: ob-transport-truststore.p12
         {{- end }}
         {{- if .Values.global.jackrabbit.enabled }}
           - name: cn-jackrabbit-admin-pass
@@ -197,29 +187,10 @@ spec:
               - key: ob-transport.pin
                 path: ob-transport.pin
       {{- end }}
-      {{ if .Values.global.cnObTrustStoreCrt }}
-        - name: cn-ob-truststore-crt
+      {{ if .Values.global.cnObTransportTrustStore }}
+        - name: cn-ob-transport-truststore
           secret:
-            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
-            items:
-              - key: ob-truststore.crt
-                path: ob-truststore.crt
-      {{- end }}
-      {{ if .Values.global.cnObTrustStoreKey }}
-        - name: cn-ob-truststore-key
-          secret:
-            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
-            items:
-              - key: ob-truststore.key
-                path: ob-truststore.key
-      {{- end }}
-      {{ if .Values.global.cnObTrustStoreKeyPassPhrase }}
-        - name: cn-ob-truststore-key-passphrase
-          secret:
-            secretName: {{ .Release.Name }}-ob-truststore-crt-key-pin
-            items:
-              - key: ob-truststore.pin
-                path: ob-truststore.pin
+            secretName: {{ .Release.Name }}-ob-transport-truststore
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: cn-jackrabbit-admin-pass
