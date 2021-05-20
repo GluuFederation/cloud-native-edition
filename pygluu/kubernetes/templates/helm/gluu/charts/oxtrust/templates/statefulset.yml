@@ -62,6 +62,11 @@ spec:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+          - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
+            name: google-sa
+            subPath: google-credentials.json
+        {{- end }}
         {{- if .Values.global.jackrabbit.enabled }}
           - name: gluu-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
@@ -88,6 +93,11 @@ spec:
       volumes:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+        - name: google-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-sa
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
