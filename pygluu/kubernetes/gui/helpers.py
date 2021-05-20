@@ -146,6 +146,10 @@ class WizardHandler(object):
                 "title": "Volumes",
                 "endpoint": "wizard.volumes"
             },
+            'spanner': {
+                "title": "Spanner",
+                "endpoint": "wizard.spanner"
+            },
             'couchbase_multicluster': {
                 "title": "Couchbase multi cluster",
                 "endpoint": "wizard.couchbase_multi_cluster"

@@ -256,6 +256,9 @@ def get_wizard_step():
             gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
         return url_for("wizard.couchbase")
 
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
+        return url_for("wizard.spanner")
+
     if not gluu_settings.db.get("GLUU_CACHE_TYPE"):
         return url_for("wizard.cache_type")
 

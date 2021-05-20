@@ -202,6 +202,8 @@ class SettingsHandler(object):
                                 GLUU_LDAP_ADVERTISE_REPLICATION_PORT="",
                                 GLUU_LDAP_SECONDARY_CLUSTER="",
                                 GLUU_LDAP_SERF_PEERS="",
+                                GOOGLE_SPANNER_INSTANCE_ID="",
+                                GOOGLE_SPANNER_DATABASE_ID=""
                                 )
         return default_settings
 
