@@ -501,6 +501,9 @@ def persistence_backend():
                 gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
             # skip volumes step
             wizard_steps.current_step = 'couchbase_multicluster'
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
+            # skip volumes step
+            wizard_steps.current_step = "spanner"
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -592,37 +595,6 @@ def volumes():
                            current_step=wizard_steps.step_number(),
                            template="app_volume_type",
                            prev_step=wizard_steps.prev_step())
-
-
-@wizard_blueprint.route("/spanner", methods=["GET", "POST"])
-def spanner():
-    form = SpannerForm()
-
-    if form.validate_on_submit():
-        data = {}
-        data["GOOGLE_SPANNER_INSTANCE_ID"] = form.spanner_instance_id.data
-        data["GOOGLE_SPANNER_DATABASE_ID"] = form.spanner_database_id.data
-
-        gluu_settings.db.update(data)
-        generate_main_config()
-        return redirect(url_for(wizard_steps.next_step()))
-
-    if request.method == "GET":
-        form = populate_form_data(form)
-        form.spanner_instance_id.data = gluu_settings.db.get("GOOGLE_SPANNER_INSTANCE_ID")
-        form.spanner_database_id.data = gluu_settings.db.get("GOOGLE_SPANNER_DATABASE_ID")
-
-    wizard_steps.current_step = 'spanner'
-    # TODO: find a way to get better work on dynamic wizard step
-    prev_step = wizard_steps.prev_step()
-
-    return render_template("wizard/index.html",
-                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
-                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
-                           form=form,
-                           current_step=wizard_steps.step_number(),
-                           template="spanner",
-                           prev_step=prev_step)
 
 
 @wizard_blueprint.route("/couchbase-multi-cluster", methods=["GET", "POST"])
@@ -814,6 +786,37 @@ def couchbase_calculator():
                            prev_step=wizard_steps.prev_step())
 
 
+@wizard_blueprint.route("/spanner", methods=["GET", "POST"])
+def spanner():
+    form = SpannerForm()
+
+    if form.validate_on_submit():
+        data = {}
+        data["GOOGLE_SPANNER_INSTANCE_ID"] = form.spanner_instance_id.data
+        data["GOOGLE_SPANNER_DATABASE_ID"] = form.spanner_database_id.data
+
+        gluu_settings.db.update(data)
+        generate_main_config()
+        return redirect(url_for(wizard_steps.next_step()))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.spanner_instance_id.data = gluu_settings.db.get("GOOGLE_SPANNER_INSTANCE_ID")
+        form.spanner_database_id.data = gluu_settings.db.get("GOOGLE_SPANNER_DATABASE_ID")
+
+    wizard_steps.current_step = 'spanner'
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "wizard.persistence_backend"
+
+    return render_template("wizard/index.html",
+                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
+                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           form=form,
+                           current_step=wizard_steps.step_number(),
+                           template="spanner",
+                           prev_step=prev_step)
+
+
 @wizard_blueprint.route("/cache-type", methods=["GET", "POST"])
 def cache_type():
     """
@@ -859,6 +862,9 @@ def cache_type():
             prev_step = "wizard.couchbase"
         else:
             prev_step = "wizard.couchbase_multi_cluster"
+
+    if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('spanner'):
+        prev_step = "wizard.couchbase_multi_cluster"
 
     return render_template("wizard/index.html",
                            form=form,
