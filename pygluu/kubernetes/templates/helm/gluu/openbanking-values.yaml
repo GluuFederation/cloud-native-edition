@@ -133,7 +133,7 @@ global:
   cnObTransportCrt: ""
   cnObTransportKey: ""
   cnObTransportKeyPassPhrase: ""
-  # base64 string for the open banking AS transport truststore crt. This is generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
+  # base64 string for the open banking AS transport truststore in p12 format. This can be generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportTrustStore: ""
   config:
     enabled: true

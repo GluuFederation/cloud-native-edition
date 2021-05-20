@@ -199,8 +199,17 @@
 						},
 						"cnConfigGoogleSecretNamePrefix": {
 							"description": "Prefix for Gluu configuration secret in Google Secret Manager. Defaults to gluu. If left intact gluu-configuration secret will be created. Used only when global.configAdapterName and global.configSecretAdapter is set to google.",
+							"type": "string"
+						},
+						"cnGoogleSpannerInstanceId": {
+							"description": "Google Spanner ID. Used only when global.cnPersistenceType spanner.",
 							"type": "string",
-							"pattern": "^[a-z]+$"
+							"pattern": "^([a-z0-9\\-])*$"
+						},
+						"cnGoogleSpannerDatabaseId": {
+							"description": "Google Spanner Database ID. Used only when global.cnPersistenceType spanner.",
+							"type": "string",
+							"pattern": "^[a-z0-9\\-]*$"
 						},
 						"cnDocumentStoreType": {
 							"description": "Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily.",
@@ -489,7 +498,7 @@
 				},
 				"cnPersistenceType": {
 					"type": "string",
-					"pattern": "^(ldap|couchbase|hybrid|sql)$"
+					"pattern": "^(ldap|couchbase|hybrid|sql|spanner)$"
 				},
 				"config": {
 					"type": "object",

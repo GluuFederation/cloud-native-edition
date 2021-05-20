@@ -11,9 +11,14 @@ data:
   {{ if .Values.global.cnObExtSigningJwksUri }}
   CN_OB_EXT_SIGNING_JWKS_URI: {{ .Values.global.cnObExtSigningJwksUri | quote }}
   {{- end }}
-  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+  # [google_envs] Envs related to using Google
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
   GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
+  # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+  CN_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.configmap.cnGoogleSpannerInstanceId | quote }}
+  CN_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.configmap.cnGoogleSpannerDatabaseId | quote }}
+  # [google_spanner_envs] END
+  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
   CN_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnSecretGoogleSecretVersionId | quote }}
   CN_SECRET_GOOGLE_SECRET_MANAGER_PASSPHRASE: {{ .Values.configmap.cnGoogleSecretManagerPassPhrase | quote }}
   CN_SECRET_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnSecretGoogleSecretNamePrefix | quote }}
