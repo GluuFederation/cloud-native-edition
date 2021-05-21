@@ -8,8 +8,6 @@ metadata:
   name: {{ .Release.Name }}-istio-casa
   namespace: {{.Release.Namespace}}
 spec:
-  gateways:
-  - {{ .Release.Name }}-global-gtw
   hosts:
   - {{ .Values.global.fqdn }}
   http:

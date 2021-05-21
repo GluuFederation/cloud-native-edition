@@ -10,20 +10,9 @@
     "CN_HELM_RELEASE_NAME": { "type": "string" },
     "NGINX_INGRESS_RELEASE_NAME": { "type": "string" },
     "NGINX_INGRESS_NAMESPACE": { "type": "string" },
-    "INSTALL_GLUU_GATEWAY": { "$ref": "#/definitions/yes-no-string" },
     "POSTGRES_NAMESPACE": { "type": "string" },
-    "KONG_NAMESPACE": { "type": "string" },
-    "GLUU_GATEWAY_UI_NAMESPACE": { "type": "string" },
-    "KONG_PG_USER": { "type": "string" },
-    "KONG_PG_PASSWORD": { "type": "string" },
-    "GLUU_GATEWAY_UI_PG_USER": { "type": "string" },
-    "GLUU_GATEWAY_UI_PG_PASSWORD": { "type": "string" },
-    "KONG_DATABASE": { "type": "string" },
-    "GLUU_GATEWAY_UI_DATABASE": { "type": "string" },
     "POSTGRES_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "POSTGRES_URL": { "type": "string" },
-    "KONG_HELM_RELEASE_NAME": { "type": "string" },
-    "GLUU_GATEWAY_UI_HELM_RELEASE_NAME": { "type": "string" },
     "USE_ISTIO": { "$ref": "#/definitions/yes-no-string" },
     "USE_ISTIO_INGRESS": { "$ref": "#/definitions/yes-no-string" },
     "ISTIO_SYSTEM_NAMESPACE": { "type": "string" },
@@ -154,7 +143,6 @@
           "oxtrust",
           "persistence",
           "jackrabbit",
-          "gluu-gateway-ui",
           "cr-rotate",
           "auth-server-key-rotation",
           "radius",
@@ -201,10 +189,6 @@
     "PERSISTENCE_IMAGE_TAG": { "type": "string" },
     "RADIUS_IMAGE_NAME": { "type": "string" },
     "RADIUS_IMAGE_TAG": { "type": "string" },
-    "GLUU_GATEWAY_IMAGE_NAME": { "type": "string" },
-    "GLUU_GATEWAY_IMAGE_TAG": { "type": "string" },
-    "GLUU_GATEWAY_UI_IMAGE_NAME": { "type": "string" },
-    "GLUU_GATEWAY_UI_IMAGE_TAG": { "type": "string" },
     "UPGRADE_IMAGE_NAME": { "type": "string" },
     "UPGRADE_IMAGE_TAG": { "type": "string" },
     "CONFIRM_PARAMS": { "$ref": "#/definitions/yes-no-string" }
@@ -221,7 +205,6 @@
     { "$ref": "#/definitions/client-api-enabled" },
     { "$ref": "#/definitions/oxtrust-api-enabled" },
     { "$ref": "#/definitions/oxtrust-test-mode-enabled"},
-    { "$ref": "#/definitions/gluu-gateway-installed" },
     { "$ref": "#/definitions/install-jackrabbit-yes" },
     { "$ref": "#/definitions/install-jackrabbit-no" },
     { "$ref": "#/definitions/jackrabbit-cluster-enable" },
@@ -552,49 +535,6 @@
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": { "const": "true" }
         },
         "required": ["ENABLE_OXTRUST_TEST_MODE_BOOLEAN"]
-      }
-    },
-    "gluu-gateway-installed": {
-      "if": {
-        "properties": { "INSTALL_GLUU_GATEWAY": { "const": "Y" } }
-      },
-      "then": {
-        "properties": {
-          "ENABLED_SERVICES_LIST": {
-            "contains": { "enum" : ["gluu-gateway-ui"] },
-            "errors": {
-              "contains": "gluu-gateway-ui key not found"
-            }
-          },
-          "ENABLE_CLIENT_API": { "const": "Y" },
-          "POSTGRES_NAMESPACE": { "$ref": "#/definitions/string-cannot-empty" },
-          "POSTGRES_REPLICAS": { "type":"number", "minimum": 1  },
-          "POSTGRES_URL": { "$ref": "#/definitions/string-cannot-empty" },
-          "KONG_NAMESPACE": { "$ref": "#/definitions/string-cannot-empty" },
-          "KONG_DATABASE": { "$ref": "#/definitions/string-cannot-empty" },
-          "KONG_PG_USER": { "$ref": "#/definitions/string-cannot-empty" },
-          "KONG_PG_PASSWORD": { "$ref": "#/definitions/password-pattern" },
-          "GLUU_GATEWAY_UI_NAMESPACE": { "$ref": "#/definitions/string-cannot-empty" },
-          "GLUU_GATEWAY_UI_DATABASE": { "$ref": "#/definitions/string-cannot-empty" },
-          "GLUU_GATEWAY_UI_PG_USER": { "$ref": "#/definitions/string-cannot-empty" },
-          "GLUU_GATEWAY_UI_PG_PASSWORD": { "$ref": "#/definitions/password-pattern" }
-
-        },
-        "required": [
-          "ENABLED_SERVICES_LIST",
-          "ENABLE_CLIENT_API",
-          "POSTGRES_NAMESPACE",
-          "POSTGRES_REPLICAS",
-          "POSTGRES_URL",
-          "KONG_NAMESPACE",
-          "KONG_DATABASE",
-          "KONG_PG_USER",
-          "KONG_PG_PASSWORD",
-          "GLUU_GATEWAY_UI_NAMESPACE",
-          "GLUU_GATEWAY_UI_DATABASE",
-          "GLUU_GATEWAY_UI_PG_USER",
-          "GLUU_GATEWAY_UI_PG_PASSWORD"
-        ]
       }
     },
     "install-jackrabbit-yes": {
