@@ -1,7 +1,6 @@
 import pytest
 import click
-from pygluu.kubernetes.terminal.helpers import gather_ip
-import ipaddress
+
 
 @pytest.mark.parametrize("given, expected", [
     (True, True),

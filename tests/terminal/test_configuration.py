@@ -23,6 +23,7 @@ def test_config_country(monkeypatch, settings, given, expected):
 
     assert settings.get("config.countryCode") == expected
 
+
 @pytest.mark.parametrize("given, expected", [
     ("", "TX"),  # default
     ("random", "random"),
@@ -44,6 +45,7 @@ def test_config_state(monkeypatch, settings, given, expected):
     prompt.prompt_config()
 
     assert settings.get("config.state") == expected
+
 
 @pytest.mark.parametrize("given, expected", [
     ("", "Austin"),  # default
@@ -67,6 +69,7 @@ def test_config_city(monkeypatch, settings, given, expected):
 
     assert settings.get("config.city") == expected
 
+
 @pytest.mark.parametrize("given, expected", [
     ("", "support@gluu.org"),  # default
     ("random", "random"),
@@ -88,6 +91,7 @@ def test_config_email(monkeypatch, settings, given, expected):
     prompt.prompt_config()
 
     assert settings.get("config.email") == expected
+
 
 @pytest.mark.parametrize("given, expected", [
     ("", "Gluu"),  # default
@@ -111,6 +115,7 @@ def test_config_org(monkeypatch, settings, given, expected):
 
     assert settings.get("config.orgName") == expected
 
+
 @pytest.mark.parametrize("given, expected", [
     ("", "demoexample.gluu.org"),  # default
 ])
@@ -132,10 +137,11 @@ def test_config_hostname(monkeypatch, settings, given, expected):
 
     assert settings.get("global.fqdn") == expected
 
+
 @pytest.mark.parametrize("given, expected", [
     ("", "demoexample.gluu.org"),  # default
 ])
-def test_config_hostname(monkeypatch, settings, given, expected):
+def test_config_hostname_2(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.configuration import PromptConfiguration
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)

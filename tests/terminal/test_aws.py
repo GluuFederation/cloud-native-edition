@@ -16,6 +16,7 @@ def test_aws_loadbalancer(monkeypatch, settings, given, expected):
     PromptAws(settings).prompt_aws_lb()
     assert settings.get("installer-settings.aws.lbType") == expected
 
+
 def test_aws_vpccidr(monkeypatch, settings):
     from pygluu.kubernetes.terminal.aws import PromptAws
 

@@ -9,6 +9,7 @@ def test_prompt_couchbase_ip(monkeypatch, settings):
     prompt.prompt_couchbase()
     assert settings.get("global.lbIp") == gather_ip
 
+
 def test_prompt_couchbase_namespace(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 
@@ -18,6 +19,7 @@ def test_prompt_couchbase_namespace(monkeypatch, settings):
     prompt = PromptCouchbase(settings)
     prompt.prompt_couchbase()
     assert settings.get("installer-settings.couchbase.namespace") == "cbns"
+
 
 def test_prompt_couchbase_cluster(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
@@ -29,6 +31,7 @@ def test_prompt_couchbase_cluster(monkeypatch, settings):
     prompt.prompt_couchbase()
     assert settings.get("installer-settings.couchbase.clusterName") == "cbgluu"
 
+
 def test_prompt_couchbase_bucket(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 
@@ -38,6 +41,7 @@ def test_prompt_couchbase_bucket(monkeypatch, settings):
     prompt = PromptCouchbase(settings)
     prompt.prompt_couchbase()
     assert settings.get("config.configmap.cnCouchbaseBucketPrefix") == "gluu"
+
 
 def test_prompt_couchbase_replicanum(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
@@ -49,6 +53,7 @@ def test_prompt_couchbase_replicanum(monkeypatch, settings):
     prompt.prompt_couchbase()
     assert settings.get("config.configmap.cnCouchbaseIndexNumReplica") == "0"
 
+
 def test_prompt_couchbase_superuser(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 
@@ -58,6 +63,7 @@ def test_prompt_couchbase_superuser(monkeypatch, settings):
     prompt = PromptCouchbase(settings)
     prompt.prompt_couchbase()
     assert settings.get("config.configmap.cnCouchbaseSuperUser") == "admin"
+
 
 def test_prompt_couchbase_user(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
@@ -69,6 +75,7 @@ def test_prompt_couchbase_user(monkeypatch, settings):
     prompt.prompt_couchbase()
     assert settings.get("config.configmap.cnCouchbaseUser") == "gluu"
 
+
 def test_prompt_couchbase_users(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 
@@ -79,6 +86,7 @@ def test_prompt_couchbase_users(monkeypatch, settings):
     prompt.prompt_couchbase_yaml()
     assert settings.get("installer-settings.couchbase.totalNumberOfExpectedUsers") == "1000000"
 
+
 def test_prompt_couchbase_transactions(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
 
@@ -88,6 +96,7 @@ def test_prompt_couchbase_transactions(monkeypatch, settings):
     prompt = PromptCouchbase(settings)
     prompt.prompt_couchbase_yaml()
     assert settings.get("installer-settings.couchbase.totalNumberOfExpectedTransactionsPerSec") == 2000
+
 
 def test_prompt_couchbase_volumetype(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase

@@ -1,5 +1,6 @@
 import pygluu.kubernetes.postgres as module0
 
+
 def test_postgres_class_object():
     var0 = module0.Postgres()
 

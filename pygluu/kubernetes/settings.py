@@ -55,11 +55,11 @@ class ValuesHandler(object):
                 try:
                     self.schema = json.load(f)
                     jsonschema.Draft7Validator.check_schema(self.schema)
-                except json.decoder.JSONDecodeError as e:
+                except json.decoder.JSONDecodeError:
                     logger.info(
                         f"Opps! values.schema.json not readable")
                     sys.exit(4)
-                except jsonschema.SchemaError as e:
+                except jsonschema.SchemaError:
                     logger.info(
                         f"Opps! values.schema.json is invalid")
                     sys.exit(4)

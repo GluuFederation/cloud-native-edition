@@ -1,18 +1,7 @@
 import pygluu.kubernetes.kubeapi as module0
 from pygluu.kubernetes.kubeapi import load_kubernetes_config, Kubernetes
-from kubernetes import client, utils, config
-import logging
-import pytest
-from pathlib import Path
+from kubernetes import config
 
-def test_kubernetes_version(kind_cluster):
-    assert kind_cluster.api.version == ('1', '20')
-
-
-def test_load_configfile(kind_cluster):
-    kubeconfig = '~/.kube/config'
-    load_kubernetes_config()
-    assert kubeconfig == '~/.kube/config'
 
 
 def test_load_kube_config(tmpdir):
@@ -56,15 +45,14 @@ def test_delete_custom_resource():
         pass
 
 
-def test_delete_collection_namespaced_replication_controller():
+def test_delete_collection_namespaced_replication_controller1():
     try:
         var0 = None
         var1 = module0.Kubernetes()
         assert var1 is not None
         var2 = module0.Kubernetes()
         assert var2 is not None
-        var3 = var2.delete_collection_namespaced_replication_controller(var0,
-            var1)
+        var3 = var2.delete_collection_namespaced_replication_controller(var0, var1)
     except BaseException:
         pass
 
@@ -81,7 +69,7 @@ def test_delete_deployment_using_name():
         pass
 
 
-def test_delete_deployment_using_name():
+def test_delete_deployment_using_name_exception():
     try:
         var0 = module0.Kubernetes()
         assert var0 is not None
@@ -176,3 +164,4 @@ def test_check_read_error_and_responses():
         var3 = var2.check_read_error_and_response(var0, var1)
     except BaseException:
         pass
+

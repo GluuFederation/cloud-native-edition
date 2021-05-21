@@ -17,6 +17,3 @@ def test_cache_type(monkeypatch, settings, given, expected):
 
     PromptCache(settings).prompt_cache_type()
     assert settings.get("config.configmap.cnCacheType") == expected
-
-
-

@@ -79,8 +79,7 @@ class Prompt:
         self.load_settings()
         test_environment = PromptTestEnvironment(self.settings)
         if not self.settings.get("global.cloud.testEnviroment") and \
-                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath",
-                "k8s.io/minikube-hostpath"):
+                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             test_environment.prompt_test_environment()
 
     def network(self):

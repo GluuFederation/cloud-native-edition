@@ -429,7 +429,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.network_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except client.rest.ApiException:
                 try:
                     resp = self.extenstion_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
                 except client.rest.ApiException as e:
@@ -503,7 +503,7 @@ class Kubernetes(object):
             if e.status == 404:
                 logger.info('{} in namespace  {} not found.'.format(name, namespace))
             else:
-                logger.error(e)
+                logger.error(e, resp)
 
     def create_namespace(self, name, labels=None):
         """Create namespace using name"""
@@ -530,7 +530,7 @@ class Kubernetes(object):
 
         try:
             self.core_cli.create_namespaced_service_account(namespace=namespace, body=body)
-            logger.info('Created serviceaccount {} in namespace'.format(name, namespace))
+            logger.info('Created serviceaccount {} in namespace {}'.format(name, namespace))
             return
         except client.rest.ApiException as e:
             self.check_create_error_and_response(e, "ServiceAccount", name)

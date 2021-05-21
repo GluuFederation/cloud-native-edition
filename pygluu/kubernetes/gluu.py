@@ -15,8 +15,6 @@ from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.settings import ValuesHandler
 import time
 import socket
-import base64
-import secrets
 
 logger = get_logger("gluu-helm          ")
 
@@ -121,8 +119,7 @@ class Gluu(object):
                     break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings.get('installer-settings.nginxIngress.releaseName') +
-                             "-ingress-nginx-controller",
+                        name=self.settings.get('installer-settings.nginxIngress.releaseName') + "-ingress-nginx-controller",
                         namespace=self.settings.get("installer-settings.nginxIngress.releaseName")).status.load_balancer.ingress[0].ip
                     self.settings.set("global.lbIp", hostname_ip)
             except (TypeError, AttributeError):

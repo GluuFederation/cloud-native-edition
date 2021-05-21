@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.mark.parametrize("given, expected", [
     (False, False),
     (True, True),
@@ -26,6 +27,7 @@ def test_istio_enabled_prompt(monkeypatch, settings):
     prompt.prompt_istio()
     assert settings.get("global.istio.enabled") == True
 
+
 @pytest.mark.parametrize("given, expected", [
     (False, False),
     (True, True),
@@ -39,6 +41,7 @@ def test_global_istio_enabled(monkeypatch, settings, given, expected):
     prompt.prompt_istio()
     assert settings.get("global.istio.enabled") == expected
 
+
 def test_istio_namespace(monkeypatch, settings):
     from pygluu.kubernetes.terminal.istio import PromptIstio
 
@@ -49,6 +52,7 @@ def test_istio_namespace(monkeypatch, settings):
     prompt = PromptIstio(settings)
     prompt.prompt_istio()
     assert settings.get("global.istio.namespace") == "istio-system"
+
 
 def test_istio_lbaddr(monkeypatch, settings):
     from pygluu.kubernetes.terminal.istio import PromptIstio

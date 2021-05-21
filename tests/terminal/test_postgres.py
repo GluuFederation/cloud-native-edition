@@ -49,7 +49,6 @@ def test_postgres_url(monkeypatch, settings, given, expected):
     settings.set("installer-settings.postgres.namespace", "postgres")
     settings.set("installer-settings.postgres.replicas", 3)
     settings.set("config.configmap.cnJackrabbitPostgresHost", "")
-    
 
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()

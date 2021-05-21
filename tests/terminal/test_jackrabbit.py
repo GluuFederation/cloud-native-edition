@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_jackrabbit_enable(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
@@ -52,8 +53,8 @@ def test_jackrabit_adminid(monkeypatch, settings):
 
 
 @pytest.mark.parametrize("given, expected", [
-(False, False),
-(True, True),
+    (False, False),
+    (True, True),
 ])
 def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit

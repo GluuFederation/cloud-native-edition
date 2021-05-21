@@ -12,4 +12,3 @@ def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected)
     settings.set("global.cloud.testEnviroment", "")
     PromptTestEnvironment(settings).prompt_test_environment()
     assert settings.get("global.cloud.testEnviroment") == expected
-

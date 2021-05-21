@@ -8,4 +8,3 @@ def settings():
     handler = ValuesHandler()
     yield handler
     unlink_values_yaml()
-

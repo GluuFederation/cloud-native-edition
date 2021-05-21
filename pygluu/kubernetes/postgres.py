@@ -40,7 +40,7 @@ class Postgres(object):
                                          self.settings.get("installer-settings.postgres.namespace")))
 
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.postgres.install"), "app=postgres", 
+            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.postgres.install"), "app=postgres",
                                                 self.timeout)
 
     def uninstall_postgres(self):

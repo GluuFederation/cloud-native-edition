@@ -53,7 +53,7 @@ def test_get_logger():
     assert var5 is not None
 
 
-def test_update_settings_json():
+def test_update_settings_json1():
     var0 = None
     var1 = None
     var2 = None

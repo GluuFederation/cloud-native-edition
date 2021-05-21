@@ -1,5 +1,4 @@
 import logging
-import json
 from pathlib import Path
 
 
@@ -45,5 +44,3 @@ def test_settings_is_exist(settings, tmpdir):
     settings.values_file = p
 
     assert settings.is_exist() is True
-
-

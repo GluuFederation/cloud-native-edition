@@ -1,5 +1,5 @@
-import pytest
 import pygluu.kubernetes.terminal.redis as module0
+
 
 def test_prompt_redis_type(monkeypatch, settings):
     from pygluu.kubernetes.terminal.redis import PromptRedis
@@ -11,10 +11,12 @@ def test_prompt_redis_type(monkeypatch, settings):
     prompt.prompt_redis()
     assert settings.get("config.configmap.cnRedisType") == "CLUSTER"
 
+
 def test_redis_object_prompt():
     var0 = None
     var1 = module0.PromptRedis(var0)
     assert var1 is not None
+
 
 def test_configmap_redis_prompt():
     var0 = None
@@ -22,6 +24,7 @@ def test_configmap_redis_prompt():
     assert var1 is not None
     var2 = module0.PromptRedis(var1)
     assert var2 is not None
+
 
 def test_masternodes_prompt():
     var0 = None
@@ -32,6 +35,7 @@ def test_masternodes_prompt():
     var3 = 1716
     var4 = module0.PromptRedis(var3)
     assert var4 is not None
+
 
 def test_nodespermaster_prompt():
     var0 = None

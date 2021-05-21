@@ -1,4 +1,3 @@
-import pytest
 import pygluu.kubernetes.yamlparser as module0
 
 
@@ -87,6 +86,7 @@ def test_analyze_ordered_dict_object():
     var14 = '[tJIBjwy'
     var15 = var4.analyze_ordered_dict_object(var14)
     assert var15 == '[tJIBjwy'
+
 
 def test_updates():
     var0 = '^!&@-I\x0b91+IPf~a\tC"a'
@@ -469,14 +469,9 @@ def test_empty_parse():
         var2 = -672
         var3 = -877
         var4 = 'Me5]dIm;ff.U,'
-        var5 = (
-            b'\x0e\xaa\x12\xc0\x9f\xe8\xc3\x87\xabS\xda\xde\x91i\xb7\xf2\x87\xb0'
-            )
+        var5 = (b'\x0e\xaa\x12\xc0\x9f\xe8\xc3\x87\xabS\xda\xde\x91i\xb7\xf2\x87\xb0')
         var6 = module0.Parser(var4, var5, var2, var5)
         assert var6 is not None
         var7 = module0.Parser(var1, var2, var3, var6)
     except BaseException:
         pass
-
-
-

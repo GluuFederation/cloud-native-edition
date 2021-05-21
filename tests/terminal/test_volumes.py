@@ -51,7 +51,7 @@ def test_prompt_app_volume_choice_gce(monkeypatch, settings, vol_choice, vol_pat
 
 
 @pytest.mark.parametrize("vol_choice, vol_path", [
-(17, "aksPdDynamic"),
+    (17, "aksPdDynamic"),
 ])
 def test_prompt_app_volume_choice_azure(monkeypatch, settings, vol_choice, vol_path):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
@@ -66,7 +66,7 @@ def test_prompt_app_volume_choice_azure(monkeypatch, settings, vol_choice, vol_p
 
 
 @pytest.mark.parametrize("vol_choice, vol_path", [
-(22, "doksPdDynamic"),
+    (22, "doksPdDynamic"),
 ])
 def test_prompt_app_volume_choice_do(monkeypatch, settings, vol_choice, vol_path):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
@@ -106,8 +106,9 @@ def test_prompt_storage(monkeypatch, settings, persistence):
     PromptVolumes(settings).prompt_storage()
     assert settings.get("opendj.persistence.size") == "4Gi"
 
+
 @pytest.mark.parametrize("persistence", ["ldap", "hybrid"])
-def test_prompt_storage(monkeypatch, settings, persistence):
+def test_prompt_storage_2(monkeypatch, settings, persistence):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
 
     monkeypatch.setattr("click.prompt", lambda x, default: "4Gi")
@@ -173,6 +174,7 @@ def test_prompt_volumes_global_gke_type(monkeypatch, settings):
     settings.set("global.gcePdStorageType", "")
     PromptVolumes(settings).prompt_volumes()
     assert settings.get("global.gcePdStorageType") == "pd-ssd"
+
 
 def test_prompt_volumes_global_local_type(monkeypatch, settings):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes

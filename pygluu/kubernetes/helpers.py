@@ -195,7 +195,7 @@ def generate_password(length=6):
 
     while True:
         password = ''.join(random.choice(chars) for _ in range(length))
-        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)  # noqa: W605
+        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W)[a-zA-Z0-9\\S]{6,}$', password)  # noqa: W605
         if regex_bool:
             break
 
@@ -220,7 +220,7 @@ def prompt_password(password, length=6):
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             if password != "Redis":
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
+                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W)[a-zA-Z0-9\\S]{6,}$',
                                       pw_prompt)  # noqa: W605
 
         if confirm_pw_prompt != pw_prompt:
