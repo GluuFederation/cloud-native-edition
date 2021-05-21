@@ -503,7 +503,7 @@ def persistence_backend():
             wizard_steps.current_step = 'couchbase_multicluster'
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
             # skip volumes step
-            wizard_steps.current_step = "spanner"
+            wizard_steps.current_step = "couchbase_calculator"
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -581,7 +581,7 @@ def volumes():
         gluu_settings.db.update(data)
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
             # skip couchbase and jump to cache step
-            wizard_steps.current_step = 'couchbase_calculator'
+            wizard_steps.current_step = 'spanner'
 
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -712,8 +712,8 @@ def couchbase():
                 gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
             return redirect(url_for(wizard_steps.next_step()))
 
-        # skip couchbase calculator
-        wizard_steps.current_step = 'couchbase_calculator'
+        # skip couchbase calculator and spanner
+        wizard_steps.current_step = 'spanner'
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -779,6 +779,9 @@ def couchbase_calculator():
         return redirect(url_for(wizard_steps.next_step()))
 
     wizard_steps.current_step = 'couchbase_calculator'
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
+        # skip volumes step
+        wizard_steps.current_step = "spanner"
     return render_template("wizard/index.html",
                            form=form,
                            current_step=wizard_steps.step_number(),
@@ -856,7 +859,7 @@ def cache_type():
     wizard_steps.current_step = 'cache'
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = wizard_steps.prev_step()
+    prev_step = prev_step = "wizard.volumes"
     if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
             prev_step = "wizard.couchbase"
@@ -864,7 +867,7 @@ def cache_type():
             prev_step = "wizard.couchbase_multi_cluster"
 
     if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('spanner'):
-        prev_step = "wizard.couchbase_multi_cluster"
+        prev_step = "wizard.spanner"
 
     return render_template("wizard/index.html",
                            form=form,
