@@ -25,7 +25,7 @@ def test_istio_enabled_prompt(monkeypatch, settings):
     settings.set("global.istio.enabled", "False")
     prompt = PromptIstio(settings)
     prompt.prompt_istio()
-    assert settings.get("global.istio.enabled") == True
+    assert settings.get("global.istio.enabled")
 
 
 @pytest.mark.parametrize("given, expected", [

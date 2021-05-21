@@ -15,12 +15,12 @@ def test_jackrabbit_enable(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
 
-    assert settings.get("global.jackrabbit.enabled") == True
+    assert settings.get("global.jackrabbit.enabled")
     assert settings.get("jackrabbit.storage.size") == "4Gi"
     assert settings.get("config.configmap.cnJackrabbitUrl") == "http://jackrabbit:8080"
     assert settings.get("config.configmap.cnJackrabbitAdminId") == "admin"
     assert settings.get("jackrabbit.secrets.cnJackrabbitAdminPassword") == "Test1234#"
-    assert settings.get("installer-settings.jackrabbit.clusterMode") == False
+    assert settings.get("installer-settings.jackrabbit.clusterMode", False)
 
 
 def test_jackrabbit_disable_no_url(monkeypatch, settings):
@@ -37,7 +37,7 @@ def test_jackrabbit_disable_no_url(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
 
-    assert settings.get("global.jackrabbit.enabled") == False
+    assert settings.get("global.jackrabbit.enabled", False)
     assert settings.get("config.configmap.cnJackrabbitUrl") == "http://jackrabbit:8080"
 
 
@@ -72,7 +72,7 @@ def test_jackrabit_postgresdb(monkeypatch, settings):
 
     monkeypatch.setattr("click.prompt", lambda x, default: "jackrabbit")
 
-    settings.set("installer-settings.jackrabbit.clusterMode", True)
+    settings.set("installer-settings.jackrabbit.clusterMode")
     settings.set("config.configmap.cnJackrabbitPostgresDatabaseName", "")
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
