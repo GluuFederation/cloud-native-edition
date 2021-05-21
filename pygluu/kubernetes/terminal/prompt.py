@@ -159,8 +159,9 @@ class Prompt:
 
     def spanner(self):
         self.load_settings()
-        spanner = PromptSpanner(self.settings)
-        spanner.prompt_spanner()
+        if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
+            spanner = PromptSpanner(self.settings)
+            spanner.prompt_spanner()
 
     def confirm_settings(self):
         self.load_settings()
