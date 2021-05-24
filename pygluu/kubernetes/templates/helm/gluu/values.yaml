@@ -66,7 +66,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -91,7 +91,7 @@ auth-server-key-rotation:
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   keysLife: 23
   resources:
     limits:
@@ -139,7 +139,7 @@ client-api:
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -190,9 +190,6 @@ config:
     cnCouchbaseUrl: cbgluu.default.svc.cluster.local
     cnCouchbaseUser: gluu
     cnDocumentStoreType: JCA
-    # base64 string for the external signing jwks. Used when .global.cnExtSigningJwksUri is set.
-    cnExtSigningJwksCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-    cnExtSigningJwksKey: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     cnJackrabbitAdminId: admin
     cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
@@ -203,16 +200,22 @@ config:
     cnJackrabbitPostgresUser: jackrabbit
     cnJackrabbitSyncInterval: 300
     cnJackrabbitUrl: "http://jackrabbit:8080"
-    # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
-    # Base64 encode service account. The sa must have roles/secretmanager.admin
+    # [google_envs] Envs related to using Google
+    # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
     cnGoogleSecretManagerServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     cnGoogleProjectId: google-project-to-save-config-and-secrets-to
+    # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+    cnGoogleSpannerInstanceId: ""
+    cnGoogleSpannerDatabaseId: ""
+    # [google_spanner_envs] END
+    # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
     cnSecretGoogleSecretVersionId: "latest"
     cnSecretGoogleSecretNamePrefix: jans
     cnGoogleSecretManagerPassPhrase: Test1234#
     cnConfigGoogleSecretVersionId: "latest"
     cnConfigGoogleSecretNamePrefix: jans
     # [google_secret_manager_envs] END
+    # [google_envs] END
     cnLdapUrl: "opendj:1636"
     cnMaxRamPercent: "75.0"
     cnPassportEnabled: false
@@ -234,7 +237,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -262,7 +265,7 @@ config-api:
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -311,7 +314,7 @@ fido2:
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -345,18 +348,30 @@ global:
   cloud:
     testEnviroment: false
   cnJackrabbitCluster: true
+  # ldap|couchbase|hybrid|sql|spanner
   cnPersistenceType: ldap
-  cnExtSigningJwksUri: ""
+  cnObExtSigningJwksUri: ""
+  # base64 string for the open banking AS external signing jwks crt, keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: ""
+  cnObExtSigningJwksKey: ""
+  cnObExtSigningJwksKeyPassPhrase: ""
+
+  # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: ""
+  cnObTransportKey: ""
+  cnObTransportKeyPassPhrase: ""
+  # base64 string for the open banking AS transport truststore in p12 format. This can be generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportTrustStore: ""
   config:
     enabled: true
   #google/kubernetes
   configAdapterName: kubernetes
   #google/kubernetes
   configSecretAdapter: kubernetes
-  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
-  # Base64 encode service account. The sa must have roles/secretmanager.admin
+  # [google_envs] Envs related to using Google
+  # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
   cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
-  # [google_secret_manager_envs] END
+  # [google_envs] END
   config-api:
     enabled: true
   cr-rotate:
@@ -588,7 +603,7 @@ persistence:
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   resources:
     limits:
       cpu: 300m
@@ -631,7 +646,7 @@ scim:
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_b2
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:

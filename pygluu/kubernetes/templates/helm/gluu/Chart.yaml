@@ -3,31 +3,33 @@
 kubeVersion: ">=v1.17.0-0"
 annotations:
   artifacthub.io/changes: |
-    - Gluu 5.0 under dev charts
+    - Gluu 5.0 Openbanking Distribution. Auth-server and config-api.
+    - Updated new images
+    - https://gluu.org/docs/openbanking
   artifacthub.io/containsSecurityUpdates: "true"
   artifacthub.io/images: |
     - name: auth-server
-      image: janssenproject/auth-server:1.0.0_b2
+      image: janssenproject/auth-server:1.0.0_b4
     - name: auth-server-key-rotation
-      image: janssenproject/certmanager:1.0.0_b2
+      image: janssenproject/certmanager:1.0.0_b4
     - name:  client-api
-      image: janssenproject/client-api:1.0.0_b2
+      image: janssenproject/client-api:1.0.0_b4
     - name: configuration-manager
-      image: janssenproject/configuration-manager:1.0.0_b2
+      image: janssenproject/configuration-manager:1.0.0_b4
     - name:  config-api
-      image: janssenproject/config-api:1.0.0_b2
+      image: janssenproject/config-api:1.0.0_b4
     - name: fido2
-      image: janssenproject/fido2:1.0.0_b2
+      image: janssenproject/fido2:1.0.0_b4
     - name: opendj
-      image: janssenproject/opendj:5.0.0_dev
+      image: gluufederation/opendj:5.0.0_dev
     - name: persistence
-      image: janssenproject/persistence-loader:1.0.0_b2
+      image: janssenproject/persistence-loader:1.0.0_b4
     - name: scim
-      image: janssenproject/scim:1.0.0_b2
+      image: janssenproject/scim:1.0.0_b4
   artifacthub.io/license: Apache-2.0
   artifacthub.io/prerelease: "true"
 apiVersion: v2
-appVersion: "5.0.0-a1"
+appVersion: "5.0.0"
 icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
 home: https://www.gluu.org
 sources:
@@ -35,91 +37,91 @@ sources:
 maintainers:
 - name: moabu
   email: mo@gluu.org
-description: Gluu Access and Identity Mangement
+description: Gluu Access and Identity Mangement OpenBanking distribution
 name: gluu
-version: 5.0.0-a1
+version: 5.0.0
 dependencies:
     - name: config
       condition: global.config.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: config-api
       condition: global.config-api.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: opendj
       condition: global.opendj.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: jackrabbit
       condition: global.jackrabbit.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: auth-server
       condition: global.auth-server.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: fido2
       condition: global.fido2.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: scim
       condition: global.scim.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
-    - name: nginx
+    - name: nginx-ingress
       condition: global.nginx-ingress.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: oxshibboleth
       condition: global.oxshibboleth.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: oxpassport
-      version: 5.0.0-a1
+      version: 5.0.0
       condition: config.configmap.cnPassportEnabled
       repository: ""
 
     - name: casa
-      version: 5.0.0-a1
+      version: 5.0.0
       condition: config.configmap.cnCasaEnabled
       repository: ""
 
     - name: auth-server-key-rotation
       condition: global.auth-server-key-rotation.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: cr-rotate
-      version: 5.0.0-a1
+      version: 5.0.0
       condition: global.cr-rotate.enabled
       repository: ""
 
     - name: radius
       condition: config.configmap.cnRadiusEnabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: client-api
       condition: global.client-api.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: persistence
       condition: global.persistence.enabled
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
 
     - name: cn-istio-ingress
       condition: global.istio.ingress
-      version: 5.0.0-a1
+      version: 5.0.0
       repository: ""
