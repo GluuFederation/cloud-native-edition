@@ -10,11 +10,13 @@ metadata:
   labels:
     app: oxtrust
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 
 spec:
 {{- if .Values.ingress.tls }}
@@ -49,11 +51,13 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/openid-configuration /oxauth/.well-known/openid-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/openid-configuration
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -87,11 +91,13 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/uma2-configuration /oxauth/restv1/uma2-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/uma2-configuration
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -125,11 +131,13 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/webfinger /oxauth/.well-known/webfinger$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/webfinger
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -164,11 +172,13 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/simple-web-discovery /oxauth/.well-known/simple-web-discovery$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/simple-web-discovery
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -202,11 +212,13 @@ metadata:
   labels:
     app: scim
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /scim/restv1/scim/scim-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /scim/restv1/scim/scim-configuration
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -240,9 +252,11 @@ metadata:
   labels:
     app: scim
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "scim"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -277,11 +291,13 @@ metadata:
   labels:
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido-configuration /oxauth/restv1/fido-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/fido-configuration
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -315,11 +331,13 @@ metadata:
   labels:
     app: fido2
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido2-configuration /fido2/restv1/fido2/configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /fido2/restv1/fido2/configuration
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -353,9 +371,11 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "oxauth"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -390,13 +410,15 @@ metadata:
   labels: 
     app: oxauth
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "oxtrust"
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -437,10 +459,12 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.org/ssl-services: "casa"
     nginx.ingress.kubernetes.io/rewrite-target: /casa
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
