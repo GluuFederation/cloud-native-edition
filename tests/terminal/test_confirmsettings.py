@@ -18,4 +18,4 @@ def test_confirmsettings_confirm_params_rejected(monkeypatch, settings):
     
     prompt = PromptConfirmSettings(settings)
     prompt.confirm_params()
-    assert settings.get("installer-settings.confirmSettings", False)
+    assert settings.get("installer-settings.confirmSettings") == False

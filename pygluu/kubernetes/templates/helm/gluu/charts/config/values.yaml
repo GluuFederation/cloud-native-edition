@@ -71,6 +71,8 @@ configmap:
   cnPassportEnabled: false
   cnRadiusEnabled: false
   cnSamlEnabled: true
+  #CN_CERT_ALT_NAME value. the same as the opendj service name
+  ldapServiceName: opendj
 
 nameOverride: ""
 fullNameOverride: ""
