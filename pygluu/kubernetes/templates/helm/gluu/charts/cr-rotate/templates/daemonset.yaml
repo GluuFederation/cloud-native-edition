@@ -32,11 +32,16 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config-cm
-          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
           volumeMounts:
           {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if eq .Values.global.gluuPersistenceType "sql" }}
+            - name: sql-pass
+              mountPath: "/etc/gluu/conf/sql_password"
+              subPath: sql_password
+          {{- end }}
+          {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
@@ -54,11 +59,16 @@ spec:
           resources:
 {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
       volumes:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if eq .Values.global.gluuPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
+      {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid") }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass

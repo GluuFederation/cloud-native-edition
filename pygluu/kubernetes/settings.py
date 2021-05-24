@@ -202,6 +202,13 @@ class SettingsHandler(object):
                                 GLUU_LDAP_ADVERTISE_REPLICATION_PORT="",
                                 GLUU_LDAP_SECONDARY_CLUSTER="",
                                 GLUU_LDAP_SERF_PEERS="",
+                                GLUU_INSTALL_SQL="",
+                                GLUU_SQL_DB_DIALECT="",
+                                GLUU_SQL_DB_NAMESPACE="",
+                                GLUU_SQL_DB_HOST="",
+                                GLUU_SQL_DB_NAME="",
+                                GLUU_SQL_DB_USER="",
+                                GLUU_SQL_DB_PASSWORD="",
                                 )
         return default_settings
 

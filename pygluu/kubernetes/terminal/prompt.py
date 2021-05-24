@@ -31,6 +31,7 @@ from pygluu.kubernetes.terminal.cache import PromptCache
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
+from pygluu.kubernetes.terminal.sql import PromptSQL
 
 
 class Prompt:
@@ -157,6 +158,12 @@ class Prompt:
         replicas = PromptReplicas(self.settings)
         replicas.prompt_replicas()
 
+    def sql(self):
+        self.load_settings()
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql":
+            spanner = PromptSQL(self.settings)
+            spanner.prompt_sql()
+
     def confirm_settings(self):
         self.load_settings()
         if self.settings.get("CONFIRM_PARAMS") != "Y":
@@ -181,6 +188,7 @@ class Prompt:
         self.persistence_backend()
         self.ldap()
         self.volumes()
+        self.sql()
         self.couchbase()
         self.cache()
         self.backup()

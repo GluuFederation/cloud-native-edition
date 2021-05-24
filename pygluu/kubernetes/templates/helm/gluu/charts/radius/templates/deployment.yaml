@@ -53,6 +53,11 @@ spec:
           {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
           {{- end }}
+        {{- if eq .Values.global.gluuPersistenceType "sql" }}
+          - name: sql-pass
+            mountPath: "/etc/gluu/conf/sql_password"
+            subPath: sql_password
+        {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           - name: {{ include "radius.fullname" .}}-updatelbip
             mountPath: /scripts
@@ -83,6 +88,11 @@ spec:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
       {{- end }}
+        {{- if eq .Values.global.gluuPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
+        {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         - name: {{ include "radius.fullname" .}}-updatelbip
           configMap:

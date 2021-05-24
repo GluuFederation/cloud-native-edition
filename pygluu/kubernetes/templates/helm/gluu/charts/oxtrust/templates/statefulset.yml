@@ -62,6 +62,11 @@ spec:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{- if eq .Values.global.gluuPersistenceType "sql" }}
+          - name: sql-pass
+            mountPath: "/etc/gluu/conf/sql_password"
+            subPath: sql_password
+        {{- end }}
         {{- if .Values.global.jackrabbit.enabled }}
           - name: gluu-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
@@ -88,6 +93,11 @@ spec:
       volumes:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.global.gluuPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass

@@ -29,6 +29,7 @@ from ..forms.configuration import ConfigurationForm
 from ..forms.couchbase import CouchbaseForm, \
     CouchbaseCalculatorForm, CouchbaseMultiClusterForm
 from ..forms.environment import EnvironmentForm
+from ..forms.sql import SqlForm
 from ..forms.helpers import volume_types, app_volume_types, \
     RequiredIfFieldIn, password_requirement_check
 from ..forms.images import ImageNameTagForm
@@ -483,6 +484,9 @@ def persistence_backend():
         if data["PERSISTENCE_BACKEND"] == "hybrid":
             data["HYBRID_LDAP_HELD_DATA"] = form.hybrid_ldap_held_data.data
 
+        if data["PERSISTENCE_BACKEND"] == "sql":
+            data["GLUU_SQL_DB_DIALECT"] = form.sql_dialect.data
+
         if data["PERSISTENCE_BACKEND"] == "ldap":
             data["ENABLED_SERVICES_LIST"] = gluu_settings.db.get("ENABLED_SERVICES_LIST")
             data["ENABLED_SERVICES_LIST"].append("ldap")
@@ -500,6 +504,9 @@ def persistence_backend():
                 gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
             #skip volumes step
             wizard_steps.current_step = 'couchbase_multicluster'
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "sql":
+            # skip volumes step
+            wizard_steps.current_step = "couchbase_calculator"
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -775,11 +782,52 @@ def couchbase_calculator():
         return redirect(url_for(wizard_steps.next_step()))
 
     wizard_steps.current_step = 'couchbase_calculator'
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("spanner", "sql"):
+        # skip volumes step
+        wizard_steps.current_step = "spanner"
     return render_template("wizard/index.html",
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="couchbase_calculator",
                            prev_step=wizard_steps.prev_step())
+
+
+@wizard_blueprint.route("/sql", methods=["GET", "POST"])
+def sql():
+    form = SqlForm()
+
+    if form.validate_on_submit():
+        data = {}
+        data["GLUU_INSTALL_SQL"] = form.install_sql.data
+        data["GLUU_SQL_DB_HOST"] = form.sql_url.data
+        data["GLUU_SQL_DB_NAMESPACE"] = form.sql_namespace.data
+        data["GLUU_SQL_DB_USER"] = form.sql_user.data
+        data["GLUU_SQL_DB_PASSWORD"] = form.sql_password.data
+        data["GLUU_SQL_DB_NAME"] = form.sql_database.data
+
+        gluu_settings.db.update(data)
+        generate_main_config()
+        return redirect(url_for(wizard_steps.next_step()))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.sql_url.data = gluu_settings.db.get("GLUU_SQL_DB_HOST")
+        form.sql_namespace.data = gluu_settings.db.get("GLUU_SQL_DB_NAMESPACE")
+        form.sql_user.data = gluu_settings.db.get("GLUU_SQL_DB_USER")
+        form.sql_password.data = gluu_settings.db.get("GLUU_SQL_DB_PASSWORD")
+        form.sql_database.data = gluu_settings.db.get("GLUU_SQL_DB_NAME")
+
+    wizard_steps.current_step = 'sql'
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "wizard.persistence_backend"
+
+    return render_template("wizard/index.html",
+                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
+                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           form=form,
+                           current_step=wizard_steps.step_number(),
+                           template="sql",
+                           prev_step=prev_step)
 
 
 @wizard_blueprint.route("/cache-type", methods=["GET", "POST"])

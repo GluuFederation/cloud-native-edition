@@ -6,6 +6,13 @@ metadata:
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
 data:
+  GLUU_SQL_DB_DIALECT: {{ .Values.configmap.cnSqlDbDialect }}
+  GLUU_SQL_DB_HOST: {{ .Values.configmap.cnSqlDbHost }}
+  GLUU_SQL_DB_PORT: {{ .Values.configmap.cnSqlDbPort | quote }}
+  GLUU_SQL_DB_NAME: {{ .Values.configmap.cnSqlDbName }}
+  GLUU_SQL_DB_USER: {{ .Values.configmap.cnSqlDbUser }}
+  GLUU_SQL_DB_TIMEZONE: {{ .Values.configmap.cnSqlDbTimezone }}
+  GLUU_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
   GLUU_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}

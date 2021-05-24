@@ -158,6 +158,10 @@ class WizardHandler(object):
                 "title": "Couchbase calculator",
                 "endpoint": "wizard.couchbase_calculator"
             },
+            'sql': {
+                "title": "RDBMS",
+                "endpoint": "wizard.sql"
+            },
             'cache': {
                 "title": "Cache type",
                 "endpoint": "wizard.cache_type"

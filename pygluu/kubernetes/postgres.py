@@ -37,6 +37,17 @@ class Postgres(object):
                                          self.settings.get("JACKRABBIT_PG_USER"),
                                          self.settings.get("POSTGRES_NAMESPACE")))
 
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "postgresql":
+            exec_cmd("helm install {} bitnami/postgresql "
+                     "--set global.postgresql.postgresqlDatabase={} "
+                     "--set global.postgresql.postgresqlPassword={} "
+                     "--set global.postgresql.postgresqlUsername={} "
+                     "--namespace={}".format("gluu",
+                                             self.settings.get("GLUU_SQL_DB_NAME"),
+                                             self.settings.get("GLUU_SQL_DB_PASSWORD"),
+                                             self.settings.get("GLUU_SQL_DB_USER"),
+                                             self.settings.get("GLUU_SQL_DB_NAMESPACE")))
+
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
                                                 self.timeout)
@@ -44,5 +55,8 @@ class Postgres(object):
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
         logger.info("Removing postgres...")
-        exec_cmd("helm delete {} --namespace={}".format("postgres",
+        exec_cmd("helm delete {} --namespace={}".format("sql",
                                                         self.settings.get("POSTGRES_NAMESPACE")))
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "postgresql":
+            exec_cmd("helm delete {} --namespace={}".format("gluu",
+                                                            self.settings.get("GLUU_SQL_DB_NAMESPACE")))

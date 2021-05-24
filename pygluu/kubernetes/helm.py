@@ -233,6 +233,17 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql":
+            values_file_parser["config"]["configmap"]["cnSqlDbDialect "] = \
+                self.settings.get("GLUU_SQL_DB_DIALECT")
+            values_file_parser["config"]["configmap"]["cnSqlDbHost "] = \
+                self.settings.get("GLUU_SQL_DB_HOST")
+            values_file_parser["config"]["configmap"]["cnSqlDbName "] = \
+                self.settings.get("GLUU_SQL_DB_NAME")
+            values_file_parser["config"]["configmap"]["cnSqlDbUser "] = \
+                self.settings.get("GLUU_SQL_DB_USER")
+            values_file_parser["config"]["configmap"]["cnSqldbUserPassword "] = \
+                self.settings.get("GLUU_SQL_DB_PASSWORD")
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True
