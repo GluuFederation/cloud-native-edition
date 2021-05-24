@@ -9,9 +9,9 @@ service:
   port: 8080
 ingress:
   enabled: true
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  additionalAnnotations:
+    # Required annotation below
+    kubernetes.io/ingress.class: "nginx"
   path: /
   hosts:
     - demoexample.gluu.org

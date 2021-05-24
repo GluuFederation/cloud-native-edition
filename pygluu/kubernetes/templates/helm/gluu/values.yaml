@@ -133,6 +133,9 @@ nginx-ingress:
   ingress:
     enabled: true
     path: /
+    additionalAnnotations:
+      # Required annotation below
+      kubernetes.io/ingress.class: "nginx"
     hosts:
     - demoexample.gluu.org
     tls:
