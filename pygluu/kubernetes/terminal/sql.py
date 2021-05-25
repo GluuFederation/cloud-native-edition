@@ -41,15 +41,15 @@ class PromptSQL:
             choice = click.prompt("SQL dialect", default=1)
             self.settings.set("GLUU_SQL_DB_DIALECT", sql_dialect.get(choice, "mysql"))
 
-        if not self.settings.get("INSTALL_SQL"):
+        if not self.settings.get("GLUU_INSTALL_SQL"):
             logger.info(
                 "Install SQL dialect from Bitnamis charts.If the following prompt is answered with N it is assumed "
                 "the SQL server is installed remotely or locally by the user."
                 " A managed service such as Amazon Aurora or CloudSQL should be used in production setups.")
-            self.settings.set("INSTALL_SQL",
+            self.settings.set("GLUU_INSTALL_SQL",
                               confirm_yesno("Install SQL dialect from Bitnamis charts", default=True))
 
-        if self.settings.get("INSTALL_SQL") == "Y":
+        if self.settings.get("GLUU_INSTALL_SQL") == "Y":
 
             if self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
                 self.settings.set("INSTALL_POSTGRES", "Y")

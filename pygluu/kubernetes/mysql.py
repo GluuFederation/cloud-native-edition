@@ -30,9 +30,9 @@ class MySQL(object):
         exec_cmd("helm install {} bitnami/mysql "
                  "--set auth.rootPassword={} "
                  "--set auth.database={} "
-                 "--set auth.username={}"
-                 "--set auth.password={}"
-                 "--namespace={}".format("gluu",
+                 "--set auth.username={} "
+                 "--set auth.password={} "
+                 "--namespace={} ".format("gluu",
                                          self.settings.get("GLUU_SQL_DB_PASSWORD"),
                                          self.settings.get("GLUU_SQL_DB_NAME"),
                                          self.settings.get("GLUU_SQL_DB_USER"),
@@ -46,5 +46,5 @@ class MySQL(object):
     def uninstall_mysql(self):
         logger.info("Removing gluu-mysql...")
         logger.info("Removing mysql...")
-        exec_cmd("helm delete {} --namespace={}".format("sql",
+        exec_cmd("helm delete {} --namespace={}".format("gluu",
                                                         self.settings.get("GLUU_SQL_DB_NAMESPACE")))

@@ -12,6 +12,7 @@ from pygluu.kubernetes.helpers import get_logger
 from .extensions import gluu_settings
 from pygluu.kubernetes.redis import Redis
 from pygluu.kubernetes.postgres import Postgres
+from pygluu.kubernetes.mysql import MySQL
 
 logger = get_logger("gluu-gui        ")
 
@@ -123,6 +124,10 @@ class InstallHandler(object):
             if gluu_settings.db.get("INSTALL_REDIS") == "Y":
                 redis = Redis()
                 redis.install_redis()
+            if gluu_settings.db.get("GLUU_INSTALL_SQL") == "Y" \
+                    and gluu_settings.db.get("GLUU_SQL_DB_DIALECT") == "mysql":
+                sql = MySQL()
+                sql.install_mysql()
             self.queue.put(('Installation in progress', 'ONPROGRESS'))
             helm.install_gluu()
             self.queue.put(('Installation is complete', 'COMPLETED'))
