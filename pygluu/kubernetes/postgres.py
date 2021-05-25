@@ -37,7 +37,7 @@ class Postgres(object):
                                          self.settings.get("JACKRABBIT_PG_USER"),
                                          self.settings.get("POSTGRES_NAMESPACE")))
 
-        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "postgresql":
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
             exec_cmd("helm install {} bitnami/postgresql "
                      "--set global.postgresql.postgresqlDatabase={} "
                      "--set global.postgresql.postgresqlPassword={} "
@@ -57,6 +57,6 @@ class Postgres(object):
         logger.info("Removing postgres...")
         exec_cmd("helm delete {} --namespace={}".format("sql",
                                                         self.settings.get("POSTGRES_NAMESPACE")))
-        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "postgresql":
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
             exec_cmd("helm delete {} --namespace={}".format("gluu",
                                                             self.settings.get("GLUU_SQL_DB_NAMESPACE")))

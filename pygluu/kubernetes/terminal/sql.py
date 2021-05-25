@@ -25,6 +25,22 @@ class PromptSQL:
     def prompt_sql(self):
         """Prompts for SQL server
         """
+        sql_dialect = {
+            1: "mysql",
+            2: "pgsql",
+        }
+
+        if self.settings.get("GLUU_SQL_DB_DIALECT") not in sql_dialect.values():
+            print("|------------------------------------------------------------------|")
+            print("|                     SQL DIALECT                                  |")
+            print("|------------------------------------------------------------------|")
+            print("| [1] MySQL                                                        |")
+            print("| [2] PostgreSQL                                                   |")
+            print("|------------------------------------------------------------------|")
+
+            choice = click.prompt("SQL dialect", default=1)
+            self.settings.set("GLUU_SQL_DB_DIALECT", sql_dialect.get(choice, "mysql"))
+            
         if not self.settings.get("INSTALL_SQL"):
             logger.info(
                 "Install SQL dialect from Bitnamis charts.If the following prompt is answered with N it is assumed "

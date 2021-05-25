@@ -40,6 +40,6 @@ class PersistenceBackendForm(FlaskForm):
                                        render_kw={"disabled": "disabled"})
     sql_dialect = RadioField("SQL Dialect",
                                        choices=[("mysql", "MySQL"),
-                                                ("postgresql", "PostgreSQL")],
+                                                ("pgsql", "PostgreSQL")],
                                        default="mysql",
                                        render_kw={"disabled": "disabled"})
