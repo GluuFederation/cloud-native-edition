@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.2...v1.6.0) (2021-05-25)
+
+
+### Features
+
+* **helm:** allow to configure liveness and readiness probe globally ([ed793e5](https://www.github.com/GluuFederation/cloud-native-edition/commit/ed793e5cf2348c902a2130f991e0a9d35c1861d4))
+
+
+### Bug Fixes
+
+* **helm:** adjust helm version ([7f8a158](https://www.github.com/GluuFederation/cloud-native-edition/commit/7f8a1588495721e8f7d00511b8e06ece246388d9))
+
 ### [1.5.2](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.1...v1.5.2) (2021-05-24)
 
 
