@@ -9,6 +9,8 @@ metadata:
 spec:
   hosts:
   - {{ .Values.global.fqdn }}
+  gateways:
+  - {{ .Release.Name }}-global-gtw
   http:
   - name: {{ .Release.Name }}-istio-passport
     match:
