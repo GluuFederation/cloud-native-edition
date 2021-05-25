@@ -9,13 +9,8 @@ metadata:
 {{ include "jackrabbit.labels" . | indent 4}}
 spec:
   ports:
-    {{- if .Values.global.istio.enabled }}
-    - port: 8080
-      name: http-jackrabbit
-    {{- else }}
-    - port: {{ .Values.ports.jackrabbit.port }}
-      name: {{ .Values.service.jackRabbitServiceName }}
-    {{- end }}
+    - port: {{ .Values.service.port }}
+      name: {{ .Values.service.name }}
   clusterIP: None
   selector:
     app: {{ include "jackrabbit.name" . }}

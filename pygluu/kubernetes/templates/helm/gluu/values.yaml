@@ -157,6 +157,10 @@ jackrabbit:
     requests:
       cpu: 1500m
       memory: 1000Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -213,6 +217,10 @@ opendj:
       targetPort: 7946
       protocol: UDP
       nodePort: ""
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -237,6 +245,10 @@ oxauth:
     requests:
       cpu: 2500m
       memory: 2500Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -255,6 +267,10 @@ oxtrust:
     requests:
       cpu: 1000m
       memory: 1000Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -273,6 +289,10 @@ fido2:
     requests:
       cpu: 500m
       memory: 500Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -291,6 +311,10 @@ scim:
     requests:
       cpu: 1000m
       memory: 1000Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -309,6 +333,10 @@ oxd-server:
     requests:
       cpu: 1000m
       memory: 400Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -327,6 +355,10 @@ casa:
     limits:
       memory: "500Mi"
       cpu: "500m"
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -345,6 +377,10 @@ oxpassport:
     requests:
       cpu: 700m
       memory: 900Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -363,6 +399,10 @@ oxshibboleth:
     requests:
       cpu: 1000m
       memory: 1000Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
@@ -381,6 +421,10 @@ radius:
     requests:
       cpu: 700m
       memory: 700Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
   dnsPolicy: ""
   dnsConfig: {}
 
