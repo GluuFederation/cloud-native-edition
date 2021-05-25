@@ -158,6 +158,10 @@ class WizardHandler(object):
                 "title": "Couchbase calculator",
                 "endpoint": "wizard.couchbase_calculator"
             },
+            'spanner': {
+                "title": "Spanner",
+                "endpoint": "wizard.spanner"
+            },
             'cache': {
                 "title": "Cache type",
                 "endpoint": "wizard.cache_type"

@@ -31,7 +31,7 @@ from pygluu.kubernetes.terminal.cache import PromptCache
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
-
+from pygluu.kubernetes.terminal.spanner import PromptSpanner
 
 class Prompt:
     """Prompt is used for prompting users for input used in deploying Gluu.
@@ -157,6 +157,12 @@ class Prompt:
         replicas = PromptReplicas(self.settings)
         replicas.prompt_replicas()
 
+    def spanner(self):
+        self.load_settings()
+        if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
+            spanner = PromptSpanner(self.settings)
+            spanner.prompt_spanner()
+
     def confirm_settings(self):
         self.load_settings()
         if self.settings.get("CONFIRM_PARAMS") != "Y":
@@ -181,6 +187,7 @@ class Prompt:
         self.persistence_backend()
         self.ldap()
         self.volumes()
+        self.spanner()
         self.couchbase()
         self.cache()
         self.backup()

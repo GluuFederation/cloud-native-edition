@@ -31,6 +31,14 @@ global:
   isDomainRegistered: "false"
   gluuPersistenceType: couchbase
   gluuJackrabbitCluster: "true"
+  #google/kubernetes
+  configAdapterName: kubernetes
+  #google/kubernetes
+  configSecretAdapter: kubernetes
+  # [google_envs] Envs related to using Google
+  # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
+  cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
+  # [google_envs] END
   oxauth:
     enabled: true
   fido2:
@@ -85,9 +93,7 @@ config:
     gluuSyncShibManifests: false
     gluuSyncCasaManifests: false
     gluuMaxRamPercent: "75.0"
-    configAdapterName: kubernetes
     containerMetadataName: kubernetes
-    configSecretAdapter: kubernetes
     gluuRedisUrl: redis:6379
     gluuRedisUseSsl: "false"
     gluuRedisType: STANDALONE
@@ -109,6 +115,22 @@ config:
     gluuJackrabbitUrl: http://jackrabbit:8080
     gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     gluuDocumentStoreType: JCA
+    # [google_envs] Envs related to using Google
+    # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
+    cnGoogleSecretManagerServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+    cnGoogleProjectId: google-project-to-save-config-and-secrets-to
+    # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+    cnGoogleSpannerInstanceId: ""
+    cnGoogleSpannerDatabaseId: ""
+    # [google_spanner_envs] END
+    # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+    cnSecretGoogleSecretVersionId: "latest"
+    cnSecretGoogleSecretNamePrefix: jans
+    cnGoogleSecretManagerPassPhrase: Test1234#
+    cnConfigGoogleSecretVersionId: "latest"
+    cnConfigGoogleSecretNamePrefix: jans
+    # [google_secret_manager_envs] END
+    # [google_envs] END
     lbAddr: ""
     ldapServiceName: opendj
     gluuOxtrustApiEnabled: false

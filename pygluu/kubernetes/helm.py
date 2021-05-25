@@ -220,7 +220,7 @@ class Helm(object):
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
         values_file_parser["config"]["configmap"]["gluuPersistenceLdapMapping"] = \
             self.settings.get("HYBRID_LDAP_HELD_DATA")
-        if self.settings.get("PERSISTENCE_BACKEND") != "ldap":
+        if self.settings.get("PERSISTENCE_BACKEND") in ("couchbase", "hybrid"):
             values_file_parser["config"]["configmap"]["gluuCouchbaseUrl"] = self.settings.get("COUCHBASE_URL")
             values_file_parser["config"]["configmap"]["gluuCouchbaseUser"] = self.settings.get("COUCHBASE_USER")
             values_file_parser["config"]["configmap"]["gluuCouchbaseBucketPrefix"] = self.settings.get(
@@ -233,6 +233,12 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
+        if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId "] = \
+                self.settings.get("GOOGLE_SPANNER_INSTANCE_ID")
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId "] = \
+                self.settings.get("GOOGLE_SPANNER_DATABASE_ID")
+
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True
