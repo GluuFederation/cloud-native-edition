@@ -22,7 +22,7 @@ class SqlForm(FlaskForm):
     Fields :
     install_sql (string|required|default: Y)
     sql_namespace (string|required|default: postgres)
-    sql_url (string|required|default: postgres.postgres.svc.cluster.local  )
+    sql_url (string|required|default: gluu.sql.svc.cluster.local  )
     sql_user (string|required: default gluu)
     sql_password (string|required: default auto generated)
     sql_password_confirmation (string|required equal to jackrabbit_pg_password)
@@ -41,7 +41,7 @@ class SqlForm(FlaskForm):
         validators=[InputRequired()])
     sql_url = StringField(
         "Please enter  SQL (remote or local) URL base name. ",
-        default="mysql.mysql.svc.cluster.local",
+        default="gluu.mysql.svc.cluster.local",
         validators=[InputRequired()])
     sql_user = StringField("Please enter a user for Gluu SQL database",
                                      default="gluu",

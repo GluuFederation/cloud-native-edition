@@ -40,7 +40,7 @@ class PromptSQL:
 
             choice = click.prompt("SQL dialect", default=1)
             self.settings.set("GLUU_SQL_DB_DIALECT", sql_dialect.get(choice, "mysql"))
-            
+
         if not self.settings.get("INSTALL_SQL"):
             logger.info(
                 "Install SQL dialect from Bitnamis charts.If the following prompt is answered with N it is assumed "
@@ -51,15 +51,18 @@ class PromptSQL:
 
         if self.settings.get("INSTALL_SQL") == "Y":
 
+            if self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
+                self.settings.set("INSTALL_POSTGRES", "Y")
+
             if not self.settings.get("GLUU_SQL_DB_NAMESPACE"):
                 self.settings.set("GLUU_SQL_DB_NAMESPACE",
                                   click.prompt("Please enter a namespace for the SQL server", default="sql"))
 
-            self.settings.set("GLUU_SQL_DB_HOST", f'sql.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
+            self.settings.set("GLUU_SQL_DB_HOST", f'gluu.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
 
         if not self.settings.get("GLUU_SQL_DB_HOST"):
             self.settings.set("GLUU_SQL_DB_HOST", click.prompt("Please enter  SQL (remote or local) URL base name",
-                                                               default="sql.sql.svc.cluster.local"))
+                                                               default="gluu.sql.svc.cluster.local"))
 
         if not self.settings.get("GLUU_SQL_DB_USER"):
             self.settings.set("GLUU_SQL_DB_USER", click.prompt("Please enter a user for Gluu SQL database ",

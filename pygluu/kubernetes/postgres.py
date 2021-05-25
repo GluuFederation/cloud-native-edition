@@ -24,18 +24,18 @@ class Postgres(object):
         self.uninstall_postgres()
         self.kubernetes.create_namespace(name=self.settings.get("POSTGRES_NAMESPACE"),
                                          labels={"app": "postgres"})
-
-        exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
-        exec_cmd("helm repo update")
-        exec_cmd("helm install {} bitnami/postgresql "
-                 "--set global.postgresql.postgresqlDatabase={} "
-                 "--set global.postgresql.postgresqlPassword={} "
-                 "--set global.postgresql.postgresqlUsername={} "
-                 "--namespace={}".format("postgresql",
-                                         self.settings.get("JACKRABBIT_DATABASE"),
-                                         self.settings.get("JACKRABBIT_PG_PASSWORD"),
-                                         self.settings.get("JACKRABBIT_PG_USER"),
-                                         self.settings.get("POSTGRES_NAMESPACE")))
+        if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+            exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
+            exec_cmd("helm repo update")
+            exec_cmd("helm install {} bitnami/postgresql "
+                     "--set global.postgresql.postgresqlDatabase={} "
+                     "--set global.postgresql.postgresqlPassword={} "
+                     "--set global.postgresql.postgresqlUsername={} "
+                     "--namespace={}".format("postgresql",
+                                             self.settings.get("JACKRABBIT_DATABASE"),
+                                             self.settings.get("JACKRABBIT_PG_PASSWORD"),
+                                             self.settings.get("JACKRABBIT_PG_USER"),
+                                             self.settings.get("POSTGRES_NAMESPACE")))
 
         if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
             exec_cmd("helm install {} bitnami/postgresql "

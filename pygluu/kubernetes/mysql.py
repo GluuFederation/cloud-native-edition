@@ -32,7 +32,7 @@ class MySQL(object):
                  "--set auth.database={} "
                  "--set auth.username={}"
                  "--set auth.password={}"
-                 "--namespace={}".format("sql",
+                 "--namespace={}".format("gluu",
                                          self.settings.get("GLUU_SQL_DB_PASSWORD"),
                                          self.settings.get("GLUU_SQL_DB_NAME"),
                                          self.settings.get("GLUU_SQL_DB_USER"),
