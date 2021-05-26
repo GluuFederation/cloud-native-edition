@@ -8,4 +8,4 @@ maintainers:
 email: support@gluu.org
 description: A Helm chart for jackrabbit content repository
 name: jackrabbit
-version: 1.5.3
+version: 1.5.4
