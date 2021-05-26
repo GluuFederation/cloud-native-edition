@@ -30,11 +30,9 @@ livenessProbe:
   timeoutSeconds: 5
   failureThreshold: 20
 readinessProbe:
-  exec:
-    command:
-    - python3
-    - /app/scripts/healthcheck.py
-  initialDelaySeconds: 25
+  tcpSocket:
+    port: 1636
+  initialDelaySeconds: 60
   timeoutSeconds: 5
   periodSeconds: 25
   failureThreshold: 20
