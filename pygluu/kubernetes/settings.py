@@ -209,6 +209,8 @@ class SettingsHandler(object):
                                 GLUU_SQL_DB_NAME="",
                                 GLUU_SQL_DB_USER="",
                                 GLUU_SQL_DB_PASSWORD="",
+                                GOOGLE_SPANNER_INSTANCE_ID="",
+                                GOOGLE_SPANNER_DATABASE_ID=""
                                 )
         return default_settings
 

@@ -26,6 +26,7 @@ class PersistenceBackendForm(FlaskForm):
         choices=[("ldap", "OpenDJ"),
                  ("couchbase", "Couchbase"),
                  ("sql", "SQL(MySQL/PostgreSQL)"),
+                 ("spanner", "Spanner"),
                  ("hybrid", "Hybrid(OpenDJ + Couchbase)")],
         default="ldap",
         validators=[DataRequired()])

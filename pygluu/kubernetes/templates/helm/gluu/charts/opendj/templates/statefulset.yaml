@@ -32,6 +32,11 @@ spec:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+        - name: google-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-sa
+      {{- end }}
       {{- if .Values.multiCluster.enabled }}
         - name: serfkey
           secret:
@@ -68,6 +73,14 @@ spec:
             name: {{ $key }}
         {{- end }}
         volumeMounts:
+        {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+          - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
+            name: google-sa
+            subPath: google-credentials.json
+        {{- end }}
         {{- range $key, $values := .Values.OpenDjVolumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}

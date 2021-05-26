@@ -25,6 +25,7 @@ class PromptPersistenceBackend:
             1: "ldap",
             2: "couchbase",
             3: "hybrid",
+            4: "spanner",
             5: "sql"
         }
 
@@ -35,6 +36,7 @@ class PromptPersistenceBackend:
             print("| [1] OpenDJ [default]                                             |")
             print("| [2] Couchbase                                                    |")
             print("| [3] Hybrid(OpenDJ + Couchbase)                                   |")
+            print("| [4] Google Spanner                                               |")
             print("| [5] SQL(MySQL or PostgreSQL)                                     |")
             print("|------------------------------------------------------------------|")
 

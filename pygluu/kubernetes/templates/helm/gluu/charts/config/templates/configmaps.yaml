@@ -15,6 +15,22 @@ data:
   GLUU_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
   GLUU_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
+  GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
+  GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+  # [google_envs] Envs related to using Google
+  GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
+  GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
+  # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+  GLUU_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.configmap.cnGoogleSpannerInstanceId | quote }}
+  GLUU_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.configmap.cnGoogleSpannerDatabaseId | quote }}
+  # [google_spanner_envs] END
+  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+  GLUU_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnSecretGoogleSecretVersionId | quote }}
+  GLUU_SECRET_GOOGLE_SECRET_MANAGER_PASSPHRASE: {{ .Values.configmap.cnGoogleSecretManagerPassPhrase | quote }}
+  GLUU_SECRET_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnSecretGoogleSecretNamePrefix | quote }}
+  GLUU_CONFIG_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnConfigGoogleSecretVersionId | quote }}
+  GLUU_CONFIG_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnConfigGoogleSecretNamePrefix | quote }}
+  # [google_secret_manager_envs] END
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}

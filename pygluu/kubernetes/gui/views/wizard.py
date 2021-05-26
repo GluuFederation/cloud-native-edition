@@ -28,6 +28,7 @@ from ..forms.cache import CacheTypeForm
 from ..forms.configuration import ConfigurationForm
 from ..forms.couchbase import CouchbaseForm, \
     CouchbaseCalculatorForm, CouchbaseMultiClusterForm
+from ..forms.spanner import SpannerForm
 from ..forms.environment import EnvironmentForm
 from ..forms.sql import SqlForm
 from ..forms.helpers import volume_types, app_volume_types, \
@@ -502,7 +503,7 @@ def persistence_backend():
 
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch and \
                 gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
-            #skip volumes step
+            # skip volumes step
             wizard_steps.current_step = 'couchbase_multicluster'
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "sql":
             # skip volumes step
@@ -584,7 +585,7 @@ def volumes():
         gluu_settings.db.update(data)
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
             # skip couchbase and jump to cache step
-            wizard_steps.current_step = 'couchbase_calculator'
+            wizard_steps.current_step = 'spanner'
 
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -715,8 +716,8 @@ def couchbase():
                 gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
             return redirect(url_for(wizard_steps.next_step()))
 
-        #skip couchbase calculator
-        wizard_steps.current_step = 'couchbase_calculator'
+        # skip couchbase calculator and spanner
+        wizard_steps.current_step = 'spanner'
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -791,7 +792,6 @@ def couchbase_calculator():
                            template="couchbase_calculator",
                            prev_step=wizard_steps.prev_step())
 
-
 @wizard_blueprint.route("/sql", methods=["GET", "POST"])
 def sql():
     form = SqlForm()
@@ -829,6 +829,36 @@ def sql():
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="sql",
+                           prev_step=prev_step)
+  
+@wizard_blueprint.route("/spanner", methods=["GET", "POST"])
+def spanner():
+    form = SpannerForm()
+
+    if form.validate_on_submit():
+        data = {}
+        data["GOOGLE_SPANNER_INSTANCE_ID"] = form.spanner_instance_id.data
+        data["GOOGLE_SPANNER_DATABASE_ID"] = form.spanner_database_id.data
+
+        gluu_settings.db.update(data)
+        generate_main_config()
+        return redirect(url_for(wizard_steps.next_step()))
+
+    if request.method == "GET":
+        form = populate_form_data(form)
+        form.spanner_instance_id.data = gluu_settings.db.get("GOOGLE_SPANNER_INSTANCE_ID")
+        form.spanner_database_id.data = gluu_settings.db.get("GOOGLE_SPANNER_DATABASE_ID")
+
+    wizard_steps.current_step = 'spanner'
+    # TODO: find a way to get better work on dynamic wizard step
+    prev_step = "wizard.persistence_backend"
+
+    return render_template("wizard/index.html",
+                           deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
+                           persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
+                           form=form,
+                           current_step=wizard_steps.step_number(),
+                           template="spanner",
                            prev_step=prev_step)
 
 
@@ -871,12 +901,15 @@ def cache_type():
     wizard_steps.current_step = 'cache'
 
     # TODO: find a way to get better work on dynamic wizard step
-    prev_step = wizard_steps.prev_step()
+    prev_step = prev_step = "wizard.volumes"
     if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('hybrid', 'couchbase'):
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
             prev_step = "wizard.couchbase"
         else:
             prev_step = "wizard.couchbase_multi_cluster"
+
+    if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('spanner'):
+        prev_step = "wizard.spanner"
 
     return render_template("wizard/index.html",
                            form=form,

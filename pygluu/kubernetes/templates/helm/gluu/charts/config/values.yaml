@@ -50,9 +50,7 @@ configmap:
   gluuSyncShibManifests: false
   gluuSyncCasaManifests: false
   gluuMaxRamPercent: "75.0"
-  configAdapterName: kubernetes
   containerMetadataName: kubernetes
-  configSecretAdapter: kubernetes
   # If REDIS is the Cache Type or if going to be used with oxd
   gluuRedisUrl: redis:6379
   gluuRedisUseSsl: "false"

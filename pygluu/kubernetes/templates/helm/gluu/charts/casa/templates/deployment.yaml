@@ -72,6 +72,11 @@ spec:
               mountPath: /etc/gluu/conf/jackrabbit_admin_password
               subPath: jackrabbit_admin_password
           {{- end }}
+          {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+            - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
+              name: google-sa
+              subPath: google-credentials.json
+          {{- end }}
           {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
             - name: {{ include "casa.fullname" .}}-updatelbip
               mountPath: "/scripts"
@@ -106,6 +111,10 @@ spec:
         - name: sql-pass
           secret:
             secretName: {{ .Release.Name }}-sql-pass
+      {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+        - name: google-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-sa
       {{- end }}
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
