@@ -433,7 +433,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.2.3_03
+    tag: 4.2.3_04
     pullPolicy: Always
   resources:
     limits:
