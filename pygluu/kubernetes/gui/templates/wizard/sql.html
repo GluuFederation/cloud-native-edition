@@ -1,12 +1,12 @@
 <div class="alert alert-warning" role="alert">
   <p>Please use a managed service such as CloudSQL or Amazon Aurora serverless mode with version >=5.7. An option to use Bitnamis chart in test environments will be available and automatically installed if chosen.</p>
 </div>
-{{ forms.radio_toggle(form.sql.install_mysql) }}
-<div id="sqlInstall" class="collapse {{ 'show' if form.sql.install_sql.data == 'Y' else '' }}">
-    {{ forms.text(form.sql.mysql_namespace) }}
+{{ forms.radio_toggle(form.install_sql) }}
+<div id="sqlInstall" class="collapse {{ 'show' if form.install_sql.data == 'Y' else '' }}">
+    {{ forms.text(form.sql_namespace) }}
 </div>
-<div id="sqlNoInstall" class="collapse {{ 'show' if form.sql.install_sql.data == 'N' else '' }}">
-    {{ forms.text(form.sql.sql_url) }}
+<div id="sqlNoInstall" class="collapse {{ 'show' if form.install_sql.data == 'N' else '' }}">
+    {{ forms.text(form.sql_url) }}
 </div>
 {{ forms.text(form.sql_user) }}
 {{ forms.password(form.sql_password) }}

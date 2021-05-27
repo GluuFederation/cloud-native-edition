@@ -209,6 +209,8 @@ class SettingsHandler(object):
                                 GLUU_SQL_DB_NAME="",
                                 GLUU_SQL_DB_USER="",
                                 GLUU_SQL_DB_PASSWORD="",
+                                GOOGLE_SERVICE_ACCOUNT_BASE64="",
+                                USE_GOOGLE_SECRET_MANAGER="",
                                 GOOGLE_SPANNER_INSTANCE_ID="",
                                 GOOGLE_SPANNER_DATABASE_ID=""
                                 )

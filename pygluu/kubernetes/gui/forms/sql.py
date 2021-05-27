@@ -38,11 +38,10 @@ class SqlForm(FlaskForm):
     sql_namespace = StringField(
         "Please enter a namespace for the SQL server",
         default="mysql",
-        validators=[InputRequired()])
+        validators=[RequiredIfFieldEqualTo("install_sql", "Y")])
     sql_url = StringField(
         "Please enter  SQL (remote or local) URL base name. ",
-        default="gluu.mysql.svc.cluster.local",
-        validators=[InputRequired()])
+        default="gluu.mysql.svc.cluster.local")
     sql_user = StringField("Please enter a user for Gluu SQL database",
                                      default="gluu",
                                      validators=[RequiredIfFieldEqualTo("install_sql", "Y")])

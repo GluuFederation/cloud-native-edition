@@ -28,7 +28,7 @@ from ..forms.cache import CacheTypeForm
 from ..forms.configuration import ConfigurationForm
 from ..forms.couchbase import CouchbaseForm, \
     CouchbaseCalculatorForm, CouchbaseMultiClusterForm
-from ..forms.spanner import SpannerForm
+from ..forms.google import GoogleForm
 from ..forms.environment import EnvironmentForm
 from ..forms.sql import SqlForm
 from ..forms.helpers import volume_types, app_volume_types, \
@@ -508,6 +508,9 @@ def persistence_backend():
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "sql":
             # skip volumes step
             wizard_steps.current_step = "couchbase_calculator"
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
+            # skip volumes step
+            wizard_steps.current_step = "sql"
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -585,7 +588,7 @@ def volumes():
         gluu_settings.db.update(data)
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
             # skip couchbase and jump to cache step
-            wizard_steps.current_step = 'spanner'
+            wizard_steps.current_step = 'google'
 
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -716,8 +719,8 @@ def couchbase():
                 gluu_settings.db.get("INSTALL_COUCHBASE") == "Y":
             return redirect(url_for(wizard_steps.next_step()))
 
-        # skip couchbase calculator and spanner
-        wizard_steps.current_step = 'spanner'
+        # skip couchbase calculator and sql
+        wizard_steps.current_step = 'sql'
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
@@ -785,12 +788,13 @@ def couchbase_calculator():
     wizard_steps.current_step = 'couchbase_calculator'
     if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("spanner", "sql"):
         # skip volumes step
-        wizard_steps.current_step = "spanner"
+        wizard_steps.current_step = "sql"
     return render_template("wizard/index.html",
                            form=form,
                            current_step=wizard_steps.step_number(),
                            template="couchbase_calculator",
                            prev_step=wizard_steps.prev_step())
+
 
 @wizard_blueprint.route("/sql", methods=["GET", "POST"])
 def sql():
@@ -808,15 +812,21 @@ def sql():
         data["GLUU_SQL_DB_NAME"] = form.sql_database.data
 
         gluu_settings.db.update(data)
-        generate_main_config()
+        wizard_steps.current_step = 'sql'
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
-        form.sql_url.data = gluu_settings.db.get("GLUU_SQL_DB_HOST")
+        form.install_sql.data = gluu_settings.db.get("GLUU_INSTALL_SQL")
+        if not gluu_settings.db.get("GLUU_SQL_DB_HOST"):
+            form.sql_url.data = gluu_settings.db.get("GLUU_SQL_DB_HOST")
         form.sql_namespace.data = gluu_settings.db.get("GLUU_SQL_DB_NAMESPACE")
         form.sql_user.data = gluu_settings.db.get("GLUU_SQL_DB_USER")
-        form.sql_password.data = gluu_settings.db.get("GLUU_SQL_DB_PASSWORD")
+        if not gluu_settings.db.get("GLUU_SQL_DB_PASSWORD"):
+            form.sql_password.data = \
+                form.sql_password_confirmation.data = generate_password()
+        else:
+            form.sql_password.data = form.sql_password_confirmation.data = gluu_settings.db.get("GLUU_SQL_DB_PASSWORD")
         form.sql_database.data = gluu_settings.db.get("GLUU_SQL_DB_NAME")
 
     wizard_steps.current_step = 'sql'
@@ -830,26 +840,42 @@ def sql():
                            current_step=wizard_steps.step_number(),
                            template="sql",
                            prev_step=prev_step)
-  
-@wizard_blueprint.route("/spanner", methods=["GET", "POST"])
-def spanner():
-    form = SpannerForm()
+
+
+@wizard_blueprint.route("/google", methods=["GET", "POST"])
+def google():
+    form = GoogleForm()
 
     if form.validate_on_submit():
         data = {}
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") != "spanner":
+            form.spanner_instance_id.validators = [Optional()]
+            form.spanner_database_id.validators = [Optional()]
         data["GOOGLE_SPANNER_INSTANCE_ID"] = form.spanner_instance_id.data
         data["GOOGLE_SPANNER_DATABASE_ID"] = form.spanner_database_id.data
+        data["USE_GOOGLE_SECRET_MANAGER"] = form.google_secret_manager.data
+
+        if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner" or \
+                data["USE_GOOGLE_SECRET_MANAGER"] == "Y":
+            # load  google_service_account json
+            filename = secure_filename(form.google_service_account.data.filename)
+            form.google_service_account.data.save('./' + filename)
+            with open(Path('./' + filename)) as content_file:
+                google_service_account = content_file.read()
+                encoded_google_service_account_bytes = base64.b64encode(google_service_account.encode("utf-8"))
+                encoded_google_service_account_string = str(encoded_google_service_account_bytes, "utf-8")
+                data["GOOGLE_SERVICE_ACCOUNT_BASE64"] = encoded_google_service_account_string
 
         gluu_settings.db.update(data)
-        generate_main_config()
         return redirect(url_for(wizard_steps.next_step()))
 
     if request.method == "GET":
         form = populate_form_data(form)
         form.spanner_instance_id.data = gluu_settings.db.get("GOOGLE_SPANNER_INSTANCE_ID")
         form.spanner_database_id.data = gluu_settings.db.get("GOOGLE_SPANNER_DATABASE_ID")
+        form.google_secret_manager.data = gluu_settings.db.get("USE_GOOGLE_SECRET_MANAGER")
 
-    wizard_steps.current_step = 'spanner'
+    wizard_steps.current_step = 'google'
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "wizard.persistence_backend"
 
@@ -858,7 +884,7 @@ def spanner():
                            persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),
                            form=form,
                            current_step=wizard_steps.step_number(),
-                           template="spanner",
+                           template="google",
                            prev_step=prev_step)
 
 
@@ -908,8 +934,11 @@ def cache_type():
         else:
             prev_step = "wizard.couchbase_multi_cluster"
 
-    if gluu_settings.db.get('PERSISTENCE_BACKEND') in ('spanner'):
-        prev_step = "wizard.spanner"
+    if gluu_settings.db.get('PERSISTENCE_BACKEND') == 'spanner':
+        prev_step = "wizard.google"
+
+    if gluu_settings.db.get('PERSISTENCE_BACKEND') == 'sql':
+        prev_step = "wizard.sql"
 
     return render_template("wizard/index.html",
                            form=form,

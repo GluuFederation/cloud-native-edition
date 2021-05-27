@@ -162,9 +162,9 @@ class WizardHandler(object):
                 "title": "RDBMS",
                 "endpoint": "wizard.sql"
             },
-            'spanner': {
-                "title": "Spanner",
-                "endpoint": "wizard.spanner"
+            'google': {
+                "title": "Google",
+                "endpoint": "wizard.google"
             },
             'cache': {
                 "title": "Cache type",

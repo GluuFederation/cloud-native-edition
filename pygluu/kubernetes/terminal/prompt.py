@@ -32,7 +32,7 @@ from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
 from pygluu.kubernetes.terminal.sql import PromptSQL
-from pygluu.kubernetes.terminal.spanner import PromptSpanner
+from pygluu.kubernetes.terminal.google import PromptGoogle
 
 class Prompt:
     """Prompt is used for prompting users for input used in deploying Gluu.
@@ -164,11 +164,11 @@ class Prompt:
             spanner = PromptSQL(self.settings)
             spanner.prompt_sql()
             
-    def spanner(self):
+    def google(self):
         self.load_settings()
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
-            spanner = PromptSpanner(self.settings)
-            spanner.prompt_spanner()
+            spanner = PromptGoogle(self.settings)
+            spanner.prompt_google()
 
     def confirm_settings(self):
         self.load_settings()
@@ -195,7 +195,7 @@ class Prompt:
         self.ldap()
         self.volumes()
         self.sql()
-        self.spanner()
+        self.google()
         self.couchbase()
         self.cache()
         self.backup()

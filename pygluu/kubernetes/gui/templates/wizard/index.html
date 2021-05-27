@@ -238,6 +238,28 @@
         });
       {% endif %}
 
+      {% if template == "sql" %}
+        $('input[name="install_sql"').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#sqlInstall').collapse('show');
+             $('#sqlNoInstall').collapse('hide');
+           }else{
+            $('#sqlNoInstall').collapse('show');
+            $('#sqlInstall').collapse('hide');
+           }
+        });
+      {% endif %}
+
+      {% if template == "google" %}
+
+        $('input[name="persistencebackend-persistence_backend"]').on('change', function(){
+          if($(this).val() == 'spanner'){
+            $('#useSpanner').collapse('show');
+          }else{
+            $('#useSpanner').collapse('hide');
+          }
+        });
+
       {% if template == "environment" %}
         $('input[name="test_environment"]').on('change', function(){
           if($(this).val() == 'Y'){
@@ -261,8 +283,11 @@
         $('input[name="persistence_backend"]').on('change', function(){
           if($(this).val() == 'hybrid'){
             $('#hybridLdapHeldData').collapse('show');
+          }else if($(this).val() == 'sql'){
+            $('#sqlDialect').collapse('show');
           }else{
             $('#hybridLdapHeldData').collapse('hide');
+            $('#sqlDialect').collapse('hide');
           }
         });
 

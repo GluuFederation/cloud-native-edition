@@ -252,6 +252,10 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId "] = \
                 self.settings.get("GOOGLE_SPANNER_DATABASE_ID")
 
+        if self.settings.get("PERSISTENCE_BACKEND") == "spanner" or \
+                self.settings.get("USE_GOOGLE_SECRET_MANAGER") == "Y":
+            values_file_parser["config"]["configmap"]["cnGoogleServiceAccount"] = \
+                self.settings.get("GOOGLE_SERVICE_ACCOUNT_BASE64")
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True

@@ -1,0 +1,17 @@
+<div id="useSpanner" class="collapse {{ 'show' if form.persistencebackend.persistence_backend.data == 'spanner' else '' }}">
+    <div class="alert alert-warning" role="alert">
+    <p>Using Google Spanner is beta.The service account that will be uploaded  must have roles/spanner.databaseUser to use Spanner</p>
+    </div>
+    {{ forms.text(form.spanner_instance_id) }}
+    {{ forms.text(form.spanner_database_id) }}
+</div>
+<div class="alert alert-warning" role="alert">
+  <p>Using Google secret manager is beta.The service account that will be uploaded later must have roles/secretmanager.admin to use Google secret manager</p>
+</div>
+{{ forms.radio_toggle(form.google_secret_manager) }}
+<div id="loadGoogleServiceAccount" class="collapse {{ 'show' if form.google_secret_manager.data == 'Y' or form.persistencebackend.persistence_backend.data == 'spanner' else '' }}">
+    <div class="alert alert-warning" role="alert">
+        <p>The service account that will be uploaded  must have roles/spanner.databaseUser to use Spanner</p>
+        <p>The service account that will be uploaded later must have roles/secretmanager.admin to use Google secret manager</p>
+    {{ forms.fileinput(form.google_service_account) }}
+</div>
