@@ -10,6 +10,8 @@ data:
   CN_DISTRIBUTION: {{ .Values.global.distribution | quote }}
   {{ if .Values.global.cnObExtSigningJwksUri }}
   CN_OB_EXT_SIGNING_JWKS_URI: {{ .Values.global.cnObExtSigningJwksUri | quote }}
+  CN_OB_AS_TRANSPORT_ALIAS: {{ .Values.global.cnObTransportAlias | quote }}
+  CN_OB_EXT_SIGNING_ALIAS: {{ .Values.global.cnObExtSigningAlias | quote }}
   {{- end }}
   # [google_envs] Envs related to using Google
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}

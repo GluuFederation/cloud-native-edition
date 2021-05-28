@@ -128,11 +128,14 @@ global:
   cnObExtSigningJwksCrt: ""
   cnObExtSigningJwksKey: ""
   cnObExtSigningJwksKeyPassPhrase: ""
+  # This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G
+  cnObExtSigningAlias: ""
 
   # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportCrt: ""
   cnObTransportKey: ""
   cnObTransportKeyPassPhrase: ""
+  cnObTransportAlias: ""
   # base64 string for the open banking AS transport truststore in p12 format. This can be generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportTrustStore: ""
   config:
