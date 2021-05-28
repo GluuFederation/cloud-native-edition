@@ -247,10 +247,12 @@ class Helm(object):
                 self.settings.get("GLUU_SQL_DB_PASSWORD")
             
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
-            values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId "] = \
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId"] = \
                 self.settings.get("GOOGLE_SPANNER_INSTANCE_ID")
-            values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId "] = \
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId"] = \
                 self.settings.get("GOOGLE_SPANNER_DATABASE_ID")
+            values_file_parser["config"]["configmap"]["cnGoogleProjectId"] = \
+                self.settings.get("GOOGLE_PROJECT_ID")
 
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner" or \
                 self.settings.get("USE_GOOGLE_SECRET_MANAGER") == "Y":

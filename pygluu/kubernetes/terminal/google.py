@@ -11,6 +11,7 @@ import click
 from pathlib import Path
 import base64
 from pygluu.kubernetes.terminal.helpers import confirm_yesno
+import json
 
 
 class PromptGoogle:
@@ -25,12 +26,14 @@ class PromptGoogle:
         """
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
             if not self.settings.get("GOOGLE_SPANNER_INSTANCE_ID"):
-                self.settings.set("GOOGLE_SPANNER_INSTANCE_ID", click.prompt("Please enter the google spanner instance ID.",
-                                                                             default=""))
+                self.settings.set("GOOGLE_SPANNER_INSTANCE_ID",
+                                  click.prompt("Please enter the google spanner instance ID.",
+                                               default=""))
 
             if not self.settings.get("GOOGLE_SPANNER_DATABASE_ID"):
-                self.settings.set("GOOGLE_SPANNER_DATABASE_ID", click.prompt("Please enter the google spanner database ID",
-                                                                             default=""))
+                self.settings.set("GOOGLE_SPANNER_DATABASE_ID",
+                                  click.prompt("Please enter the google spanner database ID",
+                                               default=""))
 
         if not self.settings.get("USE_GOOGLE_SECRET_MANAGER"):
             self.settings.set("USE_GOOGLE_SECRET_MANAGER",
@@ -50,3 +53,15 @@ class PromptGoogle:
                     encoded_sa_crt_bytes = base64.b64encode(sa.encode("utf-8"))
                     encoded_sa_crt_string = str(encoded_sa_crt_bytes, "utf-8")
                 self.settings.set("GOOGLE_SERVICE_ACCOUNT_BASE64", encoded_sa_crt_string)
+
+            try:
+                with open("google_service_account.json", "r") as google_sa:
+                    sa = json.load(google_sa)
+                    self.settings.set("GOOGLE_PROJECT_ID", sa["project_id"])
+            except FileNotFoundError:
+                print("The google service account json was not found. However, your setup has it included already in "
+                      "your settings.json.")
+                if not self.settings.get("GOOGLE_PROJECT_ID"):
+                    self.settings.set("GOOGLE_PROJECT_ID",
+                                      click.prompt("Please enter the google project ID",
+                                                   default=""))

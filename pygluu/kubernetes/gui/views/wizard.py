@@ -867,7 +867,9 @@ def google():
                 encoded_google_service_account_bytes = base64.b64encode(google_service_account.encode("utf-8"))
                 encoded_google_service_account_string = str(encoded_google_service_account_bytes, "utf-8")
                 data["GOOGLE_SERVICE_ACCOUNT_BASE64"] = encoded_google_service_account_string
-
+            with open(Path('./' + filename)) as content_file:
+                sa = json.load(content_file)
+                data["GOOGLE_PROJECT_ID"] = sa["project_id"]
         gluu_settings.db.update(data)
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -1018,6 +1020,8 @@ def configuration():
             data["LDAP_PW"] = form.ldap_pw.data
         else:
             data["LDAP_PW"] = gluu_settings.db.get("COUCHBASE_PASSWORD")
+            # set dummy password to pass configuration check. @TODO: Configuration pod should skip check
+            if not gluu_settings.db.get("COUCHBASE_PASSWORD"): data["LDAP_PW"] = "P@ssw0rdummy"
 
         if gluu_settings.db.get("DEPLOYMENT_ARCH") in test_arch:
             data["IS_GLUU_FQDN_REGISTERED"] = "N"
