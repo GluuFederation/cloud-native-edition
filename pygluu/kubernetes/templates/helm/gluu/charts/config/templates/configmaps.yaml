@@ -13,13 +13,18 @@ data:
   CN_OB_AS_TRANSPORT_ALIAS: {{ .Values.global.cnObTransportAlias | quote }}
   CN_OB_EXT_SIGNING_ALIAS: {{ .Values.global.cnObExtSigningAlias | quote }}
   {{- end }}
+  {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
   # [google_envs] Envs related to using Google
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
   GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
+  {{- end }}
+  {{ if eq .Values.global.cnPersistenceType "spanner" }}
   # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
   CN_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.configmap.cnGoogleSpannerInstanceId | quote }}
   CN_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.configmap.cnGoogleSpannerDatabaseId | quote }}
   # [google_spanner_envs] END
+  {{- end }}
+  {{ if eq .Values.global.configSecretAdapter "google" }}
   # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
   CN_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnSecretGoogleSecretVersionId | quote }}
   CN_SECRET_GOOGLE_SECRET_MANAGER_PASSPHRASE: {{ .Values.configmap.cnGoogleSecretManagerPassPhrase | quote }}
@@ -27,6 +32,7 @@ data:
   CN_CONFIG_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnConfigGoogleSecretVersionId | quote }}
   CN_CONFIG_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnConfigGoogleSecretNamePrefix | quote }}
   # [google_secret_manager_envs] END
+  {{- end }}
   CN_SQL_DB_DIALECT: {{ .Values.configmap.cnSqlDbDialect }}
   CN_SQL_DB_HOST: {{ .Values.configmap.cnSqlDbHost }}
   CN_SQL_DB_PORT: {{ .Values.configmap.cnSqlDbPort | quote }}
