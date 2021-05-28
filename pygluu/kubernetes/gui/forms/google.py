@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FileField, FormField, RadioField
-from wtforms.validators import InputRequired, DataRequired
-from .persistencebackend import PersistenceBackendForm
+from wtforms.validators import InputRequired, DataRequired, Optional
+from .helpers import RequiredIfFieldEqualTo
 
 
 class GoogleForm(FlaskForm):
@@ -36,6 +36,4 @@ class GoogleForm(FlaskForm):
                     "Google Secret Manager. The service account must have "
                     "roles/secretmanager.admin to use Google secret manager and/or "
                     "roles/spanner.databaseUser to use Spanner",
-        validators=[DataRequired()])
-
-    persistencebackend = FormField(PersistenceBackendForm)
+        validators=[RequiredIfFieldEqualTo("google_secret_manager", "Y")])

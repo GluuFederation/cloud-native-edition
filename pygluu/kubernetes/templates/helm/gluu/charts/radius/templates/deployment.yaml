@@ -57,6 +57,7 @@ spec:
           - name: sql-pass
             mountPath: "/etc/gluu/conf/sql_password"
             subPath: sql_password
+        {{- end }}
         {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
           - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
             name: google-sa
@@ -96,6 +97,7 @@ spec:
         - name: sql-pass
           secret:
             secretName: {{ .Release.Name }}-sql-pass
+        {{- end }}
         {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
         - name: google-sa
           secret:

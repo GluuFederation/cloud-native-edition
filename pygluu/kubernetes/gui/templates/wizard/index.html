@@ -251,14 +251,14 @@
       {% endif %}
 
       {% if template == "google" %}
-
-        $('input[name="persistencebackend-persistence_backend"]').on('change', function(){
-          if($(this).val() == 'spanner'){
-            $('#useSpanner').collapse('show');
+        $('input[name="google_secret_manager"]').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#loadGoogleServiceAccount').collapse('show');
           }else{
-            $('#useSpanner').collapse('hide');
+            $('#loadGoogleServiceAccount').collapse('hide');
           }
         });
+      {% endif %}
 
       {% if template == "environment" %}
         $('input[name="test_environment"]').on('change', function(){

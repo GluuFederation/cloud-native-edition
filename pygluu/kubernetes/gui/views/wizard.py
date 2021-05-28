@@ -588,7 +588,7 @@ def volumes():
         gluu_settings.db.update(data)
         if gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
             # skip couchbase and jump to cache step
-            wizard_steps.current_step = 'google'
+            wizard_steps.current_step = 'sql'
 
         return redirect(url_for(wizard_steps.next_step()))
 
@@ -845,12 +845,14 @@ def sql():
 @wizard_blueprint.route("/google", methods=["GET", "POST"])
 def google():
     form = GoogleForm()
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") != "spanner":
+        form.spanner_instance_id.validators = [Optional()]
+        form.spanner_database_id.validators = [Optional()]
+    else:
+        form.google_service_account.validators = [DataRequired()]
 
     if form.validate_on_submit():
         data = {}
-        if gluu_settings.db.get("PERSISTENCE_BACKEND") != "spanner":
-            form.spanner_instance_id.validators = [Optional()]
-            form.spanner_database_id.validators = [Optional()]
         data["GOOGLE_SPANNER_INSTANCE_ID"] = form.spanner_instance_id.data
         data["GOOGLE_SPANNER_DATABASE_ID"] = form.spanner_database_id.data
         data["USE_GOOGLE_SECRET_MANAGER"] = form.google_secret_manager.data
@@ -873,12 +875,22 @@ def google():
         form = populate_form_data(form)
         form.spanner_instance_id.data = gluu_settings.db.get("GOOGLE_SPANNER_INSTANCE_ID")
         form.spanner_database_id.data = gluu_settings.db.get("GOOGLE_SPANNER_DATABASE_ID")
-        form.google_secret_manager.data = gluu_settings.db.get("USE_GOOGLE_SECRET_MANAGER")
+        if not gluu_settings.db.get("USE_GOOGLE_SECRET_MANAGER"):
+            form.google_secret_manager.data = "N"
+        else:
+            form.google_secret_manager.data = gluu_settings.db.get("USE_GOOGLE_SECRET_MANAGER")
 
     wizard_steps.current_step = 'google'
     # TODO: find a way to get better work on dynamic wizard step
     prev_step = "wizard.persistence_backend"
-
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "sql":
+        prev_step = "wizard.sql"
+    elif gluu_settings.db.get("PERSISTENCE_BACKEND") == "couchbase":
+        prev_step = "wizard.couchbase"
+    elif gluu_settings.db.get("PERSISTENCE_BACKEND") == "hybrid":
+        prev_step = "wizard.couchbase"
+    elif gluu_settings.db.get("PERSISTENCE_BACKEND") == "ldap":
+        prev_step = "wizard.volumes"
     return render_template("wizard/index.html",
                            deployment_arch=gluu_settings.db.get("DEPLOYMENT_ARCH"),
                            persistence_backend=gluu_settings.db.get("PERSISTENCE_BACKEND"),

@@ -111,6 +111,7 @@ spec:
         - name: sql-pass
           secret:
             secretName: {{ .Release.Name }}-sql-pass
+      {{- end }}
       {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
         - name: google-sa
           secret:
