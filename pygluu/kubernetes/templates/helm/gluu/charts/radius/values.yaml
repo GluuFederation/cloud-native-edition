@@ -22,6 +22,24 @@ service:
     http-jetty-service:
       port: 8080
 
+livenessProbe:
+  exec:
+    command:
+    - cat
+    - /tmp/gluu-radius-health
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 20
+readinessProbe:
+  exec:
+    command:
+    - cat
+    - /tmp/gluu-radius-health
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+  failureThreshold: 20
 resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -39,6 +57,15 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

@@ -7,6 +7,22 @@ image:
   tag: 5.0.0_dev
   pullPolicy: Always
 
+
+livenessProbe:
+  httpGet:
+    path: /casa/health-check
+    port: http-casa
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /casa/health-check
+    port: http-casa
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -38,6 +54,15 @@ resources:
   requests:
     # cpu: 100m
     memory: 1000Mi # 128Mi
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

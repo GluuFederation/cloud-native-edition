@@ -5,6 +5,8 @@ nameOverride: ""
 fullnameOverride: ""
 service:
   jackRabbitServiceName: jackrabbit
+  name: http-jackrabbit
+  port: 8080
 # StatefulSet
 # values declaration
 replicas: 1
@@ -23,13 +25,22 @@ storage:
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
 
-#servicePorts values used in StatefulSet container
-ports:
-  jackrabbit:
-    port: 8080
+livenessProbe:
+  tcpSocket:
+    port: http-jackrabbit
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+readinessProbe:
+  tcpSocket:
+    port: http-jackrabbit
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+
 # VolumeMounts for StatefulSet
 # jackrabbit-init vm
-volumeMounts:
+jackrabbitVolumeMounts:
   repository:
     mountPath: /opt/jackrabbit/repository
     name: jackrabbit-volume
@@ -39,6 +50,15 @@ volumeMounts:
   workspaces:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

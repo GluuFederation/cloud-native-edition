@@ -83,7 +83,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -94,13 +94,21 @@ auth-server:
       memory: 2500Mi
   service:
     authServerServiceName: auth-server
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 auth-server-key-rotation:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   keysLife: 23
   resources:
     limits:
@@ -109,6 +117,14 @@ auth-server-key-rotation:
     requests:
       cpu: 300m
       memory: 300Mi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 casa:
   dnsPolicy: ""
   dnsConfig: {}
@@ -126,13 +142,21 @@ casa:
       memory: 500Mi
   service:
     casaServiceName: casa
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 client-api:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -143,13 +167,29 @@ client-api:
       memory: 400Mi
   service:
     clientApiServerServiceName: client-api
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 config:
-  adminPassword: P@ssw0rd
+  adminPassword: Test1234#
   city: Austin
   configmap:
     cnAuthServerBackend: "auth-server:8080"
+    cnSqlDbDialect: mysql
+    cnSqlDbHost: my-release-mysql.default.svc.cluster.local
+    cnSqlDbPort: 3306
+    cnSqlDbName: jans
+    cnSqlDbUser: jans
+    cnSqlDbTimezone: UTC
+    cnSqlPasswordFile: /etc/jans/conf/sql_password
+    cnSqldbUserPassword: Test1234#
     cnCacheType: NATIVE_PERSISTENCE
-    cnCasaEnabled: true
+    cnCasaEnabled: false
     cnClientApiAdminCertCn: client-api
     cnClientApiApplicationCertCn: client-api
     cnClientApiBindIpAddresses: "*"
@@ -157,12 +197,12 @@ config:
     cnConfigKubernetesConfigMap: cn
     cnCouchbaseBucketPrefix: jans
     cnCouchbaseCertFile: /etc/certs/couchbase.crt
-    cnCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    cnCouchbaseCrt: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     cnCouchbaseIndexNumReplica: 0
     cnCouchbasePassword: P@ssw0rd
     cnCouchbasePasswordFile: /etc/gluu/conf/couchbase_password
     cnCouchbaseSuperUser: admin
-    cnCouchbaseSuperUserPassword: P@ssw0rd
+    cnCouchbaseSuperUserPassword: Test1234#
     cnCouchbaseSuperUserPasswordFile: /etc/gluu/conf/couchbase_superuser_password
     cnCouchbaseUrl: cbgluu.default.svc.cluster.local
     cnCouchbaseUser: gluu
@@ -177,11 +217,27 @@ config:
     cnJackrabbitPostgresUser: jackrabbit
     cnJackrabbitSyncInterval: 300
     cnJackrabbitUrl: "http://jackrabbit:8080"
+    # [google_envs] Envs related to using Google
+    # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
+    cnGoogleSecretManagerServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+    cnGoogleProjectId: google-project-to-save-config-and-secrets-to
+    # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+    cnGoogleSpannerInstanceId: ""
+    cnGoogleSpannerDatabaseId: ""
+    # [google_spanner_envs] END
+    # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+    cnSecretGoogleSecretVersionId: "latest"
+    cnSecretGoogleSecretNamePrefix: jans
+    cnGoogleSecretManagerPassPhrase: Test1234#
+    cnConfigGoogleSecretVersionId: "latest"
+    cnConfigGoogleSecretNamePrefix: jans
+    # [google_secret_manager_envs] END
+    # [google_envs] END
     cnLdapUrl: "opendj:1636"
     cnMaxRamPercent: "75.0"
-    cnPassportEnabled: true
+    cnPassportEnabled: false
     cnPersistenceLdapMapping: default
-    cnRadiusEnabled: true
+    cnRadiusEnabled: false
     cnRedisSentinelGroup: ""
     cnRedisSslTruststore: ""
     cnRedisType: STANDALONE
@@ -191,8 +247,6 @@ config:
     cnSecretKubernetesSecret: cn
     cnSyncCasaManifests: false
     cnSyncShibManifests: false
-    configAdapterName: kubernetes
-    configSecretAdapter: kubernetes
     containerMetadataName: kubernetes
     lbAddr: ""
     ldapServiceName: opendj
@@ -200,7 +254,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -212,13 +266,23 @@ config:
       cpu: 300m
       memory: 300Mi
   state: TX
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+  dnsPolicy: ""
+  dnsConfig: {}
 config-api:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -229,6 +293,14 @@ config-api:
       memory: 400Mi
   service:
     configApiServerServiceName: config-api
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 cr-rotate:
   dnsPolicy: ""
   dnsConfig: {}
@@ -245,13 +317,21 @@ cr-rotate:
       memory: 200Mi
   service:
     crRotateServiceName: cr-rotate
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 fido2:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -262,6 +342,14 @@ fido2:
       memory: 500Mi
   service:
     fido2ServiceName: fido2
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 global:
   alb:
     ingress: false
@@ -277,16 +365,40 @@ global:
   cloud:
     testEnviroment: false
   cnJackrabbitCluster: true
+  # ldap|couchbase|hybrid|sql|spanner
   cnPersistenceType: ldap
+  cnObExtSigningJwksUri: ""
+  # base64 string for the open banking AS external signing jwks crt, keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: ""
+  cnObExtSigningJwksKey: ""
+  cnObExtSigningJwksKeyPassPhrase: ""
+  # This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G
+  cnObExtSigningAlias: ""
+
+  # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: ""
+  cnObTransportKey: ""
+  cnObTransportKeyPassPhrase: ""
+  cnObTransportAlias: ""
+  # base64 string for the open banking AS transport truststore in p12 format. This can be generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportTrustStore: ""
   config:
     enabled: true
+  #google/kubernetes
+  configAdapterName: kubernetes
+  #google/kubernetes
+  configSecretAdapter: kubernetes
+  # [google_envs] Envs related to using Google
+  # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
+  cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
+  # [google_envs] END
   config-api:
     enabled: true
   cr-rotate:
     enabled: false
   fqdn: demoexample.gluu.org
   fido2:
-    enabled: true
+    enabled: false
   gcePdStorageType: pd-standard
   isFqdnRegistered: false
   istio:
@@ -294,29 +406,32 @@ global:
     ingress: false
     namespace: istio-system
   jackrabbit:
-    enabled: true
+    enabled: false
   lbIp: ""
   nginx-ingress:
     enabled: true
   opendj:
-    enabled: true
+    enabled: false
   oxshibboleth:
     enabled: false
+  # distributions supported are: default|openbanking
+  distribution: default
   persistence:
     enabled: true
   scim:
-    enabled: true
+    enabled: false
   storageClass:
     allowVolumeExpansion: true
     allowedTopologies: []
     mountOptions:
-      - debug
-    parameters:
-      fsType: ""
-      kind: ""
-      pool: ""
-      storageAccountType: ""
-      type: ""
+    - debug
+    parameters: {}
+    #parameters:
+      #fsType: ""
+      #kind: ""
+      #pool: ""
+      #storageAccountType: ""
+      #type: ""
     provisioner: microk8s.io/hostpath
     reclaimPolicy: Retain
     volumeBindingMode: WaitForFirstConsumer
@@ -344,6 +459,14 @@ jackrabbit:
     jackRabbitServiceName: jackrabbit
   storage:
     size: 5Gi
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 nginx-ingress:
   ingress:
     # /.well-known/openid-configuration
@@ -355,26 +478,30 @@ nginx-ingress:
     # /.well-known/simple-web-discovery
     webdiscoveryEnabled: true
     # /.well-known/scim-configuration
-    scimConfigEnabled: true
+    scimConfigEnabled: false
     # /jans-scim
-    scimEnabled: true
+    scimEnabled: false
     # /jans-config-api
     configApiEnabled: true
     # /.well-known/fido-configuration
     u2fConfigEnabled: true
     # /.well-known/fido2-configuration
-    fido2ConfigEnabled: true
+    fido2ConfigEnabled: false
     # /jans-auth
     authServerEnabled: true
+    #/jans-auth/restv1/token
+    authServerProtectedToken: false
+    #/jans-auth/restv1/register
+    authServerProtectedRegister: false
     # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
     additionalAnnotations: {}
     path: /
     hosts:
-    - demoexample.jans.io
+    - demoexample.gluu.org
     tls:
     - secretName: tls-certificate
       hosts:
-      - demoexample.jans.io
+      - demoexample.gluu.org
 opendj:
   dnsPolicy: ""
   dnsConfig: {}
@@ -432,6 +559,14 @@ opendj:
       memory: 2000Mi
   service:
     ldapServiceName: opendj
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 oxpassport:
   dnsPolicy: ""
   dnsConfig: {}
@@ -449,6 +584,14 @@ oxpassport:
       memory: 900Mi
   service:
     oxPassportServiceName: oxpassport
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 oxshibboleth:
   dnsPolicy: ""
   dnsConfig: {}
@@ -466,13 +609,21 @@ oxshibboleth:
       memory: 1000Mi
   service:
     oxShibbolethServiceName: oxshibboleth
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 persistence:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   resources:
     limits:
       cpu: 300m
@@ -480,6 +631,10 @@ persistence:
     requests:
       cpu: 300m
       memory: 300Mi
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 radius:
   dnsPolicy: ""
   dnsConfig: {}
@@ -497,13 +652,21 @@ radius:
       memory: 700Mi
   service:
     radiusServiceName: radius
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
 scim:
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_dev
+    tag: 1.0.0_b4
   replicas: 1
   resources:
     limits:
@@ -514,3 +677,11 @@ scim:
       memory: 1000Mi
   service:
     scimServiceName: scim
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
