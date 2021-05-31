@@ -15,7 +15,7 @@ service:
   port: 8080
   targetPort: 8080
   oxShibbolethServiceName: oxshibboleth
-  name: http-oxshibboleth
+  name: http-oxshib
 
 resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -30,14 +30,14 @@ resources:
 livenessProbe:
   httpGet:
     path: /idp
-    port: http-oxshibboleth
+    port: http-oxshib
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
 readinessProbe:
   httpGet:
     path: /idp
-    port: http-oxshibboleth
+    port: http-oxshib
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5

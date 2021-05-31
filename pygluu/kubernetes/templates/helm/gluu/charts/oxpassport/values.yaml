@@ -14,7 +14,7 @@ fullnameOverride: ""
 service:
   oxPassportServiceName: oxpassport
   port: 8090
-  name: http-oxpassport
+  name: http-passport
 
 livenessProbe:
   httpGet:
