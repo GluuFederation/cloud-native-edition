@@ -3,20 +3,6 @@ from pygluu.kubernetes.kubeapi import load_kubernetes_config, Kubernetes
 from kubernetes import config
 
 
-
-def test_load_kube_config(tmpdir):
-
-    config_loaded = False
-
-    configfile = '~/.kube/config'
-    load_kubernetes_config()
-    config.load_kube_config()
-    config_loaded = True
-
-    assert config_loaded is True
-    assert configfile == '~/.kube/config'
-
-
 def test_patch_or_create_namespaced_secret():
     try:
         var0 = None
