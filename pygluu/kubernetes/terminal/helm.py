@@ -56,16 +56,25 @@ class PromptHelm:
                 self.settings.set("installer-settings.ldap.subsequentCluster",
                                   click.confirm("ALPHA-FEATURE-Is this a subsequent kubernetes cluster "
                                                 "( 2nd and above)"))
-            if self.settings.get("opendj.multiCluster.serfPeers") in (None, ''):
-                self.settings.set("opendj.multiCluster.serfPeers",
-                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers as an array",
-                                               default="['firstldap.gluu.org:30946', 'secondldap.gluu.org:31946']"))
+
+            if self.settings.get("opendj.multiCluster.serfPeers") in (None, '') or \
+                    not isinstance(self.settings.get("opendj.multiCluster.serfPeers"), list):
+                temp = click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers separated by a comma with "
+                                    "no quotes , or brackets",
+                                    default="firstldap.gluu.org:30946,secondldap.gluu.org:31946")
+                temp = temp.replace(" ", "")
+                serf_peers_array = temp.split(",")
+                self.settings.set("opendj.multiCluster.serfPeers", list(serf_peers_array))
 
         if self.settings.get("installer-settings.nginxIngress.releaseName") in (None, '') and \
                 self.settings.get("installer-settings.aws.lbType") != "alb":
             self.settings.set("installer-settings.nginxIngress.releaseName",
-                              click.prompt("Please enter nginx-ingress helm name", default="ningress"))
+                              click.prompt("Please enter nginx-ingress helm name",
+                                           default="ningress"))
 
-        if self.settings.get("installer-settings.nginxIngress.namespace") in (None, '') and self.settings.get("installer-settings.aws.lbType") != "alb":
-            self.settings.set("installer-settings.nginxIngress.namespace", click.prompt("Please enter nginx-ingress helm namespace",
-                                                                                        default="ingress-nginx"))
+        if self.settings.get("installer-settings.nginxIngress.namespace") in (None, '') and self.settings.get(
+                "installer-settings.aws.lbType") != "alb":
+            self.settings.set("installer-settings.nginxIngress.namespace",
+                              click.prompt("Please enter nginx-ingress helm namespace",
+                                           default="ingress-nginx"))
+
