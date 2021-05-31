@@ -1,10 +1,10 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
-appVersion: "5.0.0-a1"
+appVersion: "5.0.0"
 description: nginx-ingress chart
-name: nginx
-version: 5.0.0-a1
+name: nginx-ingress
+version: 5.0.0
 maintainers:
 - name: moabu
   email: mo@gluu.org
