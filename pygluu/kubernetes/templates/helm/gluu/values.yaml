@@ -37,7 +37,7 @@ global:
   configSecretAdapter: kubernetes
   # [google_envs] Envs related to using Google
   # Base64 encode service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner
-  cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
+  cnGoogleApplicationCredentials: /etc/gluu/conf/google-credentials.json
   # [google_envs] END
   oxauth:
     enabled: true
@@ -151,7 +151,7 @@ config:
     gluuSamlEnabled: false
   image:
     repository: gluufederation/config-init
-    tag: 4.3.0_01
+    tag: 4.3.0_dev
   volumes: []
     # Configure any additional volumes that need to be attached to the pod
   volumeMounts: []
@@ -184,8 +184,8 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_dev
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1500m
@@ -217,8 +217,8 @@ opendj:
     size: 5Gi
   image:
     repository: gluufederation/opendj
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_dev
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1500m
@@ -271,8 +271,8 @@ opendj:
 persistence:
   image:
     repository: gluufederation/persistence
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources: {}
   volumes: []
     # Configure any additional volumes that need to be attached to the pod
@@ -287,8 +287,8 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 2500m
@@ -313,8 +313,8 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1000m
@@ -339,8 +339,8 @@ fido2:
   replicas: 1
   image:
     repository: gluufederation/fido2
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 500m
@@ -365,8 +365,8 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1000m
@@ -391,8 +391,8 @@ oxd-server:
   replicas: 1
   image:
     repository: gluufederation/oxd-server
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1000m
@@ -417,8 +417,8 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     requests:
       memory: "500Mi"
@@ -443,8 +443,8 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_dev
+    pullPolicy: Always
   resources:
     limits:
       cpu: 700m
@@ -469,8 +469,8 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 1000m
@@ -495,8 +495,8 @@ radius:
   replicas: 1
   image:
     repository: gluufederation/radius
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 700m
@@ -520,8 +520,8 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_sql_spanner
+    pullPolicy: Always
   resources:
     limits:
       cpu: 200m
@@ -540,8 +540,8 @@ oxauth-key-rotation:
   keysLife: 48
   image:
     repository: gluufederation/certmanager
-    tag: 4.3.0_01
-    pullPolicy: IfNotPresent
+    tag: 4.3.0_dev
+    pullPolicy: Always
   resources:
     limits:
       cpu: 300m
