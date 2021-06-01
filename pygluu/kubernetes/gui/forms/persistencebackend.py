@@ -19,11 +19,13 @@ class PersistenceBackendForm(FlaskForm):
     Fields :
         persistence_backend(string|required|default: ldap)
         hybrid_ldap_held_data(string|optional, available when persistence_backend is hybrid)
+        sql_dialect(string|optional, available when persistence_backend is sql)
     """
     persistence_backend = RadioField(
         "Persistence layer",
         choices=[("ldap", "OpenDJ"),
                  ("couchbase", "Couchbase"),
+                 ("sql", "SQL(MySQL/PostgreSQL)"),
                  ("spanner", "Spanner"),
                  ("hybrid", "Hybrid(OpenDJ + Couchbase)")],
         default="ldap",
@@ -36,4 +38,9 @@ class PersistenceBackendForm(FlaskForm):
                                                 ("token", "Token"),
                                                 ("session", "Session")],
                                        default="default",
+                                       render_kw={"disabled": "disabled"})
+    sql_dialect = RadioField("SQL Dialect",
+                                       choices=[("mysql", "MySQL"),
+                                                ("pgsql", "PostgreSQL")],
+                                       default="mysql",
                                        render_kw={"disabled": "disabled"})

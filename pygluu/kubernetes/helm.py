@@ -233,12 +233,31 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
+            
+        if self.settings.get("PERSISTENCE_BACKEND") == "sql":
+            values_file_parser["config"]["configmap"]["cnSqlDbDialect "] = \
+                self.settings.get("GLUU_SQL_DB_DIALECT")
+            values_file_parser["config"]["configmap"]["cnSqlDbHost "] = \
+                self.settings.get("GLUU_SQL_DB_HOST")
+            values_file_parser["config"]["configmap"]["cnSqlDbName "] = \
+                self.settings.get("GLUU_SQL_DB_NAME")
+            values_file_parser["config"]["configmap"]["cnSqlDbUser "] = \
+                self.settings.get("GLUU_SQL_DB_USER")
+            values_file_parser["config"]["configmap"]["cnSqldbUserPassword "] = \
+                self.settings.get("GLUU_SQL_DB_PASSWORD")
+            
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
-            values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId "] = \
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId"] = \
                 self.settings.get("GOOGLE_SPANNER_INSTANCE_ID")
-            values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId "] = \
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId"] = \
                 self.settings.get("GOOGLE_SPANNER_DATABASE_ID")
+            values_file_parser["config"]["configmap"]["cnGoogleProjectId"] = \
+                self.settings.get("GOOGLE_PROJECT_ID")
 
+        if self.settings.get("PERSISTENCE_BACKEND") == "spanner" or \
+                self.settings.get("USE_GOOGLE_SECRET_MANAGER") == "Y":
+            values_file_parser["config"]["configmap"]["cnGoogleServiceAccount"] = \
+                self.settings.get("GOOGLE_SERVICE_ACCOUNT_BASE64")
         values_file_parser["global"]["oxauth"]["enabled"] = True
         values_file_parser["global"]["persistence"]["enabled"] = True
         values_file_parser["global"]["oxtrust"]["enabled"] = True

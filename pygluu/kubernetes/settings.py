@@ -202,8 +202,18 @@ class SettingsHandler(object):
                                 GLUU_LDAP_ADVERTISE_REPLICATION_PORT="",
                                 GLUU_LDAP_SECONDARY_CLUSTER="",
                                 GLUU_LDAP_SERF_PEERS="",
+                                GLUU_INSTALL_SQL="",
+                                GLUU_SQL_DB_DIALECT="",
+                                GLUU_SQL_DB_NAMESPACE="",
+                                GLUU_SQL_DB_HOST="",
+                                GLUU_SQL_DB_NAME="",
+                                GLUU_SQL_DB_USER="",
+                                GLUU_SQL_DB_PASSWORD="",
+                                GOOGLE_SERVICE_ACCOUNT_BASE64="",
+                                USE_GOOGLE_SECRET_MANAGER="",
                                 GOOGLE_SPANNER_INSTANCE_ID="",
-                                GOOGLE_SPANNER_DATABASE_ID=""
+                                GOOGLE_SPANNER_DATABASE_ID="",
+                                GOOGLE_PROJECT_ID=""
                                 )
         return default_settings
 

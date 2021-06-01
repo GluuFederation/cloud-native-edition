@@ -1,0 +1,20 @@
+{% if persistence_backend == "spanner" %}
+    <div class="alert alert-warning" role="alert">
+        <p>Using Google Spanner is beta.The service account that will be uploaded  must have roles/spanner.databaseUser to use Spanner</p>
+    </div>
+  {{ forms.text(form.spanner_instance_id) }}
+  {{ forms.text(form.spanner_database_id) }}
+{% endif %}
+<div class="alert alert-warning" role="alert">
+    <p>Using Google secret manager with Gluu is currently beta.The service account that will be uploaded  must have roles/secretmanager.admin to use Google secret manager</p>
+</div>
+{{ forms.radio_toggle(form.google_secret_manager) }}
+
+{% if persistence_backend == "spanner" %}
+    {{ forms.fileinput(form.google_service_account) }}
+{% else %}
+    <div id="loadGoogleServiceAccount" class="collapse {{ 'show' if form.google_secret_manager.data == 'Y' else '' }}">
+        {{ forms.fileinput(form.google_service_account) }}
+    </div>
+{% endif %}
+

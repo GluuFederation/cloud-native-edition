@@ -72,6 +72,9 @@ class PromptConfiguration:
                 self.settings.set("LDAP_PW", prompt_password("LDAP"))
             else:
                 self.settings.set("LDAP_PW", self.settings.get("COUCHBASE_PASSWORD"))
+                # set dummy password to pass configuration check. @TODO: Configuration pod should skip check
+                if not self.settings.db.get("COUCHBASE_PASSWORD"):
+                    self.settings.set("LDAP_PW", "P@ssw0rdummy")
 
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube"):
             self.settings.set("IS_GLUU_FQDN_REGISTERED", "N")

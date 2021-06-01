@@ -22,6 +22,7 @@ from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.settings import SettingsHandler
 from pygluu.kubernetes.redis import Redis
 from pygluu.kubernetes.postgres import Postgres
+from pygluu.kubernetes.mysql import MySQL
 
 logger = get_logger("gluu-create        ")
 
@@ -163,6 +164,9 @@ def main():
             if settings.get("INSTALL_REDIS") == "Y":
                 redis = Redis()
                 redis.install_redis()
+            if settings.get("GLUU_INSTALL_SQL") == "Y" and settings.get("GLUU_SQL_DB_DIALECT") == "mysql":
+                sql = MySQL()
+                sql.install_mysql()
             helm.install_gluu()
 
         elif args.subparser_name == "helm-uninstall":

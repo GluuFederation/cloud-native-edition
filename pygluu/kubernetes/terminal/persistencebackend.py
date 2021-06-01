@@ -25,7 +25,8 @@ class PromptPersistenceBackend:
             1: "ldap",
             2: "couchbase",
             3: "hybrid",
-            4: "spanner"
+            4: "spanner",
+            5: "sql"
         }
 
         if self.settings.get("PERSISTENCE_BACKEND") not in persistence_map.values():
@@ -36,6 +37,7 @@ class PromptPersistenceBackend:
             print("| [2] Couchbase                                                    |")
             print("| [3] Hybrid(OpenDJ + Couchbase)                                   |")
             print("| [4] Google Spanner                                               |")
+            print("| [5] SQL(MySQL or PostgreSQL)                                     |")
             print("|------------------------------------------------------------------|")
 
             choice = click.prompt("Persistence layer", default=1)

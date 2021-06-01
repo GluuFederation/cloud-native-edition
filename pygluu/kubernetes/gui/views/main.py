@@ -191,6 +191,7 @@ def uninstall():
             target = session["installer_target"]
             return render_template("installation.html", target=target)
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
@@ -257,7 +258,10 @@ def get_wizard_step():
         return url_for("wizard.couchbase")
 
     if gluu_settings.db.get("PERSISTENCE_BACKEND") == "spanner":
-        return url_for("wizard.spanner")
+        return url_for("wizard.google")
+
+    if gluu_settings.db.get("PERSISTENCE_BACKEND") == "sql":
+        return url_for("wizard.sql")
 
     if not gluu_settings.db.get("GLUU_CACHE_TYPE"):
         return url_for("wizard.cache_type")

@@ -158,9 +158,13 @@ class WizardHandler(object):
                 "title": "Couchbase calculator",
                 "endpoint": "wizard.couchbase_calculator"
             },
-            'spanner': {
-                "title": "Spanner",
-                "endpoint": "wizard.spanner"
+            'sql': {
+                "title": "RDBMS",
+                "endpoint": "wizard.sql"
+            },
+            'google': {
+                "title": "Google",
+                "endpoint": "wizard.google"
             },
             'cache': {
                 "title": "Cache type",

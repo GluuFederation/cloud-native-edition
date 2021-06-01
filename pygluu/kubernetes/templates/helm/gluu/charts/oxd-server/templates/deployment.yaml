@@ -54,6 +54,11 @@ spec:
           {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if eq .Values.global.gluuPersistenceType "sql" }}
+            - name: sql-pass
+              mountPath: "/etc/gluu/conf/sql_password"
+              subPath: sql_password
+          {{- end }}
           {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
             - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
               name: google-sa
@@ -84,6 +89,11 @@ spec:
       volumes:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.global.gluuPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
       {{- end }}
       {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
         - name: google-sa

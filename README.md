@@ -1,3 +1,5 @@
+# Please use branch 4.2 if building the installer. This branch is under dev.
+
 ![microk8s](https://github.com/GluuFederation/cloud-native-edition/workflows/microk8s/badge.svg?branch=4.3)
 ![minikube](https://github.com/GluuFederation/cloud-native-edition/workflows/minikube/badge.svg?branch=4.3)
 ![awseks](https://github.com/GluuFederation/cloud-native-edition/workflows/awseks/badge.svg?branch=4.3)

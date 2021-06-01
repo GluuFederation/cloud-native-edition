@@ -19,6 +19,14 @@ secondaryCluster:
   enabled: false
 gluuOxtrustConfigGeneration: true
 configmap:
+  cnSqlDbDialect: mysql
+  cnSqlDbHost: my-release-mysql.default.svc.cluster.local
+  cnSqlDbPort: 3306
+  cnSqlDbName: gluu
+  cnSqlDbUser: root
+  cnSqlDbTimezone: UTC
+  cnSqlPasswordFile: /etc/jans/conf/sql_password
+  cnSqldbUserPassword: Test1234#
   gluuOxdApplicationCertCn: oxd-server
   gluuOxdAdminCertCn: oxd-server
   # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
