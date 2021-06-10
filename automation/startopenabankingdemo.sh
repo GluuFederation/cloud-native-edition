@@ -59,8 +59,8 @@ EOF
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm
 sudo helm repo update
 sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 -f override.yaml --kubeconfig="$KUBECONFIG"
-echo "Waiting for auth-server to come up....Please do not cancel out"
-sleep 5
+echo "Waiting for auth-server to come up....Please do not cancel out...This will wait for 2 mins."
+sleep 120
 cat << EOF > testendpoints.sh
 # get certs and keys. This will also generate the client crt and key to be used to access protected endpoints
 mkdir quicktestcerts || echo "directory exists"
@@ -92,5 +92,6 @@ echo -e "Testing protected endpoint /register with client crt and key. This shou
 curl -X POST -k --cert client.crt --key client.key -u $TESTCLIENT:$TESTCLIENTSECRET https://demoexample.gluu.org/jans-auth/restv1/register
 cd ..
 EOF
-sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG" || echo -e "Please execute bash testendpoints.sh to do a quick test to protected endpoints and openid-configuration endpoint."
+sudo microk8s.kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-auth-server --kubeconfig="$KUBECONFIG"
 sudo bash testendpoints.sh
+echo -e "You may re-execute bash testendpoints.sh to do a quick test to protected endpoints and openid-configuration endpoint."

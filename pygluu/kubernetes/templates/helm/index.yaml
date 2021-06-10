@@ -30,7 +30,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-05-31T01:34:30.9851083-04:00"
+    created: "2021-06-10T02:40:46.9687453-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -101,7 +101,7 @@ entries:
       repository: ""
       version: 5.0.0
     description: Gluu Access and Identity Mangement OpenBanking distribution
-    digest: 370e82f5df44027f5c8093b7fe5b95cde1cdf1303f65a545e02b5655d18f5c28
+    digest: 491926b9d6074e30ec6d9ca955a59b6cf45026826c9c93a8ef9243a21c341e5c
     home: https://www.gluu.org
     icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
     kubeVersion: '>=v1.17.0-0'
@@ -119,7 +119,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0-a1
-    created: "2021-05-31T01:34:30.9621243-04:00"
+    created: "2021-06-10T02:40:46.9598028-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -242,7 +242,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.9401827-04:00"
+    created: "2021-06-10T02:40:46.9527862-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -365,7 +365,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.9204318-04:00"
+    created: "2021-06-10T02:40:46.9448606-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -487,7 +487,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.8974478-04:00"
+    created: "2021-06-10T02:40:46.9348354-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -610,7 +610,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.8751197-04:00"
+    created: "2021-06-10T02:40:46.9268958-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -732,7 +732,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.8541673-04:00"
+    created: "2021-06-10T02:40:46.9189736-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -855,7 +855,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.832353-04:00"
+    created: "2021-06-10T02:40:46.9089606-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -942,7 +942,7 @@ entries:
   ldap-backup:
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.9884948-04:00"
+    created: "2021-06-10T02:40:46.9709039-04:00"
     description: A backup strategy for LDAP
     digest: c144f3433d09e9abb292fd6c0a32e131bfc0cd311b6fc287d1d28677b70966c1
     home: https://www.gluu.org
@@ -960,7 +960,7 @@ entries:
     version: 1.4.4
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-05-31T01:34:30.9871358-04:00"
+    created: "2021-06-10T02:40:46.9697684-04:00"
     description: A backup strategy for LDAP
     digest: 2feb884e3745869d8c336bc6b38b6ebf92c6c8e54b3cb679c59792129644bd11
     home: https://www.gluu.org
@@ -975,4 +975,4 @@ entries:
     urls:
     - ldap-backup-1.4.4-a.tgz
     version: 1.4.4-a
-generated: "2021-05-31T01:34:30.8053307-04:00"
+generated: "2021-06-10T02:40:46.8968689-04:00"
