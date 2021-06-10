@@ -1275,7 +1275,7 @@ def setting_summary():
     hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                        "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
                        "COUCHBASE_SUBJECT_ALT_NAME", "JACKRABBIT_ADMIN_PASSWORD",
-                       "JACKRABBIT_PG_PASSWORD"]
+                       "JACKRABBIT_PG_PASSWORD", "GOOGLE_SERVICE_ACCOUNT_BASE64"]
 
     return render_template("wizard/setting_summary.html",
                            hidden_settings=hidden_settings,

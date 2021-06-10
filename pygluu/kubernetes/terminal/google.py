@@ -56,8 +56,9 @@ class PromptGoogle:
                         encoded_sa_crt_string = str(encoded_sa_crt_bytes, "utf-8")
                     self.settings.set("GOOGLE_SERVICE_ACCOUNT_BASE64", encoded_sa_crt_string)
                 except FileNotFoundError:
-                    print("The google service account json was not found."
-                          "your settings.json.")
+                    print("The google service account json was not found.")
+                    raise SystemExit(1)
+
             if not self.settings.get("GOOGLE_PROJECT_ID"):
                 try:
                     with open("google_service_account.json", "r") as google_sa:

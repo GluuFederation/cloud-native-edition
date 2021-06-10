@@ -205,7 +205,9 @@ data:
                                               second_literal="tls.key",
                                               value_of_second_literal=key)
         else:
-            logger.error("No certificate or key was found in secrets.")
+            logger.error("No certificate or key was found in secrets."
+                          "This can happen when the ssl certificate for the domain is able to be pulled."
+                          "In that scenario the ssl_cert will be pulled from the domain provided")
 
     if __name__ == "__main__":
         main()
