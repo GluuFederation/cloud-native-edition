@@ -37,8 +37,13 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
-        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
         volumeMounts:
+        {{- if .Values.global.jackrabbit.enabled }}
+          - name: gluu-jackrabbit-admin-pass
+            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            subPath: jackrabbit_admin_password
+        {{- end }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
           - name: cb-pass
             mountPath: "/etc/gluu/conf/couchbase_password"
             subPath: couchbase_password
@@ -53,8 +58,13 @@ spec:
         {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
       volumes:
+      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+      {{- end }}
+      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass
