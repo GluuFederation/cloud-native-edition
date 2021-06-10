@@ -64,7 +64,7 @@ configmap:
   cnJackrabbitPostgresUser: jackrabbit
   cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
   cnJackrabbitPostgresDatabaseName: jackrabbit
-  cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+  cnJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
   cnJackrabbitPostgresPort: 5432
   cnJackrabbitSyncInterval: 300
   cnJackrabbitUrl: http://jackrabbit:8080

@@ -211,7 +211,7 @@ config:
     cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
     cnJackrabbitPostgresDatabaseName: jackrabbit
-    cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    cnJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
     cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     cnJackrabbitPostgresPort: 5432
     cnJackrabbitPostgresUser: jackrabbit
