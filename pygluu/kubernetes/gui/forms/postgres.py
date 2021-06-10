@@ -19,7 +19,7 @@ class PostgresForm(FlaskForm):
     Fields :
     install_postgres (string|required|default: Y)
     postgres_namespace (string|required|default: postgres)
-    postgres_url (string|required|default: postgres.postgres.svc.cluster.local  )
+    postgres_url (string|required|default: postgresql.postgres.svc.cluster.local  )
     """
     install_postgres = RadioField(
         "Install Postgres", choices=[("Y", "Yes"), ("N", "No")], default="Y",
@@ -35,5 +35,5 @@ class PostgresForm(FlaskForm):
     postgres_url = StringField(
         "Please enter  postgres (remote or local) URL base name. "
         "If postgres is to be installed",
-        default="postgres.postgres.svc.cluster.local",
+        default="postgresql.postgres.svc.cluster.local",
         validators=[InputRequired()])

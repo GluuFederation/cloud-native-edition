@@ -37,6 +37,6 @@ class PromptPostgres:
             url = click.prompt(
                 "Please enter  postgres (remote or local) "
                 "URL base name. If postgres is to be installed",
-                default=f"postgres.{self.settings.get('POSTGRES_NAMESPACE')}.svc.cluster.local",
+                default=f"postgresql.{self.settings.get('POSTGRES_NAMESPACE')}.svc.cluster.local",
             )
             self.settings.set("POSTGRES_URL", url)

@@ -101,7 +101,7 @@ config:
     gluuJackrabbitPostgresUser: jackrabbit
     gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     gluuJackrabbitPostgresDatabaseName: jackrabbit
-    gluuJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    gluuJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
     gluuJackrabbitPostgresPort: 5432
     gluuJackrabbitAdminId: admin
     gluuJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
