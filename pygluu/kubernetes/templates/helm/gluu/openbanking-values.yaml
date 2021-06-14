@@ -1,4 +1,9 @@
 auth-server:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -25,6 +30,11 @@ auth-server:
     # Configure any additional volumesMounts that need to be attached to the containers
 
 config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   city: Austin
   configmap:
     cnAuthServerBackend: "auth-server:8080"
@@ -83,6 +93,11 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -115,6 +130,12 @@ config-api:
     #  subPath: jose4j-0.7.7.jar
 
 global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   alb:
     ingress: false
   auth-server:
@@ -235,6 +256,11 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:

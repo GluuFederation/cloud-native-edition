@@ -78,6 +78,11 @@ installer-settings:
   confirmSettings: false
 
 auth-server:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -103,6 +108,11 @@ auth-server:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 auth-server-key-rotation:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -126,6 +136,11 @@ auth-server-key-rotation:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 casa:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -151,6 +166,11 @@ casa:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 client-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -176,6 +196,11 @@ client-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   adminPassword: Test1234#
   city: Austin
   configmap:
@@ -277,6 +302,11 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -302,6 +332,11 @@ config-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 cr-rotate:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -326,6 +361,11 @@ cr-rotate:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 fido2:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -351,6 +391,12 @@ fido2:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   alb:
     ingress: false
   auth-server:
@@ -438,6 +484,11 @@ global:
   upgrade:
     enabled: false
 jackrabbit:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -503,6 +554,11 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 opendj:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -568,6 +624,11 @@ opendj:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxpassport:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -593,6 +654,11 @@ oxpassport:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxshibboleth:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -618,6 +684,11 @@ oxshibboleth:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -636,6 +707,11 @@ persistence:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 radius:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -661,6 +737,11 @@ radius:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 scim:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
