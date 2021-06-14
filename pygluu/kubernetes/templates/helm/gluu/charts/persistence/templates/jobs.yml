@@ -23,6 +23,9 @@ spec:
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+          {{- include "persistence.usr-envs" . | indent 12 }}
+          {{- include "persistence.usr-secret-envs" . | indent 12 }}
         {{- if .Values.global.istio.enabled }}
         command:
           - tini
@@ -37,6 +40,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         volumeMounts:
         {{- if .Values.global.jackrabbit.enabled }}
           - name: gluu-jackrabbit-admin-pass

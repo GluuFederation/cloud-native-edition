@@ -1,6 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Required environment variables for generating Gluu server initial config
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 #values for environment variables
 orgName: Gluu
 # email address of the administrator usually. Used for certificate creation

@@ -1,4 +1,10 @@
 global:
+  # All envs defined in global.usrEnv will be available across all services.
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   istio:
     ingress: false
     enabled: false
@@ -58,6 +64,11 @@ global:
   cr-rotate:
     enabled: false
 config:
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   orgName: Gluu
   email: support@gluu.com
   adminPass: P@ssw0rd
@@ -138,6 +149,11 @@ nginx-ingress:
       - demoexample.gluu.org
 
 jackrabbit:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     jackRabbitServiceName: jackrabbit
   replicas: 1
@@ -165,6 +181,11 @@ jackrabbit:
   dnsConfig: {}
 
 opendj:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   multiCluster:
     enabled: false
     serfAdvertiseAddr: "firstldap.gluu.org:30946"
@@ -225,12 +246,22 @@ opendj:
   dnsConfig: {}
 
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   image:
     repository: gluufederation/persistence
     tag: 4.2.3_03
     pullPolicy: Always
   resources: {}
 oxauth:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     oxAuthServiceName: oxauth
   replicas: 1
@@ -253,6 +284,11 @@ oxauth:
   dnsConfig: {}
 
 oxtrust:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     oxTrustServiceName: oxtrust
   replicas: 1
@@ -275,6 +311,11 @@ oxtrust:
   dnsConfig: {}
 
 fido2:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     fido2ServiceName: fido2
   replicas: 1
@@ -297,6 +338,11 @@ fido2:
   dnsConfig: {}
 
 scim:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     scimServiceName: scim
   replicas: 1
@@ -319,6 +365,11 @@ scim:
   dnsConfig: {}
 
 oxd-server:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     oxdServerServiceName: oxd-server
   replicas: 1
@@ -341,6 +392,11 @@ oxd-server:
   dnsConfig: {}
 
 casa:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     casaServiceName: casa
   replicas: 1
@@ -363,6 +419,11 @@ casa:
   dnsConfig: {}
 
 oxpassport:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     oxPassportServiceName: oxpassport
   replicas: 1
@@ -385,6 +446,11 @@ oxpassport:
   dnsConfig: {}
 
 oxshibboleth:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     oxShibbolethServiceName: oxshibboleth
   replicas: 1
@@ -407,6 +473,11 @@ oxshibboleth:
   dnsConfig: {}
 
 radius:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     radiusServiceName: radius
   replicas: 1
@@ -429,6 +500,11 @@ radius:
   dnsConfig: {}
 
 cr-rotate:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   service:
     crRotateServiceName: cr-rotate
   image:
@@ -446,6 +522,11 @@ cr-rotate:
   dnsConfig: {}
 
 oxauth-key-rotation:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   keysLife: 48
   image:
     repository: gluufederation/certmanager

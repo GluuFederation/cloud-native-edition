@@ -34,6 +34,9 @@ spec:
       containers:
       - name: {{ include "oxshibboleth.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+          {{- include "oxshibboleth.usr-envs" . | indent 12 }}
+          {{- include "oxshibboleth.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
@@ -50,6 +53,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         volumeMounts:
           {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
             - name: gluu-jackrabbit-admin-pass

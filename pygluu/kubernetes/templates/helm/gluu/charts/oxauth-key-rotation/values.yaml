@@ -1,6 +1,13 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxauth-key-rotation.
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 image:
   repository: gluufederation/certmanager
   tag: 4.2.3_01
