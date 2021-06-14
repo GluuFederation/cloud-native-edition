@@ -49,6 +49,9 @@ spec:
       - name: {{ include "opendj.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+          {{- include "opendj.usr-envs" . | indent 12 }}
+          {{- include "opendj.usr-secret-envs" . | indent 12 }}
         lifecycle:
           preStop:
             exec:
@@ -56,6 +59,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         {{- if .Values.multiCluster.enabled }}
         env:
           - name: GLUU_SERF_ADVERTISE_ADDR

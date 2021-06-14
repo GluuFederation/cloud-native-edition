@@ -1,6 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for cr-rotate.
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 image:
   repository: gluufederation/cr-rotate
   tag: 4.3.0_01

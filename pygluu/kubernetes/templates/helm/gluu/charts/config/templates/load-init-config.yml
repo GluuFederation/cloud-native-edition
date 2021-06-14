@@ -38,6 +38,9 @@ spec:
       containers:
       - name: {{ include "config.name" . }}-load
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+          {{- include "config.usr-envs" . | indent 12 }}
+          {{- include "config.usr-secret-envs" . | indent 12 }}
         volumeMounts:
           {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
@@ -56,6 +59,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
         command:

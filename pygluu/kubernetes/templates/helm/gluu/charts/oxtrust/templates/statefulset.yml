@@ -55,9 +55,19 @@ spec:
         env:
         - name: JVM_OPTS
           value: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
+        {{- include "oxtrust.usr-envs" . | indent 8 }}
+        {{- include "oxtrust.usr-secret-envs" . | indent 8 }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         volumeMounts:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}

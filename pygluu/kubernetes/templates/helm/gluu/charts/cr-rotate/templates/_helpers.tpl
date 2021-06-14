@@ -44,3 +44,26 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
+{{/*
+Create user custom defined  envs
+*/}}
+{{- define "cr-rotate.usr-envs"}}
+{{- range $key, $val := .Values.usrEnvs.normal }}
+- name: {{ $key }}
+  value: {{ $val }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create user custom defined secret envs
+*/}}
+{{- define "cr-rotate.usr-secret-envs"}}
+{{- range $key, $val := .Values.usrEnvs.secret }}
+- name: {{ $key }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $.Release.Name }}-{{ $.Chart.Name }}-user-custom-envs
+      key: {{ $key }}
+{{- end }}
+{{- end }}
+

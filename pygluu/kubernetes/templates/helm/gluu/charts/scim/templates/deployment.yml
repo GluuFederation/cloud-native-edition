@@ -32,6 +32,9 @@ spec:
       - name: {{ include "scim.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        env:
+          {{- include "scim.usr-envs" . | indent 12 }}
+          {{- include "scim.usr-secret-envs" . | indent 12 }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh
@@ -54,6 +57,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         volumeMounts:
         {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
