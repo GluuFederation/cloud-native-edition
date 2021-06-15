@@ -1,8 +1,18 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # jackrabbit Environament Variables
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 nameOverride: ""
 fullnameOverride: ""
+# This id needs to be unique to each kubernetes cluster in a multi cluster setup
+# west, east, south, north, region ...etc If left empty it will be randomly generated.
+clusterId: ""
 service:
   jackRabbitServiceName: jackrabbit
   name: http-jackrabbit

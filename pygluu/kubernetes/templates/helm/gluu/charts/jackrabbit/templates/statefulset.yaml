@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "jackrabbit.fullname" . }}
+  name: {{ include "jackrabbit.fullname" . }}-{{ include "jackrabbit.clusterId" . }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "jackrabbit.labels" . | indent 4}}
@@ -41,11 +41,22 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "jackrabbit.name" . }}
+        env:
+          {{- include "jackrabbit.usr-envs" . | indent 12 }}
+          {{- include "jackrabbit.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         ports:
           - name: {{ .Values.service.name }}
             containerPort: {{ .Values.service.port }}
