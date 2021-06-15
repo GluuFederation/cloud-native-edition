@@ -10,6 +10,9 @@ usrEnvs: {}
 
 nameOverride: ""
 fullnameOverride: ""
+# This id needs to be unique to each kubernetes cluster in a multi cluster setup
+# west, east, south, north, region ...etc
+clusterId: "first"
 service:
   jackRabbitServiceName: jackrabbit
   name: http-jackrabbit

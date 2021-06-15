@@ -489,6 +489,9 @@ jackrabbit:
   #    variable1: value1
   #  secret:
   #    variable4: value4
+  # This id needs to be unique to each kubernetes cluster in a multi cluster setup
+  # west, east, south, north, region ...etc
+  clusterId: "first"
   dnsPolicy: ""
   dnsConfig: {}
   image:
