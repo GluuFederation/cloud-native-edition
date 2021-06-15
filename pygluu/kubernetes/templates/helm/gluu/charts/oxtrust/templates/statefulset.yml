@@ -54,7 +54,7 @@ spec:
           containerPort: {{ .Values.service.port }}
         env:
         - name: GLUU_JAVA_OPTIONS
-          value: "-XshowSettings:vm -XX:MaxRAMPercentage=80" -DCN_IDP_HOST=http://oxshibboleth:8080
+          value: "-XshowSettings:vm -XX:MaxRAMPercentage=80 -DCN_IDP_HOST=http://oxshibboleth:8080"
         {{- include "oxtrust.usr-envs" . | indent 8 }}
         {{- include "oxtrust.usr-secret-envs" . | indent 8 }}
         envFrom:
