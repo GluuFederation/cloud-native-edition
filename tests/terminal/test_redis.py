@@ -1,4 +1,5 @@
 import pygluu.kubernetes.terminal.redis as module0
+import click
 
 
 def test_prompt_redis_type(monkeypatch, settings):
