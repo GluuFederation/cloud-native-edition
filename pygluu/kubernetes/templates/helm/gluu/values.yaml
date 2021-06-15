@@ -297,7 +297,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.3_03
+    tag: 4.2.3_04
     pullPolicy: Always
   resources:
     limits:
@@ -459,7 +459,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.3_05
+    tag: 4.2.3_06
     pullPolicy: Always
   resources:
     limits:
