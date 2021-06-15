@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "jackrabbit.fullname" . }}-{{ .Values.clusterId }}
+  name: {{ include "jackrabbit.fullname" . }}-{{ include "jackrabbit.clusterId" . }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "jackrabbit.labels" . | indent 4}}
