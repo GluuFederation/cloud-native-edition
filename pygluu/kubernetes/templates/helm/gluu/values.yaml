@@ -156,7 +156,7 @@ jackrabbit:
   #    variable4: value4
   # This id needs to be unique to each kubernetes cluster in a multi cluster setup
   # west, east, south, north, region ...etc If left empty it will be randomly generated.
-  clusterId: ""
+  clusterId: "first"
   service:
     jackRabbitServiceName: jackrabbit
   replicas: 1
