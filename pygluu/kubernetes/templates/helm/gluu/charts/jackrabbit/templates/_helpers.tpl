@@ -25,6 +25,21 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Generate random clusterId to appended to the name. This is relevent expecially when there are multiple kubernetes clusters where this id otherwise would be the same.
+In Jackrabbit:
+<Cluster id="<container hostname>">
+    <Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
+    </Journal>
+</Cluster>
+*/}}
+{{- define "jackrabbit.clusterId" -}}
+{{- if .Values.clusterId -}}
+{{- .Values.clusterId | lower -}}
+{{- else -}}
+{{- randAlpha 5 | lower -}}
+{{- end -}}
+{{- end -}}
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "jackrabbit.chart" -}}
