@@ -1,10 +1,22 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # jackrabbit Environament Variables
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 nameOverride: ""
 fullnameOverride: ""
+# This id needs to be unique to each kubernetes cluster in a multi cluster setup
+# west, east, south, north, region ...etc If left empty it will be randomly generated.
+clusterId: ""
 service:
   jackRabbitServiceName: jackrabbit
+  name: http-jackrabbit
+  port: 8080
 # StatefulSet
 # values declaration
 replicas: 1
@@ -23,13 +35,22 @@ storage:
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
 
-#servicePorts values used in StatefulSet container
-ports:
-  jackrabbit:
-    port: 8080
+livenessProbe:
+  tcpSocket:
+    port: http-jackrabbit
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+readinessProbe:
+  tcpSocket:
+    port: http-jackrabbit
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+
 # VolumeMounts for StatefulSet
 # jackrabbit-init vm
-volumeMounts:
+jackrabbitVolumeMounts:
   repository:
     mountPath: /opt/jackrabbit/repository
     name: jackrabbit-volume
@@ -39,6 +60,15 @@ volumeMounts:
   workspaces:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

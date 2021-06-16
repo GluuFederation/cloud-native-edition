@@ -1,6 +1,13 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # opendj Environament Variables
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 nameOverride: ""
 fullnameOverride: ""
 # StatefulSet
@@ -18,7 +25,26 @@ service:
 image:
   repository: gluufederation/opendj
   tag: 5.0.0_dev
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
+
+livenessProbe:
+  exec:
+    command:
+    - python3
+    - /app/scripts/healthcheck.py
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 20
+readinessProbe:
+  exec:
+    command:
+    - python3
+    - /app/scripts/healthcheck.py
+  initialDelaySeconds: 25
+  timeoutSeconds: 5
+  periodSeconds: 25
+  failureThreshold: 20
 
 persistence:
   size: 5Gi
@@ -65,7 +91,7 @@ ports:
     nodePort: 30946
 # VolumeMounts for StatefulSet
 # opendj-init vm
-volumeMounts:
+openDjVolumeMounts:
   config:
     mountPath: /opt/opendj/config
     name: opendj-volume
@@ -81,6 +107,15 @@ volumeMounts:
   flag: 
     mountPath: /flag
     name: opendj-volume
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

@@ -1,36 +1,26 @@
-import pygluu.kubernetes.gluu as simulate
+import logging
+from pathlib import Path
+from pygluu.kubernetes.gluu import Gluu
 
 
-def test_uninstall_nginx_ingress():
-    try:
-        var0 = simulate.Gluu()
-        assert var0 is not None
-        var1 = var0.install_ldap_backup()
-        assert var1 is None
-        var2 = simulate.Gluu()
-        var3 = var2.install_ldap_backup()
-        var4 = var2.uninstall_nginx_ingress()
-        var5 = simulate.Gluu()
-    except BaseException:
-        pass
+def test_settings_is_not_exist(settings, tmpdir):
+    p = Path(tmpdir) / './helm/gluu/values.yaml'
+    settings.values_file = p
+
+    assert settings.is_exist() is False
 
 
-def test_install_exception():
-    try:
-        var0 = simulate.Gluu()
-    except BaseException:
-        pass
+def test_values_is_exist(settings, tmpdir):
+    p = Path(tmpdir) / 'values.yaml'
+    p.write_text('{}')
+    settings.values_file = p
 
+    assert settings.is_exist() is True
 
-def test_ldap_nginx_ingress():
-    try:
-        var0 = simulate.Gluu()
-        assert var0 is not None
-        var1 = var0.install_ldap_backup()
-        assert var1 is None
-        var2 = simulate.Gluu()
-        var3 = var2.install_ldap_backup()
-        var4 = var2.uninstall_nginx_ingress()
-        var5 = simulate.Gluu()
-    except BaseException:
-        pass
+  
+def test_overide_values_is_exist(settings, tmpdir):
+    p = Path(tmpdir) / 'gluu-upgradevalues.yaml'
+    p.write_text('{}')
+    settings.values_file = p
+
+    assert settings.is_exist() is True

@@ -7,7 +7,6 @@ def test_jackrabbit_enable(monkeypatch, settings):
     monkeypatch.setattr("click.confirm", lambda x, default: True)
 
     settings.set("jackrabbit.secrets.cnJackrabbitAdminPassword", "Test1234#")
-    settings.set("installer-settings.jackrabbit.clusterMode", False)
     settings.set("config.configmap.cnJackrabbitAdminId", "admin")
     settings.set("jackrabbit.storage.size", "4Gi")
     settings.set("global.jackrabbit.enabled", "")
@@ -15,12 +14,11 @@ def test_jackrabbit_enable(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
 
-    assert settings.get("global.jackrabbit.enabled") == True
+    assert settings.get("global.jackrabbit.enabled")
     assert settings.get("jackrabbit.storage.size") == "4Gi"
     assert settings.get("config.configmap.cnJackrabbitUrl") == "http://jackrabbit:8080"
     assert settings.get("config.configmap.cnJackrabbitAdminId") == "admin"
     assert settings.get("jackrabbit.secrets.cnJackrabbitAdminPassword") == "Test1234#"
-    assert settings.get("installer-settings.jackrabbit.clusterMode") == False
 
 
 def test_jackrabbit_disable_no_url(monkeypatch, settings):
@@ -37,7 +35,6 @@ def test_jackrabbit_disable_no_url(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
 
-    assert settings.get("global.jackrabbit.enabled") == False
     assert settings.get("config.configmap.cnJackrabbitUrl") == "http://jackrabbit:8080"
 
 
@@ -77,3 +74,27 @@ def test_jackrabit_postgresdb(monkeypatch, settings):
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
     assert settings.get("config.configmap.cnJackrabbitPostgresDatabaseName") == "jackrabbit"
+
+
+def test_jackrabit_postgresuser(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
+
+    monkeypatch.setattr("click.prompt", lambda x, default: "jackrabbit")
+
+    settings.set("installer-settings.jackrabbit.clusterMode", True)
+    settings.set("config.configmap.cnJackrabbitPostgresUser", "")
+    prompt = PromptJackrabbit(settings)
+    prompt.prompt_jackrabbit()
+    assert settings.get("config.configmap.cnJackrabbitPostgresUser") == "jackrabbit"
+    
+
+def test_jackrabit_postgressize(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
+
+    monkeypatch.setattr("click.prompt", lambda x, default: "4Gi")
+
+    settings.set("global.jackrabbit.enabled", True)
+    settings.set("jackrabbit.storage.size", "")
+    prompt = PromptJackrabbit(settings)
+    prompt.prompt_jackrabbit()
+    assert settings.get("jackrabbit.storage.size") == "4Gi"

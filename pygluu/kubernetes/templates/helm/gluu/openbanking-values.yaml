@@ -1,0 +1,281 @@
+auth-server:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  dnsPolicy: ""
+  dnsConfig: {}
+  image:
+    pullPolicy: Always
+    repository: janssenproject/auth-server
+    tag: 1.0.0_b5
+  replicas: 1
+  resources:
+    limits:
+      cpu: 2500m
+      memory: 2500Mi
+    requests:
+      cpu: 2500m
+      memory: 2500Mi
+  service:
+    authServerServiceName: auth-server
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+
+config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  city: Austin
+  configmap:
+    cnAuthServerBackend: "auth-server:8080"
+    cnSqlDbDialect: mysql
+    cnSqlDbHost: my-release-mysql.default.svc.cluster.local
+    cnSqlDbPort: 3306
+    cnSqlDbName: jans
+    cnSqlDbUser: jans
+    cnSqlDbTimezone: UTC
+    cnSqlPasswordFile: /etc/jans/conf/sql_password
+    cnSqldbUserPassword: Test1234#
+    cnCacheType: NATIVE_PERSISTENCE
+    cnConfigKubernetesConfigMap: cn
+    # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+    # Base64 encode service account. The sa must have roles/secretmanager.admin
+    cnGoogleSecretManagerServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
+    cnGoogleProjectId: google-project-to-save-config-and-secrets-to
+    cnSecretGoogleSecretVersionId: "latest"
+    cnSecretGoogleSecretNamePrefix: jans
+    cnGoogleSecretManagerPassPhrase: Test1234#
+    cnConfigGoogleSecretVersionId: "latest"
+    cnConfigGoogleSecretNamePrefix: jans
+    # [google_secret_manager_envs] END
+    cnMaxRamPercent: "75.0"
+    cnRedisSentinelGroup: ""
+    cnRedisSslTruststore: ""
+    cnRedisType: STANDALONE
+    cnRedisUrl: "redis.redis.svc.cluster.local:6379"
+    cnRedisUseSsl: false
+    cnSecretKubernetesSecret: cn
+    containerMetadataName: kubernetes
+  # Below values should always remain intact
+    cnCasaEnabled: false
+    cnPassportEnabled: false
+    cnRadiusEnabled: false
+
+  countryCode: US
+  email: support@gluu.org
+  image:
+    repository: janssenproject/configuration-manager
+    tag: 1.0.0_b4
+  orgName: Gluu
+  redisPassword: P@assw0rd
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+  state: TX
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+  dnsPolicy: ""
+  dnsConfig: {}
+config-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  dnsPolicy: ""
+  dnsConfig: {}
+  image:
+    pullPolicy: IfNotPresent
+    repository: janssenproject/config-api
+    tag: 1.0.0_b5
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+    requests:
+      cpu: 1000m
+      memory: 400Mi
+  service:
+    configApiServerServiceName: config-api
+#  livenessProbe:
+#    initialDelaySeconds: 25
+#  readinessProbe:
+#    initialDelaySeconds: 30
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+    #- name: jose4j
+    #  configMap:
+    #    name: jose4j
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+    #- name: jose4j
+    #  mountPath: "/opt/jans/jetty/jans-auth/custom/libs/jose4j-0.7.7.jar"
+    #  subPath: jose4j-0.7.7.jar
+
+global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  alb:
+    ingress: false
+  auth-server:
+    enabled: true
+  awsStorageType: io1
+  cloud:
+    testEnviroment: false
+  cnPersistenceType: sql
+  cnObExtSigningJwksUri: ""
+  # base64 string for the open banking AS external signing jwks crt, keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObExtSigningJwksCrt: ""
+  cnObExtSigningJwksKey: ""
+  cnObExtSigningJwksKeyPassPhrase: ""
+  # This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G
+  cnObExtSigningAlias: ""
+
+  # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportCrt: ""
+  cnObTransportKey: ""
+  cnObTransportKeyPassPhrase: ""
+  cnObTransportAlias: ""
+  # base64 string for the open banking AS transport truststore in p12 format. This can be generated from the OB issuing CA, OB Root CA and Signing CA. Used when .global.cnObExtSigningJwksUri is set.
+  cnObTransportTrustStore: ""
+  config:
+    enabled: true
+  #google/kubernetes
+  configAdapterName: kubernetes
+  #google/kubernetes
+  configSecretAdapter: kubernetes
+  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+  # Base64 encode service account. The sa must have roles/secretmanager.admin
+  cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
+  # [google_secret_manager_envs] END
+  config-api:
+    enabled: true
+  fqdn: demoexample.gluu.org
+  gcePdStorageType: pd-standard
+  isFqdnRegistered: true
+  istio:
+    enabled: false
+    ingress: false
+    namespace: istio-system
+  nginx-ingress:
+    enabled: true
+  distribution: openbanking
+  persistence:
+    enabled: true
+  storageClass:
+    allowVolumeExpansion: true
+    allowedTopologies: []
+    mountOptions:
+    - debug
+    parameters: {}
+    #parameters:
+      #fsType: ""
+      #kind: ""
+      #pool: ""
+      #storageAccountType: ""
+      #type: ""
+    provisioner: microk8s.io/hostpath
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+  upgrade:
+    enabled: false
+  # Below values should always remain intact
+  opendj:
+    enabled: false
+  jackrabbit:
+    enabled: false
+  fido2:
+    enabled: false
+  scim:
+    enabled: false
+  oxshibboleth:
+    enabled: false
+  cr-rotate:
+    enabled: false
+  client-api:
+    enabled: false
+  auth-server-key-rotation:
+    enabled: false
+
+nginx-ingress:
+  ingress:
+    # /.well-known/openid-configuration
+    openidConfigEnabled: true
+    # /.well-known/uma2-configuration
+    uma2ConfigEnabled: true
+    # /.well-known/webfinger
+    webfingerEnabled: true
+    # /.well-known/simple-web-discovery
+    webdiscoveryEnabled: true
+    # /jans-config-api
+    configApiEnabled: true
+    # /.well-known/fido-configuration
+    u2fConfigEnabled: true
+    # /jans-auth
+    authServerEnabled: true
+    #/jans-auth/restv1/token
+    authServerProtectedToken: false
+    #/jans-auth/restv1/register
+    authServerProtectedRegister: false
+      # in the format of {cert-manager.io/cluster-issuer: nameOfClusterIssuer, kubernetes.io/tls-acme: "true"}
+    additionalAnnotations: {}
+      # Enable client certificate authentication
+      # nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
+      # Create the secret containing the trusted ca certificates
+      # nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate"
+      # Specify the verification depth in the client certificates chain
+      # nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      # Specify if certificates are passed to upstream server
+      # nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+    path: /
+    hosts:
+    - demoexample.gluu.org
+    tls:
+    - secretName: tls-certificate
+      hosts:
+      - demoexample.gluu.org
+persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  dnsPolicy: ""
+  dnsConfig: {}
+  image:
+    pullPolicy: IfNotPresent
+    repository: janssenproject/persistence-loader
+    tag: 1.0.0_b5
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+  volumes: []
+    # Configure any additional volumes that need to be attached to the pod
+  volumeMounts: []
+    # Configure any additional volumesMounts that need to be attached to the containers
+

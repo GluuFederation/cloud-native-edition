@@ -1,9 +1,16 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for auth-server-key-rotation.
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 image:
   repository: janssenproject/certmanager
-  tag: 5.0.0_dev
+  tag: 1.0.0_b4
   pullPolicy: Always
 keysLife: 48
 nameOverride: ""
@@ -22,6 +29,15 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

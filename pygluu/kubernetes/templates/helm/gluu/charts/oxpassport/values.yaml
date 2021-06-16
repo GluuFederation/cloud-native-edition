@@ -1,6 +1,13 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxpassport.
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 replicas: 1
 
 image:
@@ -14,7 +21,24 @@ fullnameOverride: ""
 service:
   oxPassportServiceName: oxpassport
   port: 8090
-  name: http-oxpassport
+  name: http-passport
+
+livenessProbe:
+  httpGet:
+    path: /passport/health-check
+    port: http-passport
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 20
+readinessProbe:
+  httpGet:
+    path: /passport/health-check
+    port: http-passport
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+  failureThreshold: 20
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -33,6 +57,15 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

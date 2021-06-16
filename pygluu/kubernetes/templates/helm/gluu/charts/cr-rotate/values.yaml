@@ -1,6 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for cr-rotate.
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 image:
   repository: gluufederation/cr-rotate
   tag: 5.0.0_dev
@@ -13,6 +19,17 @@ service:
   crRotateServiceName: cr-rotate
   port: 8084
   name: http-cr-rotate
+volumes: []
+  # Configure any additional volumes that need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+
+
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:

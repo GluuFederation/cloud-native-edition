@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "jackrabbit.fullname" . }}
+  name: {{ include "jackrabbit.fullname" . }}-{{ include "jackrabbit.clusterId" . }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "jackrabbit.labels" . | indent 4}}
@@ -28,51 +28,60 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       volumes:
-      {{- if .Values.global.cnJackrabbitCluster }}
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         - name: cn-jackrabbit-admin-pass
           secret:
             secretName: cn-jackrabbit-admin-pass
+      {{- if .Values.global.cnJackrabbitCluster }}
         - name: cn-jackrabbit-postgres-pass
           secret:
             secretName: cn-jackrabbit-postgres-pass
       {{- end }}
       containers:
-      - name: {{ include "jackrabbit.fullname" . }}
+      - name: {{ include "jackrabbit.name" . }}
+        env:
+          {{- include "jackrabbit.usr-envs" . | indent 12 }}
+          {{- include "jackrabbit.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         ports:
-          - name: {{ .Values.service.jackRabbitServiceName }}
-            containerPort: {{ .Values.ports.jackrabbit.port }}
+          - name: {{ .Values.service.name }}
+            containerPort: {{ .Values.service.port }}
             protocol: TCP
         volumeMounts:
-        {{- if .Values.global.cnJackrabbitCluster }}
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+          {{- end }}
           - name: cn-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
+        {{- if .Values.global.cnJackrabbitCluster }}
           - name: cn-jackrabbit-postgres-pass
             mountPath: /etc/gluu/conf/postgres_password
             subPath: postgres_password
         {{- end }}
-        {{- range $key, $values := .Values.volumeMounts }}
+        {{- range $key, $values := .Values.jackrabbitVolumeMounts }}
           - mountPath: {{$values.mountPath}}
             name: {{$values.name}}
             subPath: {{$key}}
         {{- end }}
         readinessProbe:
-          tcpSocket: 
-            port: 8080
-          initialDelaySeconds: 25
-          periodSeconds: 25
-          timeoutSeconds: 5
+{{- toYaml .Values.readinessProbe | nindent 10 }}
         livenessProbe:
-          tcpSocket:
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
+{{- toYaml .Values.livenessProbe | nindent 10 }}
         {{- if or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath") }}
         resources: {}
         {{- else if .Values.global.cloud.testEnviroment }}

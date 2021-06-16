@@ -1,4 +1,6 @@
 import pygluu.kubernetes.terminal.redis as module0
+import click
+import pytest
 
 
 def test_prompt_redis_type(monkeypatch, settings):
@@ -53,3 +55,4 @@ def test_nodespermaster_prompt():
     assert var7 is not None
     var8 = module0.PromptRedis(var0)
     assert var8 is not None
+

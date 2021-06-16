@@ -879,15 +879,26 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `ADMIN_PW`                                      | Password of oxTrust 6 chars min: 1 capital, 1 small, 1 digit and 1 special char  | `"P@ssw0rd"`                                                                                |
 | `GLUU_VERSION`                                  | Gluu version to be installed                                                     | `"4.2"`                                                                                     |
 | `GLUU_UPGRADE_TARGET_VERSION`                   | Gluu upgrade version                                                             | `"4.2"`                                                                                     |
-| `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |                                                     |
+| `GLUU_HELM_RELEASE_NAME`                        | Gluu Helm release name                                                           | `"<name>"`                                                                                  |
+| `KONG_HELM_RELEASE_NAME`                        | Gluu Gateway (Kong) Helm release name                                            | `"<name>"`                                                                                  |
 | `NGINX_INGRESS_NAMESPACE`                       | Nginx namespace                                                                  | `"<name>"`                                                                                  |
 | `NGINX_INGRESS_RELEASE_NAME`                    | Nginx Helm release name                                                          | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_HELM_RELEASE_NAME`             |  Gluu Gateway UI release name                                                    | `"<name>"`                                                                                  |
+| `INSTALL_GLUU_GATEWAY`                          | Install Gluu Gateway Database mode                                               | `"Y"` or `"N"`                                                                              |
 | `USE_ISTIO`                                     | Enable use of Istio. This will inject sidecars in Gluu pods.[Alpha]              | `"Y"` or `"N"`                                                                              |
 | `USE_ISTIO_INGRESS`                             | Enable Istio ingress.[Alpha]                                                     | `"Y"` or `"N"`                                                                              |
-| `ISTIO_SYSTEM_NAMESPACE`                        | Istio namespace                                       | `"<name>"`                                                                                  |
-| `POSTGRES_NAMESPACE`                            | Postgres namespace                                                | `"<name>"`                                                                                  |                                                         |
-| `POSTGRES_REPLICAS`                             | Postgres number of replicas                                      | `"<name>"`                                                                                  |
-| `POSTGRES_URL`                                  | Postgres URL ( Can be local or remote)                      |  i.e `"<servicename>.<namespace>.svc.cluster.local"`                                        |
+| `ISTIO_SYSTEM_NAMESPACE`                        | Postgres namespace - Gluu Gateway [Alpha]                                        | `"<name>"`                                                                                  |
+| `POSTGRES_NAMESPACE`                            | Postgres namespace - Gluu Gateway                                                | `"<name>"`                                                                                  |
+| `KONG_NAMESPACE`                                | Kong namespace - Gluu Gateway                                                    | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_NAMESPACE`                     | Gluu Gateway UI namespace - Gluu Gateway                                         | `"<name>"`                                                                                  |
+| `KONG_PG_USER`                                  | Kong Postgres user - Gluu Gateway                                                | `"<name>"`                                                                                  |
+| `KONG_PG_PASSWORD`                              | Kong Postgres password - Gluu Gateway                                            | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_PG_USER`                       | Gluu Gateway UI Postgres user - Gluu Gateway                                     | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_PG_PASSWORD`                   | Gluu Gateway UI Postgres password - Gluu Gateway                                 | `"<name>"`                                                                                  |
+| `KONG_DATABASE`                                 | Kong Postgres Database name - Gluu Gateway                                       | `"<name>"`                                                                                  |
+| `GLUU_GATEWAY_UI_DATABASE`                      | Gluu Gateway UI Postgres Database name - Gluu Gateway                            | `"<name>"`                                                                                  |
+| `POSTGRES_REPLICAS`                             | Postgres number of replicas - Gluu Gateway                                       | `"<name>"`                                                                                  |
+| `POSTGRES_URL`                                  | Postgres URL ( Can be local or remote) - Gluu Gateway                            |  i.e `"<servicename>.<namespace>.svc.cluster.local"`                                        |
 | `NODES_IPS`                                     | List of kubernetes cluster node ips                                              | `["<ip>", "<ip2>", "<ip3>"]`                                                                |
 | `NODES_ZONES`                                   | List of kubernetes cluster node zones                                            | `["<node1_zone>", "<node2_zone>", "<node3_zone>"]`                                          |
 | `NODES_NAMES`                                   | List of kubernetes cluster node names                                            | `["<node1_name>", "<node2_name>", "<node3_name>"]`                                          |
@@ -1036,6 +1047,10 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `PERSISTENCE_IMAGE_TAG`                         | Persistence image tag                                                            | i.e `"4.2.2_02"`                                                                            |
 | `RADIUS_IMAGE_NAME`                             | Radius image repository name                                                     | i.e `"gluufederation/radius"`                                                               |
 | `RADIUS_IMAGE_TAG`                              | Radius image tag                                                                 | i.e `"4.2.2_02"`                                                                            |
+| `GLUU_GATEWAY_IMAGE_NAME`                       | Gluu Gateway image repository name                                               | i.e `"gluufederation/gluu-gateway"`                                                         |
+| `GLUU_GATEWAY_IMAGE_TAG`                        | Gluu Gateway image tag                                                           | i.e `"4.2.2_01"`                                                                            |
+| `GLUU_GATEWAY_UI_IMAGE_NAME`                    | Gluu Gateway UI image repository name                                            | i.e `"gluufederation/gluu-gateway-ui"`                                                      |
+| `GLUU_GATEWAY_UI_IMAGE_TAG`                     | Gluu Gateway UI image tag                                                        | i.e `"4.2.2_01"`                                                                            |
 | `UPGRADE_IMAGE_NAME`                            | Gluu upgrade image repository name                                               | i.e `"gluufederation/upgrade"`                                                              |
 | `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.2.2_02"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
@@ -1254,7 +1269,7 @@ The above means that Jackrabbit will maintain the source folder on all replicas 
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
 
-## Architectural diagram of all Gluu servicess
+## Architectural diagram of all Gluu services
 
 ![svg](../img/kubernetes/cn-general-arch-diagram.svg)
 

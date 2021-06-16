@@ -1,5 +1,6 @@
 import pytest
 import click
+import click
 
 
 @pytest.mark.parametrize("given, expected", [

@@ -135,14 +135,6 @@ def test_prompt_volumes_minikube(settings):
     assert settings.get("global.storageClass.provisioner") == "k8s.io/minikube-hostpath"
 
 
-@pytest.mark.parametrize("vol_type", [0, 8, 13, 18])
-def test_prompt_volumes_misc_vol_type(settings, vol_type):
-    from pygluu.kubernetes.terminal.volumes import PromptVolumes
-
-    settings.set("CN_APP_VOLUME_TYPE", vol_type)
-    PromptVolumes(settings).prompt_volumes()
-
-
 def test_prompt_volumes_global_azure_type(monkeypatch, settings):
     from pygluu.kubernetes.terminal.volumes import PromptVolumes
 

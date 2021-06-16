@@ -26,14 +26,28 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "cr-rotate.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            {{- include "cr-rotate.usr-envs" . | indent 12 }}
+            {{- include "cr-rotate.usr-secret-envs" . | indent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config-cm
-          {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
+            {{ if .Values.global.usrEnvs.secret }}
+            - secretRef:
+                name: {{ .Release.Name }}-global-user-custom-envs
+            {{- end }}
+            {{ if .Values.global.usrEnvs.normal }}
+            - configMapRef:
+                name: {{ .Release.Name }}-global-user-custom-envs
+            {{- end }}
           volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}          
             - name: cb-pass
               mountPath: "/etc/gluu/conf/couchbase_password"
               subPath: couchbase_password
@@ -51,6 +65,9 @@ spec:
           {{- end }}
       {{- if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
       volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
         - name: cb-pass
           secret:
             secretName: {{ .Release.Name }}-cb-pass 

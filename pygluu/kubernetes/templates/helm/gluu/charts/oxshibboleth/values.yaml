@@ -1,6 +1,13 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for oxshibboleth.
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 replicas: 1
 
 image:
@@ -15,7 +22,7 @@ service:
   port: 8080
   targetPort: 8080
   oxShibbolethServiceName: oxshibboleth
-  name: http-oxshibboleth
+  name: http-oxshib
 
 resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -27,11 +34,35 @@ resources:
   requests:
    memory: 1000Mi # "1536Mi"
 
+livenessProbe:
+  httpGet:
+    path: /idp
+    port: http-oxshib
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /idp
+    port: http-oxshib
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+volumes: []
+  # Configure any additional volumes need to be attached to the pod
+  # - name: mycustomcert
+  #   secret:
+  #     secretName: mycustomsecret
+volumeMounts: []
+  # Configure any additional volumesMounts that need to be attached to the containers
+  # - name: mycustomcert
+  #   mountPath: /etc/certs
 dnsPolicy: ""
 dnsConfig: {}
   # options:
