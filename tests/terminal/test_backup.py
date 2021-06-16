@@ -99,3 +99,17 @@ def test_backup_not_ldap_storage(monkeypatch, settings, given, expected, type_):
 
     PromptBackup(settings).prompt_backup()
     assert settings.get("installer-settings.couchbase.backup.storageSize") == expected
+
+
+def test_backup_fullschedule(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.backup import PromptBackup
+
+
+    monkeypatch.setattr("click.prompt", lambda x, default: "0 2 * * 6")
+
+    settings.set("global.cnPersistenceType", "couchbase")
+    settings.set("installer-settings.couchbase.backup.fullSchedule", "")
+
+    PromptBackup(settings).prompt_backup()
+
+    assert settings.get("installer-settings.couchbase.backup.fullSchedule") == "0 2 * * 6"

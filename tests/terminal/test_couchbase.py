@@ -1,3 +1,5 @@
+import pytest
+
 def test_prompt_couchbase_ip(monkeypatch, settings):
     from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
     from pygluu.kubernetes.terminal.helpers import gather_ip
@@ -107,3 +109,14 @@ def test_prompt_couchbase_volumetype(monkeypatch, settings):
     prompt = PromptCouchbase(settings)
     prompt.prompt_couchbase_yaml()
     assert settings.get("installer-settings.couchbase.volumeType") == "io1"
+
+
+def test_prompt_couchbase_commonname(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
+
+    monkeypatch.setattr("click.prompt", lambda x, default: "Couchbase CA")
+    cm = "Couchbase CA"
+    settings.set("installer-settings.couchbase.commonName", cm)
+    prompt = PromptCouchbase(settings)
+    prompt.prompt_couchbase_yaml()
+    assert settings.get("installer-settings.couchbase.commonName") == cm
