@@ -70,7 +70,7 @@ spec:
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
       volumes:
-      {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+      {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
           secret:
             secretName: gluu-jackrabbit-admin-pass

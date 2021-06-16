@@ -59,10 +59,10 @@ spec:
             containerPort: {{ .Values.service.port }}
             protocol: TCP
         volumeMounts:
-        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
           - name: gluu-jackrabbit-admin-pass
             mountPath: /etc/gluu/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
+        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
           - name: gluu-jackrabbit-postgres-pass
             mountPath: /etc/gluu/conf/postgres_password
             subPath: postgres_password
