@@ -10,7 +10,6 @@ import sys
 import time
 
 from kubernetes import client, utils, config
-from kubernetes.stream import stream
 
 from pygluu.kubernetes.helpers import get_logger, check_microk8s_kube_config_file, exec_cmd
 from pygluu.kubernetes.yamlparser import Parser
@@ -50,11 +49,7 @@ class Kubernetes(object):
         self.custom_def_cli = client.CustomObjectsApi()
         self.core_cli = client.CoreV1Api()
         self.apps_cli = client.AppsV1Api()
-        self.jobs_cli = client.BatchV1Api()
-        self.cronjobs_cli = client.BatchV1beta1Api()
         self.rbac_cli = client.RbacAuthorizationV1Api()
-        self.network_cli = client.NetworkingV1beta1Api()
-        self.network_policy_cli = client.NetworkingV1Api()
         self.extenstion_cli = client.ExtensionsV1beta1Api()
         self.crd_cli = client.ApiextensionsV1beta1Api()
         self.storage_cli = client.StorageV1Api()
@@ -113,19 +108,6 @@ class Kubernetes(object):
             # The kubernetes object has been found"
             return False
 
-    def delete_namespace(self, name):
-        """Delete namespace with name"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_namespace(name)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info("namespace/{} has been removed or does not exist".format(name))
-
     def delete_validating_webhook_configuration(self, name):
         """Delete validating webhook configuration with name"""
         starting_time = time.time()
@@ -165,35 +147,6 @@ class Kubernetes(object):
                 response = self.check_error_and_response(starting_time, resp)
         logger.info("service/{} from namespace/{} has been removed or does not exist".format(name, namespace))
 
-    def delete_network_policy(self, name, namespace="default"):
-        """Delete service with name in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.network_policy_cli.delete_namespaced_network_policy(name=name, namespace=namespace)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info("NetworkPolicy/{} from namespace/{} has been removed or does not exist".format(name, namespace))
-
-    def delete_deployment_using_label(self, namespace="default", app_label=None):
-        """Delete deployment using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.apps_cli.delete_collection_namespaced_deployment(namespace=namespace,
-                                                                             label_selector=app_label,
-                                                                             body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info(
-            'deployment with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
     def delete_deployment_using_name(self, name, namespace="default"):
         """Delete deployment using name in namespace"""
         starting_time = time.time()
@@ -207,52 +160,6 @@ class Kubernetes(object):
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('deployment/{} in namespace/{} has been removed or does not exist'.format(name, namespace))
 
-    def delete_stateful_set(self, namespace="default", app_label=None):
-        """Delete statefulset using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.apps_cli.delete_collection_namespaced_stateful_set(namespace=namespace,
-                                                                               label_selector=app_label,
-                                                                               body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info(
-            'statefulset with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
-    def delete_job(self, namespace="default", app_label=None):
-        """Delete job using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.jobs_cli.delete_collection_namespaced_job(namespace=namespace, label_selector=app_label,
-                                                                      body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('job with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
-    def delete_cronjob(self, namespace="default", app_label=None):
-        """Delete job using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.cronjobs_cli.delete_collection_namespaced_cron_job(namespace=namespace,
-                                                                               label_selector=app_label,
-                                                                               body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info(
-            'cronjob with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
     def delete_secret(self, name, namespace="default"):
         """Delete secret using name in namespace"""
         starting_time = time.time()
@@ -265,66 +172,6 @@ class Kubernetes(object):
             else:
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('secret/{} from namespace/{} has been removed or does not exist'.format(name, namespace))
-
-    def delete_daemon_set(self, namespace="default", app_label=None):
-        """Delete daemon set using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.apps_cli.delete_collection_namespaced_daemon_set(namespace=namespace,
-                                                                             label_selector=app_label,
-                                                                             body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info(
-            'daemonset with label {} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
-    def delete_collection_namespaced_replication_controller(self, namespace="default", app_label=None):
-        """Delete replication controller using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_collection_namespaced_replication_controller(namespace=namespace,
-                                                                                         label_selector=app_label,
-                                                                                         body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('replicationcontroller/{} from namespace/{} has been removed or does not exist'.format(app_label,
-                                                                                                           namespace))
-
-    def delete_config_map_using_label(self, namespace="default", app_label=None):
-        """Delete config map using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_collection_namespaced_config_map(namespace=namespace,
-                                                                             label_selector=app_label,
-                                                                             body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('configmap/{} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
-    def delete_config_map_using_name(self, name, namespace="default"):
-        """Delete config map using name in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_namespaced_config_map(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('configmap/{} in namespace/{} has been removed or does not exist'.format(name, namespace))
 
     def delete_role(self, name, namespace="default"):
         """Delete role using name in namespace"""
@@ -378,37 +225,6 @@ class Kubernetes(object):
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('clusterrolebinding/{} has been removed or does not exist'.format(name))
 
-    def delete_persistent_volume(self, app_label=None):
-        """Delete persistent volume using app label"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_collection_persistent_volume(label_selector=app_label,
-                                                                         body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('persistentvolume/{} has been removed or does not exist'.format(app_label))
-
-    def delete_persistent_volume_claim(self, namespace="default", app_label=None):
-        """Delete persistent volume claim using app label in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.core_cli.delete_collection_namespaced_persistent_volume_claim(namespace=namespace,
-                                                                                          label_selector=app_label,
-                                                                                          body=self.delete_options)
-            except client.rest.ApiException as e:
-                response = self.check_error_and_response(starting_time, e)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-
-        logger.info(
-            'persistentvolumeclaim/{} in namespace/{} has been removed or does not exist'.format(app_label, namespace))
-
     def delete_service_account(self, name, namespace="default"):
         """Delete service account using name in namespace"""
         starting_time = time.time()
@@ -421,24 +237,6 @@ class Kubernetes(object):
             else:
                 response = self.check_error_and_response(starting_time, resp)
         logger.info('serviceaccount/{} in namespace/{} has been removed or does not exist'.format(name, namespace))
-
-    def delete_ingress(self, name, namespace="default"):
-        """Delete ingress using name in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                resp = self.network_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
-            except client.rest.ApiException:
-                try:
-                    resp = self.extenstion_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
-                except client.rest.ApiException as e:
-                    response = self.check_error_and_response(starting_time, e)
-                else:
-                    response = self.check_error_and_response(starting_time, resp)
-            else:
-                response = self.check_error_and_response(starting_time, resp)
-        logger.info('ingress/{} in namespace/{} has been removed or does not exist'.format(name, namespace))
 
     def delete_custom_resource(self, name):
         """Delete custom resource using name"""
@@ -521,21 +319,6 @@ class Kubernetes(object):
             self.check_create_error_and_response(e, "Namespace", name)
             return False
 
-    def create_namespaced_service_account(self, name, namespace="default"):
-        """Create service account using name in namespace"""
-        body = client.V1ServiceAccount()
-        metadata = client.V1ObjectMeta()
-        metadata.name = name
-        body.metadata = metadata
-
-        try:
-            self.core_cli.create_namespaced_service_account(namespace=namespace, body=body)
-            logger.info('Created serviceaccount {} in namespace {}'.format(name, namespace))
-            return
-        except client.rest.ApiException as e:
-            self.check_create_error_and_response(e, "ServiceAccount", name)
-            return False
-
     def create_cluster_role_binding(self, cluster_role_binding_name, user_name, cluster_role_name):
         """Create role binding using name=role_binding_name in namespace
         connecting role_name using service_account_name"""
@@ -550,22 +333,6 @@ class Kubernetes(object):
             return True
         except client.rest.ApiException as e:
             self.check_create_error_and_response(e, "ClusterRoleBinding", cluster_role_binding_name)
-            return False
-
-    def create_namespaced_role_binding(self, role_binding_name, service_account_name, role_name, namespace="default"):
-        """Create role binding using name=role_binding_name in namespace
-        connecting role_name using service_account_name"""
-        subject = client.V1Subject(kind="ServiceAccount", name=service_account_name, namespace=namespace)
-        metadata = client.V1ObjectMeta(name=role_binding_name)
-        role = client.V1RoleRef(kind="Role", name=role_name, api_group="rbac.authorization.k8s.io")
-        body = client.V1RoleBinding(subjects=[subject], metadata=metadata, role_ref=role)
-
-        try:
-            self.rbac_cli.create_namespaced_role_binding(namespace=namespace, body=body)
-            logger.info('Created role {} in namespace {}'.format(role_binding_name, namespace))
-            return True
-        except client.rest.ApiException as e:
-            self.check_create_error_and_response(e, "RoleBinding", role_binding_name)
             return False
 
     def create_namespaced_custom_object(self, filepath, group, version, plural, namespace="default"):
@@ -583,49 +350,6 @@ class Kubernetes(object):
                                                                     manifest["metadata"]["name"], namespace))
             except (client.rest.ApiException, Exception) as e:
                 self.check_create_error_and_response(e, manifest["kind"], manifest["metadata"]["name"])
-
-    def patch_or_create_namespaced_configmap(self, name, literal=None, value_of_literal=None, namespace="default",
-                                             second_literal=None, value_of_second_literal=None, data=None):
-        """Patch configmap and if not exist create"""
-        # Instantiate the configmap object
-        body = client.V1ConfigMap()
-        metadata = client.V1ObjectMeta(name=name)
-        body.data = data
-        if not data:
-            body.data = {literal: value_of_literal}
-        body.metadata = metadata
-        if second_literal:
-            body.data = {literal: value_of_literal, second_literal: value_of_second_literal}
-        try:
-            self.core_cli.patch_namespaced_config_map(name, namespace, body)
-            logger.info('Configmap  {} in namespace {} has been patched'.format(name, namespace))
-            return
-        except client.rest.ApiException as e:
-            if e.status == 404 or not e.status:
-                try:
-                    self.core_cli.create_namespaced_config_map(namespace=namespace, body=body)
-                    logger.info('Created configmap {} in namespace {}'.format(name, namespace))
-                    return True
-                except client.rest.ApiException as e:
-                    logger.exception(e)
-                    return False
-            logger.exception(e)
-            return False
-
-    def patch_namespaced_deployment_scale(self, name, replicas, namespace="default"):
-        """Scale deployment using name in namespace to replicas"""
-        body = {
-            'spec': {
-                'replicas': replicas,
-            }
-        }
-        try:
-            self.apps_cli.patch_namespaced_deployment_scale(name, namespace, body)
-            logger.info('Deployemnt {} in namespace {} has been scaled to {}'.format(name, namespace, replicas))
-            return
-        except client.rest.ApiException as e:
-            logger.exception(e)
-            return False
 
     def patch_or_create_namespaced_secret(self, name, literal, value_of_literal, namespace="default",
                                           secret_type="Opaque", second_literal=None, value_of_second_literal=None,
@@ -654,115 +378,6 @@ class Kubernetes(object):
                 except client.rest.ApiException as e:
                     logger.exception(e)
                     return False
-            logger.exception(e)
-            return False
-
-    def patch_namespaced_deployment(self, name, image, namespace="default"):
-        """Scale deployment using name in namespace to replicas"""
-        # Configureate Pod template container
-        container = client.V1Container(name=name)
-        # Create and configurate a spec section
-        template = client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(labels={"app": name}),
-            spec=client.V1PodSpec(containers=[container]))
-        # Create the specification of deployment
-        spec = client.V1DeploymentSpec(
-            template=template,
-            selector={'matchLabels': {'app': name}})
-        # Instantiate the deployment object
-        deployment = client.V1Deployment(
-            api_version="apps/v1",
-            kind="Deployment",
-            metadata=client.V1ObjectMeta(name=name),
-            spec=spec)
-        deployment.spec.template.spec.containers[0].image = image
-        try:
-            self.apps_cli.patch_namespaced_deployment(name, namespace, deployment)
-            logger.info('Image of deployemnt {} in namespace {} has been updated to {}'.format(name, namespace, image))
-            return
-        except client.rest.ApiException as e:
-            if e.status == 404 or not e.status:
-                logger.info(
-                    'Deployment {} in namespace {} is not found'.format(name, namespace))
-                return
-            logger.exception(e)
-            return False
-
-    def patch_namespaced_statefulset(self, name, image, namespace="default"):
-        """Scale deployment using name in namespace to replicas"""
-        # Configureate Pod template container
-        container = client.V1Container(name=name)
-        # Create and configurate a spec section
-        template = client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(labels={"app": name}),
-            spec=client.V1PodSpec(containers=[container]))
-        # Create the specification of statefulset
-        spec = client.V1StatefulSetSpec(
-            template=template,
-            selector={'matchLabels': {'app': name}},
-            service_name=name)
-        # Instantiate the statefulset object
-        statefulset = client.V1StatefulSet(
-            api_version="apps/v1",
-            kind="StatefulSet",
-            metadata=client.V1ObjectMeta(name=name),
-            spec=spec)
-        statefulset.spec.template.spec.containers[0].image = image
-        try:
-            self.apps_cli.patch_namespaced_stateful_set(name, namespace, statefulset)
-            logger.info('Image of statefulset {} in namespace {} has been updated to {}'.format(name, namespace, image))
-            return
-        except client.rest.ApiException as e:
-            if e.status == 404 or not e.status:
-                logger.info(
-                    'Statefulset {} in namespace {} is not found'.format(name, namespace))
-                return
-            logger.exception(e)
-            return False
-
-    def patch_namespaced_daemonset(self, name, image, namespace="default"):
-        """Scale deployment using name in namespace to replicas"""
-        # Configureate Pod template container
-        container = client.V1Container(name=name)
-        # Create and configurate a spec section
-        template = client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(labels={"app": name}),
-            spec=client.V1PodSpec(containers=[container]))
-        # Create the specification of DaemonSet
-        spec = client.V1DaemonSetSpec(
-            template=template,
-            selector={'matchLabels': {'app': name}})
-        # Instantiate the DaemonSet object
-        daemonset = client.V1DaemonSet(
-            api_version="apps/v1",
-            kind="DaemonSet",
-            metadata=client.V1ObjectMeta(name=name),
-            spec=spec)
-        daemonset.spec.template.spec.containers[0].image = image
-        try:
-            self.apps_cli.patch_namespaced_daemon_set(name, namespace, daemonset)
-            logger.info('Image of daemonset {} in namespace {} has been updated to {}'.format(name, namespace, image))
-            return
-        except client.rest.ApiException as e:
-            if e.status == 404 or not e.status:
-                logger.info(
-                    'Daemonset {} in namespace {} is not found'.format(name, namespace))
-                return
-            logger.exception(e)
-            return False
-
-    def patch_namespaced_stateful_set_scale(self, name, replicas, namespace="default"):
-        """Scale statefulset using name in namespace to replicas"""
-        body = {
-            'spec': {
-                'replicas': replicas,
-            }
-        }
-        try:
-            self.apps_cli.patch_namespaced_stateful_set_scale(name, namespace, body)
-            logger.info('StatefulSet {} in namespace {} has been scaled to {}'.format(name, namespace, replicas))
-            return
-        except client.rest.ApiException as e:
             logger.exception(e)
             return False
 
@@ -797,18 +412,6 @@ class Kubernetes(object):
         except client.rest.ApiException as e:
             logger.exception(e)
 
-    def read_namespaced_secret(self, name, namespace="default"):
-        """Read secret with name in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                secret = self.core_cli.read_namespaced_secret(name=name, namespace=namespace)
-                logger.info('Reading secret {}'.format(name))
-                return secret
-            except client.rest.ApiException as e:
-                response = self.check_read_error_and_response(starting_time, e)
-
     def read_namespaced_service(self, name, namespace="default"):
         """Read service with name in namespace"""
         starting_time = time.time()
@@ -818,18 +421,6 @@ class Kubernetes(object):
                 service = self.core_cli.read_namespaced_service(name=name, namespace=namespace)
                 logger.info('Reading service {}'.format(name))
                 return service
-            except client.rest.ApiException as e:
-                response = self.check_read_error_and_response(starting_time, e)
-
-    def read_namespaced_configmap(self, name, namespace="default"):
-        """Read configmap with name in namespace"""
-        starting_time = time.time()
-        response = True
-        while response:
-            try:
-                configmap = self.core_cli.read_namespaced_config_map(name=name, namespace=namespace)
-                logger.info('Reading configmap {}'.format(name))
-                return configmap
             except client.rest.ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
@@ -884,33 +475,6 @@ class Kubernetes(object):
         pods_name = self.list_pod_name_by_label(namespace, app_label)
         for pod_name in pods_name:
             self.read_namespaced_pod_status(name=pod_name, namespace=namespace, timeout=timeout)
-
-    def connect_get_namespaced_pod_exec(self, exec_command, container, app_label=None, namespace="default",
-                                        stdout=True):
-        """Execute command in pod with app label in namespace"""
-        pods_name = self.list_pod_name_by_label(namespace, app_label)
-        for pod_name in pods_name:
-            try:
-                resp = stream(self.core_cli.connect_get_namespaced_pod_exec,
-                              name=pod_name,
-                              namespace=namespace,
-                              command=exec_command,
-                              container=container,
-                              stderr=True, stdin=False,
-                              stdout=True, tty=False)
-                if stdout:
-                    logger.info("{}".format(resp))
-                return resp
-            except client.rest.ApiException as e:
-                logger.exception(e)
-
-    def get_namespaces(self):
-        """List all namespaces"""
-        try:
-            return self.core_cli.list_namespace(pretty="pretty")
-        except client.rest.ApiException as e:
-            logger.exception(e)
-            return False
 
     def list_nodes(self):
         """List all nodes"""
