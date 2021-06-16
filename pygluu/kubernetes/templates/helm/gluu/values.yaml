@@ -78,12 +78,17 @@ installer-settings:
   confirmSettings: false
 
 auth-server:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b4
+    tag: 1.0.0_b5
   replicas: 1
   resources:
     limits:
@@ -103,6 +108,11 @@ auth-server:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 auth-server-key-rotation:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -126,6 +136,11 @@ auth-server-key-rotation:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 casa:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -151,6 +166,11 @@ casa:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 client-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -176,6 +196,11 @@ client-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   adminPassword: Test1234#
   city: Austin
   configmap:
@@ -211,7 +236,7 @@ config:
     cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
     cnJackrabbitPostgresDatabaseName: jackrabbit
-    cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    cnJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
     cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     cnJackrabbitPostgresPort: 5432
     cnJackrabbitPostgresUser: jackrabbit
@@ -277,12 +302,17 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_b4
+    tag: 1.0.0_b5
   replicas: 1
   resources:
     limits:
@@ -302,6 +332,11 @@ config-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 cr-rotate:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -326,6 +361,11 @@ cr-rotate:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 fido2:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -351,6 +391,12 @@ fido2:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   alb:
     ingress: false
   auth-server:
@@ -438,6 +484,14 @@ global:
   upgrade:
     enabled: false
 jackrabbit:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  # This id needs to be unique to each kubernetes cluster in a multi cluster setup
+  # west, east, south, north, region ...etc If left empty it will be randomly generated.
+  clusterId: "first"
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -503,6 +557,11 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 opendj:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -568,6 +627,11 @@ opendj:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxpassport:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -593,6 +657,11 @@ oxpassport:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxshibboleth:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -618,12 +687,17 @@ oxshibboleth:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b4
+    tag: 1.0.0_b5
   resources:
     limits:
       cpu: 300m
@@ -636,6 +710,11 @@ persistence:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 radius:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -661,6 +740,11 @@ radius:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 scim:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:

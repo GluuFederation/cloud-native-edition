@@ -27,6 +27,9 @@ spec:
           containers:
             - name: {{ include "auth-server-key-rotation.name" . }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              env:
+                {{- include "auth-server-key-rotation.usr-envs" . | indent 16 }}
+                {{- include "auth-server-key-rotation.usr-secret-envs" . | indent 16 }}
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               volumeMounts:
               {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
@@ -55,6 +58,14 @@ spec:
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-config-cm
+                {{ if .Values.global.usrEnvs.secret }}
+                - secretRef:
+                    name: {{ .Release.Name }}-global-user-custom-envs
+                {{- end }}
+                {{ if .Values.global.usrEnvs.normal }}
+                - configMapRef:
+                    name: {{ .Release.Name }}-global-user-custom-envs
+                {{- end }}
               {{- if or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath") }}
               resources: {}
               {{- else if .Values.global.cloud.testEnviroment }}
