@@ -99,9 +99,6 @@ class ValuesHandler(object):
             logger.info("No Value Can Be Found for " + str(keys_string))
             return False
 
-    def get_all(self):
-        return self.values_file_parser
-
     def update(self, collection):
         """
         mass update

@@ -3,6 +3,12 @@ from pygluu.kubernetes.kubeapi import load_kubernetes_config, Kubernetes
 from kubernetes import config
 
 
+def test_load_kubernetes_config():
+    var0 = '\n'
+    var1 = module0.load_kubernetes_config(var0)
+    assert var1 is None
+
+
 def test_patch_or_create_namespaced_secret():
     try:
         var0 = None
@@ -151,3 +157,88 @@ def test_check_read_error_and_responses():
     except BaseException:
         pass
 
+
+def test_webhook_configuration():
+    try:
+        var0 = '\n'
+        var1 = module0.load_kubernetes_config(var0)
+        assert var1 is None
+        var2 = module0.Kubernetes()
+        assert var2 is not None
+        var3 = var2.delete_mutating_webhook_configuration(var0)
+    except BaseException:
+        pass
+
+
+def test_undefined_role():
+    try:
+        var0 = None
+        var1 = ']J4?1tK,V71M&53-XlTF'
+        var2 = module0.Kubernetes()
+        assert var2 is not None
+        var3 = var2.delete_role(var0, var1)
+    except BaseException:
+        pass
+
+
+def test_empty_custom_resource():
+    try:
+        var0 = '\n'
+        var1 = module0.load_kubernetes_config(var0)
+        assert var1 is None
+        var2 = -932
+        var3 = module0.Kubernetes()
+        assert var3 is not None
+        var4 = var3.delete_custom_resource(var2)
+    except BaseException:
+        pass
+
+
+def test_role_bind():
+    try:
+        var0 = -1198.1
+        var1 = ',Ru.: ,V'
+        var2 = module0.Kubernetes()
+        assert var2 is not None
+        var3 = var2.delete_role_binding(var0, var1)
+    except BaseException:
+        pass
+
+
+def test_namespaced_custom_object():
+    try:
+        var0 = 'IIp\x0cIk'
+        var1 = 1739
+        var2 = 1869
+        var3 = None
+        var4 = None
+        var5 = module0.Kubernetes()
+        assert var5 is not None
+        var6 = var5.create_namespaced_custom_object(var0, var1, var2, var3,
+            var4)
+    except BaseException:
+        pass
+
+
+def test_empty_secrets():
+    try:
+        var0 = -2807
+        var1 = False
+        var2 = module0.Kubernetes()
+        assert var2 is not None
+        var3 = var2.delete_secret(var0, var1)
+    except BaseException:
+        pass
+
+
+def test_service_endpoint():
+    try:
+        var0 = '\n'
+        var1 = module0.load_kubernetes_config(var0)
+        assert var1 is None
+        var2 = False
+        var3 = module0.Kubernetes()
+        assert var3 is not None
+        var4 = var3.delete_service(var2, var2)
+    except BaseException:
+        pass

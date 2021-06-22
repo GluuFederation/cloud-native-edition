@@ -265,21 +265,6 @@ def test_updated_get_version():
     assert var21 is not None
 
 
-def test_copy():
-    var0 = None
-    var1 = None
-    var2 = None
-    var3 = b'\xb1\xb0\xb13\xad\xaa\xa5\x97\x93:\xd9\xfe\x96\xa1'
-    var4 = module0.ssh_and_remove(var0, var1, var2, var3)
-    assert var4 is None
-    var5 = module0.get_logger(var1)
-    assert var5 is not None
-    var6 = 'M]e<8>#arT\r'
-    var7 = None
-    var8 = module0.copy(var6, var7)
-    assert var8 is None
-
-
 def test_check_port_exception():
     try:
         var0 = b'T'

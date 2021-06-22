@@ -61,3 +61,30 @@ def test_base_exception_against_prompt():
         var0 = module0.Prompt()
     except BaseException:
         pass
+
+
+def test_eempty_couchbase():
+    var0 = module0.Prompt()
+    assert var0 is not None
+    var1 = var0.couchbase()
+    assert var1 is None
+
+
+def test_empty_test_enviornment():
+    var0 = module0.Prompt()
+    assert var0 is not None
+    var1 = var0.test_enviornment()
+    assert var1 is None
+
+
+def test_replica_prompt():
+    var0 = module0.Prompt()
+    assert var0 is not None
+    var1 = var0.replicas()
+
+
+def test_istio_prompt():
+    var0 = module0.Prompt()
+    assert var0 is not None
+    var1 = var0.istio()
+    assert var1 is None
