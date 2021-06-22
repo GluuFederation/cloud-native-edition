@@ -7,13 +7,3 @@ def test_base_exception():
         var0 = module0.Postgres()
     except BaseException:
         pass
-
-
-def test_class_object1():
-    var0 = module0.Postgres()
-    var1 = var0.uninstall_postgres()
-
-
-def test_class_object2():
-    var0 = module0.Postgres()
-    var1 = var0.__init__()

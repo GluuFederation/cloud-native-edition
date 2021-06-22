@@ -3,12 +3,6 @@ from pygluu.kubernetes.kubeapi import load_kubernetes_config, Kubernetes
 from kubernetes import config
 
 
-def test_load_kubernetes_config():
-    var0 = '\n'
-    var1 = module0.load_kubernetes_config(var0)
-    assert var1 is None
-
-
 def test_patch_or_create_namespaced_secret():
     try:
         var0 = None
