@@ -78,6 +78,16 @@ installer-settings:
   confirmSettings: false
 
 auth-server:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -136,6 +146,16 @@ auth-server-key-rotation:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 casa:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -166,6 +186,16 @@ casa:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 client-api:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -302,6 +332,16 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -361,6 +401,16 @@ cr-rotate:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 fido2:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -484,6 +534,16 @@ global:
   upgrade:
     enabled: false
 jackrabbit:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -557,6 +617,16 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 opendj:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -627,6 +697,16 @@ opendj:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxpassport:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -657,6 +737,16 @@ oxpassport:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxshibboleth:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -710,6 +800,16 @@ persistence:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 radius:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1
@@ -740,6 +840,16 @@ radius:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 scim:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
   #usrEnvs:
   #  normal:
   #    variable1: value1

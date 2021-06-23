@@ -1,6 +1,17 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for config-api.
+#HorizontalPodAutoscaler
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  # metrics if targetCPUUtilizationPercentage is not set
+  metrics: []
+  #Scaling Policies
+  behavior: {}
+
 replicas: 1
 service:
   # This must match config.configMap.cnClientApiApplicationCertCn
