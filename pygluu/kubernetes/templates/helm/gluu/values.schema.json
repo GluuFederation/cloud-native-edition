@@ -63,12 +63,12 @@
 						"cnSqlDbName": {
 							"description": "SQL server database name for Jans",
 							"type": "string",
-							"pattern": "^[a-z]+$"
+							"pattern": "^[a-z-0-9]+$"
 						},
 						"cnSqlDbUser": {
 							"description": "SQL server Jans username",
 							"type": "string",
-							"pattern": "^[a-z]+$"
+							"pattern": "^[a-z-0-9]+$"
 						},
 						"cnSqlDbTimezone": {
 							"description": "SQL server timezone",
