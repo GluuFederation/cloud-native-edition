@@ -14,6 +14,8 @@ data:
   CN_OB_EXT_SIGNING_JWKS_URI: {{ .Values.global.cnObExtSigningJwksUri | quote }}
   CN_OB_AS_TRANSPORT_ALIAS: {{ .Values.global.cnObTransportAlias | quote }}
   CN_OB_EXT_SIGNING_ALIAS: {{ .Values.global.cnObExtSigningAlias | quote }}
+  # force the AS to use a specific signing key
+  CN_OB_STATIC_KID: {{ .Values.global.cnObStaticSigningKeyKid | quote }}
   {{- end }}
   {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
   # [google_envs] Envs related to using Google

@@ -480,6 +480,10 @@
 					"description": "Open banking external signing AS Alias. This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G",
 					"type": "string"
 				},
+				"cnObStaticSigningKeyKid": {
+					"description": "Open banking  signing AS kid to force the AS to use a specific signing key. i.e Wy44xWSlcWnMiEc8iq9s2G",
+					"type": "string"
+				},
 				"cnObTransportCrt": {
 					"description": "Open banking transport crt. Used in SSA Validation. This must be encoded using base64.",
 					"type": "string",
