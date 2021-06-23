@@ -24,6 +24,8 @@ state: TX
 city: SLC
 cnOxtrustConfigGeneration: true
 configmap:
+  # Jetty header size in bytes in the auth server
+  cnJettyRequestHeaderSize: 8192
   cnSqlDbDialect: mysql
   cnSqlDbHost: my-release-mysql.default.svc.cluster.local
   cnSqlDbPort: 3306

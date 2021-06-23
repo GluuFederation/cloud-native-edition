@@ -235,6 +235,8 @@ config:
   city: Austin
   configmap:
     cnAuthServerBackend: "auth-server:8080"
+    # Jetty header size in bytes in the auth server
+    cnJettyRequestHeaderSize: 8192
     cnSqlDbDialect: mysql
     cnSqlDbHost: my-release-mysql.default.svc.cluster.local
     cnSqlDbPort: 3306
