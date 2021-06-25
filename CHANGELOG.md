@@ -27,6 +27,14 @@
 
 * release 1.6.0 ([bad3c37](https://www.github.com/GluuFederation/cloud-native-edition/commit/bad3c3720d70ad83ffff8ea6526b300009a5ba6d))
 
+
+### [1.5.7](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.6...v1.5.7) (2021-06-24)
+
+
+### Bug Fixes
+
+* allow injecting volumes and volumeMounts in values ([b1a4d89d](https://www.github.com/GluuFederation/cloud-native-edition/commit/b1a4d89d339f96b05adf7daeb6126c8145244632))
+
 ### [1.5.6](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.5...v1.5.6) (2021-06-21)
 
 
