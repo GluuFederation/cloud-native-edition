@@ -1,5 +1,27 @@
 # Changelog
 
+### [1.6.1](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.0...v1.6.1) (2021-06-25)
+
+
+### Bug Fixes
+
+* add oxshibboleth address param ([abf101d](https://www.github.com/GluuFederation/cloud-native-edition/commit/abf101d52662b5db8d50747a78c61e0965698b08))
+* add random function for jackrabbit clusterId ([e5a6c9d](https://www.github.com/GluuFederation/cloud-native-edition/commit/e5a6c9dd005f22148a867055a9f9792826f10540))
+* allow injecting user custom envs ([aff31d7](https://www.github.com/GluuFederation/cloud-native-edition/commit/aff31d736c277f8b2fa6e53333e51a782d343faf))
+* default set clusterId ([2dab08c](https://www.github.com/GluuFederation/cloud-native-edition/commit/2dab08cb0d8f86288d02aa77aad8a4ed19594106))
+* exit on service account not found ([1ce5380](https://www.github.com/GluuFederation/cloud-native-edition/commit/1ce53803c84ed8e884fcb87abbf4192f6e4a2e0c))
+* keep storageclass during upgrades ([245de68](https://www.github.com/GluuFederation/cloud-native-edition/commit/245de686f40ffa8db847654060d817355179e876))
+* mount jackrabbit admin pass ([7d537cb](https://www.github.com/GluuFederation/cloud-native-edition/commit/7d537cba71ceb8ec087ea53b43f802e1521feca5))
+* postgres automatically installed address ([cb9a146](https://www.github.com/GluuFederation/cloud-native-edition/commit/cb9a1469ccae08b09612d90cdfd8b5364dd54b56))
+* specify different names for jackrabbit statefulset ([dab3298](https://www.github.com/GluuFederation/cloud-native-edition/commit/dab3298a218b8ea36fc6b2dc44a412b93c8710a1))
+* syntax in java option param pass ([1c1aa33](https://www.github.com/GluuFederation/cloud-native-edition/commit/1c1aa3359195cf26eb1f1c786654759bb3ec7fce))
+
+
+### Documentation
+
+* update changelog for branch 4.2 ([1cd486c](https://www.github.com/GluuFederation/cloud-native-edition/commit/1cd486cc9733b7826e4a38668eb565fb89fa7997))
+* update changelong ([23ac54d](https://www.github.com/GluuFederation/cloud-native-edition/commit/23ac54d1621055bc554d520ae35e86a41fbc0e8e))
+
 ## [1.6.0](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.4.4...v1.6.0) (2021-06-01)
 
 
