@@ -98,7 +98,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -128,7 +128,7 @@ auth-server-key-rotation:
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   keysLife: 23
   resources:
     limits:
@@ -206,7 +206,7 @@ client-api:
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -311,7 +311,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -354,7 +354,7 @@ config-api:
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -423,7 +423,7 @@ fido2:
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -790,7 +790,7 @@ persistence:
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   resources:
     limits:
       cpu: 300m
@@ -863,7 +863,7 @@ scim:
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:

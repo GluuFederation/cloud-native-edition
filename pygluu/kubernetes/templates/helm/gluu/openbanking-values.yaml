@@ -19,7 +19,7 @@ auth-server:
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -87,7 +87,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   orgName: Gluu
   redisPassword: P@assw0rd
   resources:
@@ -125,7 +125,7 @@ config-api:
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/config-api
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -289,7 +289,7 @@ persistence:
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b5
+    tag: 1.0.0_b6
   resources:
     limits:
       cpu: 300m

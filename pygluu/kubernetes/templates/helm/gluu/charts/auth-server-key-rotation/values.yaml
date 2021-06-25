@@ -10,7 +10,7 @@ usrEnvs: {}
 
 image:
   repository: janssenproject/certmanager
-  tag: 1.0.0_b4
+  tag: 1.0.0_b6
   pullPolicy: Always
 keysLife: 48
 nameOverride: ""
