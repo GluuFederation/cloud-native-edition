@@ -10,7 +10,7 @@ usrEnvs: {}
 replicas: 1
 image:
   repository: gluufederation/scim
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
   pullPolicy: IfNotPresent
 
 #Resources for the deployment

@@ -10,7 +10,7 @@ usrEnvs: {}
 
 image:
   repository: gluufederation/certmanager
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
   pullPolicy: IfNotPresent
 keysLife: 48
 nameOverride: ""

@@ -97,7 +97,7 @@ fullNameOverride: ""
 
 image:
   repository: gluufederation/config-init
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
 
 volumes: []
   # Configure any additional volumes that need to be attached to the pod

@@ -9,7 +9,7 @@ usrEnvs: {}
 
 image:
   repository: gluufederation/fido2
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
   pullPolicy: IfNotPresent
 replicas: 1
 #Resources for the deployment

@@ -24,7 +24,7 @@ service:
   ldapServiceName: opendj
 image:
   repository: gluufederation/opendj
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
   pullPolicy: IfNotPresent
 
 livenessProbe:

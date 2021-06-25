@@ -27,7 +27,7 @@ secrets:
 
 image:
   repository: gluufederation/jackrabbit
-  tag: 4.3.0_01
+  tag: 4.3.0_b1
   pullPolicy: IfNotPresent
   
 storage:
