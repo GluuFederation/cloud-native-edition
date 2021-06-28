@@ -130,7 +130,7 @@ def test_base_exception():
     except BaseException:
         pass
 
-#slow
+
 def test_deploy_alb():
     var0 = module0.Gluu()
     assert var0 is not None
@@ -147,7 +147,7 @@ def test_deploy_alb():
     var11 = var0.prepare_alb()
     var12 = var0.uninstall_gluu()
 
-#slow
+
 def test_uninstall():
     var0 = module0.Gluu()
     assert var0 is not None
