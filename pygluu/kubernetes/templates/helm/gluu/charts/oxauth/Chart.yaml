@@ -5,7 +5,7 @@ appVersion: "4.3.0"
 home: https://gluu.org/docs/gluu-server
 maintainers:
 - name: Gluu
-email: support@gluu.org
+  email: support@gluu.org
 description: Helm chart for oxauth service
 name: oxauth
 version: 1.6.1

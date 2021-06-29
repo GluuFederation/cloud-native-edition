@@ -7,6 +7,6 @@ name: oxshibboleth
 version: 1.6.1
 maintainers:
 - name: Gluu
-email: support@gluu.org
+  email: support@gluu.org
 home: https://wwwgluu.org
 

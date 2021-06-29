@@ -13,8 +13,6 @@ data:
   GLUU_SQL_DB_USER: {{ .Values.configmap.cnSqlDbUser }}
   GLUU_SQL_DB_TIMEZONE: {{ .Values.configmap.cnSqlDbTimezone }}
   GLUU_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
-  GLUU_CONFIG_ADAPTER: {{ .Values.configmap.configAdapterName }}
-  GLUU_SECRET_ADAPTER: {{ .Values.configmap.configSecretAdapter }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
   # [google_envs] Envs related to using Google
@@ -87,7 +85,6 @@ data:
   GLUU_JACKRABBIT_POSTGRES_HOST: {{ .Values.configmap.gluuJackrabbitPostgresHost | quote }}
   GLUU_JACKRABBIT_POSTGRES_PORT: {{ .Values.configmap.gluuJackrabbitPostgresPort | quote }}
   GLUU_JACKRABBIT_POSTGRES_DATABASE: {{ .Values.configmap.gluuJackrabbitPostgresDatabaseName | quote }}
-  # GLUU_JACKRABBIT_PASSWORD_FILE: {{ .Values.configmap.gluuJcaPasswordFile | quote }} NOT IMPLEMENTED
   {{- end }}
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
