@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.6.2](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.1...v1.6.2) (2021-07-02)
+
+
+### Bug Fixes
+
+* adjust image tag for secondary charts ([d846422](https://www.github.com/GluuFederation/cloud-native-edition/commit/d84642249e3b18d392cd190433d9058bd94fc783)), closes [#338](https://www.github.com/GluuFederation/cloud-native-edition/issues/338)
+* helm chart email ([9f0e56b](https://www.github.com/GluuFederation/cloud-native-edition/commit/9f0e56b21525ebfea549db130a83257d1aba71f9))
+
 ### [1.6.1](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.0...v1.6.1) (2021-06-25)
 
 
