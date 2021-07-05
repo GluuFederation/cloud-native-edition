@@ -70,18 +70,6 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
-    """Execute ssh command and remove directory.
-
-    :param key:
-    :param user:
-    :param node_ip:
-    :param folder_to_be_removed:
-    """
-    exec_cmd("ssh -oStrictHostKeyChecking=no -i {} {}@{} sudo rm -rf {}"
-             .format(key, user, node_ip, folder_to_be_removed))
-
-
 def copy_templates():
     """Copy templates folder. /pygluu/kubernetes/templates to working dir.
     """

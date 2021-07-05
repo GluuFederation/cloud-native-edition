@@ -30,17 +30,3 @@ def test_reset_data_exception(caplog, monkeypatch, settings):
         assert settings.reset_data() is False
         assert "Uncaught error" in caplog.text
 
-
-def test_settings_is_not_exist(settings, tmpdir):
-    p = Path(tmpdir) / 'test_settings.json'
-    settings.values_file = p
-
-    assert settings.is_exist() is False
-
-
-def test_settings_is_exist(settings, tmpdir):
-    p = Path(tmpdir) / 'test_settings.json'
-    p.write_text('{}')
-    settings.values_file = p
-
-    assert settings.is_exist() is True

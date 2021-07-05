@@ -35,7 +35,6 @@ class ValuesHandler(object):
         self.values_file_parser = Parser(self.values_file, True)
         self.schema = {}
         self.load()
-        # self.load_schema()
 
     def load(self):
         """
@@ -48,24 +47,6 @@ class ValuesHandler(object):
         except FileNotFoundError:
             # No installation settings mounted as /override-values.yaml. Checking values.yaml.
             pass
-
-    def load_schema(self):
-        try:
-            with open(self.values_schema, 'r') as f:
-                try:
-                    self.schema = json.load(f)
-                    jsonschema.Draft7Validator.check_schema(self.schema)
-                except json.decoder.JSONDecodeError:
-                    logger.info(
-                        f"Opps! values.schema.json not readable")
-                    sys.exit(4)
-                except jsonschema.SchemaError:
-                    logger.info(
-                        f"Opps! values.schema.json is invalid")
-                    sys.exit(4)
-        except FileNotFoundError:
-            logger.info(f"Opps! values.schema.json not found")
-            sys.exit(4)
 
     def store_data(self):
         try:
@@ -131,10 +112,3 @@ class ValuesHandler(object):
             logger.info(f"Uncaught error={exc}")
             return False
 
-    def is_exist(self):
-        try:
-            self.values_file.resolve(strict=True)
-        except FileNotFoundError:
-            return False
-        else:
-            return True

@@ -35,9 +35,9 @@ class PromptRedis:
 
         if self.settings.get("installer-settings.redis.install"):
             if self.settings.get("installer-settings.redis.namespace") in (None, ''):
-                self.settings.set("installer-settings.redis.namespace",
-                                  click.prompt("Please enter a namespace for Redis cluster",
-                                               default="gluu-redis-cluster"))
+                namespace = click.prompt("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
+                self.settings.set("installer-settings.redis.namespace", namespace)
+                
             if self.settings.get("config.redisPassword") in (None, ''):
                 self.settings.set("config.redisPassword", prompt_password("Redis"))
 

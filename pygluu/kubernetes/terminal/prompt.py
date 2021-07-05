@@ -107,7 +107,7 @@ class Prompt:
         self.load_settings()
         volumes = PromptVolumes(self.settings)
         if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap") or \
-                self.settings.get("global.jackrabbit"):
+                self.settings.get("global.jackrabbit.enabled"):
             volumes.prompt_volumes()
         volumes.prompt_storage()
 

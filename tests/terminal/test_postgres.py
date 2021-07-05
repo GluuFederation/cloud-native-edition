@@ -53,3 +53,15 @@ def test_postgres_url(monkeypatch, settings, given, expected):
     prompt = PromptPostgres(settings)
     prompt.prompt_postgres()
     assert settings.get("config.configmap.cnJackrabbitPostgresHost") == expected
+
+
+def test_prompt_postgres_install(monkeypatch, settings):
+    from pygluu.kubernetes.terminal.postgres import PromptPostgres
+
+    monkeypatch.setattr("click.confirm", lambda x: True)
+
+    settings.set("installer-settings.postgres.install", "")
+    prompt = PromptPostgres(settings)
+    prompt.prompt_postgres()
+
+    assert settings.get("installer-settings.postgres.install")
