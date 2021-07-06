@@ -1,6 +1,12 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Required environment variables for generating Gluu server initial config
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 #values for environment variables
 orgName: Gluu
 # email address of the administrator usually. Used for certificate creation
@@ -18,6 +24,8 @@ state: TX
 city: SLC
 cnOxtrustConfigGeneration: true
 configmap:
+  # Jetty header size in bytes in the auth server
+  cnJettyRequestHeaderSize: 8192
   cnSqlDbDialect: mysql
   cnSqlDbHost: my-release-mysql.default.svc.cluster.local
   cnSqlDbPort: 3306
@@ -64,7 +72,7 @@ configmap:
   cnJackrabbitPostgresUser: jackrabbit
   cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
   cnJackrabbitPostgresDatabaseName: jackrabbit
-  cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+  cnJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
   cnJackrabbitPostgresPort: 5432
   cnJackrabbitSyncInterval: 300
   cnJackrabbitUrl: http://jackrabbit:8080
@@ -73,18 +81,19 @@ configmap:
   # Options LOCAL / JCA (jackrabbit)
   cnDocumentStoreType: JCA
   lbAddr: "" # axx-109xx52.us-west-2.elb.amazonaws.com
-  ldapServiceName: opendj
   cnCasaEnabled: true
   cnPassportEnabled: false
   cnRadiusEnabled: false
   cnSamlEnabled: true
+  #CN_CERT_ALT_NAME value. the same as the opendj service name
+  ldapServiceName: opendj
 
 nameOverride: ""
 fullNameOverride: ""
 
 image:
   repository: janssenproject/configuration-manager
-  tag: 1.0.0_b4
+  tag: 1.0.0_b6
 
 volumes: []
   # Configure any additional volumes that need to be attached to the pod

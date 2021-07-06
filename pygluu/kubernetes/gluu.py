@@ -15,8 +15,6 @@ from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.settings import ValuesHandler
 import time
 import socket
-import base64
-import secrets
 
 logger = get_logger("gluu-helm          ")
 
@@ -29,9 +27,8 @@ class Gluu(object):
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get("installer-settings.releaseName") + "-ldap-backup"
         if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
-            # Clusterrolebinding needs to be created for gke with CB or kubeDB installed
+            # Clusterrolebinding needs to be created for gke with CB installed
             if self.settings.get("config.configmap.cnCacheType") == "REDIS" or \
-                    self.settings.get("installer-settings.gluuGateway.install") or \
                     self.settings.get("installer-settings.couchbase.install"):
                 user_account, stderr, retcode = exec_cmd("gcloud config get-value core/account")
                 user_account = str(user_account, "utf-8").strip()
@@ -62,10 +59,6 @@ class Gluu(object):
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
             if self.settings.get("config.configmap.cnPassportEnabled") and service_name == "oxpassport":
-                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
-                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
-
-            if self.settings.get("installer-settings.gluuGateway.uI") and service_name == "gg-kong-ui":
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
@@ -126,8 +119,7 @@ class Gluu(object):
                     break
                 else:
                     hostname_ip = self.kubernetes.read_namespaced_service(
-                        name=self.settings.get('installer-settings.nginxIngress.releaseName') +
-                             "-ingress-nginx-controller",
+                        name=self.settings.get('installer-settings.nginxIngress.releaseName') + "-ingress-nginx-controller",
                         namespace=self.settings.get("installer-settings.nginxIngress.releaseName")).status.load_balancer.ingress[0].ip
                     self.settings.set("global.lbIp", hostname_ip)
             except (TypeError, AttributeError):
@@ -224,7 +216,7 @@ class Gluu(object):
             self.prepare_alb()
             self.deploy_alb()
         if self.settings.get("installer-settings.aws.lbType") != "alb" and \
-                self.settings.get("global.istio.ingress.enabled"):
+                self.settings.get("global.istio.ingress"):
             self.check_install_nginx_ingress(install_ingress)
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(

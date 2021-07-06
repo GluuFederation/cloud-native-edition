@@ -1,10 +1,25 @@
 auth-server:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -25,9 +40,16 @@ auth-server:
     # Configure any additional volumesMounts that need to be attached to the containers
 
 config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   city: Austin
   configmap:
     cnAuthServerBackend: "auth-server:8080"
+    # Jetty header size in bytes in the auth server
+    cnJettyRequestHeaderSize: 8192
     cnSqlDbDialect: mysql
     cnSqlDbHost: my-release-mysql.default.svc.cluster.local
     cnSqlDbPort: 3306
@@ -65,7 +87,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   orgName: Gluu
   redisPassword: P@assw0rd
   resources:
@@ -83,12 +105,27 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/config-api
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -115,6 +152,12 @@ config-api:
     #  subPath: jose4j-0.7.7.jar
 
 global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   alb:
     ingress: false
   auth-server:
@@ -130,7 +173,8 @@ global:
   cnObExtSigningJwksKeyPassPhrase: ""
   # This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G
   cnObExtSigningAlias: ""
-
+  # force the AS to use a specific signing key
+  cnObStaticSigningKeyKid: ""
   # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportCrt: ""
   cnObTransportKey: ""
@@ -235,12 +279,17 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: IfNotPresent
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   resources:
     limits:
       cpu: 300m

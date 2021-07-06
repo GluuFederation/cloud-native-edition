@@ -28,6 +28,9 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
+        env:
+          {{- include "persistence.usr-envs" . | indent 12 }}
+          {{- include "persistence.usr-secret-envs" . | indent 12 }}
         {{- if .Values.global.istio.enabled }}
         command:
           - tini
@@ -42,10 +45,23 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
+        {{ if .Values.global.usrEnvs.secret }}
+        - secretRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
+        {{ if .Values.global.usrEnvs.normal }}
+        - configMapRef:
+            name: {{ .Release.Name }}-global-user-custom-envs
+        {{- end }}
         volumeMounts:
           {{- with .Values.volumeMounts }}
 {{- toYaml . | nindent 10 }}
           {{- end }}
+        {{- if .Values.global.jackrabbit.enabled }}
+          - name: gluu-jackrabbit-admin-pass
+            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            subPath: jackrabbit_admin_password
+        {{- end }}
         {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
           - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
             name: google-sa
@@ -72,6 +88,11 @@ spec:
       volumes:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.jackrabbit.enabled }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
       {{- end }}
       {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
         - name: google-sa

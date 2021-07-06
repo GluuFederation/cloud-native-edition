@@ -5,7 +5,7 @@ apiVersion: batch/v1beta1
 metadata:
   name: {{ include "ldap-backup.fullname" . }}
 spec:
-   schedule: {{ .Values.cnLdapSchedule | quote }}
+  schedule: {{ .Values.cnLdapSchedule | quote }}
   concurrencyPolicy: {{ .Values.concurrencyPolicy }}
   jobTemplate:
     spec:

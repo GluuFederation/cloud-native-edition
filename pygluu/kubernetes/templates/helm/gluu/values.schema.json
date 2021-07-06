@@ -63,12 +63,12 @@
 						"cnSqlDbName": {
 							"description": "SQL server database name for Jans",
 							"type": "string",
-							"pattern": "^[a-z]+$"
+							"pattern": "^[a-z-0-9]+$"
 						},
 						"cnSqlDbUser": {
 							"description": "SQL server Jans username",
 							"type": "string",
-							"pattern": "^[a-z]+$"
+							"pattern": "^[a-z-0-9]+$"
 						},
 						"cnSqlDbTimezone": {
 							"description": "SQL server timezone",
@@ -478,6 +478,10 @@
 				},
 				"cnObExtSigningAlias": {
 					"description": "Open banking external signing AS Alias. This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G",
+					"type": "string"
+				},
+				"cnObStaticSigningKeyKid": {
+					"description": "Open banking  signing AS kid to force the AS to use a specific signing key. i.e Wy44xWSlcWnMiEc8iq9s2G",
 					"type": "string"
 				},
 				"cnObTransportCrt": {

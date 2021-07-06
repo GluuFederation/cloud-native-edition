@@ -28,4 +28,3 @@ class PromptTestEnvironment:
                     " at least 8GB Ram , 4 CPU, and 50 GB disk.")
         if self.settings.get("global.cloud.testEnviroment") in (None, ''):
             self.settings.set("global.cloud.testEnviroment", click.confirm("Is this a test environment."))
-

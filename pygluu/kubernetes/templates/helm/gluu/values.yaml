@@ -78,12 +78,27 @@ installer-settings:
   confirmSettings: false
 
 auth-server:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/auth-server
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -103,12 +118,17 @@ auth-server:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 auth-server-key-rotation:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/certmanager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   keysLife: 23
   resources:
     limits:
@@ -126,6 +146,21 @@ auth-server-key-rotation:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 casa:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -151,12 +186,27 @@ casa:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 client-api:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/client-api
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -176,10 +226,17 @@ client-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 config:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   adminPassword: Test1234#
   city: Austin
   configmap:
     cnAuthServerBackend: "auth-server:8080"
+    # Jetty header size in bytes in the auth server
+    cnJettyRequestHeaderSize: 8192
     cnSqlDbDialect: mysql
     cnSqlDbHost: my-release-mysql.default.svc.cluster.local
     cnSqlDbPort: 3306
@@ -211,7 +268,7 @@ config:
     cnJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     cnJackrabbitAdminPasswordFile: /etc/gluu/conf/jackrabbit_admin_password
     cnJackrabbitPostgresDatabaseName: jackrabbit
-    cnJackrabbitPostgresHost: postgres.postgres.svc.cluster.local
+    cnJackrabbitPostgresHost: postgresql.postgres.svc.cluster.local
     cnJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     cnJackrabbitPostgresPort: 5432
     cnJackrabbitPostgresUser: jackrabbit
@@ -254,7 +311,7 @@ config:
   email: support@gluu.org
   image:
     repository: janssenproject/configuration-manager
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   ldapPassword: P@ssw0rds
   orgName: Gluu
   redisPassword: P@assw0rd
@@ -277,12 +334,27 @@ config:
   dnsPolicy: ""
   dnsConfig: {}
 config-api:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/config-api
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -302,6 +374,11 @@ config-api:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 cr-rotate:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -326,12 +403,27 @@ cr-rotate:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 fido2:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/fido2
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:
@@ -351,6 +443,12 @@ fido2:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 global:
+  # Envs defined in global.userEnvs will be globally available to all services
+  usrEnvs: {}
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   alb:
     ingress: false
   auth-server:
@@ -374,7 +472,8 @@ global:
   cnObExtSigningJwksKeyPassPhrase: ""
   # This is a kid value.Used in SSA Validation, kid used while encoding a JWT sent to token URL i.e XkwIzWy44xWSlcWnMiEc8iq9s2G
   cnObExtSigningAlias: ""
-
+  # force the AS to use a specific signing key
+  cnObStaticSigningKeyKid: ""
   # base64 string for the open banking AS transport crt , keys and passphrase. Used when .global.cnObExtSigningJwksUri is set.
   cnObTransportCrt: ""
   cnObTransportKey: ""
@@ -438,6 +537,24 @@ global:
   upgrade:
     enabled: false
 jackrabbit:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
+  # This id needs to be unique to each kubernetes cluster in a multi cluster setup
+  # west, east, south, north, region ...etc If left empty it will be randomly generated.
+  clusterId: "first"
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -503,6 +620,21 @@ nginx-ingress:
       hosts:
       - demoexample.gluu.org
 opendj:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -568,6 +700,21 @@ opendj:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxpassport:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -593,6 +740,21 @@ oxpassport:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 oxshibboleth:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -618,12 +780,17 @@ oxshibboleth:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 persistence:
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/persistence-loader
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   resources:
     limits:
       cpu: 300m
@@ -636,6 +803,21 @@ persistence:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 radius:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
@@ -661,12 +843,27 @@ radius:
   volumeMounts: []
     # Configure any additional volumesMounts that need to be attached to the containers
 scim:
+  #HorizontalPodAutoscaler
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    # metrics if targetCPUUtilizationPercentage is not set
+    #metrics: []
+    #Scaling Policies
+    #behavior: {}
+  #usrEnvs:
+  #  normal:
+  #    variable1: value1
+  #  secret:
+  #    variable4: value4
   dnsPolicy: ""
   dnsConfig: {}
   image:
     pullPolicy: Always
     repository: janssenproject/scim
-    tag: 1.0.0_b4
+    tag: 1.0.0_b6
   replicas: 1
   resources:
     limits:

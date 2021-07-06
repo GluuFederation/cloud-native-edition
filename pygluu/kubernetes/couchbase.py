@@ -228,19 +228,19 @@ class Couchbase(object):
 
         if not self.settings.get("CN_COUCHBASE_GENERAL_STORAGE"):
             self.settings.set("CN_COUCHBASE_GENERAL_STORAGE", str(int((tps_ratio * (
-                    int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 125000)) + 5)) + "Gi")
+                int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 125000)) + 5)) + "Gi")
         if not self.settings.get("CN_COUCHBASE_DATA_STORAGE"):
             self.settings.set("CN_COUCHBASE_DATA_STORAGE", str(int((tps_ratio * (
-                    int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 100000)) + 5)) + "Gi")
+                int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 100000)) + 5)) + "Gi")
         if not self.settings.get("CN_COUCHBASE_INDEX_STORAGE"):
             self.settings.set("CN_COUCHBASE_INDEX_STORAGE", str(int((tps_ratio * (
-                    int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
+                int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
         if not self.settings.get("CN_COUCHBASE_QUERY_STORAGE"):
             self.settings.set("CN_COUCHBASE_QUERY_STORAGE", str(int((tps_ratio * (
-                    int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
+                int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 200000)) + 5)) + "Gi")
         if not self.settings.get("CN_COUCHBASE_ANALYTICS_STORAGE"):
             self.settings.set("CN_COUCHBASE_ANALYTICS_STORAGE", str(int((tps_ratio * (
-                    int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 250000)) + 5)) + "Gi")
+                int(self.settings.get("CN_NUMBER_OF_EXPECTED_USERS")) / 250000)) + 5)) + "Gi")
 
         if self.settings.get("CN_COUCHBASE_DATA_NODES"):
             number_of_data_nodes = self.settings.get("CN_COUCHBASE_DATA_NODES")
@@ -422,7 +422,7 @@ class Couchbase(object):
         if not self.settings.get("installer-settings.couchbase.customFileOverride"):
             try:
                 self.analyze_couchbase_cluster_yaml()
-            except Exception as e:
+            except Exception:
                 # TODO remove this exception
                 logger.error("Looks like some of the couchbase files were misconfigured. "
                              "If you wish to override the couchbase files please set "

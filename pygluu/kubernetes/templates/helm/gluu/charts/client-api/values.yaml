@@ -1,13 +1,30 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Default values for client-api.
+#HorizontalPodAutoscaler
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  # metrics if targetCPUUtilizationPercentage is not set
+  metrics: []
+  #Scaling Policies
+  behavior: {}
+
+usrEnvs: {}
+#  normal:
+#    variable1: value1
+#  secret:
+#    variable4: value4
+
 replicas: 1
 service:
   # This must match config.configMap.cnClientApiApplicationCertCn
   clientApiServerServiceName: client-api
 image:
   repository: janssenproject/client-api
-  tag: 1.0.0_b4
+  tag: 1.0.0_b6
   pullPolicy: Always
 
 nameOverride: ""

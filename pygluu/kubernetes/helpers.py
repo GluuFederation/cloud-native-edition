@@ -5,12 +5,11 @@ pygluu.kubernetes.common
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+import errno
 import subprocess
 import shlex
 import logging
 import json
-import errno
-import socket
 import shutil
 import os
 import string
@@ -70,49 +69,6 @@ def get_logger(name):
     console.setFormatter(logging.Formatter(log_format))
     logging.getLogger(name).addHandler(console)
     return logging.getLogger(name)
-
-
-def ssh_and_remove(key, user, node_ip, folder_to_be_removed):
-    """Execute ssh command and remove directory.
-
-    :param key:
-    :param user:
-    :param node_ip:
-    :param folder_to_be_removed:
-    """
-    exec_cmd("ssh -oStrictHostKeyChecking=no -i {} {}@{} sudo rm -rf {}"
-             .format(key, user, node_ip, folder_to_be_removed))
-
-
-def check_port(host, port):
-    """Check if ports are open
-
-    :param host:
-    :param port:
-    :return:
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        conn = sock.connect_ex((host, port))
-        if conn == 0:
-            # port is not available
-            return False
-        return True
-
-
-def copy(src, dest):
-    """Copy from source to destination
-
-    :param src:
-    :param dest:
-    """
-    try:
-        shutil.copytree(src, dest)
-    except OSError as e:
-        # If the error was caused because the source wasn't a directory
-        if e.errno == errno.ENOTDIR:
-            shutil.copy(src, dest)
-        else:
-            logger.error('Directory not copied. Error: {}'.format(e))
 
 
 def copy_templates():
@@ -220,7 +176,7 @@ def prompt_password(password, length=6):
         else:
             confirm_pw_prompt = getpass(prompt='Confirm password: ', stream=None)
             if password != "Redis":
-                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$',
+                regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W)[a-zA-Z0-9\\S]{6,}$',
                                       pw_prompt)  # noqa: W605
 
         if confirm_pw_prompt != pw_prompt:
@@ -233,63 +189,20 @@ def prompt_password(password, length=6):
             return pw_prompt
 
 
-def analyze_storage_class(settings, storageclass):
-    from pygluu.kubernetes.yamlparser import Parser
-    parser = Parser(storageclass, "StorageClass")
-    if "aws" in settings.get("installer-settings.volumeProvisionStrategy"):
-        parser["provisioner"] = "kubernetes.io/aws-ebs"
-        parser["parameters"]["encrypted"] = "true"
-        parser["parameters"]["type"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
-        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-        parser.dump_it()
-    elif "gke" in settings.get("installer-settings.volumeProvisionStrategy"):
-        parser["provisioner"] = "kubernetes.io/gce-pd"
-        try:
-            del parser["parameters"]["encrypted"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser["parameters"]["type"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
-        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-        parser.dump_it()
-    elif "aks" in settings.get("installer-settings.volumeProvisionStrategy"):
-        parser["provisioner"] = "kubernetes.io/azure-disk"
-        try:
-            del parser["parameters"]["encrypted"]
-            del parser["parameters"]["type"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser["parameters"]["storageaccounttype"] = settings.get("CN_LDAP_JACKRABBIT_VOLUME")
-        unique_zones = list(dict.fromkeys(settings.get("CN_NODES_ZONES")))
-        parser["allowedTopologies"][0]["matchLabelExpressions"][0]["values"] = unique_zones
-        parser.dump_it()
-    elif "doks" in settings.get("installer-settings.volumeProvisionStrategy"):
-        parser["provisioner"] = "dobs.csi.digitalocean.com"
-        try:
-            del parser["parameters"]
-            del parser["allowedTopologies"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser.dump_it()
-    elif "microk8s" in settings.get('installer-settings.volumeProvisionStrategy'):
-        try:
-            parser["provisioner"] = "microk8s.io/hostpath"
-            del parser["allowedTopologies"]
-            del parser["allowVolumeExpansion"]
-            del parser["parameters"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser.dump_it()
-    elif "minikube" in settings.get('installer-settings.volumeProvisionStrategy'):
-        try:
-            parser["provisioner"] = "k8s.io/minikube-hostpath"
-            del parser["allowedTopologies"]
-            del parser["allowVolumeExpansion"]
-            del parser["parameters"]
-        except KeyError:
-            logger.info("Key not deleted as it does not exist inside yaml.")
-        parser.dump_it()
+def copy(src, dest):
+    """Copy from source to destination
+
+     :param src:
+     :param dest:
+     """
+    try:
+        shutil.copytree(src, dest)
+    except OSError as e:
+        # If the error was caused because the source wasn't a directory
+        if e.errno == errno.ENOTDIR:
+            shutil.copy(src, dest)
+        else:
+            logger.error('Directory not copied. Error: {}'.format(e))
 
 
 logger = get_logger("gluu-common        ")

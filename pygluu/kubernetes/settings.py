@@ -8,11 +8,8 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 import contextlib
-import json
 import os
-import sys
 import shutil
-import jsonschema
 from dotty_dict import dotty
 from pygluu.kubernetes.yamlparser import Parser
 from pathlib import Path
@@ -35,7 +32,6 @@ class ValuesHandler(object):
         self.values_file_parser = Parser(self.values_file, True)
         self.schema = {}
         self.load()
-        # self.load_schema()
 
     def load(self):
         """
@@ -48,24 +44,6 @@ class ValuesHandler(object):
         except FileNotFoundError:
             # No installation settings mounted as /override-values.yaml. Checking values.yaml.
             pass
-
-    def load_schema(self):
-        try:
-            with open(self.values_schema) as f:
-                try:
-                    self.schema = json.load(f)
-                    jsonschema.Draft7Validator.check_schema(self.schema)
-                except json.decoder.JSONDecodeError as e:
-                    logger.info(
-                        f"Opps! values.schema.json not readable")
-                    sys.exit(4)
-                except jsonschema.SchemaError as e:
-                    logger.info(
-                        f"Opps! values.schema.json is invalid")
-                    sys.exit(4)
-        except FileNotFoundError:
-            logger.info(f"Opps! values.schema.json not found")
-            sys.exit(4)
 
     def store_data(self):
         try:
@@ -99,9 +77,6 @@ class ValuesHandler(object):
             logger.info("No Value Can Be Found for " + str(keys_string))
             return False
 
-    def get_all(self):
-        return self.values_file_parser
-
     def update(self, collection):
         """
         mass update
@@ -134,46 +109,3 @@ class ValuesHandler(object):
             logger.info(f"Uncaught error={exc}")
             return False
 
-    def is_exist(self):
-        try:
-            self.values_file.resolve(strict=True)
-        except FileNotFoundError:
-            return False
-        else:
-            return True
-
-    def validate(self):
-        self.errors = []
-        try:
-            with open(self.values_file) as f:
-                try:
-                    settings = json.load(f)
-                    validator = jsonschema.Draft7Validator(self.schema)
-                    errors = sorted(validator.iter_errors(settings),
-                                    key=lambda e: e.path)
-
-                    for error in errors:
-                        if "errors" in error.schema and \
-                                error.validator != 'required':
-                            key = error.path[0]
-                            error_msg = error.schema.get('errors').get(
-                                error.validator)
-                            message = f"{key} : {error_msg}"
-                        else:
-                            if error.path:
-                                key = error.path[0]
-                                message = f"{key} : {error.message}"
-                            else:
-                                message = error.message
-
-                        self.errors.append(message)
-
-                except json.decoder.JSONDecodeError as e:
-                    self.errors.append(f"Not a valid values.yaml : {str(e)}")
-                    return False
-
-        except FileNotFoundError:
-            # skip validating file does not exist
-            return True
-
-        return len(self.errors) == 0
