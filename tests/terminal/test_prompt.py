@@ -12,13 +12,6 @@ def test_license(monkeypatch, settings):
     assert settings.get("installer-settings.acceptLicense")
 
 
-def test_versions(settings):
-
-    settings.set("installer-settings.currentVersion", "5.2")
-    check.versions()
-    assert settings.get("installer-settings.currentVersion") == "5.2"
-
-
 @pytest.mark.parametrize("given, expected", [
     (1, "microk8s.io/hostpath"),
 ])
@@ -110,24 +103,6 @@ def test_replicas(monkeypatch, settings):
     settings.set("auth-server.replicas", 1)
     check.replicas()
     assert settings.get("auth-server.replicas") == 1
-
-
-@pytest.mark.parametrize("given, expected", [
-    ("", "demoexample.gluu.org"),  # default
-])
-def test_configuration(monkeypatch, settings, given, expected):
-
-    monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
-
-    settings.set("config.countryCode", "US")
-    settings.set("config.state", "TX")
-    settings.set("config.city", "Austin")
-    settings.set("config.email", "support@gluu.org")
-    settings.set("config.orgName", "Gluu")
-    settings.set("config.adminPassword", "Admin GUI")
-    settings.set("global.fqdn", "demoexample.gluu.org")
-    check.configuration()
-    assert settings.get("global.fqdn") == expected
 
 
 @pytest.mark.parametrize("given, expected", [
