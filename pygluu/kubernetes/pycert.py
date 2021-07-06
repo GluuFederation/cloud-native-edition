@@ -179,31 +179,3 @@ def setup_crts(ca_common_name, cert_common_name, san_list,
     logger.info("Dumping {}".format(key_file))
     with open(key_file, "wb") as f:
         f.write(cert_key_pem)
-
-
-def check_cert_with_private_key(cert, private_key):
-    """
-    :type cert: str
-    :type private_key: str
-    :rtype: bool
-    """
-    try:
-        private_key_obj = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key)
-    except OpenSSL.crypto.Error:
-        raise logger.exception("Private key is not correct: {}".format(private_key))
-
-    try:
-        cert_obj = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-    except OpenSSL.crypto.Error:
-        raise logger.exception("Certificate is not correct: {}".format(cert))
-
-    context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
-    context.use_privatekey(private_key_obj)
-    context.use_certificate(cert_obj)
-    try:
-        context.check_privatekey()
-        logger.info("Private key matches certificate")
-        return True
-    except OpenSSL.SSL.Error:
-        logger.error("Private key does not match certificate")
-        return False

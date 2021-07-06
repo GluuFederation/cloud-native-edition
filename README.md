@@ -52,9 +52,3 @@
     ```
 
     This command will generate executable called `pygluu-kubernetes.pyz` under the same directory.
-
-    ```sh
-    make guizipapp
-    ```
-
-    This command will generate executable called `pygluu-kubernetes-gui.pyz` under the same directory.

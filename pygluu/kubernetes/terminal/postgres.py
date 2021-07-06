@@ -19,10 +19,10 @@ class PromptPostgres:
         self.settings = settings
 
     def prompt_postgres(self):
-        """Prompts for PostGres. Injected in a file postgres.yaml used with kubedb
+        """Prompts for PostGres Install.
         """
         if self.settings.get("installer-settings.postgres.install") in (None, ''):
-            install = click.confirm("Install postgres using the KubeDB operator?)")
+            install = click.confirm("Install postgres using the Bitnami helm chart?)")
             self.settings.set("installer-settings.postgres.install", install)
 
         if self.settings.get("installer-settings.postgres.install"):
@@ -39,6 +39,6 @@ class PromptPostgres:
                 "Please enter  postgres (remote or local) "
                 "URL base name.The recommended approach is to use a "
                 "production grade managed service such as Aurora",
-                default=f"postgresql.{self.settings.get('CN_POSTGRES_NAMESPACE')}.svc.cluster.local",
+                default=f"postgres.{self.settings.get('installer-settings.postgres.namespace')}.svc.cluster.local",
             )
             self.settings.set("config.configmap.cnJackrabbitPostgresHost", url)

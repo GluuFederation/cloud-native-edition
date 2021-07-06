@@ -31,24 +31,13 @@ class PromptRedis:
         if self.settings.get("installer-settings.redis.install"):
             logger.info("For the following prompt if placed [N] the Redis is assumed to be"
                         " installed or remotely provisioned")
-            self.settings.set("installer-settings.redis.install", click.confirm("Install Redis using KubeDB operator"))
+            self.settings.set("installer-settings.redis.install", click.confirm("Install Redis using Bitnami helm chart"))
 
         if self.settings.get("installer-settings.redis.install"):
-            if self.settings.get("installer-settings.redis.masterNodes") in (None, ''):
-                self.settings.set("installer-settings.redis.masterNodes",
-                                  click.prompt("The number of master node. Minimum is 3. "
-                                               "Press enter if remote", default=3))
-
-            if self.settings.get("installer-settings.redis.nodesPerMaster") in (None, ''):
-                self.settings.set("installer-settings.redis.nodesPerMaster",
-                                  click.prompt("The number of nodes per master node", default=2))
-
             if self.settings.get("installer-settings.redis.namespace") in (None, ''):
-                self.settings.set("installer-settings.redis.namespace",
-                                  click.prompt("Please enter a namespace for Redis cluster",
-                                               default="gluu-redis-cluster"))
-        else:
-            # Placing password in kubedb is currently not supported. # Todo: Remove else once supported
+                namespace = click.prompt("Please enter a namespace for Redis cluster", default="gluu-redis-cluster")
+                self.settings.set("installer-settings.redis.namespace", namespace)
+                
             if self.settings.get("config.redisPassword") in (None, ''):
                 self.settings.set("config.redisPassword", prompt_password("Redis"))
 

@@ -7,10 +7,7 @@ This module contains helpers to interact with user's inputs for configuration te
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
-
-from pathlib import Path
 import re
-import json
 import click
 
 from pygluu.kubernetes.helpers import get_logger, prompt_password
@@ -37,7 +34,7 @@ class PromptConfiguration:
                 self.settings.set("global.fqdn", click.prompt("Enter Hostname", default="demoexample.gluu.org"))
 
             regex_bool = re.match(
-                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]){2,}$',
+                '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.){2,}([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]){2,}$',
                 # noqa: W605
                 self.settings.get("global.fqdn"))
 

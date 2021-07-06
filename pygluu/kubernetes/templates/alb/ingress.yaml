@@ -115,7 +115,3 @@ spec:
         backend:
           serviceName: casa
           servicePort: 8080
-      - path: /gg-ui*
-        backend:
-          serviceName: gg-kong-ui
-          servicePort: 443

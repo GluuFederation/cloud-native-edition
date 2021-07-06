@@ -27,7 +27,7 @@ class PromptIstio:
                 and self.settings.get("global.storageClass.provisioner") not in \
                 ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             self.settings.set("global.istio.ingress", click.confirm("[Alpha] Would you like to use "
-                                                                 "Istio Ingress with Gluu ?"))
+                                                                    "Istio Ingress with Gluu ?"))
         if self.settings.get("global.istio.ingress"):
             self.settings.set("global.istio.enabled", True)
 
@@ -45,4 +45,4 @@ class PromptIstio:
 
             if self.settings.get("config.configmap.lbAddr") in (None, ''):
                 self.settings.set("config.configmap.lbAddr", click.prompt("Istio loadbalancer adderss(eks) or "
-                                                         "ip (gke, aks, digital ocean, local)", default=""))
+                                                                          "ip (gke, aks, digital ocean, local)", default=""))

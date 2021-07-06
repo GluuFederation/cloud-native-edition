@@ -13,10 +13,8 @@ import click
 class PromptImages:
     """Prompt is used for prompting users for input used in deploying Gluu.
     """
-
-    def __init__(self, settings, gluu_gateway_settings=None):
+    def __init__(self, settings):
         self.settings = settings
-        self.gluu_gateway_settings = gluu_gateway_settings
 
     def prompt_image_name_tag(self):
         """Manual prompts for image names and tags if changed from default or at a different repository.
@@ -26,10 +24,6 @@ class PromptImages:
             repository = f'{image}.image.repository'
             tag = f'{image}.image.tag'
             settings = self.settings
-            if service == "Gluu-Gateway-UI":
-                repository = 'image.repository'
-                tag = 'image.tag'
-                settings = self.gluu_gateway_settings
             settings.set(repository,
                          click.prompt(f"{service} image name",
                                       default=self.settings.get(repository)))
@@ -74,9 +68,4 @@ class PromptImages:
             # RADIUS
             if self.settings.get("config.configmap.cnRadiusEnabled"):
                 prompt_and_set_setting("Radius", "radius")
-            # Gluu-Gateway
-            if self.settings.get("installer-settings.gluuGateway.install"):
-                prompt_and_set_setting("Gluu-Gateway", "installer-settings.gluuGateway.kong")
-                # Gluu-Gateway-UI
-                prompt_and_set_setting("Gluu-Gateway-UI", "")
             self.settings.set("installer-settings.images.edit", False)

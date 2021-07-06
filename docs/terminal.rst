@@ -49,11 +49,6 @@ to handle interaction with user-inputs.
    :private-members:
    :undoc-members:
 
-.. autoclass:: pygluu.kubernetes.terminal.gluugateway.PromptGluuGateway
-   :members:
-   :private-members:
-   :undoc-members:
-
 .. autoclass:: pygluu.kubernetes.terminal.helm.PromptHelm
    :members:
    :private-members:
