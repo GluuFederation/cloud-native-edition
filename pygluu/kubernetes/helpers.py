@@ -5,6 +5,7 @@ pygluu.kubernetes.common
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+import errno
 import subprocess
 import shlex
 import logging
@@ -25,7 +26,7 @@ def update_settings_json_file(settings):
     """
     with open(Path('./settings.json'), 'w+') as file:
         json.dump(settings, file, indent=2)
-        
+
 
 def exec_cmd(cmd, output_file=None, silent=False):
     """Execute command cmd
@@ -134,6 +135,29 @@ def get_supported_versions():
     return versions, version_number
 
 
+def generate_password(length=6):
+    """Returns randomly generated password
+
+    :param length: Length of password
+    :return:
+    """
+    chars = string.ascii_letters + string.digits + string.punctuation + string.punctuation
+    chars = chars.replace('"', '')
+    chars = chars.replace("'", "")
+    chars = chars.replace("$", "")
+    chars = chars.replace("/", "")
+    chars = chars.replace("\\", "")
+    chars = chars.replace("!", "")
+
+    while True:
+        password = ''.join(random.choice(chars) for _ in range(length))
+        regex_bool = re.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$', password)  # noqa: W605
+        if regex_bool:
+            break
+
+    return password
+
+
 def prompt_password(password, length=6):
     """Prompt password and password confirmation
 
@@ -163,6 +187,22 @@ def prompt_password(password, length=6):
         else:
             logger.info("Success! {} password was set.".format(password))
             return pw_prompt
+
+
+def copy(src, dest):
+    """Copy from source to destination
+
+     :param src:
+     :param dest:
+     """
+    try:
+        shutil.copytree(src, dest)
+    except OSError as e:
+        # If the error was caused because the source wasn't a directory
+        if e.errno == errno.ENOTDIR:
+            shutil.copy(src, dest)
+        else:
+            logger.error('Directory not copied. Error: {}'.format(e))
 
 
 logger = get_logger("gluu-common        ")

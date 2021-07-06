@@ -8,11 +8,8 @@ License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
 import contextlib
-import json
 import os
-import sys
 import shutil
-import jsonschema
 from dotty_dict import dotty
 from pygluu.kubernetes.yamlparser import Parser
 from pathlib import Path
