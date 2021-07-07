@@ -89,9 +89,7 @@ data:
   {{- end }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  CN_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
-  CN_SYNC_CASA_MANIFESTS: {{ .Values.configmap.cnSyncCasaManifests | quote }}
-  CN_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.cnSyncShibManifests | quote }}
+  CN_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   {{ if .Values.global.cnJackrabbitCluster }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
   CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}

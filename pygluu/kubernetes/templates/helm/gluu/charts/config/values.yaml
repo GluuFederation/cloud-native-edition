@@ -54,8 +54,6 @@ configmap:
   cnPersistenceLdapMapping: default
   # options REDIS/NATIVE_PERSISTENCE
   cnCacheType: NATIVE_PERSISTENCE
-  cnSyncShibManifests: false
-  cnSyncCasaManifests: false
   cnMaxRamPercent: "75.0"
   containerMetadataName: kubernetes
   # If REDIS is the Cache Type or if going to be used with clientApi

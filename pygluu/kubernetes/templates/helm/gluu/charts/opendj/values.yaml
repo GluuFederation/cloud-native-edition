@@ -30,8 +30,6 @@ multiCluster:
   # Json for serf Peers
   serfPeers: ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
 replicas: 1
-service:
-  ldapServiceName: opendj
 image:
   repository: gluufederation/opendj
   tag: 5.0.0_dev
