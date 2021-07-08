@@ -32,3 +32,16 @@ dnsConfig: {}
   # options:
   #   - name: ndots
   #     value: "5"
+
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit
+    cpu: 300m
+    # -- Memory limit.
+    memory: 300Mi
+  requests:
+    # -- CPU request.
+    cpu: 300m
+    # -- Memory request.
+    memory: 300Mi

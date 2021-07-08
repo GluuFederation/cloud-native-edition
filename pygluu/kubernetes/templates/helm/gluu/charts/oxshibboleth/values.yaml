@@ -34,16 +34,6 @@ service:
   oxShibbolethServiceName: oxshibboleth
   name: http-oxshib
 
-resources: 
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-   memory: 1000Mi # "1000Mi"
-  requests:
-   memory: 1000Mi # "1536Mi"
-
 livenessProbe:
   httpGet:
     path: /idp
@@ -78,3 +68,16 @@ dnsConfig: {}
   # options:
   #   - name: ndots
   #     value: "5"
+
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 1000m
+    # -- Memory limit.
+    memory: 1000Mi
+  requests:
+    # -- CPU request.
+    cpu: 1000m
+    # -- Memory request.
+    memory: 1000Mi

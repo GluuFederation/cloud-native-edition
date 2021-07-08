@@ -30,8 +30,6 @@ multiCluster:
   # Json for serf Peers
   serfPeers: ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
 replicas: 1
-service:
-  ldapServiceName: opendj
 image:
   repository: gluufederation/opendj
   tag: 4.3.0_b1
@@ -131,3 +129,16 @@ dnsConfig: {}
   # options:
   #   - name: ndots
   #     value: "5"
+
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 1500m
+    # -- Memory limit.
+    memory: 2000Mi
+  requests:
+    # -- CPU request.
+    cpu: 1500m
+    # -- Memory request.
+    memory: 2000Mi
