@@ -1,45 +1,78 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-
-#HorizontalPodAutoscaler
+# -- Gluu Casa ("Casa") is a self-service web portal for end-users to manage authentication and authorization preferences for their account in a Gluu Server.
+# -- Configure the HorizontalPodAutoscaler
 hpa:
   enabled: true
   minReplicas: 1
   maxReplicas: 10
-  targetCPUUtilizationPercentage: 50
-  # metrics if targetCPUUtilizationPercentage is not set
+  targetCPUUtilizationPercentage: 5 ddd0
+  # -- metrics if targetCPUUtilizationPercentage is not set
   metrics: []
-  #Scaling Policies
+  # -- Scaling Policies
   behavior: {}
-
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
-replicas: 1
-
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
+dnsPolicy: ""
+# -- Add custom dns config
+dnsConfig: {}
 image:
+  # -- Image pullPolicy to use for deploying.
+  pullPolicy: IfNotPresent
+  # -- Image  to use for deploying.
   repository: gluufederation/casa
+  # -- Image  tag to use for deploying.
   tag: 5.0.0_dev
-  pullPolicy: Always
-
-
+# -- Service replica number.
+replicas: 1
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 500m
+    # -- Memory limit.
+    memory: 500Mi
+  requests:
+    # -- CPU request.
+    cpu: 500m
+    # -- Memory request.
+    memory: 500Mi
+service:
+  # -- Name of the casa service. Please keep it as default.
+  casaServiceName: casa
+  # -- Port of the casa service. Please keep it as default.
+  port: 8080
+  # -- The name of the casa port within the casa service. Please keep it as default.
+  name: http-casa
+# -- Configure the liveness healthcheck for casa if needed.
 livenessProbe:
   httpGet:
+    # -- http liveness probe endpoint
     path: /casa/health-check
     port: http-casa
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
+# -- Configure the readiness healthcheck for the casa if needed.
 readinessProbe:
   httpGet:
+    # -- http readiness probe endpoint
     path: /casa/health-check
     port: http-casa
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []
 
 imagePullSecrets: []
 nameOverride: ""
@@ -55,34 +88,3 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-service:
-  casaServiceName: casa
-  port: 8080
-  name: http-casa
-
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    # cpu: 100m
-    memory: 1536Mi # 128Mi
-  requests:
-    # cpu: 100m
-    memory: 1000Mi # 128Mi
-volumes: []
-  # Configure any additional volumes need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
-dnsPolicy: ""
-dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"

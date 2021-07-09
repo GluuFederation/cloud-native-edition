@@ -1,37 +1,48 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for cr-rotate.
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
+# -- CacheRefreshRotation is a special container to monitor cache refresh on oxTrust containers. This may be depreciated.
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
+dnsPolicy: ""
+# -- Add custom dns config
+dnsConfig: {}
 image:
+  # -- Image pullPolicy to use for deploying.
+  pullPolicy: IfNotPresent
+  # -- Image  to use for deploying.
   repository: gluufederation/cr-rotate
+  # -- Image  tag to use for deploying.
   tag: 5.0.0_dev
-  pullPolicy: Always
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 200m
+    # -- Memory limit.
+    memory: 200Mi
+  requests:
+    # -- CPU request.
+    cpu: 200m
+    # -- Memory request.
+    memory: 200Mi
+service:
+  # -- Name of the cr-rotate service. Please keep it as default.
+  crRotateServiceName: cr-rotate
+  # -- Port of the casa service. Please keep it as default.
+  port: 8084
+  # -- The name of the cr-rotate port within the cr-rotate service. Please keep it as default.
+  name: http-cr-rotate
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []
 
 nameOverride: ""
 fullnameOverride: ""
-
-service:
-  crRotateServiceName: cr-rotate
-  port: 8084
-  name: http-cr-rotate
-volumes: []
-  # Configure any additional volumes that need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-
-
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
-dnsPolicy: ""
-dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"

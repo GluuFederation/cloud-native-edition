@@ -24,13 +24,10 @@ spec:
             name: {{ include "cn-upgrade.fullname" . }}
         {{- if or (eq .Values.cnPersistenceType "couchbase") (eq .Values.cnPersistenceType "hybrid")  }}
         volumeMounts:
-          - name: cb-pass
-            mountPath: "/etc/gluu/conf/couchbase_password"
-            subPath: couchbase_password
           - name: cb-super-pass
             mountPath: "/etc/gluu/conf/couchbase_superuser_password"
             subPath: couchbase_superuser_password
-          - name: cb-crt
+          - name: cb-crt 
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
         {{- end }}
@@ -38,9 +35,6 @@ spec:
 {{- toYaml .Values.resources | nindent 10 }}
       {{- if or (eq .Values.cnPersistenceType "couchbase") (eq .Values.cnPersistenceType "hybrid")  }}
       volumes:
-        - name: cb-pass
-          secret:
-            secretName: {{ .Release.Name }}-cb-pass
         - name: cb-super-pass
           secret:
             secretName: {{ .Release.Name }}-superuser-cb-pass

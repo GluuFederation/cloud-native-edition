@@ -30,13 +30,14 @@ annotations:
   artifacthub.io/prerelease: "true"
 apiVersion: v2
 appVersion: "5.0.0"
-icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
+icon: https://gluu.org/docs/gluu-server/favicon.ico
 home: https://www.gluu.org
 sources:
+  - https://gluu.org/docs/gluu-server
   - https://github.com/GluuFederation/cloud-native-edition
 maintainers:
 - name: moabu
-  email: mo@gluu.org
+  email: support@gluu.org
 description: Gluu Access and Identity Mangement OpenBanking distribution
 name: gluu
 version: 5.0.0
