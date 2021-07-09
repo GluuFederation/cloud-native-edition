@@ -1,6 +1,21 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
-name: gluu-istio-ingress
-description: Istio ingress integration files
+name:  gluu-istio-ingress
+version: 1.6.3
+kubeVersion: ">=v1.17.0-0"
+description: Istio Gateway
 type: application
-version: 1.6.1
+keywords:
+  - istio
+  - gateway
+home: https://gluu.org/docs/gluu-server/
+sources:
+  - https://gluu.org/docs/gluu-server/
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/gluu-istio-ingress
+maintainers:
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
 appVersion: "4.3.0"

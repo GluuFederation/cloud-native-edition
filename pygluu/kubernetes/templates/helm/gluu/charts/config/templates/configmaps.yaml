@@ -68,9 +68,9 @@ data:
   {{- if or (eq .Values.global.gluuPersistenceType "hybrid") (eq .Values.global.gluuPersistenceType "ldap") }}
   GLUU_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.gluuPersistenceLdapMapping | quote }}
   {{- end }}
-  GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
+  GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.configmap.gluuOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  GLUU_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
+  GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
   GLUU_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
   GLUU_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}

@@ -123,7 +123,7 @@ config:
   adminPass: P@ssw0rd
   # -- LDAP admin password if OpennDJ is used for persistence.
   ldapPass: P@ssw0rd
-  # -- Redis admin password if `config.configmap.cnCacheType` is set to `REDIS`.
+  # -- Redis admin password if `config.configmap.gluuCacheType` is set to `REDIS`.
   redisPass: P@assw0rd
   # -- Country code. Used for certificate creation.
   countryCode: US
@@ -154,27 +154,27 @@ config:
     gluuOxdAdminCertCn: oxd-server
     # -- Couchbase certificate authority string. This must be encoded using base64. This can also be found in your couchbase UI Security > Root Certificate. In mTLS setups this is not required.
     gluuCouchbaseCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-    # -- Couchbase password for the restricted user config.configmap.cnCouchbaseUser  that is often used inside the services. The password must contain one digit, one uppercase letter, one lower case letter and one symbol .
+    # -- Couchbase password for the restricted user config.configmap.gluuCouchbaseUser  that is often used inside the services. The password must contain one digit, one uppercase letter, one lower case letter and one symbol .
     gluuCouchbasePass: P@ssw0rd
-    # -- Couchbase password for the super user config.configmap.cnCouchbaseSuperUser  that is used during the initialization process. The password must contain one digit, one uppercase letter, one lower case letter and one symbol
+    # -- Couchbase password for the super user config.configmap.gluuCouchbaseSuperUser  that is used during the initialization process. The password must contain one digit, one uppercase letter, one lower case letter and one symbol
     gluuCouchbaseSuperUserPass: P@ssw0rd
     # -- The Couchbase super user (admin) user name. This user is used during initialization only.
     gluuCouchbaseSuperUser: admin
-    # -- Couchbase URL. Used only when global.cnPersistenceType is hybrid or couchbase. This should be in FQDN format for either remote or local Couchbase clusters. The address can be an internal address inside the kubernetes cluster
+    # -- Couchbase URL. Used only when global.gluuPersistenceType is hybrid or couchbase. This should be in FQDN format for either remote or local Couchbase clusters. The address can be an internal address inside the kubernetes cluster
     gluuCouchbaseUrl: cbgluu.default.svc.cluster.local
     # -- The prefix of couchbase buckets. This helps with separation in between different environments and allows for the same couchbase cluster to be used by different setups of Gluu.
     gluuCouchbaseBucketPrefix: gluu
-    # -- Couchbase restricted user. Used only when global.cnPersistenceType is hybrid or couchbase.
+    # -- Couchbase restricted user. Used only when global.gluuPersistenceType is hybrid or couchbase.
     gluuCouchbaseUser: gluu
     # -- The number of replicas per index created. Please note that the number of index nodes must be one greater than the number of index replicas. That means if your couchbase cluster only has 2 index nodes you cannot place the number of replicas to be higher than 1.
     gluuCouchbaseIndexNumReplica: 0
-    # -- The location of the Couchbase restricted user config.configmap.cnCouchbaseUser password. The file path must end with couchbase_password
+    # -- The location of the Couchbase restricted user config.configmap.gluuCouchbaseUser password. The file path must end with couchbase_password
     gluuCouchbasePassFile: /etc/gluu/conf/couchbase_password
-    # -- The location of the Couchbase restricted user config.configmap.cnCouchbaseSuperUser password. The file path must end with couchbase_superuser_password.
+    # -- The location of the Couchbase restricted user config.configmap.gluuCouchbaseSuperUser password. The file path must end with couchbase_superuser_password.
     gluuCouchbaseSuperUserPassFile: /etc/gluu/conf/couchbase_superuser_password
     # -- Location of `couchbase.crt` used by Couchbase SDK for tls termination. The file path must end with couchbase.crt. In mTLS setups this is not required.
     gluuCouchbaseCertFile: /etc/certs/couchbase.crt
-    # -- Specify data that should be saved in LDAP (one of default, user, cache, site, token, or session; default to default). Note this environment only takes effect when `global.cnPersistenceType`  is set to `hybrid`.
+    # -- Specify data that should be saved in LDAP (one of default, user, cache, site, token, or session; default to default). Note this environment only takes effect when `global.gluuPersistenceType`  is set to `hybrid`.
     gluuPersistenceLdapMapping: default
     # -- Cache type. `NATIVE_PERSISTENCE`, `REDIS`. or `IN_MEMORY`. Defaults to `NATIVE_PERSISTENCE` .
     gluuCacheType: NATIVE_PERSISTENCE
@@ -185,16 +185,18 @@ config:
     # -- Value passed to Java option -XX:MaxRAMPercentage
     gluuMaxRamPercent: "75.0"
     containerMetadataName: kubernetes
-    # -- Redis URL and port number <url>:<port>. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
+    # -- Redis URL and port number <url>:<port>. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
     gluuRedisUrl: redis:6379
-    # -- Boolean to use SSL in Redis. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
+    # -- Boolean to use SSL in Redis. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
     gluuRedisUseSsl: "false"
-    # -- Redis service type. `STANDALONE` or `CLUSTER`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
+    # -- Redis service type. `STANDALONE` or `CLUSTER`. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
     gluuRedisType: STANDALONE
-    # -- Redis SSL truststore. Optional. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
+    # -- Redis SSL truststore. Optional. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
     gluuRedisSslTruststore: ""
-    # -- Redis Sentinel Group. Often set when `config.configmap.cnRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
+    # -- Redis Sentinel Group. Often set when `config.configmap.gluuRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
     gluuRedisSentinelGroup: ""
+    # -- Whether to generate oxShibboleth configuration or not (default to true).
+    gluuOxtrustConfigGeneration: true
     # -- oxTrust internal address. Leave as default.
     gluuOxtrustBackend: oxtrust:8080
     # -- oxAuth internal address. Leave as default.
@@ -203,11 +205,11 @@ config:
     gluuOxdServerUrl: oxd-server:8443
     # -- OXD server bind address. This limits what ip ranges can access the client-api. This should be left as * and controlled by a NetworkPolicy
     gluuOxdBindIpAddresses: "*"
-    # -- OpenDJ internal address. Leave as default. Used when `global.cnPersistenceType` is set to `ldap`.
+    # -- OpenDJ internal address. Leave as default. Used when `global.gluuPersistenceType` is set to `ldap`.
     gluuLdapUrl: opendj:1636
     # -- Jackrabbit Postgres uid
     gluuJackrabbitPostgresUser: jackrabbit
-    # -- The location of the Jackrabbit postgres password file jackrabbit.secrets.cnJackrabbitPostgresPassword. The file path must end with postgres_password.
+    # -- The location of the Jackrabbit postgres password file jackrabbit.secrets.gluuJackrabbitPostgresPassword. The file path must end with postgres_password.
     gluuJackrabbitPostgresPasswordFile: /etc/gluu/conf/postgres_password
     # -- Jackrabbit postgres database name.
     gluuJackrabbitPostgresDatabaseName: jackrabbit
@@ -217,13 +219,13 @@ config:
     gluuJackrabbitPostgresPort: 5432
     # -- Jackrabbit admin uid.
     gluuJackrabbitAdminId: admin
-    # -- The location of the Jackrabbit admin password jackrabbit.secrets.cnJackrabbitAdminPassword. The file path must end with jackrabbit_admin_password.
+    # -- The location of the Jackrabbit admin password jackrabbit.secrets.gluuJackrabbitAdminPassword. The file path must end with jackrabbit_admin_password.
     gluuJackrabbitAdminPassFile: /etc/gluu/conf/jackrabbit_admin_password
     # -- Interval between files sync (default to 300 seconds).
     gluuJackrabbitSyncInterval: 300
     # -- Jackrabbit internal url. Normally left as default.
     gluuJackrabbitUrl: http://jackrabbit:8080
-    # -- The location of the Jackrabbit admin uid config.cnJackrabbitAdminId. The file path must end with jackrabbit_admin_id.
+    # -- The location of the Jackrabbit admin uid config.gluuJackrabbitAdminId. The file path must end with jackrabbit_admin_id.
     gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
     # -- Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily.
     gluuDocumentStoreType: JCA
@@ -232,9 +234,9 @@ config:
     cnGoogleServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
     # -- Project id of the google project the secret manager belongs to. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnGoogleProjectId: google-project-to-save-config-and-secrets-to
-    # -- Google Spanner ID. Used only when global.cnPersistenceType is spanner.
+    # -- Google Spanner ID. Used only when global.gluuPersistenceType is spanner.
     cnGoogleSpannerInstanceId: ""
-    # -- Google Spanner Database ID. Used only when global.cnPersistenceType is spanner.
+    # -- Google Spanner Database ID. Used only when global.gluuPersistenceType is spanner.
     cnGoogleSpannerDatabaseId: ""
     # [google_spanner_envs] END
     # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
@@ -392,6 +394,13 @@ jackrabbit:
   service:
     # -- Name of the Jackrabbit service. Please keep it as default.
     jackRabbitServiceName: jackrabbit
+    # -- The name of the jackrabbit port within the jackrabbit service. Please keep it as default.
+    name: http-jackrabbit
+    # -- Port of the jackrabbit service. Please keep it as default.
+    port: 8080
+  # -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
+  # west, east, south, north, region ...etc If left empty it will be randomly generated.
+  clusterId: ""
   storage:
     # -- Jackrabbit volume size
     size: 5Gi
@@ -448,7 +457,7 @@ opendj:
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
   multiCluster:
-    # -- Enable OpenDJ multiCluster mode. This flag enabbles loading keys under `opendj.multiCluster`
+    # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
     enabled: false
     # -- OpenDJ Serf advertise address for the cluster
     serfAdvertiseAddr: "firstldap.gluu.org:30946"
@@ -461,6 +470,7 @@ opendj:
   persistence:
     # -- OpenDJ volume size
     size: 5Gi
+  # -- servicePorts values used in StatefulSet container
   ports:
     tcp-admin:
       nodePort: ""
@@ -534,7 +544,7 @@ opendj:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
-# -- Job to generate data and intial config for Gluu Server persistence layer.
+# -- Job to generate data and initial config for Gluu Server persistence layer.
 persistence:
   # -- Add custom normal and secret envs to the service
   usrEnvs:
@@ -620,6 +630,10 @@ oxauth:
   service:
     # -- Name of the auth-server service. Please keep it as default.
     oxAuthServiceName: auth-server
+    # -- The name of the oxauth port within the oxauth service. Please keep it as default.
+    name: http-oxauth
+    # -- Port of the oxauth service. Please keep it as default.
+    port: 8080
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
@@ -646,7 +660,7 @@ oxauth:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
-# -- Gluu Admin UI. This shouldn't be internet facinng.
+# -- Gluu Admin UI. This shouldn't be internet facing.
 oxtrust:
   # -- Configure the HorizontalPodAutoscaler
   hpa:
@@ -692,6 +706,11 @@ oxtrust:
       # -- Memory request.
       memory: 2500Mi
   service:
+    # -- The name of the oxtrust port within the oxtrust service. Please keep it as default.
+    name: http-oxtrust
+     # -- Port of the oxtrust service. Please keep it as default.
+    port: 8080
+    clusterIp: None
     # -- Name of the auth-server service. Please keep it as default.
     oxTrustServiceName: oxtrust
   # -- Configure the liveness healthcheck for the auth server if needed.
@@ -768,6 +787,10 @@ fido2:
   service:
     # -- Name of the fido2 service. Please keep it as default.
     fido2ServiceName: fido2
+    # -- The name of the fido2 port within the fido2 service. Please keep it as default.
+    name: http-fido2
+    # -- Port of the fido2 service. Please keep it as default.
+    port: 8080
   # -- Configure the liveness healthcheck for the fido2 if needed.
   livenessProbe:
     # -- http liveness probe endpoint
@@ -837,6 +860,10 @@ scim:
   service:
     # -- Name of the auth-server service. Please keep it as default.
     scimServiceName: scim
+    # -- The name of the scim port within the scim service. Please keep it as default.
+    name: http-scim
+    # -- Port of the scim service. Please keep it as default.
+    port: 8080
   # -- Configure the liveness healthcheck for SCIM if needed.
   livenessProbe:
     httpGet:
@@ -850,7 +877,7 @@ scim:
   readinessProbe:
     httpGet:
       # -- http readiness probe endpoint
-      path: /jans-scim/sys/health-check
+      path:  /scim/restv1/scim/v2/ServiceProviderConfig
       port: 8080
     initialDelaySeconds: 25
     periodSeconds: 25
@@ -906,7 +933,7 @@ oxd-server:
       # -- Memory request.
       memory: 400Mi
   service:
-    # -- Name of the OXD server service. Please keep it as default.
+    # -- Name of the OXD server service. This must match config.configMap.gluuOxdApplicationCertCn. Please keep it as default.
     oxdServerServiceName: oxd-server
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
@@ -983,6 +1010,10 @@ casa:
   service:
     # -- Name of the casa service. Please keep it as default.
     casaServiceName: casa
+    # -- Port of the casa service. Please keep it as default.
+    port: 8080
+    # -- The name of the casa port within the casa service. Please keep it as default.
+    name: http-casa
   # -- Configure the liveness healthcheck for casa if needed.
   livenessProbe:
     httpGet:
@@ -1054,6 +1085,10 @@ oxpassport:
   service:
     # -- Name of the oxPassport service. Please keep it as default.
     oxPassportServiceName: oxpassport
+    # -- Port of the oxPassport service. Please keep it as default.
+    port: 8090
+    # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
+    name: http-passport
   # -- Configure the liveness healthcheck for oxPassport if needed.
   livenessProbe:
     httpGet:
@@ -1125,8 +1160,12 @@ oxshibboleth:
       # -- Memory request.
       memory: 1000Mi
   service:
+    # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
+    port: 8080
     # -- Name of the oxShibboleth service. Please keep it as default.
     oxShibbolethServiceName: oxshibboleth
+    # -- Port of the oxShibboleth service. Please keep it as default.
+    name: http-oxshib
   # -- Configure the liveness healthcheck for the oxShibboleth if needed.
   livenessProbe:
     httpGet:
@@ -1261,6 +1300,10 @@ cr-rotate:
   service:
     # -- Name of the cr-rotate service. Please keep it as default.
     crRotateServiceName: cr-rotate
+    # -- Port of the casa service. Please keep it as default.
+    port: 8084
+    # -- The name of the cr-rotate port within the cr-rotate service. Please keep it as default.
+    name: http-cr-rotate
   # -- Configure any additional volumes that need to be attached to the pod
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers

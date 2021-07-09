@@ -13,7 +13,7 @@ data:
   GLUU_SECRET_ADAPTER: {{ .Values.configSecretAdapter | quote }}
   GLUU_OXTRUST_CONFIG_GENERATION: {{ .Values.gluuOxtrustConfigGeneration | quote }}
   GLUU_CACHE_TYPE: {{ .Values.gluuCacheType | quote }}
-  {{- if and (.Values.gluuRedisEnabled) (eq .Values.gluuCacheType "REDIS") }}
+  {{ if eq .Values.gluuCacheType "REDIS" }}
   GLUU_REDIS_URL: {{ .Values.gluuRedisUrl | quote }}
   GLUU_REDIS_TYPE: {{ .Values.gluuRedisType | quote }}
   {{- end }}

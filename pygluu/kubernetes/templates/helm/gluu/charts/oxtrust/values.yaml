@@ -1,75 +1,37 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for oxtrust.
-#HorizontalPodAutoscaler
+# -- Gluu Admin UI. This shouldn't be internet facing.
+# -- Configure the HorizontalPodAutoscaler
 hpa:
   enabled: true
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
-  # metrics if targetCPUUtilizationPercentage is not set
+  # -- metrics if targetCPUUtilizationPercentage is not set
   metrics: []
-  #Scaling Policies
+  # -- Scaling Policies
   behavior: {}
-
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
-replicas: 1
-
-image:
-  repository: gluufederation/oxtrust
-  tag: 4.3.0_b1
-  pullPolicy: IfNotPresent
-
-service:
-  name: http-oxtrust
-  type: ClusterIP
-  port: 8080
-  clusterIp: None
-  oxTrustServiceName: oxtrust
-
-livenessProbe:
-  exec:
-    command:
-      - python3
-      - /app/scripts/healthcheck.py
-  initialDelaySeconds: 30
-  periodSeconds: 30
-  timeoutSeconds: 5
-readinessProbe:
-  exec:
-    command:
-      - python3
-      - /app/scripts/healthcheck.py
-  initialDelaySeconds: 25
-  periodSeconds: 25
-  timeoutSeconds: 5
-
-#resources: 
-limits:
-  memory: 1000Mi
-requests:
-  memory: 1000Mi
-
-volumes: []
-  # Configure any additional volumes need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
 dnsPolicy: ""
+# -- Add custom dns config
 dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"
-
+image:
+  # -- Image pullPolicy to use for deploying.
+  pullPolicy: IfNotPresent
+  # -- Image  to use for deploying.
+  repository: gluufederation/oxtrust
+  # -- Image  tag to use for deploying.
+  tag: 4.3.0_b1
+# -- Service replica number.
+replicas: 1
 # -- Resource specs.
 resources:
   limits:
@@ -82,3 +44,37 @@ resources:
     cpu: 2500m
     # -- Memory request.
     memory: 2500Mi
+service:
+  # -- The name of the oxtrust port within the oxtrust service. Please keep it as default.
+  name: http-oxtrust
+  type: ClusterIP
+   # -- Port of the oxtrust service. Please keep it as default.
+  port: 8080
+  clusterIp: None
+  # -- Name of the auth-server service. Please keep it as default.
+  oxTrustServiceName: oxtrust
+# -- Configure the liveness healthcheck for the auth server if needed.
+livenessProbe:
+  # -- Executes the python3 healthcheck.
+  # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+# -- Configure the readiness healthcheck for the auth server if needed.
+# https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+readinessProbe:
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
+  initialDelaySeconds: 25
+  periodSeconds: 25
+  timeoutSeconds: 5
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []

@@ -1,62 +1,94 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # jackrabbit Environament Variables
-#HorizontalPodAutoscaler
+# -- Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications
+# https://jackrabbit.apache.org/jcr/index.html
+# -- Configure the HorizontalPodAutoscaler
 hpa:
-  enabled: false
+  enabled: true
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
-  # metrics if targetCPUUtilizationPercentage is not set
+  # -- metrics if targetCPUUtilizationPercentage is not set
   metrics: []
-  #Scaling Policies
+  # -- Scaling Policies
   behavior: {}
-
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
-nameOverride: ""
-fullnameOverride: ""
-# This id needs to be unique to each kubernetes cluster in a multi cluster setup
-# west, east, south, north, region ...etc If left empty it will be randomly generated.
-clusterId: ""
-service:
-  jackRabbitServiceName: jackrabbit
-  name: http-jackrabbit
-  port: 8080
-# StatefulSet
-# values declaration
-replicas: 1
-
-secrets:
-  gluuJackrabbitAdminPass: admin
-  gluuJackrabbitPostgresPass: P@ssw0rd
-
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
+dnsPolicy: ""
+# -- Add custom dns config
+dnsConfig: {}
 image:
-  repository: gluufederation/jackrabbit
-  tag: 4.3.0_b1
+  # -- Image pullPolicy to use for deploying.
   pullPolicy: IfNotPresent
-  
+  # -- Image  to use for deploying.
+  repository: gluufederation/jackrabbit
+   # -- Image  tag to use for deploying.
+  tag: 4.3.0_b1
+# -- Service replica number.
+replicas: 1
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 1500m
+    # -- Memory limit.
+    memory: 1000Mi
+  requests:
+    # -- CPU request.
+    cpu: 1500m
+    # -- Memory request.
+    memory: 1000Mi
+secrets:
+  # -- Jackrabbit admin uid password
+  gluuJackrabbitAdminPass: Test1234#
+  # -- Jackrabbit Postgres uid password
+  gluuJackrabbitPostgresPass: P@ssw0rd
+service:
+  # -- Name of the Jackrabbit service. Please keep it as default.
+  jackRabbitServiceName: jackrabbit
+  # -- The name of the jackrabbit port within the jackrabbit service. Please keep it as default.
+  name: http-jackrabbit
+  # -- Port of the jackrabbit service. Please keep it as default.
+  port: 8080
 storage:
+  # -- Jackrabbit volume size
   size: 5Gi
   accessModes: ReadWriteOnce
   type: DirectoryOrCreate
-
+# -- Configure the liveness healthcheck for the Jackrabbit if needed.
 livenessProbe:
+  # -- Executes tcp healthcheck.
   tcpSocket:
     port: http-jackrabbit
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
+# -- Configure the readiness healthcheck for the Jackrabbit if needed.
 readinessProbe:
+  # -- Executes tcp healthcheck.
   tcpSocket:
     port: http-jackrabbit
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []
+
+nameOverride: ""
+fullnameOverride: ""
+# -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
+# west, east, south, north, region ...etc If left empty it will be randomly generated.
+clusterId: ""
 
 # VolumeMounts for StatefulSet
 # jackrabbit-init vm
@@ -70,30 +102,3 @@ jackrabbitVolumeMounts:
   workspaces:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
-volumes: []
-  # Configure any additional volumes need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
-dnsPolicy: ""
-dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"
-
-# -- Resource specs.
-resources:
-  limits:
-    # -- CPU limit.
-    cpu: 1500m
-    # -- Memory limit.
-    memory: 1000Mi
-  requests:
-    # -- CPU request.
-    cpu: 1500m
-    # -- Memory request.
-    memory: 1000Mi

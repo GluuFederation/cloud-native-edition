@@ -1,38 +1,25 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for persistence.
-
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
-replicaCount: 1
-
-image:
-  repository: gluufederation/persistence
-  tag: 4.3.0_b1
-  pullPolicy: IfNotPresent
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-volumes: []
-  # Configure any additional volumes need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
+# -- Job to generate data and initial config for Gluu Server persistence layer.
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
 dnsPolicy: ""
+# -- Add custom dns config
 dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"
-
+image:
+  # -- Image pullPolicy to use for deploying.
+  pullPolicy: IfNotPresent
+  # -- Image  to use for deploying.
+  repository: gluufederation/persistence
+  # -- Image  tag to use for deploying.
+  tag: 4.3.0_b1
 # -- Resource specs.
 resources:
   limits:
@@ -45,3 +32,11 @@ resources:
     cpu: 300m
     # -- Memory request.
     memory: 300Mi
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""

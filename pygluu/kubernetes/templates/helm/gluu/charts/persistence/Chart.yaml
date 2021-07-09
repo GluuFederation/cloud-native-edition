@@ -1,11 +1,21 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-apiVersion: v1
-appVersion: "4.3.0"
-description: A Helm chart for persistence layer for Gluu server
+apiVersion: v2
 name: persistence
-version: 1.6.1
-maintainers:
-- name: Gluu
-  email: support@gluu.org
+version: 1.6.3
+kubeVersion: ">=v1.17.0-0"
+description: Job to generate data and initial config for Gluu Server persistence layer.
+type: application
+keywords:
+  - persistence prep
 home: https://gluu.org/docs/gluu-server
+sources:
+  - https://github.com/GluuFederation/docker-persistence
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/persistence
+maintainers:
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
+appVersion: "4.3.0"
+

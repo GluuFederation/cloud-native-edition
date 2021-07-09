@@ -8,8 +8,27 @@ data:
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace }}
   GLUU_CONFIG_ADAPTER: {{ .Values.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.configSecretAdapter }}
+  GLUU_SQL_DB_DIALECT: {{ .Values.cnSqlDbDialect }}
+  GLUU_SQL_DB_HOST: {{ .Values.cnSqlDbHost }}
+  GLUU_SQL_DB_PORT: {{ .Values.cnSqlDbPort | quote }}
+  GLUU_SQL_DB_NAME: {{ .Values.cnSqlDbName }}
+  GLUU_SQL_DB_USER: {{ .Values.cnSqlDbUser }}
+  GLUU_SQL_DB_TIMEZONE: {{ .Values.cnSqlDbTimezone }}
+  # [google_envs] Envs related to using Google
+  GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.cnGoogleApplicationCredentials | quote }}
+  GOOGLE_PROJECT_ID: {{ .Values.cnGoogleProjectId | quote }}
+  # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
+  GLUU_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.cnGoogleSpannerInstanceId | quote }}
+  GLUU_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.cnGoogleSpannerDatabaseId | quote }}
+  # [google_spanner_envs] END
+  # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
+  GLUU_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.cnSecretGoogleSecretVersionId | quote }}
+  GLUU_SECRET_GOOGLE_SECRET_MANAGER_PASSPHRASE: {{ .Values.cnGoogleSecretManagerPassPhrase | quote }}
+  GLUU_SECRET_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.cnSecretGoogleSecretNamePrefix | quote }}
+  GLUU_CONFIG_GOOGLE_SECRET_VERSION_ID: {{ .Values.cnConfigGoogleSecretVersionId | quote }}
+  GLUU_CONFIG_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.cnConfigGoogleSecretNamePrefix | quote }}
   DOMAIN: {{ .Values.domain }}
-    # options: ldap/couchbase/hybrid
+  # options: ldap/couchbase/hybrid
   GLUU_PERSISTENCE_TYPE: {{ .Values.gluuPersistenceType }}
     # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
   {{- if or (eq .Values.gluuPersistenceType "hybrid") (eq .Values.gluuPersistenceType "ldap") }}
@@ -20,10 +39,10 @@ data:
   GLUU_LDAP_URL: {{ .Values.gluuLdapUrl | quote }}
   {{- else if or (eq .Values.gluuPersistenceType "couchbase") (eq .Values.gluuPersistenceType "hybrid") }}
   #  used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
-  GLUU_COUCHBASE_URL: {{ .Values.gluuCouchbaseUrl }}
-  GLUU_COUCHBASE_USER: {{ .Values.gluuCouchbaseUser }}
   GLUU_COUCHBASE_BUCKET_PREFIX: {{ .Values.gluuCouchbaseBucketPrefix }}
+  GLUU_COUCHBASE_URL: {{ .Values.gluuCouchbaseUrl }}
   GLUU_COUCHBASE_CERT_FILE: {{ .Values.gluuCouchbaseCertFile | quote }}
-  GLUU_COUCHBASE_PASSWORD_FILE: {{ .Values.gluuCouchbasePassFile | quote }}
+  GLUU_COUCHBASE_SUPERUSER: {{ .Values.gluuCouchbaseSuperUser }}
+  GLUU_COUCHBASE_SUPERUSER_PASSWORD_FILE: {{ .Values.gluuCouchbaseSuperUserPassFile | quote }}
   {{- end }} 
   
