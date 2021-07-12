@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: scim
-version: 5.0.0
+version: 2.0.0
 kubeVersion: ">=v1.17.0-0"
 description: Based on the TinyRadius Java library. The implementation ("Gluu Radius") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.
 type: application

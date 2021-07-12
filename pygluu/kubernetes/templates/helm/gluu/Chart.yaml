@@ -40,89 +40,89 @@ maintainers:
   email: support@gluu.org
 description: Gluu Access and Identity Mangement OpenBanking distribution
 name: gluu
-version: 5.0.0
+version: 2.0.0
 dependencies:
     - name: config
       condition: global.config.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: config-api
       condition: global.config-api.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: opendj
       condition: global.opendj.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: jackrabbit
       condition: global.jackrabbit.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: auth-server
       condition: global.auth-server.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: fido2
       condition: global.fido2.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: scim
       condition: global.scim.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: nginx-ingress
       condition: global.nginx-ingress.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: oxshibboleth
       condition: global.oxshibboleth.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: oxpassport
-      version: 5.0.0
+      version: 2.0.0
       condition: config.configmap.cnPassportEnabled
       repository: ""
 
     - name: casa
-      version: 5.0.0
+      version: 2.0.0
       condition: config.configmap.cnCasaEnabled
       repository: ""
 
     - name: auth-server-key-rotation
       condition: global.auth-server-key-rotation.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: cr-rotate
-      version: 5.0.0
+      version: 2.0.0
       condition: global.cr-rotate.enabled
       repository: ""
 
     - name: radius
       condition: config.configmap.cnRadiusEnabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: client-api
       condition: global.client-api.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: persistence
       condition: global.persistence.enabled
-      version: 5.0.0
+      version: 2.0.0
       repository: ""
 
     - name: cn-istio-ingress
       condition: global.istio.ingress
-      version: 5.0.0
+      version: 2.0.0
       repository: ""

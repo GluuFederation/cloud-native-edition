@@ -4,7 +4,7 @@ apiVersion: v1
 appVersion: "5.0.0"
 description: config-api chart
 name: config-api
-version: 5.0.0
+version: 2.0.0
 maintainers:
 - name: moabu
   email: mo@gluu.org
