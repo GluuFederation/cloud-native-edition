@@ -1014,7 +1014,14 @@ def configuration():
                 "CITY": form.city.data,
                 "EMAIL": form.email.data,
                 "ORG_NAME": form.org_name.data,
-                "ADMIN_PW": form.admin_pw.data}
+                "ADMIN_PW": form.admin_pw.data,
+                "MIGRATION_ENABLED": form.migration_enabled.data,
+                "MIGRATION_DIR": "./",
+                "MIGRATION_DATA_FORMAT": form.migration_data_format.data}
+        if data["MIGRATION_ENABLED"] == "Y":
+            for file in form.migration_files.data:
+                filename = secure_filename(file.filename)
+                file.save('./' + filename)
 
         if gluu_settings.db.get("PERSISTENCE_BACKEND") in ("hybrid", "ldap"):
             data["LDAP_PW"] = form.ldap_pw.data

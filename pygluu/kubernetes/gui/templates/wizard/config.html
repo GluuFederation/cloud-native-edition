@@ -10,6 +10,14 @@
   {{ forms.password(form.ldap_pw) }}
   {{ forms.password(form.ldap_pw_confirm) }}
 {% endif %}
+{{ forms.radio(form.migration_enabled) }}
+{% set hide_element = False if form.migration_enabled.data == 'Y' else True %}
+{% if form.migration_enabled.data == 'Y' %}
+    <div id="migrationEnabled" class="collapse {{ 'show' if form.migration_enabled.data == 'Y' else '' }}">
+	{{ forms.radio(form.migration_data_format) }}
+    {{ forms.fileinput(form.migration_files) }}
+    </div>
+{% endif %}
 <div id="fqdnRegistered" class="collapse {{ 'show' if deployment_arch  not in ('microk8s', 'minikube') else '' }}">
 {{ forms.radio(form.is_gluu_fqdn_registered) }}
 </div>

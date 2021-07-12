@@ -86,6 +86,26 @@ class PromptConfiguration:
             self.enabled_services.append("update-lb-ip")
             self.settings.set("ENABLED_SERVICES_LIST", self.enabled_services)
 
+        if not self.settings.get("MIGRATION_ENABLED"):
+            self.settings.set("MIGRATION_ENABLED",
+                              confirm_yesno("Are you migrating from the Gluu community edition (VM base)"))
+
+        if self.settings.get("MIGRATION_ENABLED") == "Y":
+            if not self.settings.get("MIGRATION_DIR"):
+                self.settings.set("MIGRATION_DIR",
+                                  click.prompt("Directory holding the community edition migration files",
+                                               default="ce-migration"))
+            if not self.settings.get("MIGRATION_DATA_FORMAT"):
+                while self.settings.get("MIGRATION_DATA_FORMAT") not in ("ldif", "couchbase+json", "spanner+avro",
+                                                                 "postgresql+json", "mysql+json"):
+                    logger.info("Supported data formats are ldif, couchbase+json, spanner+avro, "
+                                "postgresql+json, and mysql+json ")
+                    self.settings.set("MIGRATION_DATA_FORMAT",
+                                      click.prompt("Migration data-format depending on persistence backend. "
+                                                   "Supported data formats are ldif, couchbase+json, spanner+avro, "
+                                                   "postgresql+json, and mysql+json ",
+                                                   default="ldif"))
+
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
         self.generate_main_config()

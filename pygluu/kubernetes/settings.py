@@ -213,7 +213,10 @@ class SettingsHandler(object):
                                 USE_GOOGLE_SECRET_MANAGER="",
                                 GOOGLE_SPANNER_INSTANCE_ID="",
                                 GOOGLE_SPANNER_DATABASE_ID="",
-                                GOOGLE_PROJECT_ID=""
+                                GOOGLE_PROJECT_ID="",
+                                MIGRATION_ENABLED="",
+                                MIGRATION_DIR="",
+                                MIGRATION_DATA_FORMAT=""
                                 )
         return default_settings
 

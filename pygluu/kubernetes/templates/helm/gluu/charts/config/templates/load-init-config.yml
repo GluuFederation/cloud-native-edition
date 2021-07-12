@@ -76,10 +76,15 @@ spec:
           - /bin/sh
           - -c
           - |
+              {{- if .Values.migration.enabled }}
+              /app/scripts/entrypoint.sh migrate --migration-dir {{ .Values.migration.migrationDir | quote }} --data-format {{ .Values.migration.migrationDataFormat | quote }}
+              {{- else }}
               /app/scripts/entrypoint.sh load
+              {{- end }}
               /usr/bin/python3 /scripts/tls_generator.py
               {{- if .Values.global.istio.enabled }}
               curl -X POST http://localhost:15020/quitquitquit
               {{- end }}
+
       restartPolicy: Never
 {{- end }}

@@ -175,6 +175,15 @@ volumeMounts: []
 dnsPolicy: ""
 # -- Add custom dns config
 dnsConfig: {}
+# -- CE to CN Migration section
+migration:
+  # -- Boolean flag to enable migration from CE
+  enabled: false
+  # -- Directory holding all migration files
+  migrationDir: /ce-migration
+  # -- migration data-format depending on persistence backend.
+  # Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json.
+  migrationDataFormat: ldif
 # -- Resource specs.
 resources:
   limits:

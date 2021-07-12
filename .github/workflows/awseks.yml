@@ -128,6 +128,7 @@ jobs:
           "DEPLOYMENT_ARCH": "eks",
           "PERSISTENCE_BACKEND": "ldap",
           "INSTALL_JACKRABBIT": "Y",
+          "MIGRATION_ENABLED": "N",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
           "JACKRABBIT_ADMIN_ID": "admin",

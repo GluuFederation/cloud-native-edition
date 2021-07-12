@@ -10,12 +10,11 @@ https://www.apache.org/licenses/LICENSE-2.0
 import re
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField
+from wtforms import StringField, RadioField, MultipleFileField
 from wtforms.widgets import PasswordInput
 from wtforms.validators import InputRequired, Email, EqualTo, \
     Optional, ValidationError
-from .helpers import password_requirement_check
-
+from .helpers import password_requirement_check, RequiredIfFieldEqualTo
 
 class ConfigurationForm(FlaskForm):
     """
@@ -33,7 +32,9 @@ class ConfigurationForm(FlaskForm):
         ldap_pw (string|optional, required for hybrid and ldap backend)
         ldap_pw_confirm (string|equal to ldap_pw)
         is_gluu_fqdn_registered (string|optional)
-
+        migration_enabled(string|optional)
+        migration_files(file|optional)
+        migration_data_format(string|optional)
     TODO: find a better way to override ldap_pw validators
     """
     gluu_fqdn = StringField("Hostname",
@@ -81,6 +82,25 @@ class ConfigurationForm(FlaskForm):
                     "at the same location pygluu-kubernetes.pyz is at.",
         render_kw={"disabled": "disabled"})
 
+    migration_enabled = RadioField(
+        "Are you migrating from the Gluu community edition (VM base)",
+        choices=[("Y", "Yes"), ("N", "No")],
+        render_kw={"disabled": "disabled"})
+
+    migration_files = MultipleFileField(
+        "CE migration files",
+        description="Upload the CE migration files.",
+        validators=[RequiredIfFieldEqualTo("migration_enabled", "Y")])
+
+    migration_data_format = RadioField(
+        "Migration data-format depending on persistence backend.",
+        choices=[("ldif", "OpenDJ"),
+                 ("couchbase+json", "Couchbase"),
+                 ("postgresql+json", "PostgreSQL"),
+                 ("mysql+json", "MySQL"),
+                 ("spanner+avro", "Spanner")],
+        default="ldap",
+        validators=[RequiredIfFieldEqualTo("migration_enabled", "Y")])
 
     def validate_gluu_fqdn(self, field):
         """

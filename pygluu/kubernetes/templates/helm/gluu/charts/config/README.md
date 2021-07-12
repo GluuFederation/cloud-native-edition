@@ -101,6 +101,10 @@ Kubernetes: `>=v1.17.0-0`
 | image.repository | string | `"gluufederation/config-init"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | ldapPass | string | `"P@ssw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
+| migratation | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
+| migratation.enabled | bool | `false` | Boolean flag to enable migration from CE |
+| migratation.migrationDataFormat | string | `"ldif"` | migration data-format depending on persistence backend. Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json. |
+| migratation.migrationDir | string | `"/ce-migration"` | Directory holding all migration files |
 | orgName | string | `"Gluu"` | Organization name. Used for certificate creation. |
 | redisPass | string | `"P@assw0rd"` | Redis admin password if `config.configmap.gluuCacheType` is set to `REDIS`. |
 | resources | object | `{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource specs. |

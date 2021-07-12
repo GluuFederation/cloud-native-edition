@@ -100,6 +100,7 @@ jobs:
           "DEPLOYMENT_ARCH": "minikube",
           "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
           "INSTALL_JACKRABBIT": "Y",
+          "MIGRATION_ENABLED": "N",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
           "JACKRABBIT_ADMIN_ID": "admin",

@@ -260,6 +260,15 @@
         });
       {% endif %}
 
+      {% if template == "config" %}
+        $('input[name="migration_enabled"]').on('change', function(){
+          if($(this).val() == 'Y'){
+            $('#migrationEnabled').collapse('show');
+          }else{
+            $('#migrationEnabled').collapse('hide');
+          }
+        });
+      {% endif %}
       {% if template == "environment" %}
         $('input[name="test_environment"]').on('change', function(){
           if($(this).val() == 'Y'){

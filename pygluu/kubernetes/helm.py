@@ -394,7 +394,11 @@ class Helm(object):
         if self.settings.get("ENABLE_SAML_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
-        values_file_parser["oxpassport"]["resources"] = {}
+        if self.settings.get("MIGRATION_ENABLED") == "Y":
+            values_file_parser["global"]["persistence"]["enabled"] = False
+            values_file_parser["config"]["migration"]["migrationDir"] = self.settings.get("MIGRATION_DIR")
+            values_file_parser["config"]["migration"]["migrationDataFormat"] = \
+                self.settings.get("MIGRATION_DATA_FORMAT")
         values_file_parser["casa"]["image"]["repository"] = self.settings.get("CASA_IMAGE_NAME")
         values_file_parser["casa"]["image"]["tag"] = self.settings.get("CASA_IMAGE_TAG")
         values_file_parser["casa"]["replicas"] = self.settings.get("CASA_REPLICAS")

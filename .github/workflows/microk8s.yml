@@ -72,6 +72,7 @@ jobs:
           "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
           "USE_ISTIO": "N",
           "USE_ISTIO_INGRESS": "N",
+          "MIGRATION_ENABLED": "N",
           "ISTIO_SYSTEM_NAMESPACE": "istio-system",
           "NODES_IPS": [
             "$ip"
