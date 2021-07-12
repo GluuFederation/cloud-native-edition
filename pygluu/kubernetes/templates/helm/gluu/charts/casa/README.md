@@ -34,7 +34,7 @@ Kubernetes: `>=v1.17.0-0`
 | hpa.maxReplicas | int | `10` |  |
 | hpa.metrics | list | `[]` | metrics if targetCPUUtilizationPercentage is not set |
 | hpa.minReplicas | int | `1` |  |
-| hpa.targetCPUUtilizationPercentage | string | `"5 ddd0"` |  |
+| hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.repository | string | `"gluufederation/casa"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
