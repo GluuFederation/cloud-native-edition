@@ -6,7 +6,7 @@ hpa:
   enabled: true
   minReplicas: 1
   maxReplicas: 10
-  targetCPUUtilizationPercentage: 5 ddd0
+  targetCPUUtilizationPercentage: 50
   # -- metrics if targetCPUUtilizationPercentage is not set
   metrics: []
   # -- Scaling Policies

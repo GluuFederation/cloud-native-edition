@@ -2,7 +2,7 @@
 
 ![Version: 5.0.0](https://img.shields.io/badge/Version-5.0.0-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
 
-Gluu Access and Identity Mangement
+Gluu Access and Identity Management
 
 **Homepage:** <https://www.gluu.org>
 

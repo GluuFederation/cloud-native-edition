@@ -38,7 +38,7 @@ sources:
 maintainers:
 - name: moabu
   email: support@gluu.org
-description: Gluu Access and Identity Mangement OpenBanking distribution
+description: Gluu Access and Identity Management OpenBanking distribution
 name: gluu
 version: 2.0.0
 dependencies:
