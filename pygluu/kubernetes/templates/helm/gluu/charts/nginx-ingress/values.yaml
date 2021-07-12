@@ -28,16 +28,16 @@ ingress:
   casaEnabled: true
   # -- Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
   # Enable client certificate authentication
-  # nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional"
+  # nginx-ingress.ingress.kubernetes.io/auth-tls-verify-client: "optional"
   # Create the secret containing the trusted ca certificates
-  # nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate"
+  # nginx-ingress.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate"
   # Specify the verification depth in the client certificates chain
-  # nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+  # nginx-ingress.ingress.kubernetes.io/auth-tls-verify-depth: "1"
   # Specify if certificates are passed to upstream server
-  # nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+  # nginx-ingress.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
   additionalAnnotations:
     # Required annotation below
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: "nginx-ingress"
   hosts:
   - demoexample.gluu.org
   tls:

@@ -7,7 +7,7 @@ kubeVersion: ">=v1.17.0-0"
 description: Nginx ingress definitions chart
 type: application
 keywords:
-  - nginx
+  - nginx-ingress
   - ingress
 home: https://gluu.org/docs/gluu-server
 sources:
