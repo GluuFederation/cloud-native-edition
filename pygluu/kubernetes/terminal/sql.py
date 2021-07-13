@@ -58,7 +58,8 @@ class PromptSQL:
                 self.settings.set("GLUU_SQL_DB_NAMESPACE",
                                   click.prompt("Please enter a namespace for the SQL server", default="sql"))
 
-            self.settings.set("GLUU_SQL_DB_HOST", f'gluu.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
+            self.settings.set("GLUU_SQL_DB_HOST",
+                              f'gluu-mysql.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
 
         if not self.settings.get("GLUU_SQL_DB_HOST"):
             self.settings.set("GLUU_SQL_DB_HOST", click.prompt("Please enter  SQL (remote or local) URL base name",
@@ -66,11 +67,11 @@ class PromptSQL:
 
         if not self.settings.get("GLUU_SQL_DB_USER"):
             self.settings.set("GLUU_SQL_DB_USER", click.prompt("Please enter a user for Gluu SQL database ",
-                                                                 default="gluu"))
+                                                               default="gluu"))
 
         if not self.settings.get("GLUU_SQL_DB_PASSWORD"):
             self.settings.set("GLUU_SQL_DB_PASSWORD", prompt_password("gluu-db-sql"))
 
         if not self.settings.get("GLUU_SQL_DB_NAME"):
             self.settings.set("GLUU_SQL_DB_NAME", click.prompt("Please enter Gluu SQL database name",
-                                                                  default="gluu"))
+                                                               default="gluu"))

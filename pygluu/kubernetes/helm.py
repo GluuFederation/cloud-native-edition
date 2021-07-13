@@ -235,15 +235,15 @@ class Helm(object):
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
             
         if self.settings.get("PERSISTENCE_BACKEND") == "sql":
-            values_file_parser["config"]["configmap"]["cnSqlDbDialect "] = \
+            values_file_parser["config"]["configmap"]["cnSqlDbDialect"] = \
                 self.settings.get("GLUU_SQL_DB_DIALECT")
-            values_file_parser["config"]["configmap"]["cnSqlDbHost "] = \
+            values_file_parser["config"]["configmap"]["cnSqlDbHost"] = \
                 self.settings.get("GLUU_SQL_DB_HOST")
-            values_file_parser["config"]["configmap"]["cnSqlDbName "] = \
+            values_file_parser["config"]["configmap"]["cnSqlDbName"] = \
                 self.settings.get("GLUU_SQL_DB_NAME")
-            values_file_parser["config"]["configmap"]["cnSqlDbUser "] = \
+            values_file_parser["config"]["configmap"]["cnSqlDbUser"] = \
                 self.settings.get("GLUU_SQL_DB_USER")
-            values_file_parser["config"]["configmap"]["cnSqldbUserPassword "] = \
+            values_file_parser["config"]["configmap"]["cnSqldbUserPassword"] = \
                 self.settings.get("GLUU_SQL_DB_PASSWORD")
             
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":

@@ -44,7 +44,7 @@ resources:
     # -- Memory request.
     memory: 1000Mi
 service:
-  # -- Name of the auth-server service. Please keep it as default.
+  # -- Name of the SCIM service. Please keep it as default.
   scimServiceName: scim
   # -- The name of the scim port within the scim service. Please keep it as default.
   name: http-scim

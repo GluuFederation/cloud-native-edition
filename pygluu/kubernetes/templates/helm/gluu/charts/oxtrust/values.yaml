@@ -51,7 +51,7 @@ service:
    # -- Port of the oxtrust service. Please keep it as default.
   port: 8080
   clusterIp: None
-  # -- Name of the auth-server service. Please keep it as default.
+  # -- Name of the oxtrust service. Please keep it as default.
   oxTrustServiceName: oxtrust
 # -- Configure the liveness healthcheck for the auth server if needed.
 livenessProbe:

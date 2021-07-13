@@ -806,7 +806,7 @@ def sql():
         data["GLUU_SQL_DB_NAMESPACE"] = form.sql_namespace.data
         data["GLUU_SQL_DB_HOST"] = form.sql_url.data
         if data["GLUU_INSTALL_SQL"] == "Y":
-            data["GLUU_SQL_DB_HOST"] = f'gluu.{data["GLUU_SQL_DB_NAMESPACE"]}.svc.cluster.local'
+            data["GLUU_SQL_DB_HOST"] = f'gluu-mysql.{data["GLUU_SQL_DB_NAMESPACE"]}.svc.cluster.local'
         data["GLUU_SQL_DB_USER"] = form.sql_user.data
         data["GLUU_SQL_DB_PASSWORD"] = form.sql_password.data
         data["GLUU_SQL_DB_NAME"] = form.sql_database.data

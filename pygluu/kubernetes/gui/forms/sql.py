@@ -41,7 +41,7 @@ class SqlForm(FlaskForm):
         validators=[RequiredIfFieldEqualTo("install_sql", "Y")])
     sql_url = StringField(
         "Please enter  SQL (remote or local) URL base name. ",
-        default="gluu.mysql.svc.cluster.local")
+        default="gluu-mysql.sql.svc.cluster.local")
     sql_user = StringField("Please enter a user for Gluu SQL database",
                                      default="gluu",
                                      validators=[RequiredIfFieldEqualTo("install_sql", "Y")])

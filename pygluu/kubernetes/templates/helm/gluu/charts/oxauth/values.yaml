@@ -45,8 +45,8 @@ resources:
     # -- Memory request.
     memory: 2500Mi
 service:
-  # -- Name of the auth-server service. Please keep it as default.
-  oxAuthServiceName: auth-server
+  # -- Name of the oxauth service. Please keep it as default.
+  oxAuthServiceName: oxauth
   # -- The name of the oxauth port within the oxauth service. Please keep it as default.
   name: http-oxauth
   # -- Port of the oxauth service. Please keep it as default.

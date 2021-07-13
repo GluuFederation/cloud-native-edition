@@ -66,7 +66,7 @@ global:
   # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner.
   cnGoogleApplicationCredentials: /etc/gluu/conf/google-credentials.json
   oxauth:
-    # -- Boolean flag to enable/disable auth-server chart. You should never set this to false.
+    # -- Boolean flag to enable/disable oxauth chart. You should never set this to false.
     enabled: true
   fido2:
     # -- Boolean flag to enable/disable the fido2 chart.
@@ -637,8 +637,8 @@ oxauth:
       # -- Memory request.
       memory: 2500Mi
   service:
-    # -- Name of the auth-server service. Please keep it as default.
-    oxAuthServiceName: auth-server
+    # -- Name of the oxauth service. Please keep it as default.
+    oxAuthServiceName: oxauth
     # -- The name of the oxauth port within the oxauth service. Please keep it as default.
     name: http-oxauth
     # -- Port of the oxauth service. Please keep it as default.
@@ -720,7 +720,7 @@ oxtrust:
      # -- Port of the oxtrust service. Please keep it as default.
     port: 8080
     clusterIp: None
-    # -- Name of the auth-server service. Please keep it as default.
+    # -- Name of the oxtrust service. Please keep it as default.
     oxTrustServiceName: oxtrust
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
@@ -867,7 +867,7 @@ scim:
       # -- Memory request.
       memory: 1000Mi
   service:
-    # -- Name of the auth-server service. Please keep it as default.
+    # -- Name of the scim service. Please keep it as default.
     scimServiceName: scim
     # -- The name of the scim port within the scim service. Please keep it as default.
     name: http-scim
