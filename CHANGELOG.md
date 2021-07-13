@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.4](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.3...v1.6.4) (2021-07-13)
+
+
+### Bug Fixes
+
+* oxshibboleth syntax error ([fdf73e5](https://www.github.com/GluuFederation/cloud-native-edition/commit/fdf73e5d693f88cb8b4a4196cdca0d8200a228db))
+
 ### [1.6.3](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.2...v1.6.3) (2021-07-13)
 
 
