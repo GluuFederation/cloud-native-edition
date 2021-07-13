@@ -1,5 +1,24 @@
 # Changelog
 
+### [1.6.3](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.2...v1.6.3) (2021-07-13)
+
+
+### Bug Fixes
+
+* add hpa to helm chart services ([bb9309f](https://www.github.com/GluuFederation/cloud-native-edition/commit/bb9309f966d5b68694b0f198434d67f842d18ee4))
+* add ingress control, docs, and refactor opendj service name ([c4b9c0b](https://www.github.com/GluuFederation/cloud-native-edition/commit/c4b9c0bc5c6b0ff43b6edbccf8dbce5180955c1a))
+* add migration option to GUI and Terminal installation ([94244c5](https://www.github.com/GluuFederation/cloud-native-edition/commit/94244c54e3d8343f9a9625b716c7746b40a2378e))
+* add port number ([fab10a9](https://www.github.com/GluuFederation/cloud-native-edition/commit/fab10a90a2661d2ba9c62903a9e1428c12fd8ad0))
+* fix oxauth service name and sql mounts ([d71b92d](https://www.github.com/GluuFederation/cloud-native-edition/commit/d71b92d7c3ca4a12575f3f0571bf672adf2cb92d))
+* remove creationTimestamp key ([783882c](https://www.github.com/GluuFederation/cloud-native-edition/commit/783882cefef0dafb58ecefb6e4501ae224dfe0da))
+* syntax on targetCPUUtilizationPercentage ([bc3f7ae](https://www.github.com/GluuFederation/cloud-native-edition/commit/bc3f7ae8daa5410d65e2a0f5474fbe9c5881d6d3))
+* update helm charts ([45fb447](https://www.github.com/GluuFederation/cloud-native-edition/commit/45fb4479785d40a92a01842cfa1d32361ef8a8dd))
+
+
+### Documentation
+
+* update chart readme ([360f30a](https://www.github.com/GluuFederation/cloud-native-edition/commit/360f30a2ab7b3150e2c9bf2332448b12b7d7734b))
+
 ### [1.6.2](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.1...v1.6.2) (2021-07-02)
 
 
