@@ -38,6 +38,8 @@ class Postgres(object):
                                              self.settings.get("POSTGRES_NAMESPACE")))
 
         if self.settings.get("PERSISTENCE_BACKEND") == "sql" and self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
+            self.kubernetes.create_namespace(name=self.settings.get("GLUU_SQL_DB_NAMESPACE"),
+                                             labels={"app": "mysql"})
             exec_cmd("helm install {} bitnami/postgresql "
                      "--set global.postgresql.postgresqlDatabase={} "
                      "--set global.postgresql.postgresqlPassword={} "

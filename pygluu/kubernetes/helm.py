@@ -237,6 +237,8 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") == "sql":
             values_file_parser["config"]["configmap"]["cnSqlDbDialect"] = \
                 self.settings.get("GLUU_SQL_DB_DIALECT")
+            values_file_parser["config"]["configmap"]["cnSqlDbPort"] = \
+                self.settings.get("GLUU_SQL_DB_PORT")
             values_file_parser["config"]["configmap"]["cnSqlDbHost"] = \
                 self.settings.get("GLUU_SQL_DB_HOST")
             values_file_parser["config"]["configmap"]["cnSqlDbName"] = \

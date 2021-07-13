@@ -51,16 +51,17 @@ class PromptSQL:
 
         if self.settings.get("GLUU_INSTALL_SQL") == "Y":
 
-            if self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
-                self.settings.set("INSTALL_POSTGRES", "Y")
-
             if not self.settings.get("GLUU_SQL_DB_NAMESPACE"):
                 self.settings.set("GLUU_SQL_DB_NAMESPACE",
                                   click.prompt("Please enter a namespace for the SQL server", default="sql"))
 
             self.settings.set("GLUU_SQL_DB_HOST",
                               f'gluu-mysql.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
-
+            if self.settings.get("GLUU_SQL_DB_DIALECT") == "pgsql":
+                self.settings.set("INSTALL_POSTGRES", "Y")
+                self.settings.set("GLUU_SQL_DB_HOST",
+                                  f'gluu-postgresql.{self.settings.get("GLUU_SQL_DB_NAMESPACE")}.svc.cluster.local')
+                self.settings.set("GLUU_SQL_DB_PORT", 5432)
         if not self.settings.get("GLUU_SQL_DB_HOST"):
             self.settings.set("GLUU_SQL_DB_HOST", click.prompt("Please enter  SQL (remote or local) URL base name",
                                                                default="gluu.sql.svc.cluster.local"))

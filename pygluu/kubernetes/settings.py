@@ -206,6 +206,7 @@ class SettingsHandler(object):
                                 GLUU_SQL_DB_DIALECT="",
                                 GLUU_SQL_DB_NAMESPACE="",
                                 GLUU_SQL_DB_HOST="",
+                                GLUU_SQL_DB_PORT="",
                                 GLUU_SQL_DB_NAME="",
                                 GLUU_SQL_DB_USER="",
                                 GLUU_SQL_DB_PASSWORD="",
