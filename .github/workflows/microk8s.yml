@@ -17,7 +17,7 @@ jobs:
         python-version: [3.7]
         gluu-version: ['"4.3.0_dev"']
         test-cases: ["install", "helm-install-gluu"]
-        persistence-backends: ['"ldap"','"couchbase"']
+        persistence-backends: ['"ldap"','"couchbase"','"mysql"','"pgsql"']
 
     steps:
     - name: Checkout code
@@ -167,12 +167,10 @@ jobs:
           "OXPASSPORT_REPLICAS": 1,
           "OXD_SERVER_REPLICAS": 1,
           "CASA_REPLICAS": 1,
-          "RADIUS_REPLICAS": 1,
           "ENABLE_OXTRUST_API": "N",
           "ENABLE_OXTRUST_TEST_MODE": "N",
           "ENABLE_CACHE_REFRESH": "N",
           "ENABLE_OXD": "Y",
-          "ENABLE_RADIUS": "Y",
           "ENABLE_OXPASSPORT": "Y",
           "ENABLE_OXSHIBBOLETH": "Y",
           "ENABLE_FIDO2": "Y",
@@ -182,13 +180,20 @@ jobs:
           "ENABLE_OXAUTH_KEY_ROTATE": "Y",
           "ENABLE_OXTRUST_API_BOOLEAN": "true",
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
-          "ENABLE_RADIUS_BOOLEAN": "true",
           "ENABLE_OXPASSPORT_BOOLEAN": "true",
           "ENABLE_CASA_BOOLEAN": "true",
           "ENABLE_SAML_BOOLEAN": "true",
           "EDIT_IMAGE_NAMES_TAGS": "N",
           "CONFIRM_PARAMS": "Y",
-          "GLUU_LDAP_MULTI_CLUSTER": "N"
+          "GLUU_LDAP_MULTI_CLUSTER": "N",
+          "GLUU_INSTALL_SQL": "N",
+          "GLUU_SQL_DB_DIALECT": "mysql",
+          "GLUU_SQL_DB_NAMESPACE": "sql",
+          "GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local",
+          "GLUU_SQL_DB_PORT": "3306",
+          "GLUU_SQL_DB_NAME": "gluu",
+          "GLUU_SQL_DB_USER": "gluu",
+          "GLUU_SQL_DB_PASSWORD": "Test1234#"
         }
         EOF
 
@@ -213,6 +218,17 @@ jobs:
           COUCHBASE_IP=$(sudo microk8s.kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
 
+    - name: MySQL
+      if: ${{ matrix.persistence-backends == '"mysql"' }}
+      run: |
+          cd /home/runner/work/test/
+          cat settings.json | sed 's/"GLUU_INSTALL_SQL": "Y"/"GLUU_INSTALL_SQL": "N"/g' > tmpfile.py && mv tmpfile.py settings.json
+
+    - name: PostGRE
+      if: ${{ matrix.persistence-backends == '"pgsql"' }}
+      run: |
+          cd /home/runner/work/test/
+          cat settings.json | sed 's/"GLUU_SQL_DB_DIALECT": "mysql"/"GLUU_SQL_DB_DIALECT": "pgsql"/g' > tmpfile.py && mv tmpfile.py settings.json
 
 
     - name: Test Pygluu kubernetes
@@ -230,5 +246,4 @@ jobs:
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
           sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-radius || sudo kubectl logs -l app=radius -c radius -n gluu || echo "Not Found"
 

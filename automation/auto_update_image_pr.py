@@ -185,8 +185,6 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             update_dicts_and_yamls("OXTRUST", repo, tag_list)
         elif repo == "persistence":
             update_dicts_and_yamls("PERSISTENCE", repo, tag_list)
-        elif repo == "radius":
-            update_dicts_and_yamls("RADIUS", repo, tag_list)
         elif repo == "upgrade":
             update_dicts_and_yamls("UPGRADE", repo, tag_list)
     gluu_versions_dict = {major_official_version: final_official_version_dict,
@@ -201,7 +199,7 @@ def main():
     gluu_docker_repositories_names_used_in_cn = ["casa", "fido2", "scim", "config-init",
                                                  "cr-rotate", "certmanager", "opendj", "jackrabbit", "oxauth",
                                                  "oxd-server", "oxpassport", "oxshibboleth",
-                                                 "oxtrust", "persistence", "radius", "upgrade"]
+                                                 "oxtrust", "persistence", "upgrade"]
 
     for repo in gluu_docker_repositories_names_used_in_cn:
         all_repos_tags.update(get_docker_repo_tag(org, repo))
