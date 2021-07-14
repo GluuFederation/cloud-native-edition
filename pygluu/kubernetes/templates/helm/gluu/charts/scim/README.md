@@ -2,7 +2,7 @@
 
 ![Version: 1.6.3](https://img.shields.io/badge/Version-1.6.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
-Based on the TinyRadius Java library. The implementation ("Gluu Radius") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.
+System for Cross-domain Identity Management (SCIM) version 2.0
 
 **Homepage:** <https://gluu.org/docs/gluu-server>
 
@@ -48,7 +48,7 @@ Kubernetes: `>=v1.17.0-0`
 | resources.requests.memory | string | `"1000Mi"` | Memory request. |
 | service.name | string | `"http-scim"` | The name of the scim port within the scim service. Please keep it as default. |
 | service.port | int | `8080` | Port of the scim service. Please keep it as default. |
-| service.scimServiceName | string | `"scim"` | Name of the auth-server service. Please keep it as default. |
+| service.scimServiceName | string | `"scim"` | Name of the SCIM service. Please keep it as default. |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |
 | usrEnvs.normal | object | `{}` | Add custom normal envs to the service variable1: value1 |
 | usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |

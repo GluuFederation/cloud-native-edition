@@ -47,7 +47,7 @@ Kubernetes: `>=v1.17.0-0`
 | resources.requests.memory | string | `"2500Mi"` | Memory request. |
 | service.clusterIp | string | `"None"` |  |
 | service.name | string | `"http-oxtrust"` | The name of the oxtrust port within the oxtrust service. Please keep it as default. |
-| service.oxTrustServiceName | string | `"oxtrust"` | Name of the auth-server service. Please keep it as default. |
+| service.oxTrustServiceName | string | `"oxtrust"` | Name of the oxtrust service. Please keep it as default. |
 | service.port | int | `8080` | Port of the oxtrust service. Please keep it as default. |
 | service.type | string | `"ClusterIP"` |  |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |

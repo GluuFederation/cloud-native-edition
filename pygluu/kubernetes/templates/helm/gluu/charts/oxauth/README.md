@@ -46,7 +46,7 @@ Kubernetes: `>=v1.17.0-0`
 | resources.requests.cpu | string | `"2500m"` | CPU request. |
 | resources.requests.memory | string | `"2500Mi"` | Memory request. |
 | service.name | string | `"http-oxauth"` | The name of the oxauth port within the oxauth service. Please keep it as default. |
-| service.oxAuthServiceName | string | `"auth-server"` | Name of the auth-server service. Please keep it as default. |
+| service.oxAuthServiceName | string | `"oxauth"` | Name of the oxauth service. Please keep it as default. |
 | service.port | int | `8080` | Port of the oxauth service. Please keep it as default. |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |
 | usrEnvs.normal | object | `{}` | Add custom normal envs to the service variable1: value1 |

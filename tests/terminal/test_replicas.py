@@ -122,17 +122,3 @@ def test_prompt_replicas_casa(monkeypatch, settings):
     settings.set("ENABLE_CASA", "Y")
     PromptReplicas(settings).prompt_replicas()
     assert settings.get("CASA_REPLICAS") == 1
-
-
-def test_prompt_replicas_radius(monkeypatch, settings):
-    from pygluu.kubernetes.terminal.replicas import PromptReplicas
-
-    monkeypatch.setattr("click.prompt", lambda x, default: 1)
-
-    # bypass
-    settings.set("OXAUTH_REPLICAS", 1)
-    settings.set("OXTRUST_REPLICAS", 1)
-
-    settings.set("ENABLE_RADIUS", "Y")
-    PromptReplicas(settings).prompt_replicas()
-    assert settings.get("RADIUS_REPLICAS") == 1

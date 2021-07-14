@@ -84,7 +84,6 @@ Kubernetes: `>=v1.17.0-0`
 | configmap.gluuPassportEnabled | bool | `false` | Boolean flag to enable/disable passport chart |
 | configmap.gluuPassportFailureRedirectUrl | string | `""` | TEMP KEY TO BE REMOVED IN 4.3 which allows passport failure redirect url to be specified. |
 | configmap.gluuPersistenceLdapMapping | string | `"default"` | Specify data that should be saved in LDAP (one of default, user, cache, site, token, or session; default to default). Note this environment only takes effect when `global.gluuPersistenceType`  is set to `hybrid`. |
-| configmap.gluuRadiusEnabled | bool | `false` | Boolean flag to enable/disable Radius chart |
 | configmap.gluuRedisSentinelGroup | string | `""` | Redis Sentinel Group. Often set when `config.configmap.gluuRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`. |
 | configmap.gluuRedisSslTruststore | string | `""` | Redis SSL truststore. Optional. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`. |
 | configmap.gluuRedisType | string | `"STANDALONE"` | Redis service type. `STANDALONE` or `CLUSTER`. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`. |
@@ -101,10 +100,10 @@ Kubernetes: `>=v1.17.0-0`
 | image.repository | string | `"gluufederation/config-init"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | ldapPass | string | `"P@ssw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
-| migratation | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
-| migratation.enabled | bool | `false` | Boolean flag to enable migration from CE |
-| migratation.migrationDataFormat | string | `"ldif"` | migration data-format depending on persistence backend. Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json. |
-| migratation.migrationDir | string | `"/ce-migration"` | Directory holding all migration files |
+| migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
+| migration.enabled | bool | `false` | Boolean flag to enable migration from CE |
+| migration.migrationDataFormat | string | `"ldif"` | migration data-format depending on persistence backend. Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json. |
+| migration.migrationDir | string | `"/ce-migration"` | Directory holding all migration files |
 | orgName | string | `"Gluu"` | Organization name. Used for certificate creation. |
 | redisPass | string | `"P@assw0rd"` | Redis admin password if `config.configmap.gluuCacheType` is set to `REDIS`. |
 | resources | object | `{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource specs. |
