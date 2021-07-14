@@ -221,12 +221,14 @@ jobs:
       if: ${{ matrix.persistence-backends == '"sql"' }}
       run: |
           cd /home/runner/work/test/
+          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"GLUU_INSTALL_SQL": "Y"/"GLUU_INSTALL_SQL": "N"/g' > tmpfile.py && mv tmpfile.py settings.json
 
     - name: PostGRE
       if: ${{ matrix.persistence-backends == '"pgsql"' }}
       run: |
           cd /home/runner/work/test/
+          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"GLUU_SQL_DB_DIALECT": "mysql"/"GLUU_SQL_DB_DIALECT": "pgsql"/g' > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"PERSISTENCE_BACKEND": "pgsql"/"PERSISTENCE_BACKEND": "sql"/g' > tmpfile.py && mv tmpfile.py settings.json
 
