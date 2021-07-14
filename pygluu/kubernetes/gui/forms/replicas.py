@@ -17,7 +17,6 @@ class ReplicasForm(FlaskForm):
         oxpassport_replicas (integer|optional|default: 1)
         oxd_server_replicas (integer|optional|default: 1)
         casa_replicas (integer|optional|default: 1)
-        radius_replicas (integer|optional|default: 1)
     """
     oxauth_replicas = IntegerField("Number of oxAuth replicas", default=1, validators=[InputRequired()])
     fido2_replicas = IntegerField("Number of fido2 replicas", default=1, validators=[Optional()])
@@ -34,4 +33,3 @@ class ReplicasForm(FlaskForm):
                                        default=1,
                                        validators=[Optional()])
     casa_replicas = IntegerField("Number of Casa replicas", default=1, validators=[Optional()])
-    radius_replicas = IntegerField("Number of Radius replicas", default=1, validators=[Optional()])

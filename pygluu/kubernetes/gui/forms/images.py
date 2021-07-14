@@ -34,8 +34,6 @@ class ImageNameTagForm(FlaskForm):
         oxtrust_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
         persistence_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
         persistence_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
-        radius_image_name (string|required_if edit_image_name_tags is Y| default from settings.json)
-        radius_image_tag (string|required_if edit_image_name_tags is Y| default from settings.json)
     """
     # TODO: find a way to generate dynamic fields
 
@@ -114,12 +112,6 @@ class ImageNameTagForm(FlaskForm):
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     persistence_image_tag = StringField(
         "Persistence image tag",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    radius_image_name = StringField(
-        "Radius image name",
-        validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
-    radius_image_tag = StringField(
-        "Radius image tag",
         validators=[RequiredIfFieldEqualTo("edit_image_names_tags", "Y")])
     fido2_image_name = StringField(
         "FIDO2 image name",

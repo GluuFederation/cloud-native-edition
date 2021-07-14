@@ -34,12 +34,6 @@ class PromptOptionalServices:
             if not self.settings.get("OXAUTH_KEYS_LIFE"):
                 self.settings.set("OXAUTH_KEYS_LIFE", click.prompt("oxAuth keys life in hours", default=48))
 
-        if not self.settings.get("ENABLE_RADIUS"):
-            self.settings.set("ENABLE_RADIUS", confirm_yesno("Deploy Radius"))
-        if self.settings.get("ENABLE_RADIUS") == "Y":
-            self.enabled_services.append("radius")
-            self.settings.set("ENABLE_RADIUS_BOOLEAN", "true")
-
         if not self.settings.get("ENABLE_OXPASSPORT"):
             self.settings.set("ENABLE_OXPASSPORT", confirm_yesno("Deploy Passport"))
         if self.settings.get("ENABLE_OXPASSPORT") == "Y":

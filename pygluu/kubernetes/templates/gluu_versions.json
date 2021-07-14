@@ -28,8 +28,6 @@
     "OXTRUST_IMAGE_TAG": "4.3.0_b1",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
     "PERSISTENCE_IMAGE_TAG": "4.3.0_b1",
-    "RADIUS_IMAGE_NAME": "gluufederation/radius",
-    "RADIUS_IMAGE_TAG": "4.3.0_b1",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
     "UPGRADE_IMAGE_TAG": "4.3.0_b1"
   },
@@ -62,8 +60,6 @@
     "OXTRUST_IMAGE_TAG": "4.3.0_sql_spanner",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
     "PERSISTENCE_IMAGE_TAG": "4.3.0_sql_spanner",
-    "RADIUS_IMAGE_NAME": "gluufederation/radius",
-    "RADIUS_IMAGE_TAG": "4.3.0_sql_spanner",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
     "UPGRADE_IMAGE_TAG": "4.3.0_sql_spanner"
   }

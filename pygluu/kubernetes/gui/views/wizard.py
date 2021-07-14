@@ -196,7 +196,6 @@ def optional_services():
         service_list = {
             'cr-rotate': False,
             'oxauth-key-rotation': False,
-            'radius': False,
             'oxpassport': False,
             'oxshibboleth': False,
             'casa': False,
@@ -214,13 +213,6 @@ def optional_services():
             service_list['oxauth-key-rotation'] = True
         else:
             data["OXAUTH_KEYS_LIFE"] = ""
-
-        data["ENABLE_RADIUS"] = form.enable_radius.data
-        if data["ENABLE_RADIUS"] == "Y":
-            data["ENABLE_RADIUS_BOOLEAN"] = "true"
-            service_list['radius'] = True
-        else:
-            data["ENABLE_RADIUS_BOOLEAN"] = ""
 
         data["ENABLE_OXPASSPORT"] = form.enable_oxpassport.data
         if data["ENABLE_OXPASSPORT"] == "Y":
@@ -1124,12 +1116,6 @@ def images():
             form.oxshibboleth_image_tag.id,
         ]
 
-    if gluu_settings.db.get("ENABLE_RADIUS") == "N":
-        collapsed_ids += [
-            form.radius_image_name.id,
-            form.radius_image_tag.id,
-        ]
-
     if gluu_settings.db.get("ENABLE_FIDO2") == "N":
         collapsed_ids += [
             form.fido2_image_name.id,
@@ -1194,8 +1180,6 @@ def replicas():
         del form.oxd_server_replicas
     if gluu_settings.db.get("ENABLE_CASA") == "N":
         del form.casa_replicas
-    if gluu_settings.db.get("ENABLE_RADIUS") == "N":
-        del form.radius_replicas
 
     if form.validate_on_submit():
         data = {}

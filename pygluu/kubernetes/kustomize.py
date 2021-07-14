@@ -89,7 +89,6 @@ class Kustomize(object):
         self.cr_rotate_yaml = str(self.output_yaml_directory.joinpath("cr-rotate.yaml").resolve())
         self.oxd_server_yaml = str(self.output_yaml_directory.joinpath("oxd-server.yaml").resolve())
         self.casa_yaml = str(self.output_yaml_directory.joinpath("casa.yaml").resolve())
-        self.radius_yaml = str(self.output_yaml_directory.joinpath("radius.yaml").resolve())
         self.update_lb_ip_yaml = str(self.output_yaml_directory.joinpath("update-lb-ip.yaml").resolve())
         self.gluu_istio_ingress_yaml = str(self.output_yaml_directory.joinpath("gluu-istio-ingress.yaml").resolve())
         self.ingress_file = self.output_yaml_directory.joinpath("nginx/nginx.yaml")
@@ -494,7 +493,6 @@ class Kustomize(object):
         configmap_parser["data"]["GLUU_OXTRUST_API_ENABLED"] = self.settings.get("ENABLE_OXTRUST_API_BOOLEAN")
         configmap_parser["data"]["GLUU_OXTRUST_API_TEST_MODE"] = self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN")
         configmap_parser["data"]["GLUU_PASSPORT_ENABLED"] = self.settings.get("ENABLE_OXPASSPORT_BOOLEAN")
-        configmap_parser["data"]["GLUU_RADIUS_ENABLED"] = self.settings.get("ENABLE_RADIUS_BOOLEAN")
         configmap_parser["data"]["GLUU_SAML_ENABLED"] = self.settings.get("ENABLE_SAML_BOOLEAN")
         configmap_parser["data"]["GLUU_JACKRABBIT_ADMIN_ID"] = self.settings.get("JACKRABBIT_ADMIN_ID")
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
@@ -685,16 +683,6 @@ class Kustomize(object):
                 exec_cmd(command, output_file=app_file)
                 self.remove_resources(app_file, "Deployment")
                 self.setup_jackrabbit_volumes(app_file, "Deployment")
-                self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
-
-            if app == "radius" and self.settings.get("ENABLE_RADIUS") == "Y":
-                logger.info("Building {} manifests".format(app))
-                self.update_kustomization_yaml(kustomization_yaml=kustomization_file,
-                                               namespace=self.settings.get("GLUU_NAMESPACE"),
-                                               image_name_key="RADIUS_IMAGE_NAME",
-                                               image_tag_key="RADIUS_IMAGE_TAG")
-                exec_cmd(command, output_file=app_file)
-                self.remove_resources(app_file, "Deployment")
                 self.adjust_yamls_for_fqdn_status[app_file] = "Deployment"
 
             if app == "update-lb-ip" and self.settings.get("IS_GLUU_FQDN_REGISTERED") == "N":
@@ -1094,13 +1082,6 @@ class Kustomize(object):
     def deploy_oxauth_key_rotation(self):
         self.kubernetes.create_objects_from_dict(self.oxauth_key_rotate_yaml)
 
-    def deploy_radius(self):
-        self.kubernetes.create_objects_from_dict(self.radius_yaml)
-        if not self.settings.get("AWS_LB_TYPE") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("GLUU_NAMESPACE"), "app=radius", self.timeout)
-        self.kubernetes.patch_namespaced_deployment_scale(name="radius", replicas=self.settings.get("RADIUS_REPLICAS"),
-                                                          namespace=self.settings.get("GLUU_NAMESPACE"))
-
     def deploy_cr_rotate(self):
         self.kubernetes.delete_role("gluu-role", self.settings.get("GLUU_NAMESPACE"))
         self.kubernetes.delete_role_binding("gluu-rolebinding", self.settings.get("GLUU_NAMESPACE"))
@@ -1389,10 +1370,6 @@ class Kustomize(object):
             if restore:
                 self.mount_config()
 
-        if self.settings.get("ENABLE_RADIUS") == "Y":
-            self.deploy_radius()
-
-
     def uninstall_ingress(self):
         nginx_ingress_extensions_names = ["gluu-ingress-base", "gluu-ingress-openid-configuration",
                                           "gluu-ingress-uma2-configuration", "gluu-ingress-webfinger",
@@ -1404,12 +1381,12 @@ class Kustomize(object):
 
     def uninstall(self, restore=False):
         gluu_service_names = ["casa", "cr-rotate", "opendj", "oxauth", "oxpassport",
-                              "oxshibboleth", "oxtrust", "radius", "oxd-server",
+                              "oxshibboleth", "oxtrust", "oxd-server",
                               "jackrabbit", "fido2", "scim", "config-init-load-job"]
         gluu_storage_class_names = ["opendj-sc", "jackrabbit-sc"]
         nginx_service_name = "ingress-nginx"
         gluu_deployment_app_labels = ["app=casa", "app=oxauth", "app=fido2", "app=scim", "app=oxd-server",
-                                      "app=oxpassport", "app=radius", "app=oxauth-key-rotation"]
+                                      "app=oxpassport", "app=oxauth-key-rotation"]
         nginx_deployemnt_app_name = "nginx-ingress-controller"
         stateful_set_labels = ["app=opendj", "app=oxtrust", "app=oxshibboleth", "app=jackrabbit"]
         jobs_labels = ["app=config-init-load", "app=persistence-load", "app=gluu-upgrade"]

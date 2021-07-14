@@ -158,8 +158,6 @@ configmap:
   gluuPassportFailureRedirectUrl: ""
   # -- Enable Casa flag .
   gluuCasaEnabled: false
-  # -- Boolean flag to enable/disable Radius chart
-  gluuRadiusEnabled: false
   # -- Enable SAML-related features; UI menu, etc.
   gluuSamlEnabled: false
 image:

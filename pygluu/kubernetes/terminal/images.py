@@ -66,7 +66,4 @@ class PromptImages:
             prompt_and_set_setting("oxTrust", "OXTRUST_IMAGE_NAME", "OXTRUST_IMAGE_TAG")
             # PERSISTENCE
             prompt_and_set_setting("Persistence", "PERSISTENCE_IMAGE_NAME", "PERSISTENCE_IMAGE_TAG")
-            # RADIUS
-            if self.settings.get("ENABLE_RADIUS") == "Y":
-                prompt_and_set_setting("Radius", "RADIUS_IMAGE_NAME", "RADIUS_IMAGE_TAG")
             self.settings.set("EDIT_IMAGE_NAMES_TAGS", "N")

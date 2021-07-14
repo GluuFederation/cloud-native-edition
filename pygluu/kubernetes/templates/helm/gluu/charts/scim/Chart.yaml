@@ -4,7 +4,7 @@ apiVersion: v2
 name: scim
 version: 1.6.3
 kubeVersion: ">=v1.17.0-0"
-description: Based on the TinyRadius Java library. The implementation ("Gluu Radius") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.
+description: System for Cross-domain Identity Management (SCIM) version 2.0
 type: application
 keywords:
   - SCIM

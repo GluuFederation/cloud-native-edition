@@ -33,8 +33,6 @@ annotations:
       image: gluufederation/oxshibboleth:4.3.0_b1
     - name: persistence
       image: gluufederation/persistence:4.3.0_b1
-    - name: radius
-      image: gluufederation/radius:4.3.0_b1
   artifacthub.io/license: Apache-2.0
 icon: https://gluu.org/docs/gluu-server/favicon.ico
 home: https://www.gluu.org
@@ -100,10 +98,6 @@ dependencies:
     - name: cr-rotate
       version: 1.6.3
       condition: global.cr-rotate.enabled
-  
-    - name: radius
-      condition: config.configmap.gluuRadiusEnabled
-      version: 1.6.3
 
     - name: oxd-server
       condition: global.oxd-server.enabled

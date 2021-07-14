@@ -46,6 +46,3 @@ class PromptReplicas:
 
         if self.settings.get("ENABLE_CASA") == "Y" and not self.settings.get("CASA_REPLICAS"):
             self.settings.set("CASA_REPLICAS", click.prompt("Number of Casa replicas", default=1))
-
-        if self.settings.get("ENABLE_RADIUS") == "Y" and not self.settings.get("RADIUS_REPLICAS"):
-            self.settings.set("RADIUS_REPLICAS", click.prompt("Number of Radius replicas", default=1))

@@ -391,8 +391,6 @@ class Helm(object):
 
         if self.settings.get("ENABLE_OXPASSPORT_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
-        if self.settings.get("ENABLE_RADIUS_BOOLEAN") == "true":
-            values_file_parser["config"]["configmap"]["gluuRadiusEnabled"] = True
         if self.settings.get("ENABLE_SAML_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
 
@@ -436,9 +434,6 @@ class Helm(object):
         values_file_parser["oxtrust"]["image"]["repository"] = self.settings.get("OXTRUST_IMAGE_NAME")
         values_file_parser["oxtrust"]["image"]["tag"] = self.settings.get("OXTRUST_IMAGE_TAG")
         values_file_parser["oxtrust"]["replicas"] = self.settings.get("OXTRUST_REPLICAS")
-        values_file_parser["radius"]["image"]["repository"] = self.settings.get("RADIUS_IMAGE_NAME")
-        values_file_parser["radius"]["image"]["tag"] = self.settings.get("RADIUS_IMAGE_TAG")
-        values_file_parser["radius"]["replicas"] = self.settings.get("RADIUS_REPLICAS")
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
