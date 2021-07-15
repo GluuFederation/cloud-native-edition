@@ -218,7 +218,7 @@ jobs:
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
 
     - name: SQL
-      if: ${{ matrix.persistence-backends == '"sql"' }} && ${{ matrix.test-cases != '"install"' }}
+      if: ${{ matrix.persistence-backends == '"sql"' }}
       run: |
           cd /home/runner/work/test/
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
@@ -227,7 +227,7 @@ jobs:
           touch sqlfile
 
     - name: PostGRE
-      if: ${{ matrix.persistence-backends == '"pgsql"' }} && ${{ matrix.test-cases != '"install"' }}
+      if: ${{ matrix.persistence-backends == '"pgsql"' }}
       run: |
           cd /home/runner/work/test/
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
@@ -241,8 +241,10 @@ jobs:
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
-          [[ ! -f sqlfile && ${{ matrix.test-cases == '"install"' }} ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
-          sleep 30
+          INSTALL=TRUE
+          [[ -f sqlfile && ${{ matrix.test-cases == '"install"' }} ]] && INSTALL=FALSE
+          [[ "$INSTALL" == "TRUE" ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
+        sleep 30
           sudo microk8s.kubectl get po -n cbns
           sudo microk8s.kubectl get po -n gluu
           cat /home/runner/work/test/settings.json
