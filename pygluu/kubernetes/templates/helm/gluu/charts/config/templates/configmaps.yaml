@@ -93,11 +93,11 @@ data:
   CN_CONTAINER_MAIN_NAME: {{ .Release.Name }}-auth-server
   # options: default/user/site/cache/statistic used only if CN_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.cnPersistenceType "hybrid") (eq .Values.global.cnPersistenceType "ldap") }}
+   # must the same as the opendj service name
+  CN_CERT_ALT_NAME: {{ .Values.global.opendj.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   CN_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.cnPersistenceLdapMapping | quote }}
   {{- end }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
-  # must the same as the opendj service name
-  CN_CERT_ALT_NAME: {{ .Values.global.opendj.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   {{ if .Values.global.cnJackrabbitCluster }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
   CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}

@@ -331,9 +331,6 @@ global:
   nginx-ingress:
     # -- Boolean flag to enable/disable the nginx-ingress definitions chart.
     enabled: true
-  opendj:
-    # -- Boolean flag to enable/disable the OpenDJ  chart.
-    enabled: false
   # --  Gluu distributions supported are: default|openbanking.
   distribution: openbanking
   persistence:
@@ -357,6 +354,30 @@ global:
     volumeBindingMode: WaitForFirstConsumer
   upgrade:
     # -- Boolean flag used when running helm upgrade command. This allows upgrading the chart without immutable objects errors.
+    enabled: false
+  opendj:
+    # -- Boolean flag to enable/disable the OpenDJ  chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  jackrabbit:
+    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  fido2:
+    # -- Boolean flag to enable/disable the fido2 chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  scim:
+    # -- Boolean flag to enable/disable the SCIM chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  oxshibboleth:
+    # -- Boolean flag to enable/disable the oxShibbboleth chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  cr-rotate:
+    # -- Boolean flag to enable/disable the cr-rotate chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  client-api:
+    # -- Boolean flag to enable/disable the client-api chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
+  auth-server-key-rotation:
+    # -- Boolean flag to enable/disable the auth-server-key rotation cronjob chart. Not part of the openbanking distribution. Keep as default.
     enabled: false
 
 # -- Nginx ingress definitions chart
