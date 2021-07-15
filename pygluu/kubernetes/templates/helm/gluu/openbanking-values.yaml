@@ -233,7 +233,7 @@ config-api:
   livenessProbe:
     # -- http liveness probe endpoint
     httpGet:
-      path: /health-check/live
+      path: /jans-config-api/api/v1/health/live
       port: 8074
     initialDelaySeconds: 30
     periodSeconds: 30
@@ -241,7 +241,7 @@ config-api:
   readinessProbe:
     # -- http readiness probe endpoint
     httpGet:
-      path: /health-check/ready
+      path: jans-config-api/api/v1/health/ready
       port: 8074
     initialDelaySeconds: 25
     periodSeconds: 25
@@ -318,7 +318,7 @@ global:
   # -- GCE storage kind if using Google disks
   gcePdStorageType: pd-standard
   # -- Boolean flag to enable mapping global.lbIp  to global.fqdn inside pods on clouds that provide static ip for loadbalancers. On cloud that provide only addresses to the LB this flag will enable a script to actively scan config.configmap.lbAddr and update the hosts file inside the pods automatically.
-  isFqdnRegistered: false
+  isFqdnRegistered: true
   istio:
     # -- Boolean flag that enables using istio side cars with Gluu services.
     enabled: false

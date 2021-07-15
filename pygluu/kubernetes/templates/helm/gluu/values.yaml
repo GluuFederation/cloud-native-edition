@@ -563,7 +563,7 @@ config-api:
   livenessProbe:
     # -- http liveness probe endpoint
     httpGet:
-      path: /health-check/live
+      path: /jans-config-api/api/v1/health/live
       port: 8074
     initialDelaySeconds: 30
     periodSeconds: 30
@@ -571,7 +571,7 @@ config-api:
   readinessProbe:
     # -- http readiness probe endpoint
     httpGet:
-      path: /health-check/ready
+      path: jans-config-api/api/v1/health/ready
       port: 8074
     initialDelaySeconds: 25
     periodSeconds: 25
