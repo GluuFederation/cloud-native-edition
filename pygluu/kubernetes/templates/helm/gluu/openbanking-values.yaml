@@ -43,9 +43,6 @@ auth-server:
       cpu: 2500m
       # -- Memory request.
       memory: 2500Mi
-  service:
-    # -- Name of the auth-server service. Please keep it as default.
-    authServerServiceName: auth-server
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
@@ -85,8 +82,6 @@ config:
   # -- City. Used for certificate creation.
   city: Austin
   configmap:
-    # -- Auth server internal address. Leave as default.
-    cnAuthServerBackend: "auth-server:8080"
     # -- Jetty header size in bytes in the auth server
     cnJettyRequestHeaderSize: 8192
     # -- SQL database dialect. `mysql` or `pgsql`
@@ -275,6 +270,8 @@ global:
     ingress: false
 
   auth-server:
+    # -- Name of the auth-server service. Please keep it as default.
+    authServerServiceName: auth-server
     # -- Boolean flag to enable/disable auth-server chart. You should never set this to false.
     enabled: true
   awsStorageType: io1

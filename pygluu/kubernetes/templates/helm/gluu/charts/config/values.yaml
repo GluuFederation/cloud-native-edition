@@ -15,8 +15,6 @@ adminPassword: Test1234#
 # -- City. Used for certificate creation.
 city: Austin
 configmap:
-  # -- Auth server internal address. Leave as default.
-  cnAuthServerBackend: "auth-server:8080"
   # -- Jetty header size in bytes in the auth server
   cnJettyRequestHeaderSize: 8192
   # -- SQL database dialect. `mysql` or `pgsql`

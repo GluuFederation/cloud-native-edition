@@ -47,11 +47,6 @@
                "description":"Configuration parameters mapped to envs in a ConfigMap",
                "type":"object",
                "properties":{
-                  "cnAuthServerBackend":{
-                     "description":"Auth Server backend address",
-                     "type":"string",
-                     "pattern":"^[a-z0-9-:]+$"
-                  },
                   "cnSqlDbDialect":{
                      "description":"SQL dialect",
                      "type":"string",
@@ -450,7 +445,12 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable auth-server chart. You should never set this to false.",
                      "type":"boolean"
-                  }
+                  },
+               "authServerServiceName":{
+                     "description":"Name of the auth-server service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                           }
                }
             },
             "auth-server-key-rotation":{
@@ -1068,16 +1068,6 @@
                                     "pattern":"^[0-9Mi]+$"
                                  }
                               }
-                           }
-                        }
-                     },
-                     "service":{
-                        "type":"object",
-                        "properties":{
-                           "authServerServiceName":{
-                              "description":"Name of the auth-server service. Please keep it as default.",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-]+$"
                            }
                         }
                      }
