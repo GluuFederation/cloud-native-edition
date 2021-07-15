@@ -12,7 +12,7 @@ keywords:
 home: https://gluu.org/docs/gluu-server
 sources:
   - https://github.com/GluuFederation/docker-opendj
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/ldap-backup
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/ldap-backup
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org
