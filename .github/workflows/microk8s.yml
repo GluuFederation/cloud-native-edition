@@ -241,7 +241,7 @@ jobs:
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
-          [[ ! -f sqlfile && ${{ matrix.test-cases == "install" ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
+          [[ ! -f sqlfile && ${{ matrix.test-cases == "install" }} ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
           sleep 30
           sudo microk8s.kubectl get po -n cbns
           sudo microk8s.kubectl get po -n gluu
