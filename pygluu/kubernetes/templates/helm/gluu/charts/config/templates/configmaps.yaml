@@ -70,7 +70,11 @@ data:
   CN_PERSISTENCE_TYPE: {{ .Values.global.cnPersistenceType }}
   {{- if or (eq .Values.global.cnPersistenceType "ldap") (eq .Values.global.cnPersistenceType "hybrid")  }}
   # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
+  {{- if .Values.configmap.cnLdapUrl }}
   CN_LDAP_URL: {{ .Values.configmap.cnLdapUrl | quote }}
+  {{- else }}
+  CN_LDAP_URL: {{ cat ( .Values.global.opendj.ldapServiceName ) ":1636" | quote | nospace }}
+  {{- end }}
   {{- else if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
   #  used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
   CN_COUCHBASE_URL: {{ .Values.configmap.cnCouchbaseUrl }}
@@ -93,7 +97,7 @@ data:
   {{- end }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
   # must the same as the opendj service name
-  CN_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "cn.fullname" . }}-service
+  CN_CERT_ALT_NAME: {{ .Values.global.opendj.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   {{ if .Values.global.cnJackrabbitCluster }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
   CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}
