@@ -559,9 +559,6 @@ config-api:
       cpu: 1000m
       # -- Memory request.
       memory: 400Mi
-  service:
-    # -- Name of the config-api service. Please keep it as default.
-    configApiServerServiceName: config-api
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- http liveness probe endpoint
@@ -768,6 +765,8 @@ global:
   # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner.
   cnGoogleApplicationCredentials: /etc/jans/conf/google-credentials.json
   config-api:
+    # -- Name of the config-api service. Please keep it as default.
+    configApiServerServiceName: config-api
     # -- Boolean flag to enable/disable the config-api chart.
     enabled: true
   cr-rotate:

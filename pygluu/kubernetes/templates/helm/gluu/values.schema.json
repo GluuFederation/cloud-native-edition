@@ -582,6 +582,11 @@
             "config-api":{
                "type":"object",
                "properties":{
+                  "configApiServerServiceName":{
+                     "description":"Name of the config-api service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                  },
                   "enabled":{
                      "description":"Boolean flag to enable/disable the config-api chart.",
                      "type":"boolean"
@@ -962,8 +967,7 @@
                   "required":[
                      "image",
                      "replicas",
-                     "resources",
-                     "service"
+                     "resources"
                   ],
                   "properties":{
                      "hpa":{
@@ -1509,8 +1513,7 @@
                   "required":[
                      "image",
                      "replicas",
-                     "resources",
-                     "service"
+                     "resources"
                   ],
                   "type":"object",
                   "properties":{
@@ -1620,16 +1623,6 @@
                                     "pattern":"^[0-9Mi]+$"
                                  }
                               }
-                           }
-                        }
-                     },
-                     "service":{
-                        "type":"object",
-                        "properties":{
-                           "configApiServerServiceName":{
-                              "description":"Name of the config-api service. Please keep it as default.",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-]+$"
                            }
                         }
                      }

@@ -52,17 +52,13 @@ resources:
 service:
   # -- The name of the config-api port within the config-api service. Please keep it as default.
   name: http-config-api
-  # -- Name of the config-api service. Please keep it as default.
-  # This must match config.configMap.cnClientApiApplicationCertCn
-  clientApiServerServiceName: config-api
 # -- Configure the liveness healthcheck for the auth server if needed.
 livenessProbe:
   # -- Executes the python3 healthcheck.
   # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
-  exec:
-    command:
-      - python3
-      - /app/scripts/healthcheck.py
+  httpGet:
+    path: /jans-config-api/api/v1/health/live
+    port: 8074
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
@@ -70,7 +66,7 @@ livenessProbe:
 # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
 readinessProbe:
   httpGet:
-    path: /health-check/ready
+    path: /jans-config-api/api/v1/health/ready
     port: 8074
   initialDelaySeconds: 25
   periodSeconds: 25
