@@ -1,7 +1,6 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 # Required environment variables for generating Gluu server initial config
-
 # -- Add custom normal and secret envs to the service.
 usrEnvs:
   # -- Add custom normal envs to the service.
