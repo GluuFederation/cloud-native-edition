@@ -242,7 +242,7 @@ jobs:
       run: |
           cd /home/runner/work/test/
           INSTALL=TRUE
-          [[ -f sqlfile && ${{ matrix.test-cases == '"install"' }} ]] && INSTALL=FALSE
+          [[ -f sqlfile  && "${{ matrix.test-cases }}" == "install"  ]] && INSTALL=FALSE
           [[ "$INSTALL" == "TRUE" ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
           sleep 30
           sudo microk8s.kubectl get po -n cbns
