@@ -795,6 +795,8 @@ global:
   jackrabbit:
     # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run.
     enabled: false
+    # -- Name of the Jackrabbit service. Please keep it as default.
+    jackRabbitServiceName: jackrabbit
   # -- The Loadbalancer IP created by nginx or istio on clouds that provide static IPs. This is not needed if `global.fqdn` is globally resolvable.
   lbIp: ""
   # -- Name of the OpenDJ service. Please keep it as default.
@@ -887,9 +889,6 @@ jackrabbit:
     cnJackrabbitAdminPassword: Test1234#
     # -- Jackrabbit Postgres uid password
     cnJackrabbitPostgresPassword: P@ssw0rd
-  service:
-    # -- Name of the Jackrabbit service. Please keep it as default.
-    jackRabbitServiceName: jackrabbit
   storage:
     # -- Jackrabbit volume size
     size: 5Gi

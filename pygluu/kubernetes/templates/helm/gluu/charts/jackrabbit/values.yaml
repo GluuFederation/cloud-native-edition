@@ -52,8 +52,6 @@ secrets:
   # -- Jackrabbit Postgres uid password
   cnJackrabbitPostgresPassword: P@ssw0rd
 service:
-  # -- Name of the Jackrabbit service. Please keep it as default.
-  jackRabbitServiceName: jackrabbit
   # -- The name of the jackrabbit port within the jackrabbit service. Please keep it as default.
   name: http-jackrabbit
   # -- Port of the jackrabbit service. Please keep it as default.

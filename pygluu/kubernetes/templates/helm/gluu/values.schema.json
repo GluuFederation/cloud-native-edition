@@ -643,6 +643,10 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. ",
                      "type":"boolean"
+                  },
+                  "jackRabbitServiceName":{
+                     "description":"Name of the Jackrabbit service. Please keep it as default.",
+                     "pattern":"^[a-z0-9-]+$"
                   }
                }
             },
@@ -1964,15 +1968,6 @@
                            "cnJackrabbitPostgresPass":{
                               "description":"Jackrabbit Postgres uid password",
                               "$ref":"#/definitions/password"
-                           }
-                        }
-                     },
-                     "service":{
-                        "type":"object",
-                        "properties":{
-                           "jackRabbitServiceName":{
-                              "description":"Name of the Jackrabbit service. Please keep it as default.",
-                              "pattern":"^[a-z0-9-]+$"
                            }
                         }
                      },
