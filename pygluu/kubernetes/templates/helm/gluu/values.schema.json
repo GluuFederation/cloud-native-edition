@@ -114,11 +114,6 @@
                      "description":"Client-api bind address. This limits what ip ranges can access the client-api. This should be left as * and controlled by a NetworkPolicy",
                      "$ref":"#/definitions/ip-pattern"
                   },
-                  "cnClientApiServerUrl":{
-                     "description":"Client-api Oauth client address. This should be left intact in kubernetes as it uses the internal address format. ",
-                     "type":"string",
-                     "pattern":"^[a-z0-9-:]+$"
-                  },
                   "cnConfigKubernetesConfigMap":{
                      "description":"The name of the ConfigMap that will hold the configuration layer",
                      "type":"string",
@@ -480,6 +475,11 @@
             "client-api":{
                "type":"object",
                "properties":{
+                  "clientApiServerServiceName":{
+                     "description":"Name of the client-api service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                  },
                   "enabled":{
                      "description":"Boolean flag to enable/disable the client-api chart.",
                      "type":"boolean"
@@ -1478,16 +1478,6 @@
                                     "pattern":"^[0-9Mi]+$"
                                  }
                               }
-                           }
-                        }
-                     },
-                     "service":{
-                        "type":"object",
-                        "properties":{
-                           "clientApiServerServiceName":{
-                              "description":"Name of the client-api service. Please keep it as default.",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-]+$"
                            }
                         }
                      }

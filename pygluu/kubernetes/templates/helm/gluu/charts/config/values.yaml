@@ -43,8 +43,6 @@ configmap:
   cnClientApiApplicationCertCn: client-api
   # -- Client-api bind address. This limits what ip ranges can access the client-api. This should be left as * and controlled by a NetworkPolicy
   cnClientApiBindIpAddresses: "*"
-  # -- Client-api Oauth client address. This should be left intact in kubernetes as it uses the internal address format.
-  cnClientApiServerUrl: "client-api:8443"
   # -- The name of the Kubernetes ConfigMap that will hold the configuration layer
   cnConfigKubernetesConfigMap: cn
   # -- The prefix of couchbase buckets. This helps with separation in between different environments and allows for the same couchbase cluster to be used by different setups of Gluu.

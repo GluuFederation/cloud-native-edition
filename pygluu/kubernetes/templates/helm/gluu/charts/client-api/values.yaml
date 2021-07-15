@@ -44,9 +44,6 @@ resources:
     cpu: 1000m
     # -- Memory request.
     memory: 400Mi
-service:
-  clientApiServerServiceName: client-api
-  # -- Name of the Client API service. This must match config.configMap.cnClientApiApplicationCer. Please keep it as default.
 # -- Configure the liveness healthcheck for the auth server if needed.
 livenessProbe:
   # -- Executes the python3 healthcheck.

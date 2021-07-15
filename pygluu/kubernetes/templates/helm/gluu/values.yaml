@@ -304,9 +304,6 @@ client-api:
       cpu: 1000m
       # -- Memory request.
       memory: 400Mi
-  service:
-    # -- Name of the client-api service. Please keep it as default.
-    clientApiServerServiceName: client-api
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
@@ -376,8 +373,6 @@ config:
     cnClientApiApplicationCertCn: client-api
     # -- Client-api bind address. This limits what ip ranges can access the client-api. This should be left as * and controlled by a NetworkPolicy
     cnClientApiBindIpAddresses: "*"
-    # -- Client-api Oauth client address. This should be left intact in kubernetes as it uses the internal address format.
-    cnClientApiServerUrl: "client-api:8443"
     # -- The name of the Kubernetes ConfigMap that will hold the configuration layer
     cnConfigKubernetesConfigMap: cn
     # -- The prefix of couchbase buckets. This helps with separation in between different environments and allows for the same couchbase cluster to be used by different setups of Gluu.
@@ -730,6 +725,8 @@ global:
   # -- Azure storage kind if using Azure disks
   azureStorageKind: Managed
   client-api:
+    # -- Name of the client-api service. Please keep it as default.
+    clientApiServerServiceName: client-api
     # -- Boolean flag to enable/disable the client-api chart.
     enabled: false
   cloud:
