@@ -84,10 +84,6 @@ entries:
       name: cr-rotate
       repository: ""
       version: 5.0.0
-    - condition: config.configmap.cnRadiusEnabled
-      name: radius
-      repository: ""
-      version: 5.0.0
     - condition: global.client-api.enabled
       name: client-api
       repository: ""

@@ -11,6 +11,7 @@ keywords:
   - OpenID
 home: https://gluu.org/docs/gluu-server
 sources:
+  - https://github.com/JanssenProject/jans-auth-server
   - https://github.com/JanssenProject/docker-jans-auth-server
   - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/auth-server
 maintainers:

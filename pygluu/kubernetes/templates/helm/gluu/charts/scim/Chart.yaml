@@ -4,16 +4,17 @@ apiVersion: v2
 name: scim
 version: 2.0.0
 kubeVersion: ">=v1.17.0-0"
-description: Based on the TinyRadius Java library. The implementation ("Gluu Radius") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.
+description: System for Cross-domain Identity Management (SCIM) version 2.0
 type: application
 keywords:
   - SCIM
   - API
 home: https://gluu.org/docs/gluu-server
 sources:
+  - https://github.com/JanssenProject/jans-scim
   - https://gluu.org/docs/gluu-server/api-guide/scim-api/
-  - https://github.com/GluuFederation/docker-scim
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/scim
+  - https://github.com/JanssenProject/docker-jans-scim
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/scim
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

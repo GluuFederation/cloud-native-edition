@@ -12,8 +12,9 @@ keywords:
   - Social login
 home: https://gluu.org/docs/gluu-server
 sources:
+  - https://github.com/GluuFederation/gluu-passport
   - https://github.com/GluuFederation/docker-oxpassport
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxpassport
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/oxpassport
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

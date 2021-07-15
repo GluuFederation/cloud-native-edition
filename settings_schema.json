@@ -112,7 +112,6 @@
     "OXPASSPORT_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "CLIENT_API_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "CASA_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
-    "RADIUS_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "FIDO2_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "SCIM_REPLICAS": { "$ref": "#/definitions/emptiable-number" },
     "ENABLE_CONFIG_API": { "$ref": "#/definitions/yes-no-string" },
@@ -122,14 +121,12 @@
     "ENABLE_CLIENT_API": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_FIDO2": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_SCIM": { "$ref": "#/definitions/yes-no-string" },
-    "ENABLE_RADIUS": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_OXPASSPORT": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_OXSHIBBOLETH": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_CASA": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_AUTH_SERVER_KEY_ROTATE": { "$ref": "#/definitions/yes-no-string" },
     "ENABLE_OXTRUST_API_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
     "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
-    "ENABLE_RADIUS_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
     "ENABLE_OXPASSPORT_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
     "ENABLE_CASA_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
     "ENABLE_SAML_BOOLEAN": { "$ref": "#/definitions/emptiable-boolean-string" },
@@ -145,7 +142,6 @@
           "jackrabbit",
           "cr-rotate",
           "auth-server-key-rotation",
-          "radius",
           "oxpassport",
           "oxshibboleth",
           "casa",
@@ -187,8 +183,6 @@
     "OXTRUST_IMAGE_TAG": { "type": "string" },
     "PERSISTENCE_IMAGE_NAME": { "type": "string" },
     "PERSISTENCE_IMAGE_TAG": { "type": "string" },
-    "RADIUS_IMAGE_NAME": { "type": "string" },
-    "RADIUS_IMAGE_TAG": { "type": "string" },
     "UPGRADE_IMAGE_NAME": { "type": "string" },
     "UPGRADE_IMAGE_TAG": { "type": "string" },
     "CONFIRM_PARAMS": { "$ref": "#/definitions/yes-no-string" }
@@ -196,7 +190,6 @@
   "allOf": [
     { "$ref": "#/definitions/cache-refresh-enabled"},
     { "$ref": "#/definitions/auth-server-key-rotate-enabled"},
-    { "$ref": "#/definitions/radius-enabled" },
     { "$ref": "#/definitions/oxpassport-enabled" },
     { "$ref": "#/definitions/oxshibboleth-enabled" },
     { "$ref": "#/definitions/casa-enabled" },
@@ -375,25 +368,6 @@
           }
         },
         "required": ["ENABLED_SERVICES_LIST", "AUTH_SERVER_KEYS_LIFE"]
-      }
-    },
-    "radius-enabled": {
-      "if": {
-        "properties": {
-          "ENABLE_RADIUS": { "const": "Y" }
-        }
-      },
-      "then": {
-        "properties": {
-          "ENABLE_RADIUS_BOOLEAN": { "const": "true" },
-          "ENABLED_SERVICES_LIST": {
-            "contains": { "enum" : ["radius"] },
-            "errors": {
-              "contains": "radius key not found"
-            }
-          }
-        },
-        "required": ["ENABLE_RADIUS_BOOLEAN", "ENABLED_SERVICES_LIST"]
       }
     },
     "oxpassport-enabled": {

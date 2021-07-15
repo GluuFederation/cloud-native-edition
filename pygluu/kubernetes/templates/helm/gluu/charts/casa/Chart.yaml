@@ -14,7 +14,7 @@ home: https://gluu.org/docs/casa/
 sources:
   - https://gluu.org/docs/casa/
   - https://github.com/GluuFederation/docker-casa
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/casa
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/casa
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

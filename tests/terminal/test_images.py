@@ -112,16 +112,3 @@ def test_testenv_prompt_test_edit_oxshiboleth(monkeypatch, settings, given, expe
     prompt.prompt_image_name_tag()
     assert settings.get("oxshibboleth.image.tag") == expected
 
-
-@pytest.mark.parametrize("given, expected", [
-    (True, True),
-])
-def test_testenv_prompt_test_edit_radius(monkeypatch, settings, given, expected):
-    from pygluu.kubernetes.terminal.images import PromptImages
-
-    monkeypatch.setattr("click.prompt", lambda x, default: given)
-    settings.set("installer-settings.images.edit", True)
-    settings.set("config.configmap.cnRadiusEnabled", True)
-    prompt = PromptImages(settings)
-    prompt.prompt_image_name_tag()
-    assert settings.get("radius.image.tag") == expected

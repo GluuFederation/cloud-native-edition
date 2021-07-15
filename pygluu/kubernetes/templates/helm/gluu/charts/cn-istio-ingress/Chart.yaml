@@ -12,7 +12,7 @@ keywords:
 home: https://gluu.org/docs/gluu-server/
 sources:
   - https://gluu.org/docs/gluu-server/
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/gluu-istio-ingress
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/cn-istio-ingress
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

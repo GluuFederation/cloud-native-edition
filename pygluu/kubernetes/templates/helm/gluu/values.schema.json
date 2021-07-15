@@ -294,10 +294,6 @@
                      "type":"string",
                      "pattern":"^(default|user|site|cache|statistic)$"
                   },
-                  "cnRadiusEnabled":{
-                     "description":"Boolean flag to enable/disable Radius chart",
-                     "type":"boolean"
-                  },
                   "cnRedisSentinelGroup":{
                      "description":"Redis Sentinel Group. Often set when `config.configmap.cnRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.",
                      "type":"string"
@@ -812,13 +808,6 @@
 
          }
       },
-      "radius":{
-		  "description":"Based on the TinyRadius Java library. The implementation (\"Gluu Radius\") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.",
-         "type":"object",
-         "properties":{
-
-         }
-      },
       "scim":{
 		  "description":"System for Cross-domain Identity Management (SCIM) version 2.0",
          "type":"object",
@@ -866,9 +855,6 @@
       },
       {
          "$ref":"#/definitions/persistence-enabled"
-      },
-      {
-         "$ref":"#/definitions/radius-enabled"
       },
       {
          "$ref":"#/definitions/scim-enabled"
@@ -2831,158 +2817,6 @@
                                     "pattern":"^[0-9Mi]+$"
                                  }
                               }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         },
-         "else":true
-      },
-      "radius-enabled":{
-         "if":{
-            "properties":{
-               "config":{
-                  "properties":{
-                     "configmap":{
-                        "properties":{
-                           "cnRadiusEnabled":{
-                              "const":"true"
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         },
-         "then":{
-            "properties":{
-               "radius":{
-                  "required":[
-                     "image",
-                     "replicas",
-                     "resources",
-                     "service"
-                  ],
-                  "type":"object",
-                  "properties":{
-                     "hpa":{
-                        "description":"Configure the HorizontalPodAutoscaler",
-                        "type":"object",
-                        "properties":{
-                           "enabled":{
-                              "type":"boolean"
-                           },
-                           "minReplicas":{
-                              "type":"integer"
-                           },
-                           "maxReplicas":{
-                              "type":"integer"
-                           },
-                           "targetCPUUtilizationPercentage":{
-                              "type":"integer"
-                           },
-                           "metrics":{
-                              "description":"metrics if targetCPUUtilizationPercentage is not set",
-                              "type":"array"
-                           },
-                           "behavior":{
-                              "description":"Scaling Policies",
-                              "type":"object"
-                           }
-                        }
-                     },
-                     "usrEnvs":{
-                        "description":"Add custom normal and secret envs to the service",
-                        "type":"object",
-                        "properties":{
-                           "normal":{
-                              "description":"Add custom normal envs to the service",
-                              "type":"object"
-                           },
-                           "secret":{
-                              "description":"Add custom secret envs to the service",
-                              "type":"object"
-                           }
-                        }
-                     },
-                     "dnsPolicy":{
-                        "description":"Add custom dns policy",
-                        "type":"string",
-                        "pattern":"^(Default|ClusterFirst|ClusterFirstWithHostNet|None|)$"
-                     },
-                     "dnsConfig":{
-                        "description":"Add custom dns config",
-                        "type":"object"
-                     },
-                     "image":{
-                        "type":"object",
-                        "properties":{
-                           "pullPolicy":{
-                              "description":"Image pullPolicy to use for deploying.",
-                              "type":"string",
-                              "pattern":"^(Always|Never|IfNotPresent)$"
-                           },
-                           "repository":{
-                              "description":"Image  to use for deploying",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-_/]+$"
-                           },
-                           "tag":{
-                              "description":"Image  tag to use for deploying.",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-_.]+$"
-                           }
-                        }
-                     },
-                     "replicas":{
-                        "description":"Service replica number.",
-                        "type":"integer"
-                     },
-                     "resources":{
-                        "description":"Resource specs.",
-                        "type":"object",
-                        "properties":{
-                           "limits":{
-                              "type":"object",
-                              "properties":{
-                                 "cpu":{
-                                    "description":"CPU limit.",
-                                    "type":"string",
-                                    "pattern":"^[0-9m]+$"
-                                 },
-                                 "memory":{
-                                    "description":"Memory limit.",
-                                    "type":"string",
-                                    "pattern":"^[0-9Mi]+$"
-                                 }
-                              }
-                           },
-                           "requests":{
-                              "type":"object",
-                              "properties":{
-                                 "cpu":{
-                                    "description":"CPU request.",
-                                    "type":"string",
-                                    "pattern":"^[0-9m]+$"
-                                 },
-                                 "memory":{
-                                    "description":"Memory request.",
-                                    "type":"string",
-                                    "pattern":"^[0-9Mi]+$"
-                                 }
-                              }
-                           }
-                        }
-                     },
-                     "service":{
-                        "type":"object",
-                        "properties":{
-                           "radiusServiceName":{
-                              "description":"Name of the Radius service. Please keep it as default.",
-                              "type":"string",
-                              "pattern":"^[a-z0-9-]+$"
                            }
                         }
                      }

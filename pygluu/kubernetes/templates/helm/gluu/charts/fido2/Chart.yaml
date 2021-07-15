@@ -12,8 +12,9 @@ keywords:
 home: https://gluu.org/docs/gluu-server/
 sources:
   - https://gluu.org/docs/gluu-server/
-  - https://github.com/GluuFederation/docker-fido2
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/fido2
+  - https://github.com/JanssenProject/jans-fido2
+  - https://github.com/JanssenProject/docker-jans-fido2
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/fido2
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

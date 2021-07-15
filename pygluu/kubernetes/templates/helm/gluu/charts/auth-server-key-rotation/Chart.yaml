@@ -10,8 +10,8 @@ keywords:
   - Auth keys Rotation
 home: https://gluu.org/docs/gluu-server
 sources:
-  - https://github.com/GluuFederation/docker-certmanager
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxauth-key-rotationn
+  - https://github.com/JanssenProject/docker-jans-certmanager
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/auth-server-key-rotation
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

@@ -104,7 +104,6 @@ data:
   # Auto enable installation of some services
   CN_CASA_ENABLED: {{ .Values.configmap.cnCasaEnabled | quote }}
   CN_PASSPORT_ENABLED: {{ .Values.configmap.cnPassportEnabled | quote }}
-  CN_RADIUS_ENABLED: {{ .Values.configmap.cnRadiusEnabled | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
   CN_SAML_ENABLED: {{ .Values.configmap.cnSamlEnabled | quote }}
   {{- end }}

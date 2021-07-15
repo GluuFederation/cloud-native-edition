@@ -28,7 +28,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -137,8 +137,6 @@ config:
     cnMaxRamPercent: "75.0"
     # -- Boolean flag to enable/disable passport chart. Not part of the openbanking distribution. Please leave this disabled.
     cnPassportEnabled: false
-    # -- Boolean flag to enable/disable Radius chart. Not part of the openbanking distribution. Please leave this disabled.
-    cnRadiusEnabled: false
     # -- Redis Sentinel Group. Often set when `config.configmap.cnRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
     cnRedisSentinelGroup: ""
     # -- Redis SSL truststore. Optional. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
@@ -163,7 +161,7 @@ config:
     # -- Image  to use for deploying.
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Organization name. Used for certificate creation.
   orgName: Gluu
   # -- Redis admin password if `config.configmap.cnCacheType` is set to `REDIS`.
@@ -221,7 +219,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -425,7 +423,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Resource specs.
   resources:
     limits:

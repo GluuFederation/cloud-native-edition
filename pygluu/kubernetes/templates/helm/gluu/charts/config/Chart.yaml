@@ -12,8 +12,8 @@ keywords:
 home: https://gluu.org/docs/gluu-server/reference/container-configs/
 sources:
   - https://gluu.org/docs/gluu-server/reference/container-configs/
-  - https://github.com/GluuFederation/docker-config-init
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/config
+  - https://github.com/JanssenProject/docker-jans-configuration-manager
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/config
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

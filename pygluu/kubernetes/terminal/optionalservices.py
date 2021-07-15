@@ -30,9 +30,6 @@ class PromptOptionalServices:
                 self.settings.set("auth-server-key-rotation.keysLife",
                                   click.prompt("Auth-Server keys life in hours", default=48))
 
-        if not self.settings.get("config.configmap.cnRadiusEnabled"):
-            self.settings.set("config.configmap.cnRadiusEnabled", click.confirm("Deploy Radius"))
-
         if self.settings.get("config.configmap.cnPassportEnabled") in (None, ''):
             self.settings.set("config.configmap.cnPassportEnabled", click.confirm("Deploy Passport"))
 

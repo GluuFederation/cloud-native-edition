@@ -107,7 +107,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -171,7 +171,7 @@ auth-server-key-rotation:
     # -- Image  to use for deploying.
     repository: janssenproject/certmanager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Auth server key rotation keys life in hours
   keysLife: 48
   # -- Resource specs.
@@ -292,7 +292,7 @@ client-api:
     # -- Image  to use for deploying.
     repository: janssenproject/client-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -461,8 +461,6 @@ config:
     cnPassportEnabled: false
     # -- Specify data that should be saved in LDAP (one of default, user, cache, site, token, or session; default to default). Note this environment only takes effect when `global.cnPersistenceType`  is set to `hybrid`.
     cnPersistenceLdapMapping: default
-    # -- Boolean flag to enable/disable Radius chart
-    cnRadiusEnabled: false
     # -- Redis Sentinel Group. Often set when `config.configmap.cnRedisType` is set to `SENTINEL`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
     cnRedisSentinelGroup: ""
     # -- Redis SSL truststore. Optional. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
@@ -487,7 +485,7 @@ config:
     # -- Image  to use for deploying.
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- LDAP admin password if OpennDJ is used for persistence.
   ldapPassword: P@ssw0rds
   # -- Organization name. Used for certificate creation.
@@ -556,7 +554,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -667,7 +665,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: janssenproject/fido2
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1247,7 +1245,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Resource specs.
   resources:
     limits:
@@ -1264,81 +1262,6 @@ persistence:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
-
-# -- Based on the TinyRadius Java library. The implementation ("Gluu Radius") supports RADIUS authentication, but does not provide RADIUS accounting support. RADIUS accounting packets are simply ignored.
-radius:
-  # -- Configure the HorizontalPodAutoscaler
-  hpa:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 5 ddd0
-    # -- metrics if targetCPUUtilizationPercentage is not set
-    metrics: []
-    # -- Scaling Policies
-    behavior: {}
-  # -- Add custom normal and secret envs to the service
-  usrEnvs:
-    # -- Add custom normal envs to the service
-    # variable1: value1
-    normal: {}
-    # -- Add custom secret envs to the service
-    # variable1: value1
-    secret: {}
-  # -- Add custom dns policy
-  dnsPolicy: ""
-  # -- Add custom dns config
-  dnsConfig: {}
-  image:
-    # -- Image pullPolicy to use for deploying.
-    pullPolicy: IfNotPresent
-    # -- Image  to use for deploying.
-    repository: gluufederation/radius
-    # -- Image  tag to use for deploying
-    tag: 5.0.0_dev
-  # -- Service replica number.
-  replicas: 1
-  # -- Resource specs.
-  resources:
-    limits:
-      # -- CPU limit.
-      cpu: 700m
-      # -- Memory limit.
-      memory: 700Mi
-    requests:
-      # -- CPU request.
-      cpu: 700m
-      # -- Memory request.
-      memory: 700Mi
-  service:
-    # -- Name of the Radius service. Please keep it as default.
-    radiusServiceName: radius
-  # -- Configure the liveness healthcheck for Radius if needed.
-  livenessProbe:
-    # -- Executes innteral command healthcheck.
-    exec:
-      command:
-      - cat
-      - /tmp/gluu-radius-health
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    timeoutSeconds: 5
-    failureThreshold: 20
-  # -- Configure the readiness healthcheck for the Radius if needed.
-  readinessProbe:
-    # -- Executes innteral command healthcheck.
-    exec:
-      command:
-      - cat
-      - /tmp/gluu-radius-health
-    initialDelaySeconds: 25
-    periodSeconds: 25
-    timeoutSeconds: 5
-    failureThreshold: 20
-  volumes: []
-    # Configure any additional volumes that need to be attached to the pod
-  volumeMounts: []
-    # Configure any additional volumesMounts that need to be attached to the containers
 
 # -- System for Cross-domain Identity Management (SCIM) version 2.0
 scim:
@@ -1370,7 +1293,7 @@ scim:
     # -- Image  to use for deploying.
     repository: janssenproject/scim
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b6
+    tag: 1.0.0_b7
   # -- Service replica number.
   replicas: 1
   resources:
