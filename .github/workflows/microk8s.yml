@@ -222,13 +222,14 @@ jobs:
       if: ${{ matrix.persistence-backends == '"sql"' }}
       run: |
           cd /home/runner/work/test/
+          sudo microk8s config > config
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local"/"GLUU_SQL_DB_HOST": "gluu-mysql.sql.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
           touch sqlfile
           sudo helm repo add bitnami https://charts.bitnami.com/bitnami
           sudo microk8s kubectl create ns sql
-          sudo helm install gluu --set auth.rootPassword=Test1234#,auth.database=gluu,auth.username=gluu,auth.password=Test1234# bitnami/mysql -n sql
+          sudo helm install gluu --set auth.rootPassword=Test1234#,auth.database=gluu,auth.username=gluu,auth.password=Test1234# bitnami/mysql -n sql --kubeconfig="$PWD/config"
           sudo microk8s.kubectl get po -n sql
 
 
