@@ -47,20 +47,6 @@ def test_testenv_kyerotation(monkeypatch, settings, given, expected):
     (False, False),
     (True, True),
 ])
-def test_testenv_prompt_radius(monkeypatch, settings, given, expected):
-    from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
-
-    monkeypatch.setattr("click.confirm", lambda x: given)
-    settings.set("config.configmap.cnRadiusEnabled", False)
-    prompt = PromptOptionalServices(settings)
-    prompt.prompt_optional_services()
-    assert settings.get("config.configmap.cnRadiusEnabled") == expected
-
-
-@pytest.mark.parametrize("given, expected", [
-    (False, False),
-    (True, True),
-])
 def test_testenv_prompt_passport(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.optionalservices import PromptOptionalServices
 

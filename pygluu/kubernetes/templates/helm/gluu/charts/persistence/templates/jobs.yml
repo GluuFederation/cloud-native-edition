@@ -92,7 +92,7 @@ spec:
       {{- if .Values.global.jackrabbit.enabled }}
         - name: gluu-jackrabbit-admin-pass
           secret:
-            secretName: gluu-jackrabbit-admin-pass
+            secretName: cn-jackrabbit-admin-pass
       {{- end }}
       {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
         - name: google-sa

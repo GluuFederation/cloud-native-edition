@@ -23,6 +23,7 @@ data:
   {{- end}}
 {{- end}}
 {{ if .Values.usrEnvs.secret }}
+---
 apiVersion: v1
 kind: Secret
 metadata:

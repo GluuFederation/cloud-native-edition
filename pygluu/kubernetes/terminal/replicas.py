@@ -47,5 +47,3 @@ class PromptReplicas:
         if self.settings.get("config.configmap.cnCasaEnabled") and self.settings.get("casa.replicas") in (None, ''):
             self.settings.set("casa.replicas", click.prompt("Number of Casa replicas", default=1))
 
-        if self.settings.get("config.configmap.cnRadiusEnabled") and self.settings.get("radius.replicas") in (None, ''):
-            self.settings.set("radius.replicas", click.prompt("Number of Radius replicas", default=1))

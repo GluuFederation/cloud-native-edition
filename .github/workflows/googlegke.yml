@@ -195,7 +195,6 @@ jobs:
           "OXPASSPORT_REPLICAS": 1,
           "CLIENT_API_REPLICAS": 1,
           "CASA_REPLICAS": 1,
-          "RADIUS_REPLICAS": 1,
           "ENABLE_CONFIG_API": "Y",
           "ENABLE_OXTRUST_API": "N",
           "ENABLE_OXTRUST_TEST_MODE": "N",
@@ -203,7 +202,6 @@ jobs:
           "ENABLE_CLIENT_API": "Y",
           "ENABLE_FIDO2": "Y",
           "ENABLE_SCIM": "Y",
-          "ENABLE_RADIUS": "Y",
           "ENABLE_OXPASSPORT": "Y",
           "ENABLE_OXSHIBBOLETH": "Y",
           "ENABLE_CASA": "Y",
@@ -211,7 +209,6 @@ jobs:
           "ENABLE_AUTH_SERVER_KEY_ROTATE": "Y",
           "ENABLE_OXTRUST_API_BOOLEAN": "true",
           "ENABLE_OXTRUST_TEST_MODE_BOOLEAN": "false",
-          "ENABLE_RADIUS_BOOLEAN": "true",
           "ENABLE_OXPASSPORT_BOOLEAN": "true",
           "ENABLE_CASA_BOOLEAN": "true",
           "ENABLE_SAML_BOOLEAN": "true",
@@ -232,7 +229,6 @@ jobs:
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-client-api || sudo kubectl logs -l app=client-api -c client-api -n gluu || echo "Not Found"
           sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || sudo kubectl logs -l app=radius -c radius -n gluu || echo "Not Found"
           sudo kubectl get po -n gluu
           sudo ./pygluu-kubernetes.pyz helm-uninstall
           sudo kubectl delete -f gluu_gke_yamls/nginx/. || echo "Resources not found"
@@ -256,7 +252,6 @@ jobs:
         sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
         sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-client-api || sudo kubectl logs -l app=client-api -c client-api -n gluu || echo "Not Found"
         sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=helm-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
-        sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/helm-radius || sudo kubectl logs -l app=radius -c radius -n gluu || echo "Not Found"
         sudo kubectl get po -n cbns
         sudo kubectl get po -n gluu
         sudo ./pygluu-kubernetes.pyz uninstall-couchbase

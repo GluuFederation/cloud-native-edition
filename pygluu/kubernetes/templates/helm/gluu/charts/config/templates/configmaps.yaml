@@ -55,10 +55,14 @@ data:
   CN_CACHE_TYPE: {{ .Values.configmap.cnCacheType | quote }}
   CN_DOCUMENT_STORE_TYPE: {{ .Values.configmap.cnDocumentStoreType | quote }}
   CN_JACKRABBIT_SYNC_INTERVAL: {{ .Values.configmap.cnJackrabbitSyncInterval | quote }}
+  {{- if .Values.configmap.cnJackrabbitUrl }}
   CN_JACKRABBIT_URL: {{ .Values.configmap.cnJackrabbitUrl | quote }}
+  {{- else }}
+  CN_JACKRABBIT_URL: {{ cat "http://" ( .Values.global.jackrabbit.jackRabbitServiceName ) ":8080" | quote | nospace }}
+  {{- end }}
   DOMAIN: {{ .Values.global.fqdn | quote }}
-  CN_AUTH_SERVER_BACKEND: {{ .Values.configmap.cnAuthServerBackend | quote }}
-  CN_CLIENT_API_SERVER_URL: {{ .Values.configmap.cnClientApiServerUrl | quote }}
+  CN_AUTH_SERVER_BACKEND: {{ cat ( index .Values "global" "auth-server" "authServerServiceName" ) ":8080" | quote | nospace }}
+  CN_CLIENT_API_SERVER_URL: {{ cat ( index .Values "global" "client-api" "clientApiServerServiceName" ) ":8443" | quote | nospace }}
   CN_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.cnClientApiBindIpAddresses | quote }}
   {{- if and (not .Values.global.isFqdnRegistered ) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
@@ -66,7 +70,11 @@ data:
   CN_PERSISTENCE_TYPE: {{ .Values.global.cnPersistenceType }}
   {{- if or (eq .Values.global.cnPersistenceType "ldap") (eq .Values.global.cnPersistenceType "hybrid")  }}
   # used only if CN_PERSISTENCE_TYPE is ldap or hybrid
+  {{- if .Values.configmap.cnLdapUrl }}
   CN_LDAP_URL: {{ .Values.configmap.cnLdapUrl | quote }}
+  {{- else }}
+  CN_LDAP_URL: {{ cat ( .Values.global.opendj.ldapServiceName ) ":1636" | quote | nospace }}
+  {{- end }}
   {{- else if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
   #  used only if CN_PERSISTENCE_TYPE is couchbase or hybrid
   CN_COUCHBASE_URL: {{ .Values.configmap.cnCouchbaseUrl }}
@@ -85,13 +93,11 @@ data:
   CN_CONTAINER_MAIN_NAME: {{ .Release.Name }}-auth-server
   # options: default/user/site/cache/statistic used only if CN_PERSISTENCE_TYPE is hybrid or hybrid
   {{- if or (eq .Values.global.cnPersistenceType "hybrid") (eq .Values.global.cnPersistenceType "ldap") }}
+   # must the same as the opendj service name
+  CN_CERT_ALT_NAME: {{ .Values.global.opendj.ldapServiceName }} #{{ template "cn.fullname" . }}-service
   CN_PERSISTENCE_LDAP_MAPPING: {{ .Values.configmap.cnPersistenceLdapMapping | quote }}
   {{- end }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
-  # must the same as the opendj service name
-  CN_CERT_ALT_NAME: {{ .Values.configmap.ldapServiceName }} #{{ template "cn.fullname" . }}-service
-  CN_SYNC_CASA_MANIFESTS: {{ .Values.configmap.cnSyncCasaManifests | quote }}
-  CN_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.cnSyncShibManifests | quote }}
   {{ if .Values.global.cnJackrabbitCluster }}
   CN_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.cnJackrabbitAdminId | quote }}
   CN_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.cnJackrabbitAdminPasswordFile | quote }}
@@ -106,7 +112,6 @@ data:
   # Auto enable installation of some services
   CN_CASA_ENABLED: {{ .Values.configmap.cnCasaEnabled | quote }}
   CN_PASSPORT_ENABLED: {{ .Values.configmap.cnPassportEnabled | quote }}
-  CN_RADIUS_ENABLED: {{ .Values.configmap.cnRadiusEnabled | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
   CN_SAML_ENABLED: {{ .Values.configmap.cnSamlEnabled | quote }}
   {{- end }}

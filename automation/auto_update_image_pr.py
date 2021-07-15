@@ -180,8 +180,6 @@ def analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_offic
             update_dicts_and_yamls("OXSHIBBOLETH", repo, tag_list)
         elif repo == "persistence":
             update_dicts_and_yamls("PERSISTENCE", repo, tag_list, janssen_repo=True)
-        elif repo == "radius":
-            update_dicts_and_yamls("RADIUS", repo, tag_list)
         elif repo == "upgrade":
             update_dicts_and_yamls("UPGRADE", repo, tag_list)
     gluu_versions_dict = {major_official_version: final_official_version_dict,
@@ -195,7 +193,7 @@ def main():
     org = os.environ.get("CN_ORG_NAME", "gluufederation")
     gluu_docker_repositories_names_used_in_cn = ["casa",
                                                  "cr-rotate", "opendj", "jackrabbit", "oxpassport", "oxshibboleth",
-                                                 "radius", "upgrade"]
+                                                 "upgrade"]
     jans_docker_repositories_names_used_in_cn = ["fido2", "scim", "configuration-manager",
                                                  "certmanager", "auth-server",
                                                  "client-api", "persistence"]

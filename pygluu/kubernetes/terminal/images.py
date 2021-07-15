@@ -65,7 +65,4 @@ class PromptImages:
                 prompt_and_set_setting("oxShibboleth", "oxshibboleth")
             # PERSISTENCE
             prompt_and_set_setting("Persistence", "persistence")
-            # RADIUS
-            if self.settings.get("config.configmap.cnRadiusEnabled"):
-                prompt_and_set_setting("Radius", "radius")
             self.settings.set("installer-settings.images.edit", False)

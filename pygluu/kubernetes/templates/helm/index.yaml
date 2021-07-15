@@ -9,28 +9,28 @@ entries:
       artifacthub.io/containsSecurityUpdates: "true"
       artifacthub.io/images: |
         - name: auth-server
-          image: janssenproject/auth-server:1.0.0_b6
+          image: janssenproject/auth-server:1.0.0_b7
         - name: auth-server-key-rotation
-          image: janssenproject/certmanager:1.0.0_b6
+          image: janssenproject/certmanager:1.0.0_b7
         - name:  client-api
-          image: janssenproject/client-api:1.0.0_b6
+          image: janssenproject/client-api:1.0.0_b7
         - name: configuration-manager
-          image: janssenproject/configuration-manager:1.0.0_b6
+          image: janssenproject/configuration-manager:1.0.0_b7
         - name:  config-api
-          image: janssenproject/config-api:1.0.0_b6
+          image: janssenproject/config-api:1.0.0_b7
         - name: fido2
-          image: janssenproject/fido2:1.0.0_b6
+          image: janssenproject/fido2:1.0.0_b7
         - name: opendj
           image: gluufederation/opendj:5.0.0_dev
         - name: persistence
-          image: janssenproject/persistence-loader:1.0.0_b6
+          image: janssenproject/persistence-loader:1.0.0_b7
         - name: scim
-          image: janssenproject/scim:1.0.0_b6
+          image: janssenproject/scim:1.0.0_b7
       artifacthub.io/license: Apache-2.0
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-06-25T02:10:13.7604196-04:00"
+    created: "2021-07-15T08:34:25.619899-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -84,10 +84,6 @@ entries:
       name: cr-rotate
       repository: ""
       version: 5.0.0
-    - condition: config.configmap.cnRadiusEnabled
-      name: radius
-      repository: ""
-      version: 5.0.0
     - condition: global.client-api.enabled
       name: client-api
       repository: ""
@@ -100,16 +96,17 @@ entries:
       name: cn-istio-ingress
       repository: ""
       version: 5.0.0
-    description: Gluu Access and Identity Mangement OpenBanking distribution
-    digest: f5266255a214f1cf699739d93725fd4093058eb95bc939c9eaa48fbcfcd8d784
+    description: Gluu Access and Identity Management OpenBanking distribution
+    digest: 94dd61ba5a380904bd91f144e05a81a08c79765e01844e5cbafa0530b94f2027
     home: https://www.gluu.org
-    icon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
     kubeVersion: '>=v1.17.0-0'
     maintainers:
-    - email: mo@gluu.org
+    - email: support@gluu.org
       name: moabu
     name: gluu
     sources:
+    - https://gluu.org/docs/gluu-server
     - https://github.com/GluuFederation/cloud-native-edition
     urls:
     - gluu-5.0.0.tgz
@@ -119,7 +116,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0-a1
-    created: "2021-06-25T02:10:13.752399-04:00"
+    created: "2021-07-15T08:34:25.609336-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -242,7 +239,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7464174-04:00"
+    created: "2021-07-15T08:34:25.601413-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -365,7 +362,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7384703-04:00"
+    created: "2021-07-15T08:34:25.593977-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -492,7 +489,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.730458-04:00"
+    created: "2021-07-15T08:34:25.585733-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -620,7 +617,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7225314-04:00"
+    created: "2021-07-15T08:34:25.579208-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -742,7 +739,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7135166-04:00"
+    created: "2021-07-15T08:34:25.57033-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -865,7 +862,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.70756-04:00"
+    created: "2021-07-15T08:34:25.562559-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -987,7 +984,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.6995703-04:00"
+    created: "2021-07-15T08:34:25.555318-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1110,7 +1107,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.6935552-04:00"
+    created: "2021-07-15T08:34:25.547483-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1196,7 +1193,7 @@ entries:
   ldap-backup:
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7614044-04:00"
+    created: "2021-07-15T08:34:25.623582-04:00"
     description: A backup strategy for LDAP
     digest: c144f3433d09e9abb292fd6c0a32e131bfc0cd311b6fc287d1d28677b70966c1
     home: https://www.gluu.org
@@ -1214,7 +1211,7 @@ entries:
     version: 1.4.4
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-06-25T02:10:13.7614044-04:00"
+    created: "2021-07-15T08:34:25.621782-04:00"
     description: A backup strategy for LDAP
     digest: 2feb884e3745869d8c336bc6b38b6ebf92c6c8e54b3cb679c59792129644bd11
     home: https://www.gluu.org
@@ -1229,4 +1226,4 @@ entries:
     urls:
     - ldap-backup-1.4.4-a.tgz
     version: 1.4.4-a
-generated: "2021-06-25T02:10:13.6855775-04:00"
+generated: "2021-07-15T08:34:25.537959-04:00"

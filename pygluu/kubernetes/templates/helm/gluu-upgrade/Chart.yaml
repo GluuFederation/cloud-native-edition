@@ -1,11 +1,22 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: cn-upgrade
+version: 5.0.0
+kubeVersion: ">=v1.17.0-0"
 description: A Helm chart for upgrading gluu server
 type: application
-version: 1.2.16
-appVersion: 5.0.0
-maintainers:
-- name: moabu
-  email: mo@gluu.org
-
+keywords:
+  - upgrade
+  - gluu
 home: https://gluu.org/docs/gluu-server
+sources:
+  - https://gluu.org/docs/gluu-server/upgrade/
+  - https://github.com/GluuFederation/docker-upgrade
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu-upgrade
+maintainers:
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
+appVersion: "5.0.0"

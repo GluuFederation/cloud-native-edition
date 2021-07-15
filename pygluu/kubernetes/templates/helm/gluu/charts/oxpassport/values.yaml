@@ -1,83 +1,86 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-# Default values for oxpassport.
-#HorizontalPodAutoscaler
+# -- Gluu interface to Passport.js to support social login and inbound identity.
+# -- Configure the HorizontalPodAutoscaler
 hpa:
   enabled: true
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
-  # metrics if targetCPUUtilizationPercentage is not set
+  # -- metrics if targetCPUUtilizationPercentage is not set
   metrics: []
-  #Scaling Policies
+  # -- Scaling Policies
   behavior: {}
-
-usrEnvs: {}
-#  normal:
-#    variable1: value1
-#  secret:
-#    variable4: value4
-
-replicas: 1
-
+# -- Add custom normal and secret envs to the service
+usrEnvs:
+  # -- Add custom normal envs to the service
+  # variable1: value1
+  normal: {}
+  # -- Add custom secret envs to the service
+  # variable1: value1
+  secret: {}
+# -- Add custom dns policy
+dnsPolicy: ""
+# -- Add custom dns config
+dnsConfig: {}
 image:
+  # -- Image pullPolicy to use for deploying.
+  pullPolicy: IfNotPresent
+  # -- Image  to use for deploying.
   repository: gluufederation/oxpassport
+  # -- Image  tag to use for deploying.
   tag: 5.0.0_dev
-  pullPolicy: Always
-
-nameOverride: ""
-fullnameOverride: ""
-
+# -- Service replica number
+replicas: 1
+# -- Resource specs.
+resources:
+  limits:
+    # -- CPU limit.
+    cpu: 700m
+    # -- Memory limit.
+    memory: 900Mi
+  requests:
+    # -- CPU request.
+    cpu: 700m
+    # -- Memory request.
+    memory: 900Mi
 service:
+  # -- Name of the oxPassport service. Please keep it as default.
   oxPassportServiceName: oxpassport
+  # -- Port of the oxPassport service. Please keep it as default.
   port: 8090
+   # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
   name: http-passport
-
+# -- Configure the liveness healthcheck for oxPassport if needed.
 livenessProbe:
   httpGet:
+    # -- http liveness probe endpoint
     path: /passport/health-check
     port: http-passport
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
   failureThreshold: 20
+# -- Configure the readiness healthcheck for the oxPassport if needed.
 readinessProbe:
   httpGet:
+    # -- http readiness probe endpoint
     path: /passport/health-check
     port: http-passport
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
   failureThreshold: 20
+# -- Configure any additional volumes that need to be attached to the pod
+volumes: []
+# -- Configure any additional volumesMounts that need to be attached to the containers
+volumeMounts: []
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+nameOverride: ""
+fullnameOverride: ""
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-volumes: []
-  # Configure any additional volumes need to be attached to the pod
-  # - name: mycustomcert
-  #   secret:
-  #     secretName: mycustomsecret
-volumeMounts: []
-  # Configure any additional volumesMounts that need to be attached to the containers
-  # - name: mycustomcert
-  #   mountPath: /etc/certs
-dnsPolicy: ""
-dnsConfig: {}
-  # options:
-  #   - name: ndots
-  #     value: "5"

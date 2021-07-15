@@ -42,7 +42,7 @@ class PromptConfiguration:
                 break
             else:
                 check_fqdn_provided = True
-                logger.error("Input not FQDN structred. Please enter a FQDN with the format demoexample.gluu.org")
+                logger.error("Input not FQDN structured. Please enter a FQDN with the format demoexample.gluu.org")
 
         if self.settings.get("config.countryCode") in (None, ''):
             self.settings.set("config.countryCode", click.prompt("Enter Country Code", default="US"))
@@ -74,5 +74,25 @@ class PromptConfiguration:
         if self.settings.get("global.isFqdnRegistered") in (None, ''):
             self.settings.set("global.isFqdnRegistered", click.confirm("Are you using a globally resolvable FQDN"))
 
+        if self.settings.get("config.migration.enabled") in (None, ''):
+            self.settings.set("config.migration.enabled",
+                              click.confirm("Are you migrating from the Gluu community edition (VM base)"))
+
+        if self.settings.get("config.migration.enabled"):
+            if self.settings.get("config.migration.migrationDir") in (None, ''):
+                self.settings.set("config.migration.migrationDir",
+                                  click.prompt("Directory holding the community edition migration files",
+                                               default="./ce-migration"))
+
+            if self.settings.get("config.migration.migrationDataFormat") in (None, ''):
+                while self.settings.get("config.migration.migrationDataFormat") not in (
+                "ldif", "couchbase+json", "spanner+avro", "postgresql+json", "mysql+json"):
+                    logger.info("Supported data formats are ldif, couchbase+json, spanner+avro, "
+                                "postgresql+json, and mysql+json ")
+                    self.settings.set("config.migration.migrationDataFormat",
+                                      click.prompt("Migration data-format depending on persistence backend. "
+                                                   "Supported data formats are ldif, couchbase+json, spanner+avro, "
+                                                   "postgresql+json, and mysql+json ",
+                                                   default="ldif"))
         logger.info("You can mount your FQDN certification and key by placing them inside "
-                    "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
+                    "gluu.crt and gluu.key respectively at the same location pygluu-kubernetes.pyz is at.")

@@ -1,13 +1,21 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: ldap-backup
+version: 5.0.0
+kubeVersion: ">=v1.17.0-0"
 description: A backup strategy for LDAP
 type: application
-version: 1.2.16
-appVersion: 5.0.0
+keywords:
+  - LDAP
+  - Backup
+home: https://gluu.org/docs/gluu-server
+sources:
+  - https://github.com/GluuFederation/docker-opendj
+  - https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/ldap-backup
 maintainers:
-- name: moabu
-  email: mo@gluu.org
-
-home: https://www.gluu.org
-
-
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
+appVersion: "5.0.0"

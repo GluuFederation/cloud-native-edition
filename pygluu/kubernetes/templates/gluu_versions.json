@@ -26,8 +26,6 @@
     "oxshibboleth.image.tag": "5.0.0_01",
     "persistence.image.repository": "janssenproject/persistence-loader",
     "persistence.image.tag": "1.0.0_01",
-    "radius.image.repository": "gluufederation/radius",
-    "radius.image.tag": "5.0.0_01",
     "installer-settings.upgrade.image.repository": "gluufederation/upgrade",
     "installer-settings.upgrade.image.tag": "5.0.0_01"
   },
@@ -58,8 +56,6 @@
     "oxshibboleth.image.tag": "5.0.0_dev",
     "persistence.image.repository": "janssenproject/persistence-loader",
     "persistence.image.tag": "1.0.0_dev",
-    "radius.image.repository": "gluufederation/radius",
-    "radius.image.tag": "5.0.0_dev",
     "installer-settings.upgrade.image.repository": "gluufederation/upgrade",
     "installer-settings.upgrade.image.tag": "5.0.0_dev"
   }
