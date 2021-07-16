@@ -1,5 +1,19 @@
 # Changelog
 
+### [1.6.5](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.4...v1.6.5) (2021-07-16)
+
+
+### Bug Fixes
+
+* depreciate radius ([3b3db07](https://www.github.com/GluuFederation/cloud-native-edition/commit/3b3db078789ebbf48bd17ccfb23425d7e0e28247))
+* microk8s workflow ([d7acd2d](https://www.github.com/GluuFederation/cloud-native-edition/commit/d7acd2d2d3aa2fa861273f28948ff81e01c4f2ca))
+* ngnix override paths ([251fb28](https://www.github.com/GluuFederation/cloud-native-edition/commit/251fb28f6a969ad10316ab731b22561fc08da844))
+
+
+### Documentation
+
+* update docs ([c38675d](https://www.github.com/GluuFederation/cloud-native-edition/commit/c38675d1f4ad581a26b8fdf3de273cb83c8782f4))
+
 ### [1.6.4](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.3...v1.6.4) (2021-07-13)
 
 
