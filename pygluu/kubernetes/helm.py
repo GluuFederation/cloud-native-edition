@@ -145,13 +145,13 @@ class Helm(object):
         if self.settings.get("DEPLOYMENT_ARCH") == "eks":
             if self.settings.get("AWS_LB_TYPE") == "nlb":
                 if install_ingress:
-                    nlb_override_values_file = Path("./nginx-ingress/aws/aws-nlb-override-values.yaml").resolve()
+                    nlb_override_values_file = Path("./nginx/aws/aws-nlb-override-values.yaml").resolve()
                     nlb_values = " --values {}".format(nlb_override_values_file)
                     exec_cmd(command + nlb_values)
             else:
                 if self.settings.get("USE_ARN") == "Y":
                     if install_ingress:
-                        elb_override_values_file = Path("./nginx-ingress/aws/aws-elb-override-values.yaml").resolve()
+                        elb_override_values_file = Path("./nginx/aws/aws-elb-override-values.yaml").resolve()
                         elb_file_parser = Parser(elb_override_values_file, True)
                         elb_file_parser["controller"]["service"]["annotations"].update(
                             {"service.beta.kubernetes.io/aws-load-balancer-ssl-cert": self.settings.get("ARN_AWS_IAM")})
@@ -165,12 +165,12 @@ class Helm(object):
 
         if self.settings.get("DEPLOYMENT_ARCH") in ("gke", "aks", "do"):
             if install_ingress:
-                cloud_override_values_file = Path("./nginx-ingress/cloud/cloud-override-values.yaml").resolve()
+                cloud_override_values_file = Path("./nginx/cloud/cloud-override-values.yaml").resolve()
                 cloud_values = " --values {}".format(cloud_override_values_file)
                 exec_cmd(command + cloud_values)
         if self.settings.get("DEPLOYMENT_ARCH") == "local":
             if install_ingress:
-                baremetal_override_values_file = Path("./nginx-ingress/baremetal/baremetal-override-values.yaml").resolve()
+                baremetal_override_values_file = Path("./nginx/baremetal/baremetal-override-values.yaml").resolve()
                 baremetal_values = " --values {}".format(baremetal_override_values_file)
                 exec_cmd(command + baremetal_values)
         if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
