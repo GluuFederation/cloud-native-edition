@@ -37,7 +37,7 @@ Kubernetes: `>=v1.17.0-0`
 | hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.repository | string | `"janssenproject/client-api"` | Image  to use for deploying. |
-| image.tag | string | `"1.0.0_b7"` | Image  tag to use for deploying. |
+| image.tag | string | `"1.0.0_b8"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"exec":{"command":["curl","-k","https://localhost:8443/health-check"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
 | livenessProbe.exec | object | `{"command":["curl","-k","https://localhost:8443/health-check"]}` | Executes the python3 healthcheck. |
 | nodeSelector | object | `{}` |  |

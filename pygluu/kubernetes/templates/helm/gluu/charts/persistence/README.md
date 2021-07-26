@@ -30,7 +30,7 @@ Kubernetes: `>=v1.17.0-0`
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.repository | string | `"gluufederation/persistence"` | Image  to use for deploying. |
-| image.tag | string | `"1.0.0_b7"` | Image  tag to use for deploying. |
+| image.tag | string | `"1.0.0_b8"` | Image  tag to use for deploying. |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | resources | object | `{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource specs. |

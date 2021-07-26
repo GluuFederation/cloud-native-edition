@@ -86,6 +86,7 @@ Kubernetes: `>=v1.17.0-0`
 | configmap.cnSqlDbUser | string | `"jans"` | SQL database username. |
 | configmap.cnSqlPasswordFile | string | `"/etc/jans/conf/sql_password"` | SQL password file holding password from config.configmap.cnSqldbUserPassword . |
 | configmap.cnSqldbUserPassword | string | `"Test1234#"` | SQL password  injected as config.configmap.cnSqlPasswordFile . |
+| configmap.containerMetadataName | string | `"kubernetes"` |  |
 | configmap.lbAddr | string | `""` | Loadbalancer address for AWS if the FQDN is not registered. |
 | countryCode | string | `"US"` | Country code. Used for certificate creation. |
 | dnsConfig | object | `{}` | Add custom dns config |
@@ -93,7 +94,7 @@ Kubernetes: `>=v1.17.0-0`
 | email | string | `"support@gluu.org"` | Email address of the administrator usually. Used for certificate creation. |
 | fullNameOverride | string | `""` |  |
 | image.repository | string | `"janssenproject/configuration-manager"` | Image  to use for deploying. |
-| image.tag | string | `"1.0.0_b7"` | Image  tag to use for deploying. |
+| image.tag | string | `"1.0.0_b8"` | Image  tag to use for deploying. |
 | ldapPassword | string | `"P@ssw0rds"` | LDAP admin password if OpennDJ is used for persistence. |
 | migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
 | migration.enabled | bool | `false` | Boolean flag to enable migration from CE |

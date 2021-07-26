@@ -107,7 +107,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -168,7 +168,7 @@ auth-server-key-rotation:
     # -- Image  to use for deploying.
     repository: janssenproject/certmanager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Auth server key rotation keys life in hours
   keysLife: 48
   # -- Resource specs.
@@ -289,7 +289,7 @@ client-api:
     # -- Image  to use for deploying.
     repository: janssenproject/client-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -475,7 +475,7 @@ config:
     # -- Image  to use for deploying.
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- LDAP admin password if OpennDJ is used for persistence.
   ldapPassword: P@ssw0rds
   # -- Organization name. Used for certificate creation.
@@ -544,7 +544,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -652,7 +652,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: janssenproject/fido2
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1237,7 +1237,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Resource specs.
   resources:
     limits:
@@ -1285,7 +1285,7 @@ scim:
     # -- Image  to use for deploying.
     repository: janssenproject/scim
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b7
+    tag: 1.0.0_b8
   # -- Service replica number.
   replicas: 1
   resources:

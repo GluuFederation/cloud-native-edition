@@ -8,3 +8,5 @@ buttons:
   - b1:
     text: Instructions
     href: /cloud-native-edition/pygluu/kubernetes/templates/helm
+gems:
+  - jekyll-seo-tag
