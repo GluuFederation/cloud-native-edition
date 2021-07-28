@@ -1,9 +1,10 @@
+{{ if .Values.ingress.enabled -}}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-{{ if .Values.ingress.enabled -}}
+{{ if .Values.ingress.adminUiEnabled -}}
 {{- $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-base
@@ -39,12 +40,14 @@ spec:
               serviceName: oxtrust
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.openidConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-openid-config
@@ -79,12 +82,14 @@ spec:
               serviceName: oxauth
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.uma2ConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-uma2-config
@@ -119,12 +124,14 @@ spec:
               serviceName: oxauth
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.uma2ConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webfinger
@@ -160,12 +167,14 @@ spec:
               servicePort: 8080
 
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.webdiscoveryEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webdiscovery
@@ -200,12 +209,14 @@ spec:
               serviceName: oxauth
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.scimConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-scim-config
@@ -240,12 +251,14 @@ spec:
               serviceName: scim
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.scimEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu-scim
@@ -279,12 +292,14 @@ spec:
               servicePort: 8080
 
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.u2fConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-u2f-config
@@ -319,12 +334,14 @@ spec:
               serviceName: oxauth
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.fido2ConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-fido2-configuration
@@ -359,12 +376,14 @@ spec:
               serviceName: fido2
               servicePort: 8080
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.authServerEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu
@@ -398,12 +417,14 @@ spec:
               servicePort: 8080
 
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.adminUiEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
@@ -449,12 +470,14 @@ spec:
               servicePort: 8090
 
   {{- end }}
+{{- end }}
 
 ---
 
+{{ if .Values.ingress.casaEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
@@ -486,4 +509,6 @@ spec:
               serviceName: casa
               servicePort: 8080
   {{- end }}
+{{- end }}
+
 {{- end -}}
