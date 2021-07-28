@@ -242,13 +242,13 @@ class Helm(object):
         if self.settings.get("ENABLE_FIDO2") == "Y":
             values_file_parser["global"]["fido2"]["enabled"] = True
             values_file_parser["fido2"]["replicas"] = self.settings.get("FIDO2_REPLICAS")
-            values_file_parser["nginx-ingress"]["ingress"]["ingress"]["fido2ConfigEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["fido2ConfigEnabled"] = True
 
         values_file_parser["global"]["scim"]["enabled"] = False
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True
             values_file_parser["scim"]["replicas"] = self.settings.get("SCIM_REPLICAS")
-            values_file_parser["nginx-ingress"]["ingress"]["ingress"]["scimEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["scimEnabled"] = True
         if self.settings.get("INSTALL_JACKRABBIT") == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
             values_file_parser["config"]["configmap"]["gluuJackrabbitUrl"] = self.settings.get("JACKRABBIT_URL")
@@ -364,7 +364,7 @@ class Helm(object):
         if self.settings.get("ENABLE_CASA_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuCasaEnabled"] = True
             values_file_parser["config"]["configmap"]["gluuSyncCasaManifests"] = True
-            values_file_parser["nginx-ingress"]["ingress"]["ingress"]["casaEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["casaEnabled"] = True
 
         if self.settings.get("ENABLE_OXPASSPORT_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
