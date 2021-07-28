@@ -9,7 +9,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-base
   labels:
-    app: oxtrust
+    app: {{ $fullName }}-oxtrust
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.adminUiLabels }}
+{{ toYaml .Values.ingress.adminUiLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
@@ -52,7 +58,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-openid-config
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.openidConfigLabels }}
+{{ toYaml .Values.ingress.openidConfigLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -94,7 +106,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-uma2-config
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.uma2ConfigLabels }}
+{{ toYaml .Values.ingress.uma2ConfigLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -128,7 +146,7 @@ spec:
 
 ---
 
-{{ if .Values.ingress.uma2ConfigEnabled -}}
+{{ if .Values.ingress.webfingerEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1beta1
@@ -136,7 +154,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-webfinger
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.webfingerLabels }}
+{{ toYaml .Values.ingress.webfingerLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -179,7 +203,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-webdiscovery
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.webdiscoveryLabels }}
+{{ toYaml .Values.ingress.webdiscoveryLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -221,7 +251,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-scim-config
   labels:
-    app: scim
+    app: {{ $fullName }}-scim
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.scimConfigLabels }}
+{{ toYaml .Values.ingress.scimConfigLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -263,7 +299,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu-scim
   labels:
-    app: scim
+    app: {{ $fullName }}-scim
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.scimLabels }}
+{{ toYaml .Values.ingress.scimLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.org/ssl-services: "scim"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
@@ -304,7 +346,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-u2f-config
   labels:
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.u2fConfigLabels }}
+{{ toYaml .Values.ingress.u2fConfigLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -346,7 +394,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-fido2-configuration
   labels:
-    app: fido2
+    app: {{ $fullName }}-fido2
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.fido2ConfigLabels }}
+{{ toYaml .Values.ingress.fido2ConfigLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -388,7 +442,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxauth
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.authServerLabels }}
+{{ toYaml .Values.ingress.authServerLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.org/ssl-services: "oxauth"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
@@ -429,7 +489,13 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
   labels: 
-    app: oxauth
+    app: {{ $fullName }}-oxtrust-shib-passport
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.adminUiLabels }}
+{{ toYaml .Values.ingress.adminUiLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.org/ssl-services: "oxtrust"
     nginx.ingress.kubernetes.io/app-root: "/identity"
@@ -481,6 +547,14 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
+  labels: 
+    app: {{ $fullName }}-oxtrust-shib-passport
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.casaLabels }}
+{{ toYaml .Values.ingress.casaLabels | indent 4 }}
+{{- end }}
   annotations:
     nginx.org/ssl-services: "casa"
     nginx.ingress.kubernetes.io/rewrite-target: /casa
