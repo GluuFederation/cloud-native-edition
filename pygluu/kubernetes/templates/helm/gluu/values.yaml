@@ -185,7 +185,7 @@ nginx-ingress:
     # -- Auth server config ingress resource labels. key app is taken
     authServerLabels: { }
     # -- Enable casa endpoints /casa
-    casaEnabled: true
+    casaEnabled: false
     # -- Casa ingress resource labels. key app is taken
     casaLabels: { }
     # -- Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"}
@@ -228,7 +228,7 @@ jackrabbit:
     size: 5Gi
   image:
     repository: gluufederation/jackrabbit
-    tag: 4.2.3_03
+    tag: 4.2.3_04
     pullPolicy: Always
   resources:
     limits:
@@ -346,7 +346,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.3_08
+    tag: 4.2.3_09
     pullPolicy: Always
   resources:
     limits:
@@ -377,7 +377,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.3_04
+    tag: 4.2.3_05
     pullPolicy: Always
   resources:
     limits:
@@ -408,7 +408,7 @@ fido2:
   replicas: 1
   image:
     repository: gluufederation/fido2
-    tag: 4.2.3_02
+    tag: 4.2.3_03
     pullPolicy: Always
   resources:
     limits:
@@ -439,7 +439,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.3_04
+    tag: 4.2.3_05
     pullPolicy: Always
   resources:
     limits:
@@ -501,7 +501,7 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.2.3_02
+    tag: 4.2.3_03
     pullPolicy: Always
   resources:
     requests:
@@ -563,7 +563,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.3_07
+    tag: 4.2.3_08
     pullPolicy: Always
   resources:
     limits:

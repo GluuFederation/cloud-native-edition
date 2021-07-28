@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.5.8](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.7...v1.5.8) (2021-07-28)
+
+
+### Bug Fixes
+
+* add label injection to ingress defs  ([f4df42d6b4](https://www.github.com/GluuFederation/cloud-native-edition/commit/f4df42d6b405929665d02ef6a8849595f40e4747))
+
+
 ### [1.5.7](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.6...v1.5.7) (2021-06-24)
 
 
