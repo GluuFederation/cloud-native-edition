@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
     Common labels
 */}}
 {{- define "cr-rotate.labels" -}}
-app: {{ include "cr-rotate.name" . }}
+app: {{ .Release.Name }}-{{ include "cr-rotate.name" . }}
 helm.sh/chart: {{ include "cr-rotate.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

@@ -6,7 +6,7 @@ metadata:
   name: {{ .Values.service.crRotateServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "cr-rotate.name" . }}
+    app: {{ .Release.Name }}-{{ include "cr-rotate.name" . }}
     chart: {{ include "cr-rotate.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -16,5 +16,5 @@ spec:
       protocol: TCP
       name: {{ .Values.service.name }}
   selector:
-    app: {{ include "cr-rotate.name" . }}
+    app: {{ .Release.Name }}-{{ include "cr-rotate.name" . }}
     release: {{ .Release.Name }}

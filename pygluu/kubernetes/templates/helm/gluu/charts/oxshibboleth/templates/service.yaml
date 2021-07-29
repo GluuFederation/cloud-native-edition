@@ -18,5 +18,5 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       name: {{ .Values.service.name }}
   selector:
-    app: {{ include "oxshibboleth.name" . }}
+    app: {{ .Release.Name }}-{{ include "oxshibboleth.name" . }}
     release: {{ .Release.Name }}

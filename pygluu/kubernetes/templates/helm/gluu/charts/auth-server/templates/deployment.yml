@@ -12,12 +12,12 @@ spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "auth-server.name" . }}
+      app: {{ .Release.Name }}-{{ include "auth-server.name" . }}
   template:
     metadata:
       labels:
         APP_NAME: auth-server
-        app: {{ include "auth-server.name" . }}
+        app: {{ .Release.Name }}-{{ include "auth-server.name" . }}
       {{- if .Values.global.istio.ingress }}
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"

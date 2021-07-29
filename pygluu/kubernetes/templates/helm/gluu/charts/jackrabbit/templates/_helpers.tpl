@@ -50,7 +50,7 @@ Create chart name and version as used by the chart label.
      Common labels
 */}}
 {{- define "jackrabbit.labels" -}}
-app: {{ include "jackrabbit.name" . }}
+app: {{ .Release.Name }}-{{ include "jackrabbit.name" . }}
 helm.sh/chart: {{ include "jackrabbit.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

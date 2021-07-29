@@ -11,12 +11,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ include "cr-rotate.name" . }}
+      app: {{ .Release.Name }}-{{ include "cr-rotate.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "cr-rotate.name" . }}
+        app: {{ .Release.Name }}-{{ include "cr-rotate.name" . }}
         release: {{ .Release.Name }}
         APP_NAME: cr-rotate
     spec:

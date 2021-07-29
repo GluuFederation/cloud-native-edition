@@ -13,4 +13,4 @@ spec:
       name: {{ .Values.service.name }}
   clusterIP: None
   selector:
-    app: {{ include "jackrabbit.name" . }}
+    app: {{ .Release.Name }}-{{ include "jackrabbit.name" . }}

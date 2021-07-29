@@ -10,13 +10,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ include "jackrabbit.name" . }}
+      app: {{ .Release.Name }}-{{ include "jackrabbit.name" . }}
   serviceName: {{ include "jackrabbit.name" . }}
   replicas: {{ .Values.replicas }} 
   template:
     metadata:
       labels:
-        app: {{ include "jackrabbit.name" . }}
+        app: {{ .Release.Name }}-{{ include "jackrabbit.name" . }}
       {{- if .Values.global.istio.ingress }}
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"

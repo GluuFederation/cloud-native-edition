@@ -25,5 +25,5 @@ spec:
   clusterIP: None
   {{- end }}
   selector:
-    app: {{ include "opendj.name" . }}
+    app: {{ .Release.Name }}-{{ include "opendj.name" . }}
 {{- end }}

@@ -13,13 +13,13 @@ spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "oxshibboleth.name" . }}
+      app: {{ .Release.Name }}-{{ include "oxshibboleth.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
         APP_NAME: oxshibboleth
-        app: {{ include "oxshibboleth.name" . }}
+        app: {{ .Release.Name }}-{{ include "oxshibboleth.name" . }}
         release: {{ .Release.Name }}
       {{- if .Values.global.istio.ingress }}
       annotations:

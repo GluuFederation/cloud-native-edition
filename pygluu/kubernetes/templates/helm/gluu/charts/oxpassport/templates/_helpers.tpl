@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
      Common labels
 */}}
 {{- define "oxpassport.labels" -}}
-app: {{ include "oxpassport.name" . }}
+app: {{ .Release.Name }}-{{ include "oxpassport.name" . }}
 helm.sh/chart: {{ include "oxpassport.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

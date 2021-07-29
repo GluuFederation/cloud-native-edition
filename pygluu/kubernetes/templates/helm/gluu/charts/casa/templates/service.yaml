@@ -15,5 +15,5 @@ spec:
     - port: {{ .Values.service.port }}
       name: {{ .Values.service.name }}
   selector:
-    app: {{ include "casa.name" . }}
+    app: {{ .Release.Name }}-{{ include "casa.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

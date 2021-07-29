@@ -14,7 +14,7 @@ spec:
       name: {{ include "persistence.name" . }}
       labels:
         APP_NAME: persistence-loader
-        app: {{ include "persistence.name" . }}
+        app: {{ .Release.Name }}-{{ include "persistence.name" . }}
     spec:
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
     {{- with .Values.dnsConfig }}

@@ -11,13 +11,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ include "opendj.name" . }}
+      app: {{ .Release.Name }}-{{ include "opendj.name" . }}
   serviceName: {{ include "opendj.name" . }}
   replicas: {{ .Values.replicas }}
   template:
     metadata:
       labels:
-        app: {{ include "opendj.name" . }}
+        app: {{ .Release.Name }}-{{ include "opendj.name" . }}
       {{- if .Values.global.istio.ingress }}
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"

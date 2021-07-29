@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
      Common labels
 */}}
 {{- define "oxshibboleth.labels" -}}
-app: {{ include "oxshibboleth.name" . }}
+app: {{ .Release.Name }}-{{ include "oxshibboleth.name" . }}
 helm.sh/chart: {{ include "oxshibboleth.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

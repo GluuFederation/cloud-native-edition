@@ -12,13 +12,13 @@ spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "casa.name" . }}
+      app: {{ .Release.Name }}-{{ include "casa.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
         APP_NAME: casa
-        app: {{ include "casa.name" . }}
+        app: {{ .Release.Name }}-{{ include "casa.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
       {{- if .Values.global.istio.ingress }}
       annotations:
