@@ -25,7 +25,7 @@ class PromptConfirmSettings:
         hidden_settings = ["NODES_IPS", "NODES_ZONES", "NODES_NAMES",
                            "COUCHBASE_PASSWORD", "LDAP_PW", "ADMIN_PW", "REDIS_PW",
                            "COUCHBASE_SUBJECT_ALT_NAME", "JACKRABBIT_ADMIN_PASSWORD",
-                           "JACKRABBIT_PG_PASSWORD", "GOOGLE_SERVICE_ACCOUNT_BASE64"]
+                           "JACKRABBIT_PG_PASSWORD", "GOOGLE_SERVICE_ACCOUNT_BASE64", "GLUU_SQL_DB_PASSWORD"]
 
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.db.items():

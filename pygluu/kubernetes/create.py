@@ -89,9 +89,13 @@ def main():
         timeout = 0
     try:
         if args.subparser_name == "install" or args.subparser_name == "install-no-wait":
-            logger.warning("Kustomize installation method is being depreciated and will no longer be supported "
-                           "for Gluu > 4.3. Please consider using option helm-install instead.")
-            time.sleep(10)
+            start = time.time()
+            end = 0
+            while end - start < 20:
+                logger.warning("Kustomize installation method is being depreciated and will no longer be supported "
+                               "for Gluu > 4.3. Please consider cancelling and using option helm-install instead.")
+                time.sleep(5)
+                end = time.time()
             kustomize = Kustomize(timeout)
             kustomize.uninstall()
             kustomize.install()
