@@ -50,7 +50,7 @@ class PromptSQL:
                               confirm_yesno("Install SQL dialect from Bitnamis charts", default=True))
 
         if self.settings.get("GLUU_INSTALL_SQL") == "Y":
-
+            self.settings.set("GLUU_SQL_DB_PORT", 3306)
             if not self.settings.get("GLUU_SQL_DB_NAMESPACE"):
                 self.settings.set("GLUU_SQL_DB_NAMESPACE",
                                   click.prompt("Please enter a namespace for the SQL server", default="sql"))
