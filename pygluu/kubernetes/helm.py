@@ -215,6 +215,8 @@ class Helm(object):
         if self.settings.get("DEPLOYMENT_ARCH") in ("microk8s", "minikube") \
                 or self.settings.get("TEST_ENVIRONMENT") == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
+        if self.settings.get("DEPLOYMENT_ARCH") == "microk8s":
+            values_file_parser["nginx-ingress"]["ingress"]["additionalAnnotations"]["kubernetes.io/ingress.class"] = "public"
         values_file_parser["config"]["configmap"]["lbAddr"] = self.settings.get("LB_ADD")
         values_file_parser["global"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
