@@ -1,5 +1,15 @@
 # Changelog
 
+### [1.6.6](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.5...v1.6.6) (2021-08-02)
+
+
+### Bug Fixes
+
+* add label injection to ingress defs ([7deb1ba](https://www.github.com/GluuFederation/cloud-native-edition/commit/7deb1ba897479bbd9ce3e5c556ec0df5e9e22d7c))
+* adjust dev images tags ([83d8317](https://www.github.com/GluuFederation/cloud-native-edition/commit/83d83176eafaa203734d5c3d2e281df70b4fab5b))
+* autoset mysql port when installed through pygluu ([da79b38](https://www.github.com/GluuFederation/cloud-native-edition/commit/da79b38e752cd69ad07cec5e345cb6cb76be0fe5))
+* set ingress class to public whenn using microk8s in pygluu ([70f90a7](https://www.github.com/GluuFederation/cloud-native-edition/commit/70f90a75767c5e3f9e9ee4adfe73d9217dfae843))
+
 ### [1.6.5](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.4...v1.6.5) (2021-07-16)
 
 
