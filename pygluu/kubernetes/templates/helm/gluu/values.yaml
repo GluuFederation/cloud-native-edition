@@ -317,14 +317,11 @@ client-api:
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the auth server if needed.
   readinessProbe:
-    exec:
-      command:
-        - curl
-        - -k
-        - https://localhost:8443/health-check
-    initialDelaySeconds: 25
-    periodSeconds: 25
+    tcpSocket:
+      port: 1636
+    initialDelaySeconds: 60
     timeoutSeconds: 5
+    periodSeconds: 25
   # -- Configure any additional volumes that need to be attached to the pod
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
