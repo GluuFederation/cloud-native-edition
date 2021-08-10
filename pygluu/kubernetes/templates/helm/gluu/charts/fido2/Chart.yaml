@@ -8,4 +8,4 @@ maintainers:
 email: support@gluu.org
 description: Helm chart for fido2 service
 name: fido2
-version: 1.5.8
+version: 1.5.9
