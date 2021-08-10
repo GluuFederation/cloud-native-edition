@@ -107,6 +107,23 @@
 
 * release 1.6.0 ([bad3c37](https://www.github.com/GluuFederation/cloud-native-edition/commit/bad3c3720d70ad83ffff8ea6526b300009a5ba6d))
 
+### [1.5.9](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.8...v1.5.9) (2021-08-10)
+
+
+### Bug Fixes
+
+* add secondary ldap replication  ([3e18bb8da](https://www.github.com/GluuFederation/cloud-native-edition/commit/3e18bb8da52534f460a9bb03ae58f959efe716d9))
+* add image secrets  ([1620a8adaa](https://www.github.com/GluuFederation/cloud-native-edition/commit/1620a8adaa14c2633d6244690dc9b01a5126b173))
+* opendj service name  ([2b5f532a4c](https://www.github.com/GluuFederation/cloud-native-edition/commit/2b5f532a4cf9fecae003652084ae31d310c305c9))
+* remove duplicated env  ([b5ee9a44](https://www.github.com/GluuFederation/cloud-native-edition/commit/b5ee9a4424810c41babf582697a9a66af3b368a8))
+
+
+### [1.5.8](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.7...v1.5.8) (2021-07-28)
+
+
+### Bug Fixes
+
+* add label injection to ingress defs  ([f4df42d6b4](https://www.github.com/GluuFederation/cloud-native-edition/commit/f4df42d6b405929665d02ef6a8849595f40e4747))
 
 ### [1.5.7](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.5.6...v1.5.7) (2021-06-24)
 
