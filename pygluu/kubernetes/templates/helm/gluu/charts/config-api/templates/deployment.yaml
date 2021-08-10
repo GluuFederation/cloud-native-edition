@@ -23,6 +23,15 @@ spec:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       {{- end }}
     spec:
+    {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+    {{- with .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml . | indent 8 }}
+    {{- end }}
       containers:
         - name: {{ include "config-api.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -30,6 +30,8 @@ image:
   repository: gluufederation/opendj
   # -- Image  tag to use for deploying.
   tag: 5.0.0_dev
+  # -- Image Pull Secrets
+  pullSecrets: [ ]
 multiCluster:
   # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
   enabled: false

@@ -108,6 +108,8 @@ auth-server:
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -169,6 +171,8 @@ auth-server-key-rotation:
     repository: janssenproject/certmanager
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours
   keysLife: 48
   # -- Resource specs.
@@ -219,6 +223,8 @@ casa:
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -290,6 +296,8 @@ client-api:
     repository: janssenproject/client-api
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -473,6 +481,8 @@ config:
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- LDAP admin password if OpennDJ is used for persistence.
   ldapPassword: P@ssw0rds
   # -- Organization name. Used for certificate creation.
@@ -542,6 +552,8 @@ config-api:
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -599,6 +611,8 @@ cr-rotate:
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Resource specs.
   resources:
     limits:
@@ -650,6 +664,8 @@ fido2:
     repository: janssenproject/fido2
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -863,6 +879,8 @@ jackrabbit:
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1013,6 +1031,8 @@ opendj:
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   multiCluster:
     # -- Enable OpenDJ multiCluster mode. This flag enabbles loading keys under `opendj.multiCluster`
     enabled: false
@@ -1131,6 +1151,8 @@ oxpassport:
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number
   replicas: 1
   # -- Resource specs.
@@ -1204,6 +1226,8 @@ oxshibboleth:
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
     tag: 5.0.0_dev
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1265,6 +1289,8 @@ persistence:
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Resource specs.
   resources:
     limits:
@@ -1313,6 +1339,8 @@ scim:
     repository: janssenproject/scim
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   resources:

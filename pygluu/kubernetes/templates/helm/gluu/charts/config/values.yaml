@@ -146,6 +146,8 @@ image:
   repository: janssenproject/configuration-manager
   # -- Image  tag to use for deploying.
   tag: 1.0.0_b8
+  # -- Image Pull Secrets
+  pullSecrets: [ ]
 # -- LDAP admin password if OpennDJ is used for persistence.
 ldapPassword: P@ssw0rds
 # -- Organization name. Used for certificate creation.

@@ -20,6 +20,10 @@ spec:
         release: {{ .Release.Name }}
         APP_NAME: cr-rotate
     spec:
+    {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
     {{- with .Values.dnsConfig }}
       dnsConfig:
