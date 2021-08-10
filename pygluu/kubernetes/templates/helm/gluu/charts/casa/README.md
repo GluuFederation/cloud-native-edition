@@ -36,9 +36,9 @@ Kubernetes: `>=v1.17.0-0`
 | hpa.minReplicas | int | `1` |  |
 | hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/casa"` | Image  to use for deploying. |
 | image.tag | string | `"5.0.0_dev"` | Image  tag to use for deploying. |
-| imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{"httpGet":{"path":"/casa/health-check","port":"http-casa"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for casa if needed. |
 | livenessProbe.httpGet.path | string | `"/casa/health-check"` | http liveness probe endpoint |
 | nameOverride | string | `""` |  |

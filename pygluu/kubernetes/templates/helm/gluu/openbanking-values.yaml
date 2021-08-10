@@ -29,6 +29,8 @@ auth-server:
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -157,6 +159,8 @@ config:
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Organization name. Used for certificate creation.
   orgName: Gluu
   # -- Redis admin password if `config.configmap.cnCacheType` is set to `REDIS`.
@@ -215,6 +219,8 @@ config-api:
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -241,7 +247,7 @@ config-api:
   readinessProbe:
     # -- http readiness probe endpoint
     httpGet:
-      path: jans-config-api/api/v1/health/ready
+      path: /jans-config-api/api/v1/health/ready
       port: 8074
     initialDelaySeconds: 25
     periodSeconds: 25
@@ -441,6 +447,8 @@ persistence:
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
     tag: 1.0.0_b8
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Resource specs.
   resources:
     limits:

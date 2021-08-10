@@ -93,6 +93,7 @@ Kubernetes: `>=v1.17.0-0`
 | dnsPolicy | string | `""` | Add custom dns policy |
 | email | string | `"support@gluu.org"` | Email address of the administrator usually. Used for certificate creation. |
 | fullNameOverride | string | `""` |  |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"janssenproject/configuration-manager"` | Image  to use for deploying. |
 | image.tag | string | `"1.0.0_b8"` | Image  tag to use for deploying. |
 | ldapPassword | string | `"P@ssw0rds"` | LDAP admin password if OpennDJ is used for persistence. |

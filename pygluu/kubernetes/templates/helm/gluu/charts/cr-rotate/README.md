@@ -30,6 +30,7 @@ Kubernetes: `>=v1.17.0-0`
 | dnsPolicy | string | `""` | Add custom dns policy |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/cr-rotate"` | Image  to use for deploying. |
 | image.tag | string | `"5.0.0_dev"` | Image  tag to use for deploying. |
 | nameOverride | string | `""` |  |
