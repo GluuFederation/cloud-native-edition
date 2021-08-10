@@ -271,6 +271,8 @@ config:
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
@@ -403,6 +405,8 @@ jackrabbit:
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -487,6 +491,8 @@ opendj:
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   multiCluster:
     # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
     enabled: false
@@ -594,6 +600,8 @@ persistence:
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Resource specs.
   resources:
     limits:
@@ -642,6 +650,8 @@ oxauth:
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -720,6 +730,8 @@ oxtrust:
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -799,6 +811,8 @@ fido2:
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -873,6 +887,8 @@ scim:
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   resources:
@@ -947,6 +963,8 @@ oxd-server:
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1022,6 +1040,8 @@ casa:
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1097,6 +1117,8 @@ oxpassport:
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number
   replicas: 1
   # -- Resource specs.
@@ -1174,6 +1196,8 @@ oxshibboleth:
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Service replica number.
   replicas: 1
   # -- Resource specs.
@@ -1239,6 +1263,8 @@ cr-rotate:
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Resource specs.
   resources:
     limits:
@@ -1284,6 +1310,8 @@ oxauth-key-rotation:
     repository: gluufederation/certmanager
     # -- Image  tag to use for deploying.
     tag: 4.3.0_b1
+    # -- Image Pull Secrets
+    pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours
   keysLife: 48
   # -- Resource specs.

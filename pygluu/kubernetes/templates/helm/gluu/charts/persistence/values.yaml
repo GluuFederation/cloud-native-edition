@@ -20,6 +20,8 @@ image:
   repository: gluufederation/persistence
   # -- Image  tag to use for deploying.
   tag: 4.3.0_b1
+  # -- Image Pull Secrets
+  pullSecrets: [ ]
 # -- Resource specs.
 resources:
   limits:

@@ -30,6 +30,8 @@ image:
   repository: gluufederation/oxd-server
   # -- Image  tag to use for deploying.
   tag: 4.3.0_b1
+  # -- Image Pull Secrets
+  pullSecrets: [ ]
 # -- Service replica number.
 replicas: 1
 # -- Resource specs.
