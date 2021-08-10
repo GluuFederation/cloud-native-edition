@@ -84,14 +84,6 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-global-user-custom-envs
         {{- end }}
-        env:
-          - name: GLUU_SERF_ADVERTISE_ADDR
-            value: {{ .Values.multiCluster.serfAdvertiseAddr | quote }}
-          - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
-            value: {{ index .Values "ports" "tcp-admin" "nodePort" | quote }}
-          - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT
-            value: {{ index .Values "ports" "tcp-ldaps" "nodePort" | quote }}
-          - name: GLUU_LDAP_ADVERTISE_REPLICATION_PORT
         ports:
         {{- range $key, $value := .Values.ports }}
           - containerPort: {{ $value.targetPort }}
