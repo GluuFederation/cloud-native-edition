@@ -548,7 +548,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
   labels: 
-    app: {{ $fullName }}-oxtrust-shib-passport
+    app: {{ $fullName }}-casa
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
 {{- end }}
