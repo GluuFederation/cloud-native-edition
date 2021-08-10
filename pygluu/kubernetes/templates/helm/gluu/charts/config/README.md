@@ -95,7 +95,7 @@ Kubernetes: `>=v1.17.0-0`
 | fullNameOverride | string | `""` |  |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"janssenproject/configuration-manager"` | Image  to use for deploying. |
-| image.tag | string | `"1.0.0_b8"` | Image  tag to use for deploying. |
+| image.tag | string | `"1.0.0_b9"` | Image  tag to use for deploying. |
 | ldapPassword | string | `"P@ssw0rds"` | LDAP admin password if OpennDJ is used for persistence. |
 | migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
 | migration.enabled | bool | `false` | Boolean flag to enable migration from CE |

@@ -28,7 +28,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b8
+    tag: 1.0.0_b9
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -158,7 +158,7 @@ config:
     # -- Image  to use for deploying.
     repository: janssenproject/configuration-manager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b8
+    tag: 1.0.0_b9
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Organization name. Used for certificate creation.
@@ -218,7 +218,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b8
+    tag: 1.0.0_b9
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -446,7 +446,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b8
+    tag: 1.0.0_b9
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
