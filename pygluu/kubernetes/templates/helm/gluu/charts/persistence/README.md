@@ -29,6 +29,7 @@ Kubernetes: `>=v1.17.0-0`
 | dnsPolicy | string | `""` | Add custom dns policy |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/persistence"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | imagePullSecrets | list | `[]` |  |

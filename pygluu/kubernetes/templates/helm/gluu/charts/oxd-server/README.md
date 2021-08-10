@@ -35,6 +35,7 @@ Kubernetes: `>=v1.17.0-0`
 | hpa.minReplicas | int | `1` |  |
 | hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/oxd-server"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"exec":{"command":["curl","-k","https://localhost:8443/health-check"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |

@@ -35,6 +35,7 @@ Kubernetes: `>=v1.17.0-0`
 | hpa.minReplicas | int | `1` |  |
 | hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
+| image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/scim"` | Image  to use for deploying. |
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for SCIM if needed. |
