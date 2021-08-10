@@ -64,6 +64,16 @@ spec:
         env:
           {{- include "opendj.usr-envs" . | indent 12 }}
           {{- include "opendj.usr-secret-envs" . | indent 12 }}
+        {{- if .Values.multiCluster.enabled }}
+          - name: GLUU_SERF_ADVERTISE_ADDR
+            value: {{ .Values.multiCluster.serfAdvertiseAddr | quote }}
+          - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
+            value: {{ index .Values "ports" "tcp-admin" "nodePort" | quote }}
+          - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT
+            value: {{ index .Values "ports" "tcp-ldaps" "nodePort" | quote }}
+          - name: GLUU_LDAP_ADVERTISE_REPLICATION_PORT
+            value: {{ index .Values "ports" "tcp-repl" "nodePort" | quote }}
+        {{- end }}
         lifecycle:
           preStop:
             exec:
@@ -78,17 +88,6 @@ spec:
         {{ if .Values.global.usrEnvs.normal }}
         - configMapRef:
             name: {{ .Release.Name }}-global-user-custom-envs
-        {{- end }}
-        {{- if .Values.multiCluster.enabled }}
-        env:
-          - name: GLUU_SERF_ADVERTISE_ADDR
-            value: {{ .Values.multiCluster.serfAdvertiseAddr | quote }}
-          - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
-            value: {{ index .Values "ports" "tcp-admin" "nodePort" | quote }}
-          - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT
-            value: {{ index .Values "ports" "tcp-ldaps" "nodePort" | quote }}
-          - name: GLUU_LDAP_ADVERTISE_REPLICATION_PORT
-            value: {{ index .Values "ports" "tcp-repl" "nodePort" | quote }}
         {{- end }}
         ports:
         {{- range $key, $value := .Values.ports }}
