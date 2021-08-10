@@ -26,6 +26,7 @@ image:
   repository: gluufederation/opendj
   tag: 4.2.3_01
   pullPolicy: IfNotPresent
+  pullSecrets: []
 
 livenessProbe:
   exec:

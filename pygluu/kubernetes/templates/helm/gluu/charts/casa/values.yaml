@@ -13,6 +13,7 @@ image:
   repository: gluufederation/casa
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 
 
 livenessProbe:
@@ -30,7 +31,6 @@ readinessProbe:
   periodSeconds: 30
   timeoutSeconds: 5
 
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 

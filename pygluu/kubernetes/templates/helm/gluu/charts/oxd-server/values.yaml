@@ -16,6 +16,7 @@ image:
   repository: gluufederation/oxd-server
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""

@@ -11,6 +11,7 @@ image:
   repository: gluufederation/oxauth
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 
 replicas: 1
 #Resources for the deployment

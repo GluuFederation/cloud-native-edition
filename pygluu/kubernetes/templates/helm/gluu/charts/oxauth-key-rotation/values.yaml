@@ -12,6 +12,7 @@ image:
   repository: gluufederation/certmanager
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 keysLife: 48
 nameOverride: ""
 fullnameOverride: ""

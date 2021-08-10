@@ -94,6 +94,7 @@ fullNameOverride: ""
 image:
   repository: gluufederation/config-init
   tag: 4.2.3_01
+  pullSecrets: []
 
 
 volumes: []

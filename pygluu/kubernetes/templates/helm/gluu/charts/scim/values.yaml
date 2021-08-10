@@ -12,6 +12,7 @@ image:
   repository: gluufederation/scim
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 
 #Resources for the deployment
 requests:

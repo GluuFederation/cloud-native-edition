@@ -133,6 +133,7 @@ config:
   image:
     repository: gluufederation/config-init
     tag: 4.2.3_03
+    pullSecrets: []
   volumes: []
     # Configure any additional volumes that need to be attached to the pod
   volumeMounts: []
@@ -230,6 +231,7 @@ jackrabbit:
     repository: gluufederation/jackrabbit
     tag: 4.2.3_04
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1500m
@@ -268,6 +270,7 @@ opendj:
     repository: gluufederation/opendj
     tag: 4.2.3_02
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1500m
@@ -327,6 +330,7 @@ persistence:
     repository: gluufederation/persistence
     tag: 4.2.3_03
     pullPolicy: Always
+    pullSecrets: []
   resources: {}
   volumes: []
     # Configure any additional volumes that need to be attached to the pod
@@ -348,6 +352,7 @@ oxauth:
     repository: gluufederation/oxauth
     tag: 4.2.3_09
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 2500m
@@ -379,6 +384,7 @@ oxtrust:
     repository: gluufederation/oxtrust
     tag: 4.2.3_05
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1000m
@@ -410,6 +416,7 @@ fido2:
     repository: gluufederation/fido2
     tag: 4.2.3_03
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 500m
@@ -441,6 +448,7 @@ scim:
     repository: gluufederation/scim
     tag: 4.2.3_05
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1000m
@@ -472,6 +480,7 @@ oxd-server:
     repository: gluufederation/oxd-server
     tag: 4.2.3_02
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1000m
@@ -503,6 +512,7 @@ casa:
     repository: gluufederation/casa
     tag: 4.2.3_03
     pullPolicy: Always
+    pullSecrets: []
   resources:
     requests:
       memory: "500Mi"
@@ -534,6 +544,7 @@ oxpassport:
     repository: gluufederation/oxpassport
     tag: 4.2.3_04
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 700m
@@ -565,6 +576,7 @@ oxshibboleth:
     repository: gluufederation/oxshibboleth
     tag: 4.2.3_08
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 1000m
@@ -596,6 +608,7 @@ radius:
     repository: gluufederation/radius
     tag: 4.2.3_02
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 700m
@@ -626,6 +639,7 @@ cr-rotate:
     repository: gluufederation/cr-rotate
     tag: 4.2.3_04
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 200m
@@ -651,6 +665,7 @@ oxauth-key-rotation:
     repository: gluufederation/certmanager
     tag: 4.2.3_07
     pullPolicy: Always
+    pullSecrets: []
   resources:
     limits:
       cpu: 300m

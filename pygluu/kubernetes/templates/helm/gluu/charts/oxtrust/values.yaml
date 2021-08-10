@@ -14,6 +14,7 @@ image:
   repository: gluufederation/oxtrust
   tag: 4.2.3_01
   pullPolicy: Always
+  pullSecrets: []
 
 service:
   name: http-oxtrust
