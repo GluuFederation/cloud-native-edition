@@ -17,7 +17,11 @@ spec:
       app: {{ include "opendj.name" . }}
       {{- end }}
   serviceName: {{ include "opendj.name" . }}
+  {{- if .Values.multiCluster.enabled }}
+  replicas: 1
+  {{- else }}
   replicas: {{ .Values.replicas }}
+  {{- end }}
   template:
     metadata:
       labels:
