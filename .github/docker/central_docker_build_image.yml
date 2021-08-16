@@ -25,7 +25,7 @@ jobs:
         id: prep
         run: |
           MAIN_VERSION=$(python3 -c 'import __version__ ; print(str(__version__.__version__)[:5])')
-          DOCKER_IMAGE=gluufederation/$(python3 -c 'import os ; REPO = os.environ.get("GITHUB_REPOSITORY") ; print(str(REPO).split("/")[1])')
+          DOCKER_IMAGE=gluufederation/$(python3 -c 'import os ; REPO = os.environ.get("GITHUB_REPOSITORY") ; print(str(REPO).split("/")[1][7:])')
           VERSION=${MAIN_VERSION}_dev
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
