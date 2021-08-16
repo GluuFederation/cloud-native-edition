@@ -94,7 +94,7 @@ jobs:
             GluuFederation/docker-gluu-admin-ui
           WORKFLOW_FILES: |
             .github/docker/central_docker_imagescan.yml=.github/workflows/imagescan.yml
-            .github/docker/central_docker_release.yml=.github/workflows/release.yml
+            .github/docker/central_docker_release.yml=.github/workflows/release.yaml
             .github/docker/central_docker_triggerdevbuild.yml=.github/workflows/triggerdevbuild.yml
             .github/docker/central_docker_build_image.yml=.github/workflows/build_image.yml
             .github/docker/central_docker_dependabot.yml=.github/dependabot.yml
