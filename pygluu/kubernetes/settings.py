@@ -212,7 +212,8 @@ class SettingsHandler(object):
                                 GOOGLE_PROJECT_ID="",
                                 MIGRATION_ENABLED="",
                                 MIGRATION_DIR="",
-                                MIGRATION_DATA_FORMAT=""
+                                MIGRATION_DATA_FORMAT="",
+                                GLUU_SCIM_PROTECTION_MODE=""
                                 )
         return default_settings
 
