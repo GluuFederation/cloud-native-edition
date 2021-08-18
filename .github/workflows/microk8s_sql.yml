@@ -257,7 +257,8 @@ jobs:
           "GOOGLE_PROJECT_ID": "",
           "MIGRATION_ENABLED": "N",
           "MIGRATION_DIR": "",
-          "MIGRATION_DATA_FORMAT": ""
+          "MIGRATION_DATA_FORMAT": "",
+          "GLUU_SCIM_PROTECTION_MODE": "OAUTH"
         }
         EOF
 
