@@ -76,7 +76,7 @@ spec:
           {{- include "opendj.usr-secret-envs" $ | indent 12 }}
         {{- if $.Values.multiCluster.enabled }}
           - name: GLUU_SERF_ADVERTISE_ADDR
-            value: {{ include "opendj.fullname" $ }}-regional-{{$v}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
+            value: {{ $.Release.Name }}-opendj-regional-{{$v}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
           - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
             value: {{ index $.Values "ports" "tcp-admin" "nodePort" | quote }}
           - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT

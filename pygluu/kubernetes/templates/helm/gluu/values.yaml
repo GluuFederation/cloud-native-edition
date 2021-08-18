@@ -260,8 +260,13 @@ opendj:
     enabled: false
     serfAdvertiseAddrSuffix: "regionalldap.gluu.org:30946"
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
-    serfPeers: ["RELEASE-NAME-opendj-regional-0-regionalldap.gluu.org:30946",
-                "RELEASE-NAME-opendj-regional-1-regionalldap.gluu.org:31946"]
+    # -- Serf peer addresses. One per cluster.
+    serfPeers:
+      - "gluu-opendj-regional-0-regional.gluu.org:30946"
+      - "gluu-opendj-regional-0-regional.gluu.org:31946"
+    # -- The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows
+    # the patterm RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
+    # If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org
     replicaCount: 1
   service:
     ldapServiceName: opendj
