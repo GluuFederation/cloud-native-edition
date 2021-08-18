@@ -61,8 +61,8 @@ class PromptOptionalServices:
         if not self.settings.get("ENABLE_SCIM"):
             self.settings.set("ENABLE_SCIM", confirm_yesno("Deploy scim"))
         if self.settings.get("ENABLE_SCIM") == "Y":
-            if not self.settings.get("SCIM_PROTECTION_MODE"):
-                self.settings.set("SCIM_PROTECTION_MODE", click.prompt("SCIM Protection mode", default="OAUTH",
+            if not self.settings.get("GLUU_SCIM_PROTECTION_MODE"):
+                self.settings.set("GLUU_SCIM_PROTECTION_MODE", click.prompt("SCIM Protection mode", default="OAUTH",
                                                                        type=click.Choice(["OAUTH", "TEST", "UMA"])))
             self.enabled_services.append("scim")
 

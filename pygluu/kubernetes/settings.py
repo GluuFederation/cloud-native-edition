@@ -213,7 +213,7 @@ class SettingsHandler(object):
                                 MIGRATION_ENABLED="",
                                 MIGRATION_DIR="",
                                 MIGRATION_DATA_FORMAT="",
-                                SCIM_PROTECTION_MODE=""
+                                GLUU_SCIM_PROTECTION_MODE=""
                                 )
         return default_settings
 

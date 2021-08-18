@@ -275,7 +275,7 @@ class Helm(object):
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True
             values_file_parser["config"]["configmap"]["gluuScimProtectionMode"] = \
-                self.settings.get("SCIM_PROTECTION_MODE")
+                self.settings.get("GLUU_SCIM_PROTECTION_MODE")
             values_file_parser["scim"]["replicas"] = self.settings.get("SCIM_REPLICAS")
         if self.settings.get("INSTALL_JACKRABBIT") == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
