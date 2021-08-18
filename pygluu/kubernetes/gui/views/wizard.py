@@ -1322,7 +1322,7 @@ def generate_main_config():
     config_settings["email"] = gluu_settings.db.get("EMAIL")
     config_settings["org_name"] = gluu_settings.db.get("ORG_NAME")
 
-    with open(Path('./config/base/generate.json'), 'w+') as file:
+    with open(Path('./config/base/generate.json').resolve(), 'w+') as file:
         current_app.logger.warning("Main configuration settings has been "
                                    "outputted to file: ./config/base/generate.json. "
                                    "Please store this file safely or delete it.")
