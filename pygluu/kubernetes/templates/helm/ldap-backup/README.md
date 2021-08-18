@@ -43,7 +43,7 @@ Kubernetes: `>=v1.17.0-0`
 | image.tag | string | `"4.3.0_b1"` |  |
 | ldapPass | string | `"P@assw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
 | ldapServiceName | string | `"opendj"` | Name of the OpenDJ service. Please keep it as default. |
-| multiCluster | object | `{"enabled":false,"ldapAdvertiseAdminPort":30444,"serfAdvertiseAddr":"firstldap.gluu.org"}` | Specify cluster details if used to activate backup. |
+| multiCluster | object | `{"enabled":false,"ldapAdvertiseAdminPort":30444,"serfAdvertiseAddrSuffix":"firstldap.gluu.org"}` | Specify cluster details if used to activate backup. |
 | nameOverride | string | `""` |  |
 | ports | object | `{"admin":{"port":4444,"targetPort":4444},"ldap":{"port":1389,"targetPort":1389},"ldaps":{"port":1636,"targetPort":1636},"replication":{"port":8989,"targetPort":8989}}` | servicePorts values used in StatefulSet container |
 | restartPolicy | string | `"Never"` |  |

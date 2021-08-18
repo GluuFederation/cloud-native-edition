@@ -499,13 +499,17 @@ opendj:
     # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
     enabled: false
     # -- OpenDJ Serf advertise address for the cluster
-    serfAdvertiseAddr: "firstldap.gluu.org:30946"
+    serfAdvertiseAddrSuffix: "regional.gluu.org:30946"
     # -- Serf key. This key will automatically sync across clusters.
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
     # -- Serf peer addresses. One per cluster.
     serfPeers:
-      - "firstldap.gluu.org:30946"
-      - "secondldap.gluu.org:31946"
+      - "gluu-regional-0-regional.gluu.org:30946"
+      - "gluu-regional-1-regional.gluu.org:31946"
+    # -- The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows
+    # the patterm RELEASE-NAME-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
+    # If set to 1, with a release name of gluu,  the address of the pod would be gluu-regional-0-regional.gluu.org
+    replicaCount: 1
   persistence:
     # -- OpenDJ volume size
     size: 5Gi

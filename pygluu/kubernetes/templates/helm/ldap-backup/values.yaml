@@ -9,7 +9,7 @@ gluuOxtrustConfigGeneration: true
 # -- Specify cluster details if used to activate backup.
 multiCluster:
   enabled: false
-  serfAdvertiseAddr: "firstldap.gluu.org"
+  serfAdvertiseAddrSuffix: "firstldap.gluu.org"
   ldapAdvertiseAdminPort: 30444
 # -- Name of the OpenDJ service. Please keep it as default.
 ldapServiceName: opendj

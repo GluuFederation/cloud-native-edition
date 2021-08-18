@@ -90,6 +90,7 @@ Kubernetes: `>=v1.17.0-0`
 | configmap.gluuRedisUrl | string | `"redis:6379"` | Redis URL and port number <url>:<port>. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`. |
 | configmap.gluuRedisUseSsl | string | `"false"` | Boolean to use SSL in Redis. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`. |
 | configmap.gluuSamlEnabled | bool | `false` | Enable SAML-related features; UI menu, etc. |
+| configmap.gluuScimProtectionMode | string | `"OAUTH"` | SCIM protection mode OAUTH|TEST|UMA |
 | configmap.gluuSyncCasaManifests | bool | `false` | Activate manual Casa files sync - depreciated |
 | configmap.gluuSyncShibManifests | bool | `false` | Activate manual Shib files sync - depreciated |
 | configmap.lbAddr | string | `""` |  |
