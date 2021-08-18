@@ -36,6 +36,8 @@ spec:
       - name: {{ include "oxpassport.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
+            - name: PASSPORT_LOG_LEVEL
+              value: "info"
           {{- include "oxpassport.usr-envs" . | indent 12 }}
           {{- include "oxpassport.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

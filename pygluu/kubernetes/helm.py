@@ -274,6 +274,8 @@ class Helm(object):
         values_file_parser["global"]["scim"]["enabled"] = False
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True
+            values_file_parser["config"]["configmap"]["gluuScimProtectionMode"] = \
+                self.settings.get("SCIM_PROTECTION_MODE")
             values_file_parser["scim"]["replicas"] = self.settings.get("SCIM_REPLICAS")
         if self.settings.get("INSTALL_JACKRABBIT") == "Y":
             values_file_parser["global"]["jackrabbit"]["enabled"] = True
@@ -294,7 +296,10 @@ class Helm(object):
             values_file_parser["nginx-ingress"]["ingress"]["tls"][0]["hosts"] = [self.settings.get("GLUU_FQDN")]
         if self.settings.get("USE_ISTIO") == "Y":
             values_file_parser["global"]["istio"]["enabled"] = True
-
+        if self.settings.get("ENABLE_OXTRUST_API_BOOLEAN") == "true":
+            values_file_parser["config"]["configmap"]["gluuOxtrustApiEnabled"] = True
+        if self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN") == "true":
+            values_file_parser["config"]["configmap"]["gluuOxtrustApiTestMode"] = True
         values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
             values_file_parser["global"]["gluuJackrabbitCluster"] = "true"

@@ -258,6 +258,8 @@ config:
     gluuOxtrustApiEnabled: false
     # -- Enable oxTrust API testmode
     gluuOxtrustApiTestMode: false
+    # -- SCIM protection mode OAUTH|TEST|UMA
+    gluuScimProtectionMode: "OAUTH"
     # -- Boolean flag to enable/disable passport chart
     gluuPassportEnabled: false
     # --  TEMP KEY TO BE REMOVED IN 4.3 which allows passport failure redirect url to be specified.

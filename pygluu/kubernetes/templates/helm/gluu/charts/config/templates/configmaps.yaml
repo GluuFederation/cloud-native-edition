@@ -89,6 +89,8 @@ data:
   # Auto enable installation of some services
   GLUU_CASA_ENABLED: {{ .Values.configmap.gluuCasaEnabled | quote }}
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
+  GLUU_SCIM_ENABLED: {{ .Values.global.scim.enabled | quote }}
+  GLUU_SCIM_PROTECTION_MODE: {{ .Values.configmap.gluuScimProtectionMode | quote }}
   {{- if .Values.global.oxshibboleth.enabled }}
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   {{- end }}
