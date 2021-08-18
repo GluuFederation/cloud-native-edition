@@ -16,7 +16,7 @@ jobs:
       matrix:
         python-version: [3.7]
         gluu-version: ['"4.3.0_dev"']
-        test-cases: ["helm-install-gluu"]
+        test-cases: ["helm-install"]
         # add '"pgsql" when supported
         persistence-backends: ['"sql"']
     steps:
