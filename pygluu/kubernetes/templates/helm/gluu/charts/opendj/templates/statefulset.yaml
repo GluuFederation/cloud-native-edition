@@ -6,7 +6,11 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  {{- if $.Values.multiCluster.enabled }}
   name: {{ include "opendj.fullname" $ }}-regional-{{$v}}
+  {{- else }}
+  name: {{ include "opendj.fullname" $ }}
+  {{- end }}
   namespace: {{ $.Release.Namespace }}
   labels:
 {{ include "opendj.labels" $ | indent 4}}
