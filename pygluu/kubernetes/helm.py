@@ -289,7 +289,7 @@ class Helm(object):
             # ALPHA-FEATURE: Multi cluster ldap replication
             if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
-                values_file_parser["opendj"]["multiCluster"]["serfAdvertiseAddr"] = \
+                values_file_parser["opendj"]["multiCluster"]["serfAdvertiseAddrSuffix"] = \
                     self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")
                 serf_key = base64.b64encode(secrets.token_bytes()).decode()
                 values_file_parser["opendj"]["multiCluster"]["serfKey"] = serf_key
@@ -446,7 +446,7 @@ class Helm(object):
                         self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
                     values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
                         self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
-                    values_file_parser["multiCluster"]["serfAdvertiseAddr"] = \
+                    values_file_parser["multiCluster"]["serfAdvertiseAddrSuffix"] = \
                         self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")[:-6]
                 values_file_parser.dump_it()
 

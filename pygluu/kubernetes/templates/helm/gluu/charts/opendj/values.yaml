@@ -14,7 +14,7 @@ fullnameOverride: ""
 # values declaration
 multiCluster:
   enabled: false
-  serfAdvertiseAddr: "demoexample.gluu.org:31946"
+  serfAdvertiseAddrSuffix: "demoexample.gluu.org:31946"
   #The key size must be a 16, 24, or 32 bytes encoded as base64 string.
   serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
   # Json for serf Peers

@@ -1,20 +1,21 @@
 {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
+{{ range $k, $v := until ( .Values.multiCluster.replicaCount | int ) }}
+---
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v1
 kind: Service
 metadata:
-  {{- if .Values.multiCluster.enabled }}
-  name: {{ .Values.service.ldapServiceName }}-node
-  {{- else }}
-  name: {{ .Values.service.ldapServiceName }}
-  {{- end }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Values.service.ldapServiceName }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "opendj.labels" . | indent 4}}
+{{ include "opendj.labels" $ | indent 4}}
+  {{- if $.Values.multiCluster.enabled }}
+  appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
+  {{- end }}
 spec:
   ports:
-    {{- range $key, $value := .Values.ports }}
+    {{- range $key, $value := $.Values.ports }}
     - port: {{ $value.port }}
       name: {{ $key }}
       targetPort: {{ $value.targetPort }}
@@ -23,18 +24,18 @@ spec:
       nodePort: {{ $value.nodePort }}
       {{- end }}
     {{- end }}
-  {{- if .Values.multiCluster.enabled }}
+  {{- if $.Values.multiCluster.enabled }}
   type: NodePort
   {{- else }}
   clusterIP: None
   {{- end }}
   selector:
-    {{- if .Values.multiCluster.enabled }}
-    app: {{ include "opendj.name" . }}-regional
+    {{- if $.Values.multiCluster.enabled }}
+    appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
     {{- else }}
-    app: {{ include "opendj.name" . }}
+    app: {{ include "opendj.name" $ }}
     {{- end }}
-
+{{- end }}
 {{- if .Values.multiCluster.enabled }}
 ---
 apiVersion: v1

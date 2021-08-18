@@ -7,7 +7,7 @@ gluuLdapSchedule: "*/59 * * * *"
 gluuOxtrustConfigGeneration: true
 multiCluster:
   enabled: false
-  serfAdvertiseAddr: "firstldap.gluu.org"
+  serfAdvertiseAddrSuffix: "firstldap.gluu.org"
   ldapAdvertiseAdminPort: 30444
 
 ldapServiceName: opendj

@@ -258,9 +258,11 @@ opendj:
   #    variable4: value4
   multiCluster:
     enabled: false
-    serfAdvertiseAddr: "firstldap.gluu.org:30946"
+    serfAdvertiseAddrSuffix: "regionalldap.gluu.org:30946"
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
-    serfPeers: ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
+    serfPeers: ["RELEASE-NAME-opendj-regional-0-regionalldap.gluu.org:30946",
+                "RELEASE-NAME-opendj-regional-1-regionalldap.gluu.org:31946"]
+    replicaCount: 1
   service:
     ldapServiceName: opendj
   replicas: 1

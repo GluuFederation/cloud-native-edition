@@ -86,7 +86,7 @@ spec:
                 RANDOM_NUM=$(cat /dev/urandom | tr -cd '0-5' | head -c 1)
                 LDAP_BACKUP_FILE=backup-$RANDOM_NUM.ldif
                 {{- if .Values.multiCluster.enabled }}
-                /opt/opendj/bin/export-ldif --hostname {{ .Values.multiCluster.serfAdvertiseAddr | quote }} --port {{ .Values.multiCluster.ldapAdvertiseAdminPort | quote }} --bindDN "$LDAP_BIND_DN" --bindPassword "$LDAP_PASSWORD" --backendID userRoot --ldifFile /opt/opendj/ldif/$LDAP_BACKUP_FILE --trustAll
+                /opt/opendj/bin/export-ldif --hostname {{ .Values.multiCluster.serfAdvertiseAddrSuffix | quote }} --port {{ .Values.multiCluster.ldapAdvertiseAdminPort | quote }} --bindDN "$LDAP_BIND_DN" --bindPassword "$LDAP_PASSWORD" --backendID userRoot --ldifFile /opt/opendj/ldif/$LDAP_BACKUP_FILE --trustAll
                 {{- else }}
                 /opt/opendj/bin/export-ldif --hostname "$LDAP_HOST" --port 4444 --bindDN "$LDAP_BIND_DN" --bindPassword "$LDAP_PASSWORD" --backendID userRoot --ldifFile /opt/opendj/ldif/$LDAP_BACKUP_FILE --trustAll
                 {{- end }}
