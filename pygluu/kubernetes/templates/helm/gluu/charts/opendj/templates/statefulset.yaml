@@ -10,13 +10,14 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
 {{ include "opendj.labels" $ | indent 4}}
-  {{- if $.Values.multiCluster.enabled }}
-  appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
-  {{- end }}
+    {{- if $.Values.multiCluster.enabled }}
+    appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
+    {{- end }}
 spec:
   selector:
     matchLabels:
       {{- if $.Values.multiCluster.enabled }}
+      app: {{ include "opendj.name" $ }}
       appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
       {{- else }}
       app: {{ include "opendj.name" $ }}
@@ -31,6 +32,7 @@ spec:
     metadata:
       labels:
         {{- if $.Values.multiCluster.enabled }}
+        app: {{ include "opendj.name" $ }}
         appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
         {{- else }}
         app: {{ include "opendj.name" $ }}
