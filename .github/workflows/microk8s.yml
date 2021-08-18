@@ -12,13 +12,13 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 8
+      max-parallel: 4
       matrix:
         python-version: [3.7]
         gluu-version: ['"4.3.0_dev"']
-        test-cases: ["install", "helm-install-gluu"]
+        test-cases: ["install", "helm-install"]
         # add '"pgsql" when supported
-        persistence-backends: ['"ldap"','"couchbase"']
+        persistence-backends: ['"ldap"','"couchbase"','"sql"']
     steps:
     - name: Checkout code
       uses: actions/checkout@master
@@ -193,8 +193,7 @@ jobs:
           "GLUU_SQL_DB_PORT": "3306",
           "GLUU_SQL_DB_NAME": "gluu",
           "GLUU_SQL_DB_USER": "gluu",
-          "GLUU_SQL_DB_PASSWORD": "Test1234#",
-          "GLUU_SCIM_PROTECTION_MODE": "OAUTH"
+          "GLUU_SQL_DB_PASSWORD": "Test1234#"
         }
         EOF
 
@@ -219,11 +218,35 @@ jobs:
           COUCHBASE_IP=$(sudo microk8s.kubectl get po cbgluu-0000 -n cbns --template={{.status.podIP}})
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
 
+    - name: SQL
+      if: ${{ matrix.persistence-backends == '"sql"' }}
+      run: |
+          cd /home/runner/work/test/
+          sudo microk8s config > config
+          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
+          cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
+          cat settings.json | sed 's/"GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local"/"GLUU_SQL_DB_HOST": "gluu-mysql.sql.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
+          touch sqlfile
+
+
+   # - name: PostGRE
+   #   if: ${{ matrix.persistence-backends == '"pgsql"' }}
+   #   run: |
+   #       cd /home/runner/work/test/
+   #       cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
+   #       cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
+   #       cat settings.json | sed 's/"GLUU_SQL_DB_DIALECT": "mysql"/"GLUU_SQL_DB_DIALECT": "pgsql"/g' > tmpfile.py && mv tmpfile.py settings.json
+   #       cat settings.json | sed 's/"PERSISTENCE_BACKEND": "pgsql"/"PERSISTENCE_BACKEND": "sql"/g' > tmpfile.py && mv tmpfile.py settings.json
+   #       touch sqlfile
+
+
     - name: Test Pygluu kubernetes
       id: test_kubernetes
       run: |
           cd /home/runner/work/test/
-          sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
+          INSTALL=TRUE
+          [[ -f sqlfile  && "${{ matrix.test-cases }}" == "install"  ]] && INSTALL=FALSE
+          [[ "$INSTALL" == "TRUE" ]] && sudo ./pygluu-kubernetes.pyz ${{ matrix.test-cases }}
           sleep 30
           sudo microk8s.kubectl get po -n cbns
           sudo microk8s.kubectl get po -n gluu
@@ -234,4 +257,3 @@ jobs:
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
           sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
-

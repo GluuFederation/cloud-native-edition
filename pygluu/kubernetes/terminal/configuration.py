@@ -124,7 +124,7 @@ class PromptConfiguration:
             self.config_settings["ldap_pw"] = self.settings.get("COUCHBASE_PASSWORD")
         self.config_settings["email"] = self.settings.get("EMAIL")
         self.config_settings["org_name"] = self.settings.get("ORG_NAME")
-        with open(Path('./config/base/generate.json'), 'w+') as file:
+        with open(Path('./config/base/generate.json').resolve(), 'w+') as file:
             logger.warning("Main configuration settings has been outputted to file: "
                            "./config/base/generate.json. Please store this file safely or delete it.")
             json.dump(self.config_settings, file)
