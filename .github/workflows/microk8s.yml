@@ -12,7 +12,7 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 8
       matrix:
         python-version: [3.7]
         gluu-version: ['"4.3.0_dev"']
