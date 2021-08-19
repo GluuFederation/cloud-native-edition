@@ -36,14 +36,18 @@ class PromptHelm:
                                   click.prompt("ALPHA-FEATURE-Please enter LDAP serf port (NodePort)",
                                                default="30946"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS"):
-                self.settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", click.prompt("Please enter Serf advertise address",
-                                                                              default="demoexample.gluu.org:30946"))
+                self.settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", click.prompt("Please enter Serf advertise "
+                                                                              "address suffix. You must be able to "
+                                                                              "resolve this address in your DNS",
+                                                                              default="regional.gluu.org:30946"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_ADMIN_PORT",
-                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise admin port (NodePort)", default="30444"))
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise admin port (NodePort)",
+                                               default="30444"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_LDAPS_PORT",
-                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise LDAPS port (NodePort)", default="30636"))
+                                  click.prompt("ALPHA-FEATURE-Please enter LDAP advertise LDAPS port (NodePort)",
+                                               default="30636"))
             if not self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"):
                 self.settings.set("GLUU_LDAP_ADVERTISE_REPLICATION_PORT",
                                   click.prompt("ALPHA-FEATURE-Please enter LDAP advertise replication port (NodePort)",
@@ -55,11 +59,20 @@ class PromptHelm:
             if not self.settings.get("GLUU_LDAP_SERF_PEERS") or \
                     not isinstance(self.settings.get("GLUU_LDAP_SERF_PEERS"), list):
                 temp = click.prompt("ALPHA-FEATURE-Please enter LDAP advertise serf peers seperated by a comma with "
-                                    "no quotes , or brackets",
-                             default="firstldap.gluu.org:30946,secondldap.gluu.org:31946")
+                                    "no quotes , or brackets. The advertise addresses are in the format of "
+                                    "RELEASE-NAME-opendj-regional-{{statefulset number}}-{Serf address suffix }}",
+                                    default="gluu-opendj-regional-0-regional.gluu.org:30946,"
+                                            "gluu-opendj-regional-1-regional.gluu.org:31946")
                 temp = temp.replace(" ", "")
                 serf_peers_array = temp.split(",")
                 self.settings.set("GLUU_LDAP_SERF_PEERS", list(serf_peers_array))
+            if not self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS"):
+                self.settings.set("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS",
+                                  confirm_yesno("ALPHA-FEATURE-Enter the number of opendj statefulsets to create."
+                                                " Each will have an advertise address of"
+                                                " RELEASE-NAME-opendj-regional-"
+                                                "{{statefulset number}}-{Serf address suffix }} "
+                                                "(2nd and above)"))
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))

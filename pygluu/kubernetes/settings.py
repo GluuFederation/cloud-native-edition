@@ -202,6 +202,7 @@ class SettingsHandler(object):
                                 GLUU_LDAP_ADVERTISE_REPLICATION_PORT="",
                                 GLUU_LDAP_SECONDARY_CLUSTER="",
                                 GLUU_LDAP_SERF_PEERS="",
+                                GLUU_LDAP_MUTLI_CLUSTER_REPLICAS="",
                                 )
         return default_settings
 
