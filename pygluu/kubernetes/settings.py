@@ -213,7 +213,8 @@ class SettingsHandler(object):
                                 MIGRATION_ENABLED="",
                                 MIGRATION_DIR="",
                                 MIGRATION_DATA_FORMAT="",
-                                GLUU_SCIM_PROTECTION_MODE=""
+                                GLUU_SCIM_PROTECTION_MODE="",
+                                GLUU_LDAP_MUTLI_CLUSTER_REPLICAS="",
                                 )
         return default_settings
 
