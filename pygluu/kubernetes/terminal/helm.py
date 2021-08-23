@@ -59,9 +59,9 @@ class PromptHelm:
 
             if not self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID"):
                 self.settings.set("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID",
-                                  int(click.prompt("ALPHA-FEATURE-Please enter a cluster ID that distinguishes "
-                                                   "this cluster from any subsequent clusters. i.e "
-                                                   "west, east, north, south, test..", default="test")))
+                                  click.prompt("ALPHA-FEATURE-Please enter a cluster ID that distinguishes "
+                                               "this cluster from any subsequent clusters. i.e "
+                                               "west, east, north, south, test..", default="test"))
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))

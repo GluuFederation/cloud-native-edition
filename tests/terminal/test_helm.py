@@ -64,22 +64,16 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("GLUU_LDAP_MULTI_CLUSTER", "Y")
-    settings.set("GLUU_LDAP_SERF_PORT", "30946")
-    settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", "demoexample.gluu.org:30946")
-    settings.set("GLUU_LDAP_ADVERTISE_ADMIN_PORT", "30444")
+    settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", "demoexample.gluu.org")
     settings.set("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS", "1")
-    settings.set("GLUU_LDAP_ADVERTISE_LDAPS_PORT", "30636")
-    settings.set("GLUU_LDAP_ADVERTISE_REPLICATION_PORT", "30989")
     settings.set("GLUU_LDAP_SECONDARY_CLUSTER", "Y")
     settings.set("GLUU_LDAP_SERF_PEERS", ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"])
+    settings.set("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID", "test")
+
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
     assert settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y"
-    assert settings.get("GLUU_LDAP_SERF_PORT") == "30946"
-    assert settings.get("GLUU_LDAP_ADVERTISE_ADDRESS") == "demoexample.gluu.org:30946"
-    assert settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT") == "30444"
-    assert settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT") == "30636"
-    assert settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT") == "30989"
+    assert settings.get("GLUU_LDAP_ADVERTISE_ADDRESS") == "demoexample.gluu.org"
     assert settings.get("GLUU_LDAP_SECONDARY_CLUSTER") == "Y"
     assert settings.get("GLUU_LDAP_SERF_PEERS") == ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]
-
+    assert settings.get("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID") == "test"
