@@ -328,28 +328,10 @@ class Helm(object):
                     self.settings.get("GLUU_LDAP_SERF_PEERS")
                 if self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER") == "Y":
                     values_file_parser["global"]["persistence"]["enabled"] = False
-                values_file_parser["opendj"]["ports"]["tcp-ldaps"]["nodePort"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_LDAPS_PORT"))
-
-                values_file_parser["opendj"]["ports"]["tcp-repl"]["port"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
-                values_file_parser["opendj"]["ports"]["tcp-repl"]["targetPort"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
-                values_file_parser["opendj"]["ports"]["tcp-repl"]["nodePort"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_REPLICATION_PORT"))
-
-                values_file_parser["opendj"]["ports"]["tcp-admin"]["port"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
-                values_file_parser["opendj"]["ports"]["tcp-admin"]["targetPort"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
-                values_file_parser["opendj"]["ports"]["tcp-admin"]["nodePort"] = \
-                    int(self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT"))
-
-                values_file_parser["opendj"]["ports"]["tcp-serf"]["nodePort"] = \
-                    int(self.settings.get("GLUU_LDAP_SERF_PORT"))
-                values_file_parser["opendj"]["ports"]["udp-serf"]["nodePort"] = \
-                    int(self.settings.get("GLUU_LDAP_SERF_PORT"))
-
+                values_file_parser["opendj"]["multiCluster"]["replicaCount"] = \
+                    self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS")
+                values_file_parser["opendj"]["multiCluster"]["clusterId"] = \
+                    self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID")
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
             values_file_parser["global"]["oxshibboleth"]["enabled"] = True
@@ -477,12 +459,6 @@ class Helm(object):
                     values_file_parser["gluuLdapSchedule"] = self.settings.get("LDAP_BACKUP_SCHEDULE")
                 if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                     values_file_parser["multiCluster"]["enabled"] = True
-                    values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
-                        self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
-                    values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
-                        self.settings.get("GLUU_LDAP_ADVERTISE_ADMIN_PORT")
-                    values_file_parser["multiCluster"]["serfAdvertiseAddrSuffix"] = \
-                        self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")[:-6]
                 values_file_parser.dump_it()
 
                 exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(

@@ -499,7 +499,7 @@ opendj:
     # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
     enabled: false
     # -- OpenDJ Serf advertise address for the cluster
-    serfAdvertiseAddrSuffix: "regional.gluu.org:30946"
+    serfAdvertiseAddrSuffix: "regional.gluu.org"
     # -- Serf key. This key will automatically sync across clusters.
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
     # -- Serf peer addresses. One per cluster.
@@ -510,6 +510,9 @@ opendj:
     # the patterm RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
     # If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org
     replicaCount: 1
+    # -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
+    # west, east, south, north, region ...etc If left empty it will be randomly generated.
+    clusterId: ""
   persistence:
     # -- OpenDJ volume size
     size: 5Gi
