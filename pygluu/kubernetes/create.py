@@ -96,7 +96,7 @@ def main():
                                "for Gluu > 4.3. Please consider cancelling and using option helm-install instead.")
                 time.sleep(5)
                 end = time.time()
-            generate_main_config()
+            generate_main_config(settings)
             kustomize = Kustomize(timeout)
             kustomize.uninstall()
             kustomize.install()
