@@ -31,13 +31,14 @@ class PromptHelm:
                               confirm_yesno("ALPHA-FEATURE-Are you setting up a multi kubernetes cluster"))
 
         if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
-            if not self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS"):
-                self.settings.set("GLUU_LDAP_ADVERTISE_ADDRESS", click.prompt("Please enter Serf advertise "
-                                                                              "address suffix. You must be able to "
-                                                                              "resolve this address in your DNS",
-                                                                              default="regional.gluu.org"))
-            if not self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS"):
-                self.settings.set("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS",
+            if not self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX"):
+                self.settings.set("GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX", click.prompt("Please enter Serf advertise "
+                                                                                     "address suffix. You must be "
+                                                                                     "able to "
+                                                                                     "resolve this address in your DNS",
+                                                                                     default="regional.gluu.org"))
+            if not self.settings.get("GLUU_LDAP_MULTI_CLUSTER_REPLICAS"):
+                self.settings.set("GLUU_LDAP_MULTI_CLUSTER_REPLICAS",
                                   int(click.prompt("ALPHA-FEATURE-Enter the number of opendj statefulsets to create."
                                                    " Each will have an advertise address of"
                                                    " RELEASE-NAME-opendj-regional-"
@@ -48,20 +49,39 @@ class PromptHelm:
                 self.settings.set("GLUU_LDAP_SECONDARY_CLUSTER",
                                   confirm_yesno("ALPHA-FEATURE-Is this a subsequent kubernetes cluster "
                                                 "(2nd and above)"))
-            if not self.settings.get("GLUU_LDAP_SERF_PEERS") or \
-                    not isinstance(self.settings.get("GLUU_LDAP_SERF_PEERS"), list):
-                alist = []
-                for i in range(self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS")):
-                    alist.append(f'{self.settings.get("GLUU_HELM_RELEASE_NAME")}'
-                                 f'-opendj-regional-{i}-'
-                                 f'{self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")}:3094{i}')
-                self.settings.set("GLUU_LDAP_SERF_PEERS", alist)
 
-            if not self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID"):
-                self.settings.set("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID",
+            if not self.settings.get("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID"):
+                self.settings.set("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID",
                                   click.prompt("ALPHA-FEATURE-Please enter a cluster ID that distinguishes "
                                                "this cluster from any subsequent clusters. i.e "
                                                "west, east, north, south, test..", default="test"))
+
+            if not self.settings.get("GLUU_LDAP_MULTI_CLUSTERS_IDS") or \
+                    not isinstance(self.settings.get("GLUU_LDAP_MULTI_CLUSTERS_IDS"), list):
+                temp = click.prompt("ALPHA-FEATURE-Please enter the cluster IDs for all other subsequent "
+                                    "clusters i.e west, east, north, south, test..seperated by a comma with "
+                                    "no quotes , or brackets "
+                                    "Forexample, if there was three other clusters ( not including this one)"
+                                    " that Gluu will be installed three cluster IDs will be needed. "
+                                    "This is to help generate the serf addresses automatically.",
+                                    default="dev,stage,prod")
+                temp = temp.replace(" ", "")
+                serf_peers_array = temp.split(",")
+                self.settings.set("GLUU_LDAP_MULTI_CLUSTERS_IDS", list(serf_peers_array))
+
+            if not self.settings.get("GLUU_LDAP_SERF_PEERS") or \
+                    not isinstance(self.settings.get("GLUU_LDAP_SERF_PEERS"), list):
+                alist = []
+                # temp list to hold all cluster ids including the id of the cluster Gluu is being installed on
+                cluster_ids = self.settings.get("GLUU_LDAP_MULTI_CLUSTERS_IDS")
+                if self.settings.get("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID") not in cluster_ids:
+                    cluster_ids.append(self.settings.get("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID"))
+                for i in range(self.settings.get("GLUU_LDAP_MULTI_CLUSTER_REPLICAS")):
+                    for cluster_id in cluster_ids:
+                        alist.append(f'{self.settings.get("GLUU_HELM_RELEASE_NAME")}'
+                                     f'-opendj-{cluster_id}-regional-{i}-'
+                                     f'{self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX")}:3094{i}')
+                self.settings.set("GLUU_LDAP_SERF_PEERS", alist)
         if not self.settings.get("NGINX_INGRESS_RELEASE_NAME") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_RELEASE_NAME", click.prompt("Please enter nginx-ingress helm name",
                                                                          default="ningress"))

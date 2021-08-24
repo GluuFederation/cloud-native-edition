@@ -190,7 +190,7 @@ class SettingsHandler(object):
                                 UPGRADE_IMAGE_TAG="",
                                 CONFIRM_PARAMS="N",
                                 GLUU_LDAP_MULTI_CLUSTER="",
-                                GLUU_LDAP_ADVERTISE_ADDRESS="",
+                                GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX="",
                                 GLUU_LDAP_SECONDARY_CLUSTER="",
                                 GLUU_LDAP_SERF_PEERS="",
                                 GLUU_INSTALL_SQL="",
@@ -210,8 +210,9 @@ class SettingsHandler(object):
                                 MIGRATION_DIR="",
                                 MIGRATION_DATA_FORMAT="",
                                 GLUU_SCIM_PROTECTION_MODE="",
-                                GLUU_LDAP_MUTLI_CLUSTER_REPLICAS="",
-                                GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID=""
+                                GLUU_LDAP_MULTI_CLUSTER_REPLICAS="",
+                                GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID="",
+                                GLUU_LDAP_MULTI_CLUSTERS_IDS=[]
                                 )
         return default_settings
 

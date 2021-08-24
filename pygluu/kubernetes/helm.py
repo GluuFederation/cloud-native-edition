@@ -321,7 +321,7 @@ class Helm(object):
             if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
                 values_file_parser["opendj"]["multiCluster"]["serfAdvertiseAddrSuffix"] = \
-                    self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS")
+                    self.settings.get("GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX")
                 serf_key = base64.b64encode(secrets.token_bytes()).decode()
                 values_file_parser["opendj"]["multiCluster"]["serfKey"] = serf_key
                 values_file_parser["opendj"]["multiCluster"]["serfPeers"] = \
@@ -329,9 +329,9 @@ class Helm(object):
                 if self.settings.get("GLUU_LDAP_SECONDARY_CLUSTER") == "Y":
                     values_file_parser["global"]["persistence"]["enabled"] = False
                 values_file_parser["opendj"]["multiCluster"]["replicaCount"] = \
-                    self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_REPLICAS")
+                    self.settings.get("GLUU_LDAP_MULTI_CLUSTER_REPLICAS")
                 values_file_parser["opendj"]["multiCluster"]["clusterId"] = \
-                    self.settings.get("GLUU_LDAP_MUTLI_CLUSTER_CLUSTER_ID")
+                    self.settings.get("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID")
         values_file_parser["global"]["oxshibboleth"]["enabled"] = False
         if self.settings.get("ENABLE_OXSHIBBOLETH") == "Y":
             values_file_parser["global"]["oxshibboleth"]["enabled"] = True

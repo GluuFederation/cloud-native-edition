@@ -30,8 +30,8 @@ class PromptConfirmSettings:
         print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', 'Setting', '|', 'Value', '|'))
         for k, v in self.settings.db.items():
             if k not in hidden_settings:
-                if k == "ENABLED_SERVICES_LIST":
-                    v = ", ".join(self.settings.get("ENABLED_SERVICES_LIST"))
+                if k in  ("ENABLED_SERVICES_LIST", "GLUU_LDAP_MULTI_CLUSTERS_IDS"):
+                    v = ", ".join(self.settings.get(k))
                 print("{:<1} {:<40} {:<10} {:<35} {:<1}".format('|', k, '|', v, '|'))
 
         if click.confirm("Please confirm the above settings"):

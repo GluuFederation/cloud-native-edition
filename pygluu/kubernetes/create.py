@@ -16,7 +16,7 @@ import time
 import sys
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
-from pygluu.kubernetes.helpers import get_logger, copy_templates
+from pygluu.kubernetes.helpers import get_logger, copy_templates, generate_main_config
 from pygluu.kubernetes.helm import Helm
 from pygluu.kubernetes.kustomize import Kustomize
 from pygluu.kubernetes.settings import SettingsHandler
@@ -96,6 +96,7 @@ def main():
                                "for Gluu > 4.3. Please consider cancelling and using option helm-install instead.")
                 time.sleep(5)
                 end = time.time()
+            generate_main_config()
             kustomize = Kustomize(timeout)
             kustomize.uninstall()
             kustomize.install()

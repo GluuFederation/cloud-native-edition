@@ -25,8 +25,6 @@ class PromptConfiguration:
 
     def __init__(self, settings):
         self.settings = settings
-        self.config_settings = {"hostname": "", "country_code": "", "state": "", "city": "", "admin_pw": "",
-                                "ldap_pw": "", "email": "", "org_name": "", "redis_pw": ""}
         self.enabled_services = self.settings.get("ENABLED_SERVICES_LIST")
 
     def prompt_config(self):
@@ -97,7 +95,7 @@ class PromptConfiguration:
                                                default="ce-migration"))
             if not self.settings.get("MIGRATION_DATA_FORMAT"):
                 while self.settings.get("MIGRATION_DATA_FORMAT") not in ("ldif", "couchbase+json", "spanner+avro",
-                                                                 "postgresql+json", "mysql+json"):
+                                                                         "postgresql+json", "mysql+json"):
                     logger.info("Supported data formats are ldif, couchbase+json, spanner+avro, "
                                 "postgresql+json, and mysql+json ")
                     self.settings.set("MIGRATION_DATA_FORMAT",
@@ -108,23 +106,3 @@ class PromptConfiguration:
 
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
-        self.generate_main_config()
-
-    def generate_main_config(self):
-        """Prepare generate.json and output it
-        """
-        self.config_settings["hostname"] = self.settings.get("GLUU_FQDN")
-        self.config_settings["country_code"] = self.settings.get("COUNTRY_CODE")
-        self.config_settings["state"] = self.settings.get("STATE")
-        self.config_settings["city"] = self.settings.get("CITY")
-        self.config_settings["admin_pw"] = self.settings.get("ADMIN_PW")
-        self.config_settings["ldap_pw"] = self.settings.get("LDAP_PW")
-        self.config_settings["redis_pw"] = self.settings.get("REDIS_PW")
-        if self.settings.get("PERSISTENCE_BACKEND") == "couchbase":
-            self.config_settings["ldap_pw"] = self.settings.get("COUCHBASE_PASSWORD")
-        self.config_settings["email"] = self.settings.get("EMAIL")
-        self.config_settings["org_name"] = self.settings.get("ORG_NAME")
-        with open(Path('./config/base/generate.json').resolve(), 'w+') as file:
-            logger.warning("Main configuration settings has been outputted to file: "
-                           "./config/base/generate.json. Please store this file safely or delete it.")
-            json.dump(self.config_settings, file)

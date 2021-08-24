@@ -1031,7 +1031,7 @@ This is the main parameter file used with the [`pygluu-kubernetes.pyz`](https://
 | `UPGRADE_IMAGE_TAG`                             | Gluu upgrade image tag                                                           | i.e `"4.3.0_01"`                                                                            |
 | `CONFIRM_PARAMS`                                | Confirm using above options                                                      | `"Y"` or `"N"`                                                                              |
 | `GLUU_LDAP_MULTI_CLUSTER`                       | HELM-ALPHA-FEATURE: Enable LDAP multi cluster environment                        |`"Y"` or `"N"`                                                                               |
-| `GLUU_LDAP_ADVERTISE_ADDRESS`                   | HELM-ALPHA-FEATURE: LDAP pod advertise address                                   | i.e `demoexample.gluu.org:30946"`                                                           |
+| `GLUU_LDAP_ADVERTISE_ADDRESS_SUFFIX`                   | HELM-ALPHA-FEATURE: LDAP pod advertise address                                   | i.e `demoexample.gluu.org:30946"`                                                           |
 | `GLUU_LDAP_SECONDARY_CLUSTER`                   | HELM-ALPHA-FEATURE: Is this the first kubernetes cluster or not                  | `"Y"` or `"N"`                                                                              |
 | `GLUU_LDAP_SERF_PEERS`                          | HELM-ALPHA-FEATURE: All opendj serf advertised addresses. This must be resolvable | `["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"]` |
 
