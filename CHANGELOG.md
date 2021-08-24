@@ -24,14 +24,14 @@
 
 * update docs ([c38675d](https://www.github.com/GluuFederation/cloud-native-edition/commit/c38675d1f4ad581a26b8fdf3de273cb83c8782f4))
 
-### [1.6.4](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.7-b...v1.6.4) (2021-07-13)
+### [1.6.4](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.3...v1.6.4) (2021-07-13)
 
 
 ### Bug Fixes
 
 * oxshibboleth syntax error ([fdf73e5](https://www.github.com/GluuFederation/cloud-native-edition/commit/fdf73e5d693f88cb8b4a4196cdca0d8200a228db))
 
-### [1.6.7-b](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.2...v1.6.7-b) (2021-07-13)
+### [1.6.3](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.2...v1.6.3) (2021-07-13)
 
 
 ### Bug Fixes
