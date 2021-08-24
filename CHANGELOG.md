@@ -1,5 +1,33 @@
 # Changelog
 
+### [1.6.7](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.6...v1.6.7) (2021-08-24)
+
+
+### Bug Fixes
+
+* add GLUU_LDAP_MULTI_CLUSTERS_IDS ([edce285](https://www.github.com/GluuFederation/cloud-native-edition/commit/edce285d9e359e96524b5284feef00b8eaac4d7e))
+* add imagePullSecrets ([b34f391](https://www.github.com/GluuFederation/cloud-native-edition/commit/b34f391f7a4819aae832f0b8aee12352ab7399ba))
+* add imagePullSecrets to seconday opendj statefulset ([22a18bf](https://www.github.com/GluuFederation/cloud-native-edition/commit/22a18bfa115e8c065fb78eb3f852ec86bc490fdb))
+* add prompt for replicas ([3bcc8d9](https://www.github.com/GluuFederation/cloud-native-edition/commit/3bcc8d93ceb1f8af72d0ffa7c4a5c7d3f10e3487))
+* add secondary ldap for local replication ([901a12d](https://www.github.com/GluuFederation/cloud-native-edition/commit/901a12dc567ddbaf5216f72d8017facb5f78ce5b))
+* finalize opendj mutli regional replication strategy ([47878f2](https://www.github.com/GluuFederation/cloud-native-edition/commit/47878f24aaf258acdb36001f6111d2d5d94b8e66))
+* hardcode opendj regional statefulset replica ([70be7df](https://www.github.com/GluuFederation/cloud-native-edition/commit/70be7dffc56c9fc2c8a9fbef8c03b40bc5eb7b7f))
+* missing settings ([2056b59](https://www.github.com/GluuFederation/cloud-native-edition/commit/2056b593ef22c23f7606ee2f7a35bda01f4efde2))
+* prefix serf address with release name ([c88a16a](https://www.github.com/GluuFederation/cloud-native-edition/commit/c88a16add7ac46d6069df17e4be1ef3943e43acb))
+* remove extra env ([a73ee8f](https://www.github.com/GluuFederation/cloud-native-edition/commit/a73ee8f328baf28ba5357bee626aee64732f5aae))
+* remove int from  cluster id prompt ([82bb8f0](https://www.github.com/GluuFederation/cloud-native-edition/commit/82bb8f09e6f3994c3861e8f0870d38c33814d93b))
+* resolve address of config ([3214c84](https://www.github.com/GluuFederation/cloud-native-edition/commit/3214c84938c7d3dc1a5e5a7cb6bd845396458d4e))
+* resolve config address ([7aa7563](https://www.github.com/GluuFederation/cloud-native-edition/commit/7aa75631fcd5af7f903b8ab88604cdd7269cde44))
+* use multiple statefulsets for multi cluster replication ([0eaa26a](https://www.github.com/GluuFederation/cloud-native-edition/commit/0eaa26a7d96fa5f0e301adb1f52440a6320147f4))
+
+
+### Documentation
+
+* fix Changelog ([3ede717](https://www.github.com/GluuFederation/cloud-native-edition/commit/3ede717296958249f4ae25b95a236a2dc2a49858))
+* update changelog ([15c1335](https://www.github.com/GluuFederation/cloud-native-edition/commit/15c1335562af659844c87d77aacd0127fff91e2e))
+* update docker build ([a3eab3a](https://www.github.com/GluuFederation/cloud-native-edition/commit/a3eab3aca1c733dd5d1520ce85e7325b472d17c9))
+* update helm docs ([5794556](https://www.github.com/GluuFederation/cloud-native-edition/commit/5794556590b772b895cc7d7d677c42dfc19637d6))
+
 ### [1.6.6](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.5...v1.6.6) (2021-08-02)
 
 
