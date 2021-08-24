@@ -44,69 +44,69 @@ maintainers:
   email: support@gluu.org
 description: Gluu Access and Identity Mangement
 name: gluu
-version: 1.6.3
+version: 1.6.7-b
 
 dependencies:
     - name: config
       condition: global.config.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: opendj
       condition: global.opendj.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: jackrabbit
       condition: global.jackrabbit.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: oxauth
       condition: global.oxauth.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: fido2
       condition: global.fido2.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: scim
       condition: global.scim.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: oxtrust
       condition: global.oxtrust.enabled
-      version: 1.6.3
+      version: 1.6.7-b
   
     - name: nginx-ingress
       condition: global.nginx-ingress.enabled
-      version: 1.6.3
+      version: 1.6.7-b
   
     - name: oxshibboleth
       condition: global.oxshibboleth.enabled
-      version: 1.6.3
+      version: 1.6.7-b
   
     - name: oxpassport
-      version: 1.6.3
+      version: 1.6.7-b
       condition: config.configmap.gluuPassportEnabled
 
     - name: casa
-      version: 1.6.3
+      version: 1.6.7-b
       condition: config.configmap.gluuCasaEnabled
   
     - name: oxauth-key-rotation
       condition: global.oxauth-key-rotation.enabled
-      version: 1.6.3
+      version: 1.6.7-b
   
     - name: cr-rotate
-      version: 1.6.3
+      version: 1.6.7-b
       condition: global.cr-rotate.enabled
 
     - name: oxd-server
       condition: global.oxd-server.enabled
-      version: 1.6.3
+      version: 1.6.7-b
   
     - name: persistence
       condition: global.persistence.enabled
-      version: 1.6.3
+      version: 1.6.7-b
 
     - name: gluu-istio-ingress
       condition: global.istio.ingress
-      version: 1.6.3
+      version: 1.6.7-b

@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.3](https://img.shields.io/badge/Version-1.6.3-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.7-b](https://img.shields.io/badge/Version-1.6.7--b-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,22 +23,22 @@ Kubernetes: `>=v1.17.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.6.3 |
-|  | config | 1.6.3 |
-|  | cr-rotate | 1.6.3 |
-|  | fido2 | 1.6.3 |
-|  | gluu-istio-ingress | 1.6.3 |
-|  | jackrabbit | 1.6.3 |
-|  | nginx-ingress | 1.6.3 |
-|  | opendj | 1.6.3 |
-|  | oxauth | 1.6.3 |
-|  | oxauth-key-rotation | 1.6.3 |
-|  | oxd-server | 1.6.3 |
-|  | oxpassport | 1.6.3 |
-|  | oxshibboleth | 1.6.3 |
-|  | oxtrust | 1.6.3 |
-|  | persistence | 1.6.3 |
-|  | scim | 1.6.3 |
+|  | casa | 1.6.7-b |
+|  | config | 1.6.7-b |
+|  | cr-rotate | 1.6.7-b |
+|  | fido2 | 1.6.7-b |
+|  | gluu-istio-ingress | 1.6.7-b |
+|  | jackrabbit | 1.6.7-b |
+|  | nginx-ingress | 1.6.7-b |
+|  | opendj | 1.6.7-b |
+|  | oxauth | 1.6.7-b |
+|  | oxauth-key-rotation | 1.6.7-b |
+|  | oxd-server | 1.6.7-b |
+|  | oxpassport | 1.6.7-b |
+|  | oxshibboleth | 1.6.7-b |
+|  | oxtrust | 1.6.7-b |
+|  | persistence | 1.6.7-b |
+|  | scim | 1.6.7-b |
 
 ## Values
 
@@ -304,7 +304,7 @@ Kubernetes: `>=v1.17.0-0`
 | nginx-ingress.ingress.webdiscoveryLabels | object | `{}` | webdiscovery ingress resource labels. key app is taken |
 | nginx-ingress.ingress.webfingerEnabled | bool | `true` | Enable endpoint /.well-known/webfinger |
 | nginx-ingress.ingress.webfingerLabels | object | `{}` | webfinger ingress resource labels. key app is taken |
-| opendj | object | `{"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.3.0_b1"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"multiCluster":{"enabled":false,"replicaCount":1,"serfAdvertiseAddrSuffix":"regional.gluu.org:30946","serfKey":"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=","serfPeers":["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
+| opendj | object | `{"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.3.0_b1"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"multiCluster":{"clusterId":"","enabled":false,"replicaCount":1,"serfAdvertiseAddrSuffix":"regional.gluu.org","serfKey":"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=","serfPeers":["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
 | opendj.dnsConfig | object | `{}` | Add custom dns config |
 | opendj.dnsPolicy | string | `""` | Add custom dns policy |
 | opendj.hpa | object | `{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50}` | Configure the HorizontalPodAutoscaler |
@@ -316,9 +316,10 @@ Kubernetes: `>=v1.17.0-0`
 | opendj.image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | opendj.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for OpenDJ if needed. https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py |
 | opendj.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. |
+| opendj.multiCluster.clusterId | string | `""` | This id needs to be unique to each kubernetes cluster in a multi cluster setup west, east, south, north, region ...etc If left empty it will be randomly generated. |
 | opendj.multiCluster.enabled | bool | `false` | Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster` |
 | opendj.multiCluster.replicaCount | int | `1` | The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows the patterm RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }} If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org |
-| opendj.multiCluster.serfAdvertiseAddrSuffix | string | `"regional.gluu.org:30946"` | OpenDJ Serf advertise address for the cluster |
+| opendj.multiCluster.serfAdvertiseAddrSuffix | string | `"regional.gluu.org"` | OpenDJ Serf advertise address for the cluster |
 | opendj.multiCluster.serfKey | string | `"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk="` | Serf key. This key will automatically sync across clusters. |
 | opendj.multiCluster.serfPeers | list | `["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]` | Serf peer addresses. One per cluster. |
 | opendj.persistence.size | string | `"5Gi"` | OpenDJ volume size |

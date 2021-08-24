@@ -1,6 +1,6 @@
 # opendj
 
-![Version: 1.6.3](https://img.shields.io/badge/Version-1.6.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.7-b](https://img.shields.io/badge/Version-1.6.7--b-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions.
 
@@ -50,11 +50,12 @@ Kubernetes: `>=v1.17.0-0`
 | image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for OpenDJ if needed. https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py |
 | livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. |
+| multiCluster.clusterId | string | `""` | This id needs to be unique to each kubernetes cluster in a multi cluster setup west, east, south, north, region ...etc If left empty it will be randomly generated. |
 | multiCluster.enabled | bool | `false` | Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster` |
 | multiCluster.replicaCount | int | `1` | The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows the patterm RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }} If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org |
 | multiCluster.serfAdvertiseAddrSuffix | string | `"firstldap.gluu.org:30946"` | OpenDJ Serf advertise address for the cluster |
 | multiCluster.serfKey | string | `"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk="` | Serf key. This key will automatically sync across clusters. |
-| multiCluster.serfPeers | list | `[" gluu-opendj-regional-0-regional.gluu.org:30946"]` | Serf peer addresses. One per cluster. |
+| multiCluster.serfPeers | list | `["gluu-opendj-regional-0-regional.gluu.org:30946"]` | Serf peer addresses. One per cluster. |
 | nameOverride | string | `""` |  |
 | persistence.accessModes | string | `"ReadWriteOnce"` |  |
 | persistence.size | string | `"5Gi"` | OpenDJ volume size |
