@@ -258,7 +258,7 @@ opendj:
   #    variable4: value4
   multiCluster:
     enabled: false
-    serfAdvertiseAddrSuffix: "regionalldap.gluu.org:30946"
+    serfAdvertiseAddrSuffix: "regionalldap.gluu.org"
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
     # -- Serf peer addresses. One per cluster.
     serfPeers:

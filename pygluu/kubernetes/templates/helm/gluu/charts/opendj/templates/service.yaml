@@ -19,6 +19,34 @@ metadata:
     {{- end }}
 spec:
   ports:
+  {{- if $.Values.multiCluster.enabled }}
+    - port: 1636
+      name: tcp-ldaps
+      targetPort: 1636
+      protocol: TCP
+      nodePort: 3063{{$v}}
+    - port: 3098{{$v}}
+      name: tcp-replication
+      targetPort: 3098{{$v}}
+      protocol: TCP
+      nodePort: 3098{{$v}}
+    - port: 3044{{$v}}
+      name: tcp-admin
+      targetPort: 3044{{$v}}
+      nodePort: 3044{{$v}}
+      protocol: TCP
+    - port: 7946
+      name: tcp-serf
+      targetPort: 7946
+      protocol: TCP
+      nodePort: 3094{{$v}}
+    - port: 7946
+      name: udp-serf
+      targetPort: 7946
+      protocol: UDP
+      nodePort: 3094{{$v}}
+  type: NodePort
+  {{- else }}
     {{- range $key, $value := $.Values.ports }}
     - port: {{ $value.port }}
       name: {{ $key }}
@@ -28,9 +56,6 @@ spec:
       nodePort: {{ $value.nodePort }}
       {{- end }}
     {{- end }}
-  {{- if $.Values.multiCluster.enabled }}
-  type: NodePort
-  {{- else }}
   clusterIP: None
   {{- end }}
   selector:
@@ -53,7 +78,7 @@ spec:
   ports:
   - port: 1636
     name: tcp-ldaps
-    targetPort: {{ index .Values "ports.tcp-ldaps.nodePort" }}
+    targetPort: 1636
     protocol: TCP
   - port: 1389
     name: tcp-ldap
