@@ -357,7 +357,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.3_09
+    tag: 4.2.3_10
     pullPolicy: Always
     pullSecrets: []
   resources:

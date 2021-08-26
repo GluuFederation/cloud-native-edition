@@ -26,7 +26,7 @@ annotations:
     - name: jackrabbit
       image: gluufederation/jackrabbit:4.2.3_04
     - name: oxauth
-      image: gluufederation/oxauth:4.2.3_09
+      image: gluufederation/oxauth:4.2.3_10
     - name: oxd-server
       image: gluufederation/oxd-server:4.2.3_02
     - name: oxpassport

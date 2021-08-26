@@ -17,7 +17,7 @@
     "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
     "JACKRABBIT_IMAGE_TAG": "4.2.3_04",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
-    "OXAUTH_IMAGE_TAG": "4.2.3_09",
+    "OXAUTH_IMAGE_TAG": "4.2.3_10",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
     "OXD_IMAGE_TAG": "4.2.3_02",
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
