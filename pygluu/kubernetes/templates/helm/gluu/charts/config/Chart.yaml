@@ -3,7 +3,7 @@
 apiVersion: v2
 name: config
 version: 1.6.7-b
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.18.0-0"
 description: Configuration parameters for setup and initial configuration secret and config layers used by Gluu services.
 type: application
 keywords:
