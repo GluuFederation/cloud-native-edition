@@ -12,6 +12,7 @@ from pygluu.kubernetes.gui.views.main import main_blueprint
 from pygluu.kubernetes.gui.views.wizard import wizard_blueprint
 from pygluu.kubernetes.gui.views.operation import operation_blueprint
 
+
 def resolve_secret_key(path):
     key = ""
     with contextlib.suppress(FileNotFoundError):
@@ -61,7 +62,6 @@ def create_app(debug=False):
     app.register_blueprint(wizard_blueprint)
     app.register_blueprint(operation_blueprint, url_prefix="/operations")
 
-
     @app.context_processor
     def hash_processor():
         def hashed_url(filepath):
@@ -77,4 +77,5 @@ def create_app(debug=False):
             return os.path.join('/static', filepath)
 
         return dict(hashed_url=hashed_url)
+
     return app

@@ -33,11 +33,11 @@ class MySQL(object):
                  "--set auth.username={} "
                  "--set auth.password={} "
                  "--namespace={} ".format("gluu",
-                                         self.settings.get("GLUU_SQL_DB_PASSWORD"),
-                                         self.settings.get("GLUU_SQL_DB_NAME"),
-                                         self.settings.get("GLUU_SQL_DB_USER"),
-                                         self.settings.get("GLUU_SQL_DB_PASSWORD"),
-                                         self.settings.get("GLUU_SQL_DB_NAMESPACE")))
+                                          self.settings.get("GLUU_SQL_DB_PASSWORD"),
+                                          self.settings.get("GLUU_SQL_DB_NAME"),
+                                          self.settings.get("GLUU_SQL_DB_USER"),
+                                          self.settings.get("GLUU_SQL_DB_PASSWORD"),
+                                          self.settings.get("GLUU_SQL_DB_NAMESPACE")))
 
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
             self.kubernetes.check_pods_statuses(self.settings.get("GLUU_SQL_DB_NAMESPACE"), "app=mysql",

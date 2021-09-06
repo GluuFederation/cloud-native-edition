@@ -43,7 +43,6 @@ def determine_final_official_and_dev_version(tag_list):
             if "dev" not in tag and "a" not in tag and tag[4:5] == highest_major_minor_patch_number:
                 versions_list.append(int(tag[6:8]))
 
-
     # Remove duplicates
     versions_list = list(set(versions_list))
     # Sort
