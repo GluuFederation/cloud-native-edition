@@ -33,7 +33,6 @@ class PromptVersion:
 
         image_names_and_tags = versions.get(self.settings.get("installer-settings.currentVersion"), {})
         # override non-empty image name and tag
-        self.settings.update({
-            k: v for k, v in image_names_and_tags.items()
-            if not self.settings.get(k)
-        })
+        for k, v in image_names_and_tags.items():
+            if self.settings.get(k) in (None, ''):
+                self.settings.set(k, v)

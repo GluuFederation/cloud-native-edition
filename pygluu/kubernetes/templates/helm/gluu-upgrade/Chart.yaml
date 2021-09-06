@@ -3,7 +3,7 @@
 apiVersion: v2
 name: cn-upgrade
 version: 5.0.0
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.19.0-0"
 description: A Helm chart for upgrading gluu server
 type: application
 keywords:

@@ -3,7 +3,7 @@
 apiVersion: v2
 name: oxpassport
 version: 5.0.0
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.19.0-0"
 description: Gluu interface to Passport.js to support social login and inbound identity.
 type: application
 keywords:

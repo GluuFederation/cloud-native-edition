@@ -30,6 +30,8 @@ from pygluu.kubernetes.terminal.cache import PromptCache
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
+from pygluu.kubernetes.terminal.openbanking import PromptOpenBanking
+from pygluu.kubernetes.terminal.distribution import PromptDistribution
 
 
 class Prompt:
@@ -79,16 +81,18 @@ class Prompt:
         self.load_settings()
         test_environment = PromptTestEnvironment(self.settings)
         if not self.settings.get("global.cloud.testEnviroment") and \
-                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
+                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath",
+                                                                             "k8s.io/minikube-hostpath"):
             test_environment.prompt_test_environment()
 
     def network(self):
-        if not self.settings.get("CN_HOST_EXT_IP"):
+        if self.settings.get("global.lbIp") in ('None', ''):
             ip = gather_ip()
             self.load_settings()
-            self.settings.set("CN_HOST_EXT_IP", ip)
+            self.settings.set("global.lbIp", ip)
 
-            if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and not self.settings.get("global.istio.enabled"):
+            if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and \
+                    not self.settings.get("global.istio.enabled"):
                 aws = PromptAws(self.settings)
                 aws.prompt_aws_lb()
 
@@ -144,6 +148,28 @@ class Prompt:
         replicas = PromptReplicas(self.settings)
         replicas.prompt_replicas()
 
+    def distribution(self):
+        self.load_settings()
+        dist = PromptDistribution(self.settings)
+        dist.prompt_distribution()
+
+    def openbanking(self):
+        self.load_settings()
+        if self.settings.get("global.distribution") == "openbanking":
+            # Disable all optional services from openbanking distribution
+            self.settings.set("global.cr-rotate.enabled", False)
+            self.settings.set("global.auth-server-key-rotation.enabled", False)
+            self.settings.set("config.configmap.cnPassportEnabled", False)
+            self.settings.set("global.oxshibboleth.enabled", False)
+            self.settings.set("config.configmap.cnCasaEnabled", False)
+            self.settings.set("global.client-api.enabled", False)
+            self.settings.set("global.fido2.enabled", False)
+            self.settings.set("global.scim.enabled", False)
+            # Jackrabbit might be enabled for this distribution later
+            self.settings.set("global.jackrabbit.enabled", False)
+            ob = PromptOpenBanking(self.settings)
+            ob.prompt_openbanking()
+
     def confirm_settings(self):
         self.load_settings()
         if not self.settings.get("installer-settings.confirmSettings"):
@@ -158,15 +184,19 @@ class Prompt:
         self.license()
         self.versions()
         self.arch()
+        self.distribution()
+        self.openbanking()
         self.namespace()
         self.optional_services()
-        self.jackrabbit()
+        if self.settings.get("global.distribution") != "openbanking":
+            self.jackrabbit()
         self.istio()
         self.test_enviornment()
         self.network()
         self.persistence_backend()
         self.ldap()
-        self.volumes()
+        if self.settings.get("global.distribution") != "openbanking":
+            self.volumes()
         self.couchbase()
         self.cache()
         self.backup()

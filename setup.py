@@ -39,7 +39,7 @@ setup(
         "ruamel.yaml>=0.16.5",
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
-        "kubernetes==12.0.0",
+        "kubernetes==18.20.0",
         "Click!=7.0,>=6.7",
         "email_validator >= 1.1.0",
         "Flask-SocketIO >= 4.3.1",

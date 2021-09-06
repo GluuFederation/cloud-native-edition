@@ -12,7 +12,7 @@ def test_helm_release_name(monkeypatch, settings, given, expected):
 
     settings.set("installer-settings.nginxIngress.releaseName", "ningress")
     settings.set("installer-settings.nginxIngress.namespace", "ingress-nginx")
-    settings.set("opendj.multiCluster.enabled", "N")
+    settings.set("opendj.multiCluster.enabled", False)
     settings.set("installer-settings.releaseName", "")
 
     prompt = PromptHelm(settings)
@@ -31,7 +31,7 @@ def test_helm_ingress_release_name(monkeypatch, settings, given, expected):
 
     settings.set("installer-settings.releaseName", "gluu")
     settings.set("installer-settings.nginxIngress.namespace", "ingress-nginx")
-    settings.set("opendj.multiCluster.enabled", "N")
+    settings.set("opendj.multiCluster.enabled", False)
     settings.set("installer-settings.nginxIngress.releaseName", "")
 
     prompt = PromptHelm(settings)
@@ -50,7 +50,7 @@ def test_helm_ingress_namespace(monkeypatch, settings, given, expected):
 
     settings.set("installer-settings.nginxIngress.releaseName", "ningress")
     settings.set("installer-settings.releaseName", "gluu")
-    settings.set("opendj.multiCluster.enabled", "N")
+    settings.set("opendj.multiCluster.enabled", False)
     settings.set("installer-settings.nginxIngress.namespace", "")
 
     prompt = PromptHelm(settings)

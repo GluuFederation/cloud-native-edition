@@ -43,24 +43,8 @@ installer-settings:
     totalNumberOfExpectedTransactionsPerSec:
     volumeType:
   volumeProvisionStrategy:
-  gluuGateway:
-    install:
-    kong:
-      image:
-        repository:
-        tag:
-      releaseName:
-      namespace:
-      postgresUser:
-      postgresPassword:
-      postgresDatabaseName:
-    uI:
-      releaseName:
-      namespace:
-      postgresUser:
-      postgresPassword:
-      postgresDatabaseName:
   ldap:
+    multiClusterIds: []
     subsequentCluster:
     backup:
       fullSchedule:
@@ -75,6 +59,9 @@ installer-settings:
     masterNodes:
     nodesPerMaster:
     namespace:
+  openbanking:
+    hasCnObTransportTrustStore: false
+    cnObTransportTrustStoreP12password: ""
   confirmSettings: false
 
 # -- OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization Server--this is the main Internet facing component of Gluu. It's the service that returns tokens, JWT's and identity assertions. This service must be Internet facing.
@@ -452,6 +439,8 @@ config:
     cnLdapUrl: "opendj:1636"
     # -- Value passed to Java option -XX:MaxRAMPercentage
     cnMaxRamPercent: "75.0"
+    # -- SCIM protection mode OAUTH|TEST|UMA
+    cnScimProtectionMode: "OAUTH"
     # -- Boolean flag to enable/disable passport chart
     cnPassportEnabled: false
     # -- Specify data that should be saved in LDAP (one of default, user, cache, site, token, or session; default to default). Note this environment only takes effect when `global.cnPersistenceType`  is set to `hybrid`.
@@ -1034,16 +1023,24 @@ opendj:
     # -- Image Pull Secrets
     pullSecrets: [ ]
   multiCluster:
-    # -- Enable OpenDJ multiCluster mode. This flag enabbles loading keys under `opendj.multiCluster`
+    # -- Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster`
     enabled: false
-    # -- OpenDJ Serf advertise address for the cluster
-    serfAdvertiseAddr: "firstldap.gluu.org:30946"
+    # -- OpenDJ Serf advertise address suffix that will be added to each opendj replica.
+    # i.e RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
+    serfAdvertiseAddrSuffix: "regional.gluu.org:30946"
     # -- Serf key. This key will automatically sync across clusters.
     serfKey: Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=
     # -- Serf peer addresses. One per cluster.
     serfPeers:
-      - "firstldap.gluu.org:30946"
-      - "secondldap.gluu.org:31946"
+      - "gluu-opendj-regional-0-regional.gluu.org:30946"
+      - "gluu-opendj-regional-0-regional.gluu.org:31946"
+    # -- The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows
+    # the patterm RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}
+    # If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org
+    replicaCount: 1
+    # -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
+    # west, east, south, north, region ...etc If left empty it will be randomly generated.
+    clusterId: ""
   persistence:
     # -- OpenDJ volume size
     size: 5Gi
