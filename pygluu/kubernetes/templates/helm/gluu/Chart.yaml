@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 appVersion: "4.3.0"
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.19.0-0"
 annotations:
   artifacthub.io/changes: |
     - Gluu 4.3.0 beta official chart release

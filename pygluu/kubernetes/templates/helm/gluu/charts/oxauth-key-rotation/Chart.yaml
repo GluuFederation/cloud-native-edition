@@ -3,7 +3,7 @@
 apiVersion: v2
 name: oxauth-key-rotation
 version: 1.6.7-b
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.19.0-0"
 description: Responsible for regenerating auth-keys per x hours
 type: application
 keywords:
