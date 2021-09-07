@@ -1,64 +1,61 @@
 # -- Only used by the installer. These settings do not affect nor are used by the chart
 installer-settings:
-  currentVersion:
+  currentVersion: ""
   upgrade:
-    targetVersion:
+    targetVersion: ""
     image:
-      repository:
-      tag:
-  acceptLicense:
-  namespace: gluu
-  releaseName: gluu
+      repository: ""
+      tag: ""
+  acceptLicense: ""
+  namespace: ""
+  releaseName: ""
   nginxIngress:
-    releaseName:
-    namespace:
+    releaseName: ""
+    namespace: ""
   nodes:
-    names:
-    zones:
-    ips:
+    names: ""
+    zones: ""
+    ips: ""
   images:
-    edit:
+    edit: ""
   aws:
-    lbType: clb
+    lbType: ""
     arn:
-      enabled: false
-      arnAcmCert:
+      enabled: ""
+      arnAcmCert: ""
     vpcCidr: "0.0.0.0/0"
   couchbase:
-    clusterName:
-    namespace:
-    lowResourceInstall:
-    install:
-    customFileOverride:
+    clusterName: ""
+    namespace: ""
+    lowResourceInstall: ""
+    install: ""
+    customFileOverride: ""
     backup:
-      incrementalSchedule:
-      fullSchedule:
-      retentionTime:
-      storageSize:
+      incrementalSchedule: ""
+      fullSchedule: ""
+      retentionTime: ""
+      storageSize: ""
     # Couchbase cert related keys
-    subjectAlternativeName:
-    commonName:
+    subjectAlternativeName: ""
+    commonName: ""
     # Couchbase cluster yaml generator keys
-    totalNumberOfExpectedUsers:
-    totalNumberOfExpectedTransactionsPerSec:
-    volumeType:
-  volumeProvisionStrategy:
+    totalNumberOfExpectedUsers: ""
+    totalNumberOfExpectedTransactionsPerSec: ""
+    volumeType: ""
+  volumeProvisionStrategy: ""
   ldap:
     multiClusterIds: []
-    subsequentCluster:
+    subsequentCluster: ""
     backup:
-      fullSchedule:
+      fullSchedule: ""
   jackrabbit:
-    clusterMode:
+    clusterMode: ""
   postgres:
-    install:
-    namespace:
-    replicas:
+    install: ""
+    namespace: ""
   redis:
-    install:
-    masterNodes:
-    nodesPerMaster:
-    namespace:
+    install: ""
+    namespace: ""
   openbanking:
     hasCnObTransportTrustStore: false
     cnObTransportTrustStoreP12password: ""
