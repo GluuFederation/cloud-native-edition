@@ -102,18 +102,20 @@ class PromptOpenBanking:
                                             default=False))
 
         if self.settings.get("global.cnObTransportTrustStore") in ("None", ''):
-            if self.settings.get("openbanking.hasCnObTransportTrustStore"):
+            if self.settings.get("installer-settings.openbanking.hasCnObTransportTrustStore"):
                 print("Place the Open banking AS transport truststore p12 in a file  "
                       "named obtransporttruststore.p12. Used in SSA "
                       "Validation. "
                       " This will be encoded using base64 so please do not encode it.")
-                encoded_transport_truststore_pem = read_file("./obtransporttruststore.p12")
+                encoded_transport_truststore_pem = read_file_bytes("./obtransporttruststore.p12")
                 self.settings.set("global.cnObTransportTrustStore", encoded_transport_truststore_pem)
             else:
                 print("Place the Open banking issuing CA, OB Root CA and Signing CA string in one file "
                       "named obcas.pem. Example command: cat obissuingca.pem obrootca.pem obsigningca.pem > obcas.pem "
                       "This will be used to generate the ob transport truststore p12 file "
                       " This will be encoded using base64 so please do not encode it.")
+                # check file is there
+                read_file("./obcas.pem")
                 if self.settings.get("installer-settings.openbanking.cnObTransportTrustStoreP12password") in ("None", ''):
                     self.settings.set("installer-settings.openbanking.cnObTransportTrustStoreP12password",
                                       prompt_password("Open Banking CAs"))

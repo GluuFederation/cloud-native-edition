@@ -103,7 +103,7 @@ def read_file(file):
             encoded_content_string = str(encoded_content_bytes, "utf-8")
             return encoded_content_string
     except FileNotFoundError:
-        logger.error(f"File{file} not found.")
+        logger.error(f"File {file} not found.")
         raise SystemExit(1)
 
 
@@ -121,5 +121,5 @@ def read_file_bytes(file):
             encoded_content_string = str(encoded_content_bytes, "utf-8")
             return encoded_content_string
     except FileNotFoundError:
-        logger.error(f"File{file} not found.")
+        logger.error(f"File {file} not found.")
         raise SystemExit(1)

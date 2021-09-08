@@ -53,6 +53,11 @@ installer-settings:
   postgres:
     install: ""
     namespace: ""
+  sql:
+    install: ""
+    namespace: ""
+  google:
+    useSecretManager: ""
   redis:
     install: ""
     namespace: ""

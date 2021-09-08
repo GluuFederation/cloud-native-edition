@@ -30,6 +30,8 @@ from pygluu.kubernetes.terminal.cache import PromptCache
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
+from pygluu.kubernetes.terminal.sql import PromptSQL
+from pygluu.kubernetes.terminal.google import PromptGoogle
 from pygluu.kubernetes.terminal.openbanking import PromptOpenBanking
 from pygluu.kubernetes.terminal.distribution import PromptDistribution
 
@@ -170,6 +172,18 @@ class Prompt:
             ob = PromptOpenBanking(self.settings)
             ob.prompt_openbanking()
 
+    def sql(self):
+        self.load_settings()
+        if self.settings.get("global.cnPersistenceType") == "sql":
+            spanner = PromptSQL(self.settings)
+            spanner.prompt_sql()
+
+    def google(self):
+        self.load_settings()
+        if self.settings.get("global.cnPersistenceType") == "spanner":
+            spanner = PromptGoogle(self.settings)
+            spanner.prompt_google()
+
     def confirm_settings(self):
         self.load_settings()
         if not self.settings.get("installer-settings.confirmSettings"):
@@ -197,6 +211,8 @@ class Prompt:
         self.ldap()
         if self.settings.get("global.distribution") != "openbanking":
             self.volumes()
+        self.sql()
+        self.google()
         self.couchbase()
         self.cache()
         self.backup()

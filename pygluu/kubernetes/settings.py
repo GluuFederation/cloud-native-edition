@@ -42,12 +42,14 @@ class ValuesHandler(object):
             shutil.copy(Path("./override-values.yaml"), self.values_file)
             self.values_file_parser = Parser(self.values_file, True)
         except FileNotFoundError:
+            self.reset_data()
             # No installation settings mounted as /override-values.yaml. Checking values.yaml.
             pass
 
     def store_data(self):
         try:
             self.values_file_parser.dump_it()
+            shutil.copy(self.values_file, Path("./override-values.yaml"))
             return True
         except Exception as exc:
             logger.info(f"Uncaught error={exc}")
@@ -108,4 +110,3 @@ class ValuesHandler(object):
         except Exception as exc:
             logger.info(f"Uncaught error={exc}")
             return False
-

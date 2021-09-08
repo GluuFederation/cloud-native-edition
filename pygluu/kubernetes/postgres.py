@@ -22,29 +22,49 @@ class Postgres(object):
 
     def install_postgres(self):
         self.uninstall_postgres()
-        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.postgres.namespace"),
-                                         labels={"app": "postgres"})
+        if self.settings.get("installer-settings.jackrabbit.clusterMode") == "Y":
+            self.kubernetes.create_namespace(
+                name=f'jackrabbit{self.settings.get("installer-settings.postgres.namespace")}',
+                labels={"app": "postgres"})
+            exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
+            exec_cmd("helm repo update")
+            exec_cmd("helm install {} bitnami/postgresql "
+                     "--set global.postgresql.postgresqlDatabase={} "
+                     "--set global.postgresql.postgresqlPassword={} "
+                     "--set global.postgresql.postgresqlUsername={} "
+                     "--namespace=jackrabbit{}".format("postgresql",
+                                                       self.settings.get(
+                                                           "config.configmap.cnJackrabbitPostgresDatabaseName"),
+                                                       self.settings.get(
+                                                           "jackrabbit.secrets.cnJackrabbitPostgresPassword"),
+                                                       self.settings.get("config.configmap.cnJackrabbitPostgresUser"),
+                                                       self.settings.get("installer-settings.postgres.namespace")))
 
-        exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
-        exec_cmd("helm repo update")
-        exec_cmd("helm install {} bitnami/postgresql "
-                 "--set global.postgresql.postgresqlDatabase={} "
-                 "--set global.postgresql.postgresqlPassword={} "
-                 "--set global.postgresql.servicePort={} "
-                 "--set global.postgresql.postgresqlUsername={} "
-                 "--namespace={}".format("postgresql",
-                                         self.settings.get("config.configmap.cnJackrabbitPostgresDatabaseName"),
-                                         self.settings.get("jackrabbit.secrets.cnJackrabbitPostgresPassword"),
-                                         self.settings.get("config.configmap.cnJackrabbitPostgresPort"),
-                                         self.settings.get("config.configmap.cnJackrabbitPostgresUser"),
-                                         self.settings.get("installer-settings.postgres.namespace")))
+        if self.settings.get("global.cnPersistenceType") == "sql" and \
+                self.settings.get("config.configmap.cnSqlDbDialect") == "pgsql":
+            self.kubernetes.create_namespace(name=self.settings.get("installer-settings.postgres.namespace"),
+                                             labels={"app": "mysql"})
+            exec_cmd("helm install {} bitnami/postgresql "
+                     "--set global.postgresql.postgresqlDatabase={} "
+                     "--set global.postgresql.postgresqlPassword={} "
+                     "--set global.postgresql.postgresqlUsername={} "
+                     "--namespace={}".format("gluu",
+                                             self.settings.get("config.configmap.cnSqlDbName"),
+                                             self.settings.get("config.configmap.cnSqldbUserPassword"),
+                                             self.settings.get("config.configmap.cnSqlDbUser"),
+                                             self.settings.get("installer-settings.postgres.namespace")))
 
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.postgres.install"), "app=postgres",
+            self.kubernetes.check_pods_statuses(self.settings.get("POSTGRES_NAMESPACE"), "app=postgres",
                                                 self.timeout)
 
     def uninstall_postgres(self):
         logger.info("Removing gluu-postgres...")
-        logger.info("Removing postgresql...")
-        exec_cmd("helm delete {} --namespace={}".format("postgresql",
-                                                        self.settings.get("installer-settings.postgres.namespace")))
+        logger.info("Removing postgres...")
+        exec_cmd("helm delete {} --namespace=jackrabbit{}".format("sql",
+                                                                  self.settings.get(
+                                                                      "installer-settings.postgres.namespace")))
+        if self.settings.get("global.cnPersistenceType") == "sql" and \
+                self.settings.get("config.configmap.cnSqlDbDialect") == "pgsql":
+            exec_cmd("helm delete {} --namespace={}".format("gluu",
+                                                            self.settings.get("installer-settings.postgres.namespace")))
