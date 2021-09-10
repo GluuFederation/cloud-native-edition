@@ -41,3 +41,7 @@ class PromptPersistenceBackend:
 
             choice = click.prompt("Persistence layer", default=1)
             self.settings.set("global.cnPersistenceType", persistence_map.get(choice, "ldap"))
+
+        self.settings.set("global.opendj.enabled", False)
+        if self.settings.get("global.cnPersistenceType") == "ldap":
+            self.settings.set("global.opendj.enabled", True)

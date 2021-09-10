@@ -234,7 +234,7 @@ class Gluu(object):
     def install_ldap_backup(self):
         values_file = Path("./helm/ldap-backup/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
-        values_file_parser["ldapPass"] = self.settings.get("config.configmap.ldapPassword")
+        values_file_parser["ldapPass"] = self.settings.get("config.ldapPassword")
         if self.settings.get("global.storageClass.provisioner") not in \
                 ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             values_file_parser["gluuLdapSchedule"] = self.settings.get("installer-settings.ldap.backup.fullSchedule")

@@ -71,9 +71,6 @@ def main():
             gluu.install_ldap_backup()
 
         elif args.subparser_name == "uninstall-gluu":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             if settings.get("installer-settings.redis.install"):
@@ -118,9 +115,6 @@ def main():
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "install":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             if settings.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.postgres import Postgres
@@ -132,21 +126,14 @@ def main():
                 redis.uninstall_redis()
                 redis.install_redis()
             gluu.install_gluu()
-            settings.remove_empty_keys()
 
         elif args.subparser_name == "uninstall":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             gluu.uninstall_nginx_ingress()
             logger.info("Please wait...")
 
         elif args.subparser_name == "install-gluu":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             gluu.install_gluu(install_ingress=False)

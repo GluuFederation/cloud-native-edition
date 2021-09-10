@@ -34,6 +34,7 @@ from pygluu.kubernetes.terminal.sql import PromptSQL
 from pygluu.kubernetes.terminal.google import PromptGoogle
 from pygluu.kubernetes.terminal.openbanking import PromptOpenBanking
 from pygluu.kubernetes.terminal.distribution import PromptDistribution
+from pygluu.kubernetes.terminal.helm import PromptHelm
 from pathlib import Path
 
 
@@ -157,6 +158,11 @@ class Prompt:
         dist = PromptDistribution(self.settings)
         dist.prompt_distribution()
 
+    def helm(self):
+        self.load_settings()
+        helm = PromptHelm(self.settings)
+        helm.prompt_helm()
+
     def openbanking(self):
         self.load_settings()
         if self.settings.get("global.distribution") == "openbanking":
@@ -169,6 +175,7 @@ class Prompt:
             self.settings.set("global.client-api.enabled", False)
             self.settings.set("global.fido2.enabled", False)
             self.settings.set("global.scim.enabled", False)
+            self.settings.set("installer-settings.volumeProvisionStrategy", "microk8sDynamic")
             # Jackrabbit might be enabled for this distribution later
             self.settings.set("global.jackrabbit.enabled", False)
             ob = PromptOpenBanking(self.settings)
@@ -224,4 +231,6 @@ class Prompt:
         self.configuration()
         self.images()
         self.replicas()
+        self.helm()
         self.confirm_settings()
+        self.settings.remove_empty_keys()
