@@ -18,7 +18,7 @@ spec:
         prefix: "/passport"
     route:
     - destination:
-        host: {{ .Values.service.oxPassportServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
+        host: {{ .Values.global.oxpassport.oxPassportServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
         port:
           number: 8090
       weight: 100

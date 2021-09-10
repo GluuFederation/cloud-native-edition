@@ -228,9 +228,6 @@ casa:
       cpu: 500m
       # -- Memory request.
       memory: 500Mi
-  service:
-    # -- Name of the casa service. Please keep it as default.
-    casaServiceName: casa
   # -- Configure the liveness healthcheck for casa if needed.
   livenessProbe:
     httpGet:
@@ -671,9 +668,6 @@ fido2:
       cpu: 500m
       # -- Memory request.
       memory: 500Mi
-  service:
-    # -- Name of the fido2 service. Please keep it as default.
-    fido2ServiceName: fido2
   # -- Configure the liveness healthcheck for the fido2 if needed.
   livenessProbe:
     # -- http liveness probe endpoint
@@ -725,6 +719,9 @@ global:
   azureStorageAccountType: Standard_LRS
   # -- Azure storage kind if using Azure disks
   azureStorageKind: Managed
+  casa:
+    # -- Name of the casa service. Please keep it as default.
+    casaServiceName: casa
   client-api:
     # -- Name of the client-api service. Please keep it as default.
     clientApiServerServiceName: client-api
@@ -753,7 +750,7 @@ global:
   cnObTransportCrt: ""
   # -- Open banking AS transport key. Used in SSA Validation. This must be encoded using base64.
   cnObTransportKey: ""
-  # -- Open banking AS transport key passphrase to unlock AS transport key. This must be encoded using base64.
+  # -- Open banking AS transport key pas`sphrase to unlock AS transport key. This must be encoded using base64.
   cnObTransportKeyPassPhrase: ""
   # -- Open banking transport Alias used inside the JVM.
   cnObTransportAlias: ""
@@ -779,6 +776,8 @@ global:
   # -- Fully qualified domain name to be used for Gluu installation. This address will be used to reach Gluu services.
   fqdn: demoexample.gluu.org
   fido2:
+    # -- Name of the fido2 service. Please keep it as default.
+    fido2ServiceName: fido2
     # -- Boolean flag to enable/disable the fido2 chart.
     enabled: false
   # -- GCE storage kind if using Google disks
@@ -807,7 +806,12 @@ global:
     enabled: false
     # -- Name of the OpenDJ service. Please keep it as default.
     ldapServiceName: opendj
+  oxpassport:
+    # -- Name of the oxPassport service. Please keep it as default.
+    oxPassportServiceName: oxpassport
   oxshibboleth:
+    # -- Name of the oxShibboleth service. Please keep it as default.
+    oxShibbolethServiceName: oxshibboleth
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
     enabled: false
   # --  Gluu distributions supported are: default|openbanking.
@@ -816,6 +820,8 @@ global:
     # -- Boolean flag to enable/disable the persistence chart.
     enabled: true
   scim:
+    # -- Name of the scim service. Please keep it as default.
+    scimServiceName: scim
     # -- Boolean flag to enable/disable the SCIM chart.
     enabled: false
   # -- StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed.
@@ -1166,9 +1172,6 @@ oxpassport:
       cpu: 700m
       # -- Memory request.
       memory: 900Mi
-  service:
-    # -- Name of the oxPassport service. Please keep it as default.
-    oxPassportServiceName: oxpassport
   # -- Configure the liveness healthcheck for oxPassport if needed.
   livenessProbe:
     httpGet:
@@ -1241,9 +1244,6 @@ oxshibboleth:
       cpu: 1000m
       # -- Memory request.
       memory: 1000Mi
-  service:
-    # -- Name of the oxShibboleth service. Please keep it as default.
-    oxShibbolethServiceName: oxshibboleth
   # -- Configure the liveness healthcheck for the oxShibboleth if needed.
   livenessProbe:
     httpGet:
@@ -1353,9 +1353,6 @@ scim:
       cpu: 1000m
       # -- Memory request.
       memory: 1000Mi
-  service:
-    # -- Name of the auth-server service. Please keep it as default.
-    scimServiceName: scim
   # -- Configure the liveness healthcheck for SCIM if needed.
   livenessProbe:
     httpGet:

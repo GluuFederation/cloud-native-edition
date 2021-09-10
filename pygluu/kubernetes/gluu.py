@@ -21,7 +21,7 @@ logger = get_logger("gluu-helm          ")
 
 class Gluu(object):
     def __init__(self):
-        self.values_file = Path("./helm/gluu/values.yaml").resolve()
+        self.values_file = Path("./helm/gluu/override-values.yaml").resolve()
         self.upgrade_values_file = Path("./helm/gluu-upgrade/values.yaml").resolve()
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()

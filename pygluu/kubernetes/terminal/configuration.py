@@ -62,11 +62,11 @@ class PromptConfiguration:
         if self.settings.get("config.adminPassword") in (None, ''):
             self.settings.set("config.adminPassword", prompt_password("Admin GUI"))
 
-        if self.settings.get("config.ldapPassword") in (None, ''):
+        if self.settings.get("config.configmap.ldapPassword") in (None, ''):
             if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap"):
-                self.settings.set("config.ldapPassword", prompt_password("OpenDJ"))
+                self.settings.set("config.configmap.ldapPassword", prompt_password("OpenDJ"))
             else:
-                self.settings.set("config.ldapPassword", self.settings.get("config.configmap.cnCouchbasePass"))
+                self.settings.set("config.configmap.ldapPassword", self.settings.get("config.configmap.cnCouchbasePass"))
 
         if self.settings.get("global.storageClass.provisioner") in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             self.settings.set("global.isFqdnRegistered", False)

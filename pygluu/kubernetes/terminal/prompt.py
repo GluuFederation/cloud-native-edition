@@ -34,6 +34,7 @@ from pygluu.kubernetes.terminal.sql import PromptSQL
 from pygluu.kubernetes.terminal.google import PromptGoogle
 from pygluu.kubernetes.terminal.openbanking import PromptOpenBanking
 from pygluu.kubernetes.terminal.distribution import PromptDistribution
+from pathlib import Path
 
 
 class Prompt:
@@ -45,6 +46,7 @@ class Prompt:
 
     def load_settings(self):
         self.settings = ValuesHandler()
+        self.settings.store_override_file()
 
     def license(self):
         self.load_settings()
@@ -195,6 +197,9 @@ class Prompt:
 
         :return:
         """
+        # Check if override file by customer exists if not empty the new one
+        if not Path("./override-values.yaml").exists():
+            self.settings.reset_data()
         self.license()
         self.versions()
         self.arch()

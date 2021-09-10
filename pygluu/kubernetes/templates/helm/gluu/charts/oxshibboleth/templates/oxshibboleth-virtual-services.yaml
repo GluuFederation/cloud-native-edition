@@ -20,7 +20,7 @@ spec:
       uri: /identity
     route:
     - destination:
-        host: {{ .Values.service.oxShibbolethServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
+        host: {{ .Values.global.oxshibboleth.oxShibbolethServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
         port:
           number: 8080
       weight: 100

@@ -4,7 +4,8 @@
  Installs Gluu
 """
 import argparse
-import sys
+import sys, shutil
+from pathlib import Path
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
 from pygluu.kubernetes.helpers import get_logger, copy_templates
@@ -56,8 +57,10 @@ def main():
         return
 
     copy_templates()
+    # Prepare override-values.yaml for parsing
+    shutil.copy(Path("./helm/gluu/values.yaml"), Path("./helm/gluu/override-values.yaml"))
     settings = ValuesHandler()
-
+    settings.load()
     prompts = Prompt()
     prompts.prompt()
     settings = ValuesHandler()
@@ -129,6 +132,7 @@ def main():
                 redis.uninstall_redis()
                 redis.install_redis()
             gluu.install_gluu()
+            settings.remove_empty_keys()
 
         elif args.subparser_name == "uninstall":
             from pygluu.kubernetes.terminal.helm import PromptHelm
