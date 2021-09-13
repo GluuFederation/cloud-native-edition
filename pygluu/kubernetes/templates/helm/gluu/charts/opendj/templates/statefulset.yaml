@@ -76,13 +76,13 @@ spec:
           {{- include "opendj.usr-secret-envs" $ | indent 12 }}
         {{- if $.Values.multiCluster.enabled }}
           - name: GLUU_SERF_ADVERTISE_ADDR
-            value: "{{ $.Release.Name }}-opendj-{{$.Values.multiCluster.clusterId}}-regional-{{$v}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}:3094{{$v}}"
+            value: "{{ $.Release.Name }}-opendj-{{$.Values.multiCluster.clusterId}}-regional-{{$v}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }}:307{{$.Values.multiCluster.namespaceIntId}}{{$v}}"
           - name: GLUU_LDAP_ADVERTISE_ADMIN_PORT
-            value: "3044{{$v}}"
+            value: "304{{$.Values.multiCluster.namespaceIntId}}{{$v}}"
           - name: GLUU_LDAP_ADVERTISE_LDAPS_PORT
-            value: "3063{{$v}}"
+            value: "306{{$.Values.multiCluster.namespaceIntId}}{{$v}}"
           - name: GLUU_LDAP_ADVERTISE_REPLICATION_PORT
-            value: "3098{{$v}}"
+            value: "309{{$.Values.multiCluster.namespaceIntId}}{{$v}}"
         {{- end }}
         lifecycle:
           preStop:

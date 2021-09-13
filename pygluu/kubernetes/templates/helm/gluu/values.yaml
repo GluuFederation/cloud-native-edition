@@ -354,6 +354,10 @@ nginx-ingress:
     casaEnabled: true
     # -- Casa ingress resource labels. key app is taken
     casaLabels: { }
+    # -- Enable passport and oxshibboleth endpoints /idp and /passport
+    passportShibEnabled: false
+    # -- passport and oxshibboleth ingress resource labels. key app is taken.
+    passportShibLabels: { }
     # -- Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"}
     additionalLabels: { }
     # -- Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken
@@ -513,6 +517,9 @@ opendj:
     # -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
     # west, east, south, north, region ...etc If left empty it will be randomly generated.
     clusterId: ""
+    # -- Namespace int id. This id needs to be a unique number 0-9 per gluu installation per namespace.
+    # Used when gluu is installed in the same kubernetes cluster more than once.
+    namespaceIntId: 0
   persistence:
     # -- OpenDJ volume size
     size: 5Gi

@@ -48,6 +48,10 @@ ingress:
   casaEnabled: true
   # -- Casa ingress resource labels. key app is taken
   casaLabels: { }
+  # -- Enable passport and oxshibboleth endpoints /idp and /passport
+  passportShibEnabled: false
+  # -- passport and oxshibboleth ingress resource labels. key app is taken.
+  passportShibLabels: { }
   # -- Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
   # -- Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}

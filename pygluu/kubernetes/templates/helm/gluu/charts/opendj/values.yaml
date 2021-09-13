@@ -49,6 +49,9 @@ multiCluster:
   # -- This id needs to be unique to each kubernetes cluster in a multi cluster setup
   # west, east, south, north, region ...etc If left empty it will be randomly generated.
   clusterId: ""
+  # -- Namespace int id. This id needs to be a unique number 0-9 per gluu installation per namespace.
+  # Used when gluu is installed in the same kubernetes cluster more than once.
+  namespaceIntId: 0
 persistence:
   # -- OpenDJ volume size
   size: 5Gi

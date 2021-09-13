@@ -56,6 +56,14 @@ class PromptHelm:
                                                "this cluster from any subsequent clusters. i.e "
                                                "west, east, north, south, test..", default="test"))
 
+            if not self.settings.get("GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID"):
+                self.settings.set("GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID",
+                                  int(click.prompt("Namespace int id. This id needs to be a unique number 0-9 per gluu "
+                                                   "installation per namespace. Used when gluu is installed in the "
+                                                   "same kubernetes cluster more than once.", default="0",
+                                                   type=click.Choice(["0", "1", "2", "3",
+                                                                      "4", "5", "6", "7", "8", "9"]))))
+
             if not self.settings.get("GLUU_LDAP_MULTI_CLUSTERS_IDS") or \
                     not isinstance(self.settings.get("GLUU_LDAP_MULTI_CLUSTERS_IDS"), list):
                 temp = click.prompt("ALPHA-FEATURE-Please enter the cluster IDs for all other subsequent "
