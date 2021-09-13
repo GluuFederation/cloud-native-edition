@@ -43,7 +43,8 @@ def clean_dict(dictionary):
     if isinstance(dictionary, list):
         return [v for v in map(clean_dict, dictionary) if v]
 
-    return dictionary
+    if dictionary:
+        return dictionary
 
 
 class ValuesHandler(object):
