@@ -200,6 +200,7 @@ class SettingsHandler(object):
                                 GLUU_LDAP_SERF_PEERS="",
                                 GLUU_LDAP_MULTI_CLUSTER_REPLICAS="",
                                 GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID="",
+                                GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID="",
                                 GLUU_LDAP_MULTI_CLUSTERS_IDS=[]
                                 )
         return default_settings

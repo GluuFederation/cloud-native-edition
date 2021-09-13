@@ -481,7 +481,7 @@ spec:
 
 ---
 
-{{ if .Values.ingress.adminUiEnabled -}}
+{{ if .Values.ingress.passportShibEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1beta1
@@ -489,7 +489,62 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
   labels: 
-    app: {{ $fullName }}-oxtrust-shib-passport
+    app: {{ $fullName }}-shib-passport
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.passportShibLabels }}
+{{ toYaml .Values.ingress.passportShibLabels | indent 4 }}
+{{- end }}
+  annotations:
+    nginx.org/ssl-services: "oxtrust"
+    nginx.ingress.kubernetes.io/app-root: "/identity"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /idp
+            backend:
+              serviceName: oxshibboleth
+              servicePort: 8080
+          - path: /passport
+            backend:
+              serviceName: oxpassport
+              servicePort: 8090
+
+  {{- end }}
+{{- end }}
+
+---
+
+{{ if .Values.ingress.adminUiEnabled -}}
+{{ $fullName := include "nginx-ingress.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-admin-ui
+  labels:
+    app: {{ $fullName }}-oxtrust
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
 {{- end }}
@@ -523,18 +578,12 @@ spec:
       http:
         paths:
           - path: /identity
+            pathType: Prefix
             backend:
-              serviceName: oxtrust
-              servicePort: 8080
-          - path: /idp
-            backend:
-              serviceName: oxshibboleth
-              servicePort: 8080
-          - path: /passport
-            backend:
-              serviceName: oxpassport
-              servicePort: 8090
-
+              service:
+                name: oxtrust
+                port:
+                  number: 8080
   {{- end }}
 {{- end }}
 
