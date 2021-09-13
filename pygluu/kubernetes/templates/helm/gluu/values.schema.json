@@ -2256,7 +2256,7 @@
                               "description":"Enable OpenDJ multiCluster mode. This flag enabbles loading keys under `opendj.multiCluster`",
                               "type":"boolean"
                            },
-                           "serfAdvertiseAddr":{
+                           "serfAdvertiseAddrSuffix":{
                               "description":"OpenDJ Serf advertise address for the cluster",
                               "type":"string"
                            },

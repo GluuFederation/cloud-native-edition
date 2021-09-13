@@ -30,6 +30,12 @@ from pygluu.kubernetes.terminal.cache import PromptCache
 from pygluu.kubernetes.terminal.backup import PromptBackup
 from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
+from pygluu.kubernetes.terminal.sql import PromptSQL
+from pygluu.kubernetes.terminal.google import PromptGoogle
+from pygluu.kubernetes.terminal.openbanking import PromptOpenBanking
+from pygluu.kubernetes.terminal.distribution import PromptDistribution
+from pygluu.kubernetes.terminal.helm import PromptHelm
+from pathlib import Path
 
 
 class Prompt:
@@ -41,6 +47,7 @@ class Prompt:
 
     def load_settings(self):
         self.settings = ValuesHandler()
+        self.settings.store_override_file()
 
     def license(self):
         self.load_settings()
@@ -79,16 +86,18 @@ class Prompt:
         self.load_settings()
         test_environment = PromptTestEnvironment(self.settings)
         if not self.settings.get("global.cloud.testEnviroment") and \
-                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
+                self.settings.get("global.storageClass.provisioner") not in ("microk8s.io/hostpath",
+                                                                             "k8s.io/minikube-hostpath"):
             test_environment.prompt_test_environment()
 
     def network(self):
-        if not self.settings.get("CN_HOST_EXT_IP"):
+        if self.settings.get("global.lbIp") in ('None', ''):
             ip = gather_ip()
             self.load_settings()
-            self.settings.set("CN_HOST_EXT_IP", ip)
+            self.settings.set("global.lbIp", ip)
 
-            if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and not self.settings.get("global.istio.enabled"):
+            if "aws" in self.settings.get("installer-settings.volumeProvisionStrategy") and \
+                    not self.settings.get("global.istio.enabled"):
                 aws = PromptAws(self.settings)
                 aws.prompt_aws_lb()
 
@@ -144,6 +153,46 @@ class Prompt:
         replicas = PromptReplicas(self.settings)
         replicas.prompt_replicas()
 
+    def distribution(self):
+        self.load_settings()
+        dist = PromptDistribution(self.settings)
+        dist.prompt_distribution()
+
+    def helm(self):
+        self.load_settings()
+        helm = PromptHelm(self.settings)
+        helm.prompt_helm()
+
+    def openbanking(self):
+        self.load_settings()
+        if self.settings.get("global.distribution") == "openbanking":
+            # Disable all optional services from openbanking distribution
+            self.settings.set("global.cr-rotate.enabled", False)
+            self.settings.set("global.auth-server-key-rotation.enabled", False)
+            self.settings.set("config.configmap.cnPassportEnabled", False)
+            self.settings.set("global.oxshibboleth.enabled", False)
+            self.settings.set("config.configmap.cnCasaEnabled", False)
+            self.settings.set("global.client-api.enabled", False)
+            self.settings.set("global.fido2.enabled", False)
+            self.settings.set("global.scim.enabled", False)
+            self.settings.set("installer-settings.volumeProvisionStrategy", "microk8sDynamic")
+            # Jackrabbit might be enabled for this distribution later
+            self.settings.set("global.jackrabbit.enabled", False)
+            ob = PromptOpenBanking(self.settings)
+            ob.prompt_openbanking()
+
+    def sql(self):
+        self.load_settings()
+        if self.settings.get("global.cnPersistenceType") == "sql":
+            spanner = PromptSQL(self.settings)
+            spanner.prompt_sql()
+
+    def google(self):
+        self.load_settings()
+        if self.settings.get("global.cnPersistenceType") == "spanner":
+            spanner = PromptGoogle(self.settings)
+            spanner.prompt_google()
+
     def confirm_settings(self):
         self.load_settings()
         if not self.settings.get("installer-settings.confirmSettings"):
@@ -155,22 +204,33 @@ class Prompt:
 
         :return:
         """
+        # Check if override file by customer exists if not empty the new one
+        if not Path("./override-values.yaml").exists():
+            self.settings.reset_data()
         self.license()
         self.versions()
         self.arch()
+        self.distribution()
+        self.openbanking()
         self.namespace()
         self.optional_services()
-        self.jackrabbit()
+        if self.settings.get("global.distribution") != "openbanking":
+            self.jackrabbit()
         self.istio()
         self.test_enviornment()
         self.network()
         self.persistence_backend()
         self.ldap()
-        self.volumes()
+        if self.settings.get("global.distribution") != "openbanking":
+            self.volumes()
+        self.sql()
+        self.google()
         self.couchbase()
         self.cache()
         self.backup()
         self.configuration()
         self.images()
         self.replicas()
+        self.helm()
         self.confirm_settings()
+        self.settings.remove_empty_keys()

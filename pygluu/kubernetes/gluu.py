@@ -21,7 +21,7 @@ logger = get_logger("gluu-helm          ")
 
 class Gluu(object):
     def __init__(self):
-        self.values_file = Path("./helm/gluu/values.yaml").resolve()
+        self.values_file = Path("./helm/gluu/override-values.yaml").resolve()
         self.upgrade_values_file = Path("./helm/gluu-upgrade/values.yaml").resolve()
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()
@@ -234,7 +234,7 @@ class Gluu(object):
     def install_ldap_backup(self):
         values_file = Path("./helm/ldap-backup/values.yaml").resolve()
         values_file_parser = Parser(values_file, True)
-        values_file_parser["ldapPass"] = self.settings.get("config.configmap.ldapPassword")
+        values_file_parser["ldapPass"] = self.settings.get("config.ldapPassword")
         if self.settings.get("global.storageClass.provisioner") not in \
                 ("microk8s.io/hostpath", "k8s.io/minikube-hostpath"):
             values_file_parser["gluuLdapSchedule"] = self.settings.get("installer-settings.ldap.backup.fullSchedule")
@@ -242,8 +242,8 @@ class Gluu(object):
             values_file_parser["multiCluster"]["enabled"] = True
             values_file_parser["multiCluster"]["ldapAdvertiseAdminPort"] = \
                 self.settings.get("opendj.ports.tcp-admin.nodePort")
-            values_file_parser["multiCluster"]["serfAdvertiseAddr"] = \
-                self.settings.get("opendj.multiCluster.serfAdvertiseAddr")[:-6]
+            values_file_parser["multiCluster"]["serfAdvertiseAddrSuffix"] = \
+                self.settings.get("opendj.multiCluster.serfAdvertiseAddrSuffix")[:-6]
         values_file_parser.dump_it()
         exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
             self.ldap_backup_release_name, self.settings.get("installer-settings.namespace")))

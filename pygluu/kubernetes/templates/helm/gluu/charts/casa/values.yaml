@@ -47,8 +47,6 @@ resources:
     # -- Memory request.
     memory: 500Mi
 service:
-  # -- Name of the casa service. Please keep it as default.
-  casaServiceName: casa
   # -- Port of the casa service. Please keep it as default.
   port: 8080
   # -- The name of the casa port within the casa service. Please keep it as default.

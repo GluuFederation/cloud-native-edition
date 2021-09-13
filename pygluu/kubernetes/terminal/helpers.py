@@ -7,6 +7,8 @@ This module contains helpers for terminal prompt classes
 License terms and conditions for Gluu Cloud Native Edition:
 https://www.apache.org/licenses/LICENSE-2.0
 """
+import base64
+from pathlib import Path
 
 import click
 from pygluu.kubernetes.helpers import get_logger
@@ -85,3 +87,39 @@ def gather_ip():
         except ValueError as exc:
             # raised if IP is invalid
             logger.warning(f"Cannot determine IP address; reason={exc}")
+
+
+def read_file(file):
+    """
+
+    @param file:
+    @return:
+    """
+    try:
+        _ = input("Hit 'enter' or 'return' when ready.")
+        with open(Path(file)) as content_file:
+            content = content_file.read()
+            encoded_content_bytes = base64.b64encode(content.encode("utf-8"))
+            encoded_content_string = str(encoded_content_bytes, "utf-8")
+            return encoded_content_string
+    except FileNotFoundError:
+        logger.error(f"File {file} not found.")
+        raise SystemExit(1)
+
+
+def read_file_bytes(file):
+    """
+
+    @param file:
+    @return:
+    """
+    try:
+        _ = input("Hit 'enter' or 'return' when ready.")
+        with open(Path(file), 'rb') as content_file:
+            content = content_file.read()
+            encoded_content_bytes = base64.b64encode(content)
+            encoded_content_string = str(encoded_content_bytes, "utf-8")
+            return encoded_content_string
+    except FileNotFoundError:
+        logger.error(f"File {file} not found.")
+        raise SystemExit(1)

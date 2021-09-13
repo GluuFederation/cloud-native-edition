@@ -23,6 +23,9 @@ class PromptReplicas:
         if self.settings.get("auth-server.replicas") in (None, ''):
             self.settings.set("auth-server.replicas", click.prompt("Number of Auth-Server replicas", default=1))
 
+        if self.settings.get("global.config-api.enabled") and self.settings.get("config-api.replicas") in (None, ''):
+            self.settings.set("config-api.replicas", click.prompt("Number of configAPI replicas", default=1))
+
         if self.settings.get("global.fido2.enabled") and self.settings.get("fido2.replicas") in (None, ''):
             self.settings.set("fido2.replicas", click.prompt("Number of fido2 replicas", default=1))
 

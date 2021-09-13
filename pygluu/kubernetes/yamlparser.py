@@ -67,8 +67,10 @@ class Parser(dict):
     def __setitem__(self, key, value):
         super(Parser, self).__setitem__(key, value)
 
-    def dump_it(self):
+    def dump_it(self, clean_data=False):
         d = self.analyze_ordered_dict_object(self)
+        if clean_data:
+            d = self.clean_dict(d)
         final_manifest_dict_list = self.manifests_dict_list + [d]
         with open(self.filename, "w+") as f:
             self.yaml.dump_all(final_manifest_dict_list, f)
@@ -88,6 +90,20 @@ class Parser(dict):
             super(Parser, self).__delitem__(key)
         except KeyError as e:
             logger.error(e)
+
+    def clean_dict(self, data):
+        if isinstance(data, dict):
+            return {
+                k: v
+                for k, v in ((k, self.clean_dict(v)) for k, v in data.items())
+                if v
+            }
+
+        if isinstance(data, list):
+            return [v for v in map(self.clean_dict, data) if v]
+
+        if data:
+            return data
 
     def update(self, other=None, **kwargs):
         if other is not None:

@@ -13,7 +13,7 @@ data:
   CN_SECRET_ADAPTER: {{ .Values.configSecretAdapter | quote }}
   CN_OXTRUST_CONFIG_GENERATION: {{ .Values.cnOxtrustConfigGeneration | quote }}
   CN_CACHE_TYPE: {{ .Values.cnCacheType | quote }}
-  {{- if and (.Values.cnRedisEnabled) (eq .Values.cnCacheType "REDIS") }}
+  {{ if eq .Values.cnCacheType "REDIS" }}
   CN_REDIS_URL: {{ .Values.cnRedisUrl | quote }}
   CN_REDIS_TYPE: {{ .Values.cnRedisType | quote }}
   {{- end }}

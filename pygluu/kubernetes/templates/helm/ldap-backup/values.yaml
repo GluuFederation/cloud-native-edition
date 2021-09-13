@@ -1,6 +1,7 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
-
+# -- Gluu release name where Gluu was installed
+cnReleaseName: cn
 # -- Cron job Schedule for backup
 cnLdapSchedule: "*/59 * * * *"
 # -- Whether to generate oxShibboleth configuration or not (default to true).
@@ -8,31 +9,26 @@ cnOxtrustConfigGeneration: true
 # -- Specify cluster details if used to activate backup.
 multiCluster:
   enabled: false
-  serfAdvertiseAddr: "firstldap.gluu.org"
-  ldapAdvertiseAdminPort: 30444
+  ldapAdvertiseAdminPort: 30440
 # -- Name of the OpenDJ service. Please keep it as default.
 ldapServiceName: opendj
 # -- LDAP admin password if OpennDJ is used for persistence.
 ldapPass: P@assw0rd
 # -- CronJobb concurrencyPolicy. Leave as default.
 concurrencyPolicy: Forbid
-
-# cnRedisEnabled will determin if CN_REDIS_URL and CN_REDIS_TYPE if they will be used.
-cnRedisEnabled: false
 # -- Turn off replication in LDAP server. This must be left as false.
 cnLdapAutoReplicate: false
-# -- Redis URL and port number <url>:<port>. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
+# -- Redis URL and port number <url>:<port>. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
 cnRedisUrl: redis:6379
 # -- Cache type. `NATIVE_PERSISTENCE`, `REDIS`. or `IN_MEMORY`. Defaults to `NATIVE_PERSISTENCE` .
 cnCacheType: NATIVE_PERSISTENCE
-# -- Redis service type. `STANDALONE` or `CLUSTER`. Can be used when  `config.configmap.gluuCacheType` is set to `REDIS`.
+# -- Redis service type. `STANDALONE` or `CLUSTER`. Can be used when  `config.configmap.cnCacheType` is set to `REDIS`.
 cnRedisType: STANDALONE
 # -- The config backend adapter that will hold Gluu configuration layer. google|kubernetes
 configAdapterName: kubernetes
 # -- The config backend adapter that will hold Gluu secret layer. google|kubernetes
 configSecretAdapter: kubernetes
 
-cnOxtrustConfigGenerationRepl: false
 nameOverride: ""
 fullnameOverride: ""
 

@@ -19,7 +19,7 @@ spec:
         exact: /casa
     route:
     - destination:
-        host: {{ .Values.service.casaServiceName }}.{{.Release.Namespace}}.svc.cluster.local
+        host: {{ .Values.global.casa.casaServiceName }}.{{.Release.Namespace}}.svc.cluster.local
         port:
           number: 8080
       weight: 100

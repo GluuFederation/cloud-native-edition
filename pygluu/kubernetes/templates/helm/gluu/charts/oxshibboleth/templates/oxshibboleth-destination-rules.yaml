@@ -7,7 +7,7 @@ metadata:
   name: {{ .Release.Name }}-oxshibboleth-mtls
   namespace: {{ .Release.Namespace }}
 spec:
-  host: {{ .Values.service.oxShibbolethServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
+  host: {{ .Values.global.oxshibboleth.oxShibbolethServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL

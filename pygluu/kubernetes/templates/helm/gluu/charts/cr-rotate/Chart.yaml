@@ -3,7 +3,7 @@
 apiVersion: v2
 name: cr-rotate
 version: 5.0.0
-kubeVersion: ">=v1.17.0-0"
+kubeVersion: ">=v1.19.0-0"
 description: CacheRefreshRotation is a special container to monitor cache refresh on oxTrust containers. This may become depreciated in 5.0.
 type: application
 keywords:

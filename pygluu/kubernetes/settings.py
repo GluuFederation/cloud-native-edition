@@ -24,14 +24,22 @@ def unlink_values_yaml():
         os.unlink(filename)
 
 
+def iterate_dict(dictionary, key_value=""):
+    for k, v in dictionary.items():
+        if isinstance(v, dict):
+            iterate_dict(v)
+        else:
+            dictionary[k] = key_value
+
+
 class ValuesHandler(object):
-    def __init__(self, values_file="./helm/gluu/values.yaml", values_schema_file="./helm/gluu/values.schema.json"):
+    def __init__(self, values_file="./helm/gluu/override-values.yaml",
+                 values_schema_file="./helm/gluu/values.schema.json"):
         self.values_file = Path(values_file)
         self.values_schema = Path(values_schema_file)
         self.errors = list()
         self.values_file_parser = Parser(self.values_file, True)
         self.schema = {}
-        self.load()
 
     def load(self):
         """
@@ -45,9 +53,15 @@ class ValuesHandler(object):
             # No installation settings mounted as /override-values.yaml. Checking values.yaml.
             pass
 
-    def store_data(self):
+    def store_override_file(self):
+        """
+        Copy override file to main directory
+        """
+        shutil.copy(Path("./helm/gluu/override-values.yaml"), Path("./override-values.yaml"))
+
+    def store_data(self, clean_data=False):
         try:
-            self.values_file_parser.dump_it()
+            self.values_file_parser.dump_it(clean_data)
             return True
         except Exception as exc:
             logger.info(f"Uncaught error={exc}")
@@ -91,16 +105,8 @@ class ValuesHandler(object):
 
     def reset_data(self):
         """
-        reset settings.json to default_settings
+        reset values.yaml to default_settings
         """
-
-        def iterate_dict(dictionary):
-            for k, v in dictionary.items():
-                if isinstance(v, dict):
-                    iterate_dict(v)
-                else:
-                    dictionary[k] = ""
-
         try:
             iterate_dict(self.values_file_parser)
             self.store_data()
@@ -109,3 +115,14 @@ class ValuesHandler(object):
             logger.info(f"Uncaught error={exc}")
             return False
 
+    def remove_empty_keys(self):
+        """
+        removes empty keys for override-values.yaml
+        """
+        try:
+            self.store_data(clean_data=True)
+            self.store_override_file()
+            return True
+        except Exception as exc:
+            logger.error(f"Uncaught error={exc}")
+            return False

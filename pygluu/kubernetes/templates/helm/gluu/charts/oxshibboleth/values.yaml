@@ -47,11 +47,9 @@ resources:
     # -- Memory request.
     memory: 1000Mi
 service:
-  # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
+  # -- The name of the oxShibboleth port within the oxPassport service. Please keep it as default.
   port: 8080
   targetPort: 8080
-  # -- Name of the oxShibboleth service. Please keep it as default.
-  oxShibbolethServiceName: oxshibboleth
   # -- Port of the oxShibboleth service. Please keep it as default.
   name: http-oxshib
 

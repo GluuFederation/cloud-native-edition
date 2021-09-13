@@ -4,7 +4,8 @@
  Installs Gluu
 """
 import argparse
-import sys
+import sys, shutil
+from pathlib import Path
 from pygluu.kubernetes.couchbase import Couchbase
 from pygluu.kubernetes.terminal.prompt import Prompt
 from pygluu.kubernetes.helpers import get_logger, copy_templates
@@ -56,8 +57,10 @@ def main():
         return
 
     copy_templates()
+    # Prepare override-values.yaml for parsing
+    shutil.copy(Path("./helm/gluu/values.yaml"), Path("./helm/gluu/override-values.yaml"))
     settings = ValuesHandler()
-
+    settings.load()
     prompts = Prompt()
     prompts.prompt()
     settings = ValuesHandler()
@@ -68,9 +71,6 @@ def main():
             gluu.install_ldap_backup()
 
         elif args.subparser_name == "uninstall-gluu":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             if settings.get("installer-settings.redis.install"):
@@ -115,9 +115,6 @@ def main():
             logger.info("settings.json has been generated")
 
         elif args.subparser_name == "install":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             if settings.get("installer-settings.jackrabbit.clusterMode"):
                 from pygluu.kubernetes.postgres import Postgres
@@ -131,18 +128,12 @@ def main():
             gluu.install_gluu()
 
         elif args.subparser_name == "uninstall":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             gluu.uninstall_nginx_ingress()
             logger.info("Please wait...")
 
         elif args.subparser_name == "install-gluu":
-            from pygluu.kubernetes.terminal.helm import PromptHelm
-            prompt_helm = PromptHelm(settings)
-            prompt_helm.prompt_helm()
             gluu = Gluu()
             gluu.uninstall_gluu()
             gluu.install_gluu(install_ingress=False)

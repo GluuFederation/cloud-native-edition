@@ -41,16 +41,21 @@ class PromptOptionalServices:
         if self.settings.get("config.configmap.cnCasaEnabled"):
             self.settings.set("global.client-api.enabled", True)
 
-        if not self.settings.get("global.fido2.enabled"):
+        if self.settings.get("global.fido2.enabled") in (None, ''):
             self.settings.set("global.fido2.enabled", click.confirm("Deploy fido2"))
 
-        if not self.settings.get("global.config-api.enabled"):
+        if self.settings.get("global.config-api.enabled") in (None, ''):
             self.settings.set("global.config-api.enabled", click.confirm("Deploy Config API"))
 
-        if not self.settings.get("global.scim.enabled"):
+        if self.settings.get("global.scim.enabled") in (None, ''):
             self.settings.set("global.scim.enabled", click.confirm("Deploy scim"))
 
-        if not self.settings.get("global.client-api.enabled"):
+            if self.settings.get("global.scim.enabled") in (None, ''):
+                self.settings.set("config.configmap.cnScimProtectionMode",
+                                  click.prompt("SCIM Protection mode", default="OAUTH",
+                                               type=click.Choice(["OAUTH", "TEST", "UMA"])))
+
+        if self.settings.get("global.client-api.enabled") in (None, ''):
             self.settings.set("global.client-api.enabled", click.confirm("Deploy Client API"))
 
         if self.settings.get("global.client-api.enabled"):

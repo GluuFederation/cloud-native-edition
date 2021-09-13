@@ -47,8 +47,6 @@ resources:
     # -- Memory request.
     memory: 900Mi
 service:
-  # -- Name of the oxPassport service. Please keep it as default.
-  oxPassportServiceName: oxpassport
   # -- Port of the oxPassport service. Please keep it as default.
   port: 8090
    # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
