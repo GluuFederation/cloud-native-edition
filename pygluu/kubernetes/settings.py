@@ -32,21 +32,6 @@ def iterate_dict(dictionary, key_value=""):
             dictionary[k] = key_value
 
 
-def clean_dict(dictionary):
-    if isinstance(dictionary, dict):
-        return {
-            k: v
-            for k, v in ((k, clean_dict(v)) for k, v in dictionary.items())
-            if v
-        }
-
-    if isinstance(dictionary, list):
-        return [v for v in map(clean_dict, dictionary) if v]
-
-    if dictionary:
-        return dictionary
-
-
 class ValuesHandler(object):
     def __init__(self, values_file="./helm/gluu/override-values.yaml",
                  values_schema_file="./helm/gluu/values.schema.json"):
@@ -74,9 +59,9 @@ class ValuesHandler(object):
         """
         shutil.copy(Path("./helm/gluu/override-values.yaml"), Path("./override-values.yaml"))
 
-    def store_data(self):
+    def store_data(self, clean_data=False):
         try:
-            self.values_file_parser.dump_it()
+            self.values_file_parser.dump_it(clean_data)
             return True
         except Exception as exc:
             logger.info(f"Uncaught error={exc}")
@@ -135,8 +120,7 @@ class ValuesHandler(object):
         removes empty keys for override-values.yaml
         """
         try:
-            clean_dictionary = clean_dict(self.values_file_parser)
-            self.update(clean_dictionary)
+            self.store_data(clean_data=True)
             self.store_override_file()
             return True
         except Exception as exc:

@@ -44,7 +44,7 @@ class PromptOptionalServices:
         if self.settings.get("global.fido2.enabled") in (None, ''):
             self.settings.set("global.fido2.enabled", click.confirm("Deploy fido2"))
 
-        if self.settings.get("global.config-api.enabled") in (None, '') :
+        if self.settings.get("global.config-api.enabled") in (None, ''):
             self.settings.set("global.config-api.enabled", click.confirm("Deploy Config API"))
 
         if self.settings.get("global.scim.enabled") in (None, ''):
