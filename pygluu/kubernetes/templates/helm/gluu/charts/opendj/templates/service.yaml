@@ -24,27 +24,27 @@ spec:
       name: tcp-ldaps
       targetPort: 1636
       protocol: TCP
-      nodePort: 3063{{$v}}
-    - port: 3098{{$v}}
+      nodePort: 306{{$.Values.multiCluster.namespaceIntId}}{{$v}}
+    - port: 309{{$.Values.multiCluster.namespaceIntId}}{{$v}}
       name: tcp-replication
-      targetPort: 3098{{$v}}
+      targetPort: 309{{$.Values.multiCluster.namespaceIntId}}{{$v}}
       protocol: TCP
-      nodePort: 3098{{$v}}
-    - port: 3044{{$v}}
+      nodePort: 309{{$.Values.multiCluster.namespaceIntId}}{{$v}}
+    - port: 304{{$.Values.multiCluster.namespaceIntId}}{{$v}}
       name: tcp-admin
-      targetPort: 3044{{$v}}
-      nodePort: 3044{{$v}}
+      targetPort: 304{{$.Values.multiCluster.namespaceIntId}}{{$v}}
+      nodePort: 304{{$.Values.multiCluster.namespaceIntId}}{{$v}}
       protocol: TCP
     - port: 7946
       name: tcp-serf
       targetPort: 7946
       protocol: TCP
-      nodePort: 3094{{$v}}
+      nodePort: 307{{$.Values.multiCluster.namespaceIntId}}{{$v}}
     - port: 7946
       name: udp-serf
       targetPort: 7946
       protocol: UDP
-      nodePort: 3094{{$v}}
+      nodePort: 307{{$.Values.multiCluster.namespaceIntId}}{{$v}}
   type: NodePort
   {{- else }}
     {{- range $key, $value := $.Values.ports }}

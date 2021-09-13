@@ -58,6 +58,14 @@ class PromptHelm:
                                                "this cluster from any subsequent clusters. i.e "
                                                "west, east, north, south, test..", default="test"))
 
+            if self.settings.get("opendj.multiCluster.namespaceIntId") in (None, ''):
+                self.settings.set("opendj.multiCluster.namespaceIntId",
+                                  int(click.prompt("Namespace int id. This id needs to be a unique number 0-9 per gluu "
+                                                   "installation per namespace. Used when gluu is installed in the "
+                                                   "same kubernetes cluster more than once.", default="0",
+                                                   type=click.Choice(["0", "1", "2", "3",
+                                                                      "4", "5", "6", "7", "8", "9"]))))
+
             if not self.settings.get("installer-settings.ldap.multiClusterIds") or \
                     not isinstance(self.settings.get("installer-settings.ldap.multiClusterIds"), list):
                 temp = click.prompt("Please enter the cluster IDs for all other subsequent "
