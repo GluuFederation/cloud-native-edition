@@ -57,7 +57,7 @@ def test_testenv_prompt_test_environment(monkeypatch, settings, given, expected)
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.confirm", lambda x, default: given)
-
+    settings.set("installer-settings.postgres.namespace", "test")
     settings.set("installer-settings.jackrabbit.clusterMode", "")
     prompt = PromptJackrabbit(settings)
     prompt.prompt_jackrabbit()
@@ -68,7 +68,7 @@ def test_jackrabit_postgresdb(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.prompt", lambda x, default: "jackrabbit")
-
+    settings.set("installer-settings.postgres.install", True)
     settings.set("installer-settings.jackrabbit.clusterMode", True)
     settings.set("config.configmap.cnJackrabbitPostgresDatabaseName", "")
     prompt = PromptJackrabbit(settings)
@@ -80,7 +80,7 @@ def test_jackrabit_postgresuser(monkeypatch, settings):
     from pygluu.kubernetes.terminal.jackrabbit import PromptJackrabbit
 
     monkeypatch.setattr("click.prompt", lambda x, default: "jackrabbit")
-
+    settings.set("installer-settings.postgres.install", True)
     settings.set("installer-settings.jackrabbit.clusterMode", True)
     settings.set("config.configmap.cnJackrabbitPostgresUser", "")
     prompt = PromptJackrabbit(settings)
