@@ -539,7 +539,7 @@ spec:
 {{ if .Values.ingress.adminUiEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-admin-ui
@@ -578,12 +578,9 @@ spec:
       http:
         paths:
           - path: /identity
-            pathType: Prefix
             backend:
-              service:
-                name: oxtrust
-                port:
-                  number: 8080
+              serviceName: oxtrust
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
