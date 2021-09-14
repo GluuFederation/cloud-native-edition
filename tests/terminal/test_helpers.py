@@ -20,8 +20,6 @@ def test_list_nodes_ip(monkeypatch, settings):
     monkeypatch.setattr("click.prompt", lambda x, default: gather_ip)
 
     settings.set("global.storageClass.provisioner", "kubernetes.io/aws-ebs")
-    prompt = PromptJackrabbit(settings)
-    prompt.prompt_jackrabbit()
     assert gather_ip == gather_ip
 
 
