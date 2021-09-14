@@ -30,7 +30,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-09-14T05:43:47.780261-04:00"
+    created: "2021-09-14T05:47:34.764759-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -116,7 +116,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0-a1
-    created: "2021-09-14T05:43:47.769998-04:00"
+    created: "2021-09-14T05:47:34.753706-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -233,7 +233,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-09-14T05:43:47.763228-04:00"
+    created: "2021-09-14T05:47:34.74684-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -353,7 +353,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.751112-04:00"
+    created: "2021-09-14T05:47:34.735967-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -476,7 +476,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.744011-04:00"
+    created: "2021-09-14T05:47:34.728702-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -547,10 +547,9 @@ entries:
       repository: ""
       version: 1.5.9-a
     description: Gluu Access and Identity Mangement
-    digest: 1cab60262713ecd03921c67ef0625783715457a533f759b93a942e8dc0c35973
+    digest: 28c1a26634e1effcaba62927bddad2baf70dfd90a96f7686ecff24e10f7e29bc
     home: https://www.gluu.org
     icon: https://gluu.org/wp-content/uploads/2020/12/logo.png
-    kubeVersion: '>=v1.17.0-0'
     maintainers:
     - email: mo@gluu.org
       name: moabu
@@ -599,7 +598,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.734328-04:00"
+    created: "2021-09-14T05:47:34.720691-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -722,7 +721,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.727234-04:00"
+    created: "2021-09-14T05:47:34.714123-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -844,7 +843,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.718571-04:00"
+    created: "2021-09-14T05:47:34.705824-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -967,7 +966,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.710814-04:00"
+    created: "2021-09-14T05:47:34.697544-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1094,7 +1093,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.704307-04:00"
+    created: "2021-09-14T05:47:34.690611-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1222,7 +1221,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.695351-04:00"
+    created: "2021-09-14T05:47:34.68165-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1308,7 +1307,7 @@ entries:
   ldap-backup:
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-09-14T05:43:47.782917-04:00"
+    created: "2021-09-14T05:47:34.767035-04:00"
     description: A backup strategy for LDAP
     digest: b5df0e1ee0feeb7981707e84a4a6cc53b5e81e6b4e5e0ac010a433494de525ff
     home: https://gluu.org/docs/gluu-server
@@ -1331,7 +1330,7 @@ entries:
     version: 1.6.7-b
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.782217-04:00"
+    created: "2021-09-14T05:47:34.766529-04:00"
     description: A backup strategy for LDAP
     digest: d5328a94fc4bf3f38cc3a44b081c7530410428c75d7b16e0c6923932ba2bc5a7
     home: https://www.gluu.org
@@ -1349,7 +1348,7 @@ entries:
     version: 1.5.9
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.781666-04:00"
+    created: "2021-09-14T05:47:34.766061-04:00"
     description: A backup strategy for LDAP
     digest: f21440b328a2b2c8f39b652c9ebcbb369f450f130fa2a2f143d4fb89c3705027
     home: https://www.gluu.org
@@ -1366,7 +1365,7 @@ entries:
     version: 1.5.9-a
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.781111-04:00"
+    created: "2021-09-14T05:47:34.765598-04:00"
     description: A backup strategy for LDAP
     digest: c144f3433d09e9abb292fd6c0a32e131bfc0cd311b6fc287d1d28677b70966c1
     home: https://www.gluu.org
@@ -1384,7 +1383,7 @@ entries:
     version: 1.4.4
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-09-14T05:43:47.780705-04:00"
+    created: "2021-09-14T05:47:34.765193-04:00"
     description: A backup strategy for LDAP
     digest: 2feb884e3745869d8c336bc6b38b6ebf92c6c8e54b3cb679c59792129644bd11
     home: https://www.gluu.org
@@ -1399,4 +1398,4 @@ entries:
     urls:
     - ldap-backup-1.4.4-a.tgz
     version: 1.4.4-a
-generated: "2021-09-14T05:43:47.686944-04:00"
+generated: "2021-09-14T05:47:34.673749-04:00"
