@@ -69,6 +69,7 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     settings.set("GLUU_LDAP_SECONDARY_CLUSTER", "Y")
     settings.set("GLUU_LDAP_SERF_PEERS", ["firstldap.gluu.org:30946", "secondldap.gluu.org:31946"])
     settings.set("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID", "test")
+    settings.set("GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID", "1")
     settings.set("GLUU_LDAP_MULTI_CLUSTERS_IDS", ["east", "west"])
 
     prompt = PromptHelm(settings)
