@@ -559,7 +559,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.2.3_04
+    tag: 4.2.3_05
     pullPolicy: Always
     pullSecrets: []
   resources:

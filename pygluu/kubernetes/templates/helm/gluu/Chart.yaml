@@ -30,7 +30,7 @@ annotations:
     - name: oxd-server
       image: gluufederation/oxd-server:4.2.3_02
     - name: oxpassport
-      image: gluufederation/oxpassport:4.2.3_04
+      image: gluufederation/oxpassport:4.2.3_05
     - name: oxshibboleth
       image: gluufederation/oxshibboleth:4.2.3_07
     - name: oxtrust
