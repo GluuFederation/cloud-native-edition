@@ -207,8 +207,8 @@ def main():
         all_repos_tags.update(get_docker_repo_tag(org, repo))
 
     major_official_version = str(determine_major_version(all_repos_tags))
-
-    filtered_all_repos_tags = filter_all_repo_dictionary_tags(all_repos_tags, major_official_version)
+    # inserted major_official_version manually as 4.2
+    filtered_all_repos_tags = filter_all_repo_dictionary_tags(all_repos_tags, "4.2")
     final_gluu_versions_dict = analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_official_version)
     update_json_file(final_gluu_versions_dict, '../pygluu/kubernetes/templates/gluu_versions.json')
 

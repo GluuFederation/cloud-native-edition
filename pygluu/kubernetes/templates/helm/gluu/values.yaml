@@ -367,7 +367,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.3_10
+    tag: 4.2.3_11
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -654,7 +654,7 @@ cr-rotate:
     crRotateServiceName: cr-rotate
   image:
     repository: gluufederation/cr-rotate
-    tag: 4.2.3_04
+    tag: 4.2.3_05
     pullPolicy: Always
     pullSecrets: []
   resources:
