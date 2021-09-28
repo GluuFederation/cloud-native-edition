@@ -50,7 +50,7 @@ class Helm(object):
             del ingress_parser["metadata"]["annotations"]["alb.ingress.kubernetes.io/certificate-arn"]
 
         for path in ingress_parser["spec"]["rules"][0]["http"]["paths"]:
-            service_name = path["backend"]["serviceName"]
+            service_name = path["backend"]["service"]["name"]
             if self.settings.get("ENABLE_CASA") != "Y" and service_name == "casa":
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
@@ -60,6 +60,14 @@ class Helm(object):
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
             if self.settings.get("ENABLE_OXPASSPORT") != "Y" and service_name == "oxpassport":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings.get("ENABLE_SCIM") != "Y" and service_name == "scim":
+                path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
+                del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
+
+            if self.settings.get("ENABLE_FIDO2") != "Y" and service_name == "fido2":
                 path_index = ingress_parser["spec"]["rules"][0]["http"]["paths"].index(path)
                 del ingress_parser["spec"]["rules"][0]["http"]["paths"][path_index]
 
@@ -286,10 +294,12 @@ class Helm(object):
             values_file_parser["jackrabbit"]["secrets"]["gluuJackrabbitPostgresPass"] = \
                 self.settings.get("JACKRABBIT_PG_PASSWORD")
         if self.settings.get("USE_ISTIO_INGRESS") == "Y":
+            values_file_parser["nginx-ingress"]["ingress"]["enabled"] = False
             values_file_parser["global"]["istio"]["ingress"] = True
             values_file_parser["global"]["istio"]["enabled"] = True
             values_file_parser["global"]["istio"]["namespace"] = self.settings.get("ISTIO_SYSTEM_NAMESPACE")
         elif self.settings.get("AWS_LB_TYPE") == "alb":
+            values_file_parser["nginx-ingress"]["ingress"]["enabled"] = False
             values_file_parser["global"]["alb"]["ingress"] = True
         else:
             values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True

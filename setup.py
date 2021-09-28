@@ -39,7 +39,7 @@ setup(
         "ruamel.yaml>=0.16.5",
         "pyOpenSSL>=19.1.0",
         "cryptography>=2.8",
-        "kubernetes==18.20.0",
+        "kubernetes==19.15.0a1",
         "Flask==1.1.2",
         "Click!=7.0,>=6.7",
         "Flask-WTF >= 0.14.2",

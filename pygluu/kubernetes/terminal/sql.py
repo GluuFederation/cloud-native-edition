@@ -35,7 +35,7 @@ class PromptSQL:
             print("|                     SQL DIALECT                                  |")
             print("|------------------------------------------------------------------|")
             print("| [1] MySQL                                                        |")
-            print("| [2] PostgreSQL                                                   |")
+            print("| [2] PostgreSQL - underdev                                        |")
             print("|------------------------------------------------------------------|")
 
             choice = click.prompt("SQL dialect", default=1)
