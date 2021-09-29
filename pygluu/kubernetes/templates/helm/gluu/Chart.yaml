@@ -10,7 +10,7 @@ annotations:
     - Added label injection to ingress defs
   artifacthub.io/images: |
     - name: casa
-      image: gluufederation/casa:4.2.3_03
+      image: gluufederation/casa:4.2.3_04
     - name: fido2
       image: gluufederation/fido2:4.2.3_03
     - name: scim
@@ -32,7 +32,7 @@ annotations:
     - name: oxpassport
       image: gluufederation/oxpassport:4.2.3_05
     - name: oxshibboleth
-      image: gluufederation/oxshibboleth:4.2.3_08
+      image: gluufederation/oxshibboleth:4.2.3_09
     - name: oxtrust
       image: gluufederation/oxtrust:4.2.3_06
     - name: persistence

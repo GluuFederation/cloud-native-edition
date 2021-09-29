@@ -1,7 +1,7 @@
 {
   "4.2": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
-    "CASA_IMAGE_TAG": "4.2.3_03",
+    "CASA_IMAGE_TAG": "4.2.3_04",
     "FIDO2_IMAGE_NAME": "gluufederation/fido2",
     "FIDO2_IMAGE_TAG": "4.2.3_03",
     "SCIM_IMAGE_NAME": "gluufederation/scim",
@@ -23,7 +23,7 @@
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
     "OXPASSPORT_IMAGE_TAG": "4.2.3_05",
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
-    "OXSHIBBOLETH_IMAGE_TAG": "4.2.3_08",
+    "OXSHIBBOLETH_IMAGE_TAG": "4.2.3_09",
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
     "OXTRUST_IMAGE_TAG": "4.2.3_06",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
