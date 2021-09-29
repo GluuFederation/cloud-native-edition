@@ -2,7 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 appVersion: "4.2.3"
-kubeVersion: ">=v1.17.0-0"
+# networking.k8s.io/v1beta1 depreciated in v1.22
+kubeVersion: ">=v1.17.0-0<=v1.22.0-0"
 annotations:
   artifacthub.io/changes: |
     - Gluu 4.2.3 official chart release
@@ -46,7 +47,7 @@ sources:
   - https://github.com/GluuFederation/cloud-native-edition
 maintainers:
 - name: moabu
-  email: mo@gluu.org
+  email: support@gluu.org
 description: Gluu Access and Identity Mangement
 name: gluu
 version: 1.5.9

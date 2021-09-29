@@ -6,5 +6,5 @@ version: 1.4.2
 appVersion: "4.2.3"
 maintainers:
 - name: Gluu
-email: support@gluu.org
+  email: support@gluu.org
 home: https://gluu.org/docs/gluu-server
