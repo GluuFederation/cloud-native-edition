@@ -32,13 +32,15 @@ class PromptAws:
         }
 
         if self.settings.get("AWS_LB_TYPE") not in lb_map.values():
-            print("|-----------------------------------------------------------------|")
-            print("|                     AWS Loadbalancer type                       |")
-            print("|-----------------------------------------------------------------|")
-            print("| [1] Classic Load Balancer (CLB) [default]                       |")
-            print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP            |")
-            print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY            |")
-            print("|-----------------------------------------------------------------|")
+            print("|-----------------------------------------------------------------------------|")
+            print("|                     AWS Loadbalancer type                                   |")
+            print("|-----------------------------------------------------------------------------|")
+            print("| [1] Classic Load Balancer (CLB) [default]                                   |")
+            print("| [2] Network Load Balancer (NLB - Alpha) -- Static IP                        |")
+            print("| [3] Application Load Balancer (ALB - Alpha) DEV_ONLY                        |")
+            print("| [ALB] Waiting for URL rewrite support by ALB controller                     |")
+            print("| https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/1571 |")
+            print("|-----------------------------------------------------------------------------|")
 
             choice = click.prompt("Loadbalancer type", default=1)
             self.settings.set("AWS_LB_TYPE", lb_map.get(choice, "clb"))
