@@ -8,14 +8,23 @@ pygluu.kubernetes.kubeapi
 
 import sys
 import time
+import os
 
 from kubernetes import client, utils, config
 from kubernetes.stream import stream
+from kubernetes.client.rest import ApiException
 
 from pygluu.kubernetes.helpers import get_logger, check_microk8s_kube_config_file, exec_cmd
 from pygluu.kubernetes.yamlparser import Parser
 
 logger = get_logger("gluu-kubernetes-api")
+
+
+def load_kubernetes_client_proxy():
+    proxy_url = os.getenv('HTTPS_PROXY', os.getenv('HTTP_PROXY', None))
+    if proxy_url:
+        logger.info(f"Setting proxy: {proxy_url}")
+        client.Configuration._default.proxy = proxy_url
 
 
 def load_kubernetes_config(mute=True):
@@ -27,12 +36,14 @@ def load_kubernetes_config(mute=True):
     try:
         config.load_incluster_config()
         config_loaded = True
+        load_kubernetes_client_proxy()
     except config.config_exception.ConfigException:
         if not mute:
             logger.warning("Unable to load in-cluster configuration; trying to load from Kube config file")
         try:
             config.load_kube_config()
             config_loaded = True
+            load_kubernetes_client_proxy()
         except (IOError, config.config_exception.ConfigException) as exc:
             if not mute:
                 logger.warning("Unable to load Kube config; reason={}".format(exc))
@@ -120,7 +131,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_namespace(name)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -133,7 +144,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.admission_cli.delete_validating_webhook_configuration(name, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -146,7 +157,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.admission_cli.delete_mutating_webhook_configuration(name, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -159,7 +170,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_namespaced_service(name=name, namespace=namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -172,7 +183,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.network_policy_cli.delete_namespaced_network_policy(name=name, namespace=namespace)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -187,7 +198,7 @@ class Kubernetes(object):
                 resp = self.apps_cli.delete_collection_namespaced_deployment(namespace=namespace,
                                                                              label_selector=app_label,
                                                                              body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -201,7 +212,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.apps_cli.delete_namespaced_deployment(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -216,7 +227,7 @@ class Kubernetes(object):
                 resp = self.apps_cli.delete_collection_namespaced_stateful_set(namespace=namespace,
                                                                                label_selector=app_label,
                                                                                body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -231,7 +242,7 @@ class Kubernetes(object):
             try:
                 resp = self.jobs_cli.delete_collection_namespaced_job(namespace=namespace, label_selector=app_label,
                                                                       body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -246,7 +257,7 @@ class Kubernetes(object):
                 resp = self.cronjobs_cli.delete_collection_namespaced_cron_job(namespace=namespace,
                                                                                label_selector=app_label,
                                                                                body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -260,7 +271,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_namespaced_secret(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -275,7 +286,7 @@ class Kubernetes(object):
                 resp = self.apps_cli.delete_collection_namespaced_daemon_set(namespace=namespace,
                                                                              label_selector=app_label,
                                                                              body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -291,7 +302,7 @@ class Kubernetes(object):
                 resp = self.core_cli.delete_collection_namespaced_replication_controller(namespace=namespace,
                                                                                          label_selector=app_label,
                                                                                          body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -307,7 +318,7 @@ class Kubernetes(object):
                 resp = self.core_cli.delete_collection_namespaced_config_map(namespace=namespace,
                                                                              label_selector=app_label,
                                                                              body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -320,7 +331,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_namespaced_config_map(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -333,7 +344,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.rbac_cli.delete_namespaced_role(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -346,7 +357,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.rbac_cli.delete_namespaced_role_binding(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -359,7 +370,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.rbac_cli.delete_cluster_role(name, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -372,7 +383,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.rbac_cli.delete_cluster_role_binding(name, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -386,7 +397,7 @@ class Kubernetes(object):
             try:
                 resp = self.core_cli.delete_collection_persistent_volume(label_selector=app_label,
                                                                          body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -401,7 +412,7 @@ class Kubernetes(object):
                 resp = self.core_cli.delete_collection_namespaced_persistent_volume_claim(namespace=namespace,
                                                                                           label_selector=app_label,
                                                                                           body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -416,7 +427,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.core_cli.delete_namespaced_service_account(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -429,10 +440,10 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.network_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 try:
                     resp = self.extenstion_cli.delete_namespaced_ingress(name, namespace, body=self.delete_options)
-                except client.rest.ApiException as e:
+                except ApiException as e:
                     response = self.check_error_and_response(starting_time, e)
                 else:
                     response = self.check_error_and_response(starting_time, resp)
@@ -448,7 +459,7 @@ class Kubernetes(object):
             try:
                 resp = self.crd_cli.delete_custom_resource_definition(name, body=self.delete_options)
 
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -461,7 +472,7 @@ class Kubernetes(object):
         while response:
             try:
                 resp = self.storage_cli.delete_storage_class(name, body=self.delete_options)
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_error_and_response(starting_time, e)
             else:
                 response = self.check_error_and_response(starting_time, resp)
@@ -484,7 +495,7 @@ class Kubernetes(object):
 
                     logger.info('Deleted {}/{} in namespace  {}'.format(manifest["kind"],
                                                                         manifest["metadata"]["name"], namespace))
-                except client.rest.ApiException as e:
+                except ApiException as e:
                     response = self.check_error_and_response(starting_time, e)
                 else:
                     response = self.check_error_and_response(starting_time, resp)
@@ -499,7 +510,7 @@ class Kubernetes(object):
                                                                        name=name,
                                                                        body=self.delete_options)
             logger.info('Deleted {} in namespace  {}'.format(name, namespace))
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404:
                 logger.info('{} in namespace  {} not found.'.format(name, namespace))
             else:
@@ -517,7 +528,7 @@ class Kubernetes(object):
             self.core_cli.create_namespace(body=body, pretty="pretty")
             logger.info('Created namespace {}'.format(name))
             return True
-        except client.rest.ApiException as e:
+        except ApiException as e:
             self.check_create_error_and_response(e, "Namespace", name)
             return False
 
@@ -532,7 +543,7 @@ class Kubernetes(object):
             self.core_cli.create_namespaced_service_account(namespace=namespace, body=body)
             logger.info('Created serviceaccount {} in namespace'.format(name, namespace))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             self.check_create_error_and_response(e, "ServiceAccount", name)
             return False
 
@@ -548,7 +559,7 @@ class Kubernetes(object):
             self.rbac_cli.create_cluster_role_binding(body=body)
             logger.info('Created cluster role binding {}'.format(cluster_role_binding_name))
             return True
-        except client.rest.ApiException as e:
+        except ApiException as e:
             self.check_create_error_and_response(e, "ClusterRoleBinding", cluster_role_binding_name)
             return False
 
@@ -564,7 +575,7 @@ class Kubernetes(object):
             self.rbac_cli.create_namespaced_role_binding(namespace=namespace, body=body)
             logger.info('Created role {} in namespace {}'.format(role_binding_name, namespace))
             return True
-        except client.rest.ApiException as e:
+        except ApiException as e:
             self.check_create_error_and_response(e, "RoleBinding", role_binding_name)
             return False
 
@@ -581,7 +592,7 @@ class Kubernetes(object):
 
                 logger.info('Created {}/{} in namespace  {}'.format(manifest["kind"],
                                                                     manifest["metadata"]["name"], namespace))
-            except (client.rest.ApiException, Exception) as e:
+            except (ApiException, Exception) as e:
                 self.check_create_error_and_response(e, manifest["kind"], manifest["metadata"]["name"])
 
     def patch_or_create_namespaced_configmap(self, name, literal=None, value_of_literal=None, namespace="default",
@@ -600,13 +611,13 @@ class Kubernetes(object):
             self.core_cli.patch_namespaced_config_map(name, namespace, body)
             logger.info('Configmap  {} in namespace {} has been patched'.format(name, namespace))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404 or not e.status:
                 try:
                     self.core_cli.create_namespaced_config_map(namespace=namespace, body=body)
                     logger.info('Created configmap {} in namespace {}'.format(name, namespace))
                     return True
-                except client.rest.ApiException as e:
+                except ApiException as e:
                     logger.exception(e)
                     return False
             logger.exception(e)
@@ -623,7 +634,7 @@ class Kubernetes(object):
             self.apps_cli.patch_namespaced_deployment_scale(name, namespace, body)
             logger.info('Deployemnt {} in namespace {} has been scaled to {}'.format(name, namespace, replicas))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
             return False
 
@@ -645,13 +656,13 @@ class Kubernetes(object):
             self.core_cli.patch_namespaced_secret(name, namespace, body)
             logger.info('Secret  {} in namespace {} has been patched'.format(name, namespace))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404 or not e.status:
                 try:
                     self.core_cli.create_namespaced_secret(namespace=namespace, body=body)
                     logger.info('Created secret {} of type {} in namespace {}'.format(name, secret_type, namespace))
                     return True
-                except client.rest.ApiException as e:
+                except ApiException as e:
                     logger.exception(e)
                     return False
             logger.exception(e)
@@ -680,7 +691,7 @@ class Kubernetes(object):
             self.apps_cli.patch_namespaced_deployment(name, namespace, deployment)
             logger.info('Image of deployemnt {} in namespace {} has been updated to {}'.format(name, namespace, image))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404 or not e.status:
                 logger.info(
                     'Deployment {} in namespace {} is not found'.format(name, namespace))
@@ -712,7 +723,7 @@ class Kubernetes(object):
             self.apps_cli.patch_namespaced_stateful_set(name, namespace, statefulset)
             logger.info('Image of statefulset {} in namespace {} has been updated to {}'.format(name, namespace, image))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404 or not e.status:
                 logger.info(
                     'Statefulset {} in namespace {} is not found'.format(name, namespace))
@@ -743,7 +754,7 @@ class Kubernetes(object):
             self.apps_cli.patch_namespaced_daemon_set(name, namespace, daemonset)
             logger.info('Image of daemonset {} in namespace {} has been updated to {}'.format(name, namespace, image))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             if e.status == 404 or not e.status:
                 logger.info(
                     'Daemonset {} in namespace {} is not found'.format(name, namespace))
@@ -762,7 +773,7 @@ class Kubernetes(object):
             self.apps_cli.patch_namespaced_stateful_set_scale(name, namespace, body)
             logger.info('StatefulSet {} in namespace {} has been scaled to {}'.format(name, namespace, replicas))
             return
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
             return False
 
@@ -776,7 +787,7 @@ class Kubernetes(object):
                     manifest["metadata"]["namespace"] = namespace
                 utils.create_from_dict(self.api_client, manifest)
                 logger.info('Created {}/{}'.format(manifest["kind"], manifest["metadata"]["name"]))
-            except (client.rest.ApiException, Exception) as e:
+            except (ApiException, Exception) as e:
                 # AttributeError: module 'kubernetes.client' has no attribute 'NetworkingIstioIoV1alpha3Api'
                 if "module 'kubernetes.client' has no attribute 'NetworkingIstioIoV1alpha3Api'" in str(e):
                     logger.warning("Creating {} failed.".format(manifest["kind"]))
@@ -794,7 +805,7 @@ class Kubernetes(object):
             for i in range(number_of_pods):
                 pods_name.append(response.items[i].metadata.name)
             return pods_name
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
 
     def read_namespaced_secret(self, name, namespace="default"):
@@ -806,7 +817,7 @@ class Kubernetes(object):
                 secret = self.core_cli.read_namespaced_secret(name=name, namespace=namespace)
                 logger.info('Reading secret {}'.format(name))
                 return secret
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
     def read_namespaced_service(self, name, namespace="default"):
@@ -818,7 +829,7 @@ class Kubernetes(object):
                 service = self.core_cli.read_namespaced_service(name=name, namespace=namespace)
                 logger.info('Reading service {}'.format(name))
                 return service
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
     def read_namespaced_configmap(self, name, namespace="default"):
@@ -830,7 +841,7 @@ class Kubernetes(object):
                 configmap = self.core_cli.read_namespaced_config_map(name=name, namespace=namespace)
                 logger.info('Reading configmap {}'.format(name))
                 return configmap
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
     def read_namespaced_ingress(self, name, namespace="default"):
@@ -842,7 +853,7 @@ class Kubernetes(object):
                 ingress = self.extenstion_cli.read_namespaced_ingress(name=name, namespace=namespace)
                 logger.info('Reading ingress {}'.format(name))
                 return ingress
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 response = self.check_read_error_and_response(starting_time, e)
 
     def read_namespaced_pod_status(self, name, timeout, namespace="default"):
@@ -875,7 +886,7 @@ class Kubernetes(object):
                     logger.warning("Timeout exceeded. This may not be an error. Please check pods statuses.")
                     return False
                 logger.info("Waiting for pod {} to get ready".format(name))
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
 
     def check_pods_statuses(self, namespace="default", app_label=None, timeout=300):
@@ -901,14 +912,14 @@ class Kubernetes(object):
                 if stdout:
                     logger.info("{}".format(resp))
                 return resp
-            except client.rest.ApiException as e:
+            except ApiException as e:
                 logger.exception(e)
 
     def get_namespaces(self):
         """List all namespaces"""
         try:
             return self.core_cli.list_namespace(pretty="pretty")
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
             return False
 
@@ -918,7 +929,7 @@ class Kubernetes(object):
             nodes_list = self.core_cli.list_node(pretty="pretty")
             logger.info("Getting list of nodes")
             return nodes_list
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
             return False
 
@@ -928,6 +939,6 @@ class Kubernetes(object):
             node_data = self.core_cli.read_node(name)
             logger.info("Getting node {} data".format(name))
             return node_data
-        except client.rest.ApiException as e:
+        except ApiException as e:
             logger.exception(e)
             return False
