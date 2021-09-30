@@ -1,5 +1,18 @@
 # Changelog
 
+### [1.6.8](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.7...v1.6.8) (2021-09-30)
+
+
+### Bug Fixes
+
+* add namespaceIntId for multicluster ldap setups ([3068483](https://www.github.com/GluuFederation/cloud-native-edition/commit/3068483222172dfdc13d5309aa7bde2717c113f3))
+* add support for proxy in kubernetes API ([#364](https://www.github.com/GluuFederation/cloud-native-edition/issues/364)) ([a4e6676](https://www.github.com/GluuFederation/cloud-native-edition/commit/a4e667689cd46acf2a38bbaa8c35ca7cff63a756))
+* full cleanup for uninstallation ([2fbffef](https://www.github.com/GluuFederation/cloud-native-edition/commit/2fbffefae720a274a5d5aea0bb7e5b787f71ca8e))
+* missing sql port number prompt ([613d9e5](https://www.github.com/GluuFederation/cloud-native-edition/commit/613d9e51aea7d7a31a362f29ad28cc896f3d3572))
+* remove duplicate volumeMount from openDJ statefulset ([43da1c0](https://www.github.com/GluuFederation/cloud-native-edition/commit/43da1c07a8f6f8acf8d2b1e7a88b8d9471a6afbb))
+* update alb ingress ([7e4d81e](https://www.github.com/GluuFederation/cloud-native-edition/commit/7e4d81e9e0b36d9ac42bf9d74835828531b16c67))
+* update kubernetes version to 1.19 ([#359](https://www.github.com/GluuFederation/cloud-native-edition/issues/359)) ([2be82c1](https://www.github.com/GluuFederation/cloud-native-edition/commit/2be82c166130b2863ebf586ad5cd5cf33a0c854b))
+
 ### [1.6.7](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.6...v1.6.7) (2021-08-24)
 
 
