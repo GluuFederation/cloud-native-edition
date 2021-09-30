@@ -65,7 +65,9 @@ class PromptSQL:
             self.settings.set("config.configmap.cnSqlDbHost",
                               click.prompt("Please enter  SQL (remote or local) URL base name",
                                            default="gluu.sql.svc.cluster.local"))
-
+        if not self.settings.get("config.configmap.cnSqlDbPort"):
+            self.settings.set("config.configmap.cnSqlDbPort", click.prompt("Please enter  SQL (remote or local) port "
+                                                                           "number", default=3306))
         if not self.settings.get("config.configmap.cnSqlDbUser"):
             self.settings.set("config.configmap.cnSqlDbUser", click.prompt("Please enter a user for Gluu SQL database ",
                                                                            default="gluu"))
