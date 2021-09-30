@@ -66,6 +66,10 @@ class PromptSQL:
             self.settings.set("GLUU_SQL_DB_HOST", click.prompt("Please enter  SQL (remote or local) URL base name",
                                                                default="gluu.sql.svc.cluster.local"))
 
+        if not self.settings.get("GLUU_SQL_DB_PORT"):
+            self.settings.set("GLUU_SQL_DB_PORT", click.prompt("Please enter  SQL (remote or local) port number",
+                                                               default=3306))
+
         if not self.settings.get("GLUU_SQL_DB_USER"):
             self.settings.set("GLUU_SQL_DB_USER", click.prompt("Please enter a user for Gluu SQL database ",
                                                                default="gluu"))
