@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.9](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.8...v1.6.9) (2021-10-05)
+
+
+### Bug Fixes
+
+* chart annotations ([2f67d3c](https://www.github.com/GluuFederation/cloud-native-edition/commit/2f67d3c1885f9c55ef6ecab111626a5aedf5cc51))
+
 ### [1.6.8](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.7...v1.6.8) (2021-09-30)
 
 
