@@ -5,34 +5,34 @@ appVersion: "4.3.0"
 kubeVersion: ">=v1.19.0-0"
 annotations:
   artifacthub.io/changes: |
-    - Gluu 4.3.0 beta official chart release
+    - Gluu 4.3.0 official chart release
   artifacthub.io/images: |
     - name: casa
-      image: gluufederation/casa:4.3.0_01
+      image: gluufederation/casa:4.3.0_dev
     - name: fido2
-      image: gluufederation/fido2:4.3.0_01
+      image: gluufederation/fido2:4.3.0_dev
     - name: scim
-      image: gluufederation/scim:4.3.0_01
+      image: gluufederation/scim:4.3.0_dev
     - name: configuration-manager
-      image: gluufederation/config-init:4.3.0_01
+      image: gluufederation/config-init:4.3.0_dev
     - name: cr-rotate
-      image: gluufederation/cr-rotate:4.3.0_01
+      image: gluufederation/cr-rotate:4.3.0_dev
     - name: certmanager
-      image: gluufederation/certmanager:4.3.0_01
+      image: gluufederation/certmanager:4.3.0_dev
     - name: opendj
-      image: gluufederation/opendj:4.3.0_01
+      image: gluufederation/opendj:4.3.0_dev
     - name: jackrabbit
-      image: gluufederation/jackrabbit:4.3.0_01
+      image: gluufederation/jackrabbit:4.3.0_dev
     - name: oxauth
-      image: gluufederation/oxauth:4.3.0_01
+      image: gluufederation/oxauth:4.3.0_dev
     - name: oxd-server
-      image: gluufederation/oxd-server:4.3.0_01
+      image: gluufederation/oxd-server:4.3.0_dev
     - name: oxpassport
-      image: gluufederation/oxpassport:4.3.0_01
+      image: gluufederation/oxpassport:4.3.0_dev
     - name: oxshibboleth
-      image: gluufederation/oxshibboleth:4.3.0_01
+      image: gluufederation/oxshibboleth:4.3.0_dev
     - name: persistence
-      image: gluufederation/persistence:4.3.0_01
+      image: gluufederation/persistence:4.3.0_dev
   artifacthub.io/license: Apache-2.0
 icon: https://gluu.org/docs/gluu-server/favicon.ico
 home: https://www.gluu.org
