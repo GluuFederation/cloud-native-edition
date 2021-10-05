@@ -8,7 +8,7 @@ metadata:
   labels:
 {{ include "oxtrust.labels" . | indent 4 }}
 spec:
-  {{- if .Values.global.alb.ingress }}
+  {{- if .Values.global.alb.ingress.enabled }}
   type: NodePort
   {{- else }}
   clusterIP: None

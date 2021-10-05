@@ -300,7 +300,7 @@ class Helm(object):
             values_file_parser["global"]["istio"]["namespace"] = self.settings.get("ISTIO_SYSTEM_NAMESPACE")
         elif self.settings.get("AWS_LB_TYPE") == "alb":
             values_file_parser["nginx-ingress"]["ingress"]["enabled"] = False
-            values_file_parser["global"]["alb"]["ingress"] = True
+            values_file_parser["global"]["alb"]["ingress"]["enabled"] = True
         else:
             values_file_parser["nginx-ingress"]["ingress"]["enabled"] = True
             values_file_parser["nginx-ingress"]["ingress"]["hosts"] = [self.settings.get("GLUU_FQDN")]
@@ -452,8 +452,9 @@ class Helm(object):
             couchbase_app.install()
             self.settings = SettingsHandler()
         if self.settings.get("AWS_LB_TYPE") == "alb":
-            self.prepare_alb()
-            self.deploy_alb()
+            if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+                self.prepare_alb()
+                self.deploy_alb()
         if self.settings.get("AWS_LB_TYPE") != "alb" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
             self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()

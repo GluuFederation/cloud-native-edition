@@ -1,0 +1,22 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: v2
+name: gluu-alb-ingress
+version: 1.6.9
+kubeVersion: ">=v1.19.0-0"
+description: Nginx ingress definitions chart
+type: application
+keywords:
+  - application load balancer
+  - ingress
+home: https://gluu.org/docs/gluu-server
+sources:
+  - https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
+  - https://kubernetes.io/docs/concepts/services-networking/ingress/
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/alb
+maintainers:
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
+appVersion: "4.3.0"

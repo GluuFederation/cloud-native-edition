@@ -110,3 +110,7 @@ dependencies:
     - name: gluu-istio-ingress
       condition: global.istio.ingress
       version: 1.6.9
+
+    - name: gluu-alb-ingress
+      condition: global.alb.ingress
+      version: 1.6.9

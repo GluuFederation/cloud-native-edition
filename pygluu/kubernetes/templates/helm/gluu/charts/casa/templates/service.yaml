@@ -8,7 +8,7 @@ metadata:
   labels:
 {{ include "casa.labels" . | indent 4 }}
 spec:
-  {{- if .Values.global.alb.ingress }}
+  {{- if .Values.global.alb.ingress.enabled }}
   type: NodePort
   {{- end }}
   ports:
