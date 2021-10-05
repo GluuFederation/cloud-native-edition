@@ -1,6 +1,6 @@
 # ldap-backup
 
-![Version: 1.6.7-b](https://img.shields.io/badge/Version-1.6.7-b-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 A backup strategy for LDAP
 
@@ -19,7 +19,7 @@ A backup strategy for LDAP
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -40,10 +40,10 @@ Kubernetes: `>=v1.17.0-0`
 | gluuReleaseName | string | `"gluu"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"gluufederation/opendj"` |  |
-| image.tag | string | `"4.3.0_b1"` |  |
+| image.tag | string | `"4.3.0_01"` |  |
 | ldapPass | string | `"P@assw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
 | ldapServiceName | string | `"opendj"` | Name of the OpenDJ service. Please keep it as default. |
-| multiCluster | object | `{"enabled":false,"ldapAdvertiseAdminPort":30444,"serfAdvertiseAddrSuffix":"firstldap.gluu.org"}` | Specify cluster details if used to activate backup. |
+| multiCluster | object | `{"enabled":false,"ldapAdvertiseAdminPort":30440}` | Specify cluster details if used to activate backup. |
 | nameOverride | string | `""` |  |
 | ports | object | `{"admin":{"port":4444,"targetPort":4444},"ldap":{"port":1389,"targetPort":1389},"ldaps":{"port":1636,"targetPort":1636},"replication":{"port":8989,"targetPort":8989}}` | servicePorts values used in StatefulSet container |
 | restartPolicy | string | `"Never"` |  |

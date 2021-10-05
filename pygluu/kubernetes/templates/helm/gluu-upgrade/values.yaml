@@ -7,7 +7,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/upgrade
   # -- Image  tag to use for deploying.
-  tag: 4.3.0_b1
+  tag: 4.3.0_01
 
 resources:
   limits:

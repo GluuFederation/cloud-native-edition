@@ -27,7 +27,7 @@ class DeploymentArchForm(FlaskForm):
             ("eks", "Amazon Web Services - Elastic Kubernetes Service (Amazon EKS)"),
             ("gke", "Google Cloud Engine - Google Kubernetes Engine (GKE)"),
             ("aks", "Microsoft Azure (AKS)"),
-            ("do", "Digital Ocean [BETA]"),
+            ("do", "Digital Ocean "),
             ("local", "Manually provisioned Kubernetes cluster")],
         default="microk8s",
         validators=[DataRequired()])

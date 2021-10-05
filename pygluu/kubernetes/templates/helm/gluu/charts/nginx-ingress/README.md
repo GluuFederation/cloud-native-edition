@@ -1,6 +1,6 @@
 # nginx-ingress
 
-![Version: 1.6.7-b](https://img.shields.io/badge/Version-1.6.7--b-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Nginx ingress definitions chart
 
@@ -20,7 +20,7 @@ Nginx ingress definitions chart
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -41,6 +41,8 @@ Kubernetes: `>=v1.17.0-0`
 | ingress.hosts[0] | string | `"demoexample.gluu.org"` |  |
 | ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
 | ingress.openidConfigLabels | object | `{}` | openid-configuration ingress resource labels. key app is taken |
+| ingress.passportShibEnabled | bool | `false` | Enable passport and oxshibboleth endpoints /idp and /passport |
+| ingress.passportShibLabels | object | `{}` | passport and oxshibboleth ingress resource labels. key app is taken. |
 | ingress.path | string | `"/"` |  |
 | ingress.scimConfigEnabled | bool | `false` | Enable endpoint /.well-known/scim-configuration |
 | ingress.scimConfigLabels | object | `{}` | webdiscovery ingress resource labels. key app is taken |

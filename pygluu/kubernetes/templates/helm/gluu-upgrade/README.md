@@ -1,6 +1,6 @@
 # gluu-upgrade
 
-![Version: 1.6.7-b](https://img.shields.io/badge/Version-1.6.7-b-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 A Helm chart for upgrading gluu server
 
@@ -20,7 +20,7 @@ A Helm chart for upgrading gluu server
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -60,7 +60,7 @@ Kubernetes: `>=v1.17.0-0`
 | gluuPersistenceType | string | `"ldap"` | Persistence backend to run Gluu with ldap|couchbase|hybrid|sql|spanner. |
 | gluuReleaseName | string | `"gluu"` |  |
 | image.repository | string | `"gluufederation/upgrade"` | Image  to use for deploying. |
-| image.tag | string | `"4.3.0_b1"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.3.0_01"` | Image  tag to use for deploying. |
 | nameOverride | string | `""` |  |
 | resources.limits.cpu | string | `"100m"` | CPU limit. |
 | resources.limits.memory | string | `"100Mi"` | Memory limit. |
