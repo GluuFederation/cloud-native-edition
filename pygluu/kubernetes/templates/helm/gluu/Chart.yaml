@@ -33,6 +33,8 @@ annotations:
       image: gluufederation/oxshibboleth:4.3.0_dev
     - name: persistence
       image: gluufederation/persistence:4.3.0_dev
+    - name: oxtrust
+      image: gluufederation/oxtrust:4.3.0_dev
   artifacthub.io/license: Apache-2.0
 icon: https://gluu.org/docs/gluu-server/favicon.ico
 home: https://www.gluu.org
@@ -109,4 +111,8 @@ dependencies:
 
     - name: gluu-istio-ingress
       condition: global.istio.ingress
+      version: 1.6.9
+
+    - name: gluu-alb-ingress
+      condition: global.alb.ingress
       version: 1.6.9

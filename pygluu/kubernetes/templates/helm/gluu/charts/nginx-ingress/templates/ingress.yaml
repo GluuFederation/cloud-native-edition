@@ -325,7 +325,6 @@ metadata:
 {{ toYaml .Values.ingress.scimLabels | indent 4 }}
 {{- end }}
   annotations:
-    nginx.org/ssl-services: "scim"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.additionalAnnotations }}
 {{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
@@ -461,6 +460,55 @@ spec:
 
 ---
 
+{{ if .Values.ingress.fido2Enabled -}}
+{{ $fullName := include "nginx-ingress.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-fido2
+  labels:
+    app: {{ $fullName }}-fido2
+{{- if .Values.ingress.additionalLabels }}
+{{ toYaml .Values.ingress.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.ingress.fido2Labels }}
+{{ toYaml .Values.ingress.fido2Labels | indent 4 }}
+{{- end }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+{{- if .Values.ingress.additionalAnnotations }}
+{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /fido2
+            pathType: Prefix
+            backend:
+              service:
+                name: fido2
+                port:
+                  number: 8080
+  {{- end }}
+{{- end }}
+
+---
+
 {{ if .Values.ingress.authServerEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
@@ -477,7 +525,6 @@ metadata:
 {{ toYaml .Values.ingress.authServerLabels | indent 4 }}
 {{- end }}
   annotations:
-    nginx.org/ssl-services: "oxauth"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.additionalAnnotations }}
 {{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
@@ -526,7 +573,6 @@ metadata:
 {{ toYaml .Values.ingress.passportShibLabels | indent 4 }}
 {{- end }}
   annotations:
-    nginx.org/ssl-services: "oxtrust"
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
@@ -586,7 +632,6 @@ metadata:
 {{ toYaml .Values.ingress.adminUiLabels | indent 4 }}
 {{- end }}
   annotations:
-    nginx.org/ssl-services: "oxtrust"
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
@@ -639,8 +684,9 @@ metadata:
 {{ toYaml .Values.ingress.casaLabels | indent 4 }}
 {{- end }}
   annotations:
-    nginx.org/ssl-services: "casa"
-    nginx.ingress.kubernetes.io/rewrite-target: /casa
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.additionalAnnotations }}
 {{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
