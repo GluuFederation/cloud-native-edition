@@ -706,7 +706,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -786,7 +786,7 @@ oxtrust:
     # -- Image  to use for deploying.
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -867,7 +867,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -943,7 +943,7 @@ scim:
     # -- Image  to use for deploying.
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1019,7 +1019,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1096,7 +1096,7 @@ casa:
     # -- Image  to use for deploying.
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1252,7 +1252,7 @@ oxshibboleth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
-    tag: 4.3.0_01
+    tag: 4.3.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
