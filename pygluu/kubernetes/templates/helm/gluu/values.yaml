@@ -42,7 +42,7 @@ global:
       # -- Enable Auth server endpoints /oxauth
       authServerEnabled: true
       # -- Enable casa endpoints /casa
-      casaEnabled: true
+      casaEnabled: false
       # -- Enable passport /passport
       passportEnabled: false
       # -- Enable  oxshibboleth endpoints /idp
@@ -392,7 +392,7 @@ nginx-ingress:
     # -- Auth server config ingress resource labels. key app is taken
     authServerLabels: { }
     # -- Enable casa endpoints /casa
-    casaEnabled: true
+    casaEnabled: false
     # -- Casa ingress resource labels. key app is taken
     casaLabels: { }
     # -- Enable passport and oxshibboleth endpoints /idp and /passport
