@@ -1,7 +1,7 @@
 {
   "4.2": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
-    "CASA_IMAGE_TAG": "4.2.3_04",
+    "CASA_IMAGE_TAG": "4.2.3_05",
     "FIDO2_IMAGE_NAME": "gluufederation/fido2",
     "FIDO2_IMAGE_TAG": "4.2.3_03",
     "SCIM_IMAGE_NAME": "gluufederation/scim",

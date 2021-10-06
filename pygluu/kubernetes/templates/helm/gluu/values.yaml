@@ -527,7 +527,7 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.2.3_03
+    tag: 4.2.3_05
     pullPolicy: Always
     pullSecrets: []
   resources:
