@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.10](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.9...v1.6.10) (2021-10-06)
+
+
+### Bug Fixes
+
+* add alb chart ([#366](https://www.github.com/GluuFederation/cloud-native-edition/issues/366)) ([56b22fc](https://www.github.com/GluuFederation/cloud-native-edition/commit/56b22fc8507f478d69d6b1d872dc9634e88847a2))
+
 ### [1.6.9](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.8...v1.6.9) (2021-10-05)
 
 
