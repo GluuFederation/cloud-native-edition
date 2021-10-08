@@ -6,6 +6,15 @@ kind: DestinationRule
 metadata:
   name: {{ .Release.Name }}-opendj-mtls
   namespace: {{.Release.Namespace}}
+  labels:
+{{ include "opendj.labels" $ | indent 4}}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   host: {{ .Values.global.ldapServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:

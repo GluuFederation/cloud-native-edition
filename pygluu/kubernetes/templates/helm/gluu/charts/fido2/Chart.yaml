@@ -2,8 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: fido2
-version: 1.6.9
-kubeVersion: ">=v1.19.0-0"
+version: 1.6.11
+kubeVersion: ">=v1.18.0-0"
 description: FIDO 2.0 (FIDO2) is an open authentication standard that enables leveraging common devices to authenticate to online services in both mobile and desktop environments.
 type: application
 keywords:

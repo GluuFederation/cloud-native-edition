@@ -5,6 +5,15 @@ kind: ConfigMap
 metadata: 
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 data:
   GLUU_SQL_DB_DIALECT: {{ .Values.configmap.cnSqlDbDialect }}
   GLUU_SQL_DB_HOST: {{ .Values.configmap.cnSqlDbHost }}

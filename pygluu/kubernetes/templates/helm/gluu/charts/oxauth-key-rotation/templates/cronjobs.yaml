@@ -9,7 +9,13 @@ metadata:
     app: {{ include "oxauth-key-rotation.name" . }}
     release: {{ .Release.Name }}
 {{ include "oxauth-key-rotation.labels" . | indent 4 }}
-
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   schedule: "0 */{{ .Values.keysLife }} * * *"
   concurrencyPolicy: Forbid

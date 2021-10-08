@@ -1,6 +1,6 @@
 # nginx-ingress
 
-![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.11](https://img.shields.io/badge/Version-1.6.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Nginx ingress definitions chart
 
@@ -20,7 +20,7 @@ Nginx ingress definitions chart
 
 ## Requirements
 
-Kubernetes: `>=v1.19.0-0`
+Kubernetes: `>=v1.18.0-0`
 
 ## Values
 
@@ -39,6 +39,7 @@ Kubernetes: `>=v1.19.0-0`
 | ingress.fido2ConfigEnabled | bool | `false` | Enable endpoint /.well-known/fido2-configuration |
 | ingress.fido2ConfigLabels | object | `{}` | fido2 config ingress resource labels. key app is taken |
 | ingress.hosts[0] | string | `"demoexample.gluu.org"` |  |
+| ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18 |
 | ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
 | ingress.openidConfigLabels | object | `{}` | openid-configuration ingress resource labels. key app is taken |
 | ingress.passportShibEnabled | bool | `false` | Enable passport and oxshibboleth endpoints /idp and /passport |

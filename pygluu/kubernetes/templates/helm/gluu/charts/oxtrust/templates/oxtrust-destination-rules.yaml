@@ -6,6 +6,15 @@ kind: DestinationRule
 metadata:
   name: {{ .Release.Name }}-oxtrust-mtls
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "oxtrust.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   host: {{ .Values.service.oxTrustServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:
