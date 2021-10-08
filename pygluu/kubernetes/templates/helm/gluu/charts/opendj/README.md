@@ -19,7 +19,7 @@ OpenDJ is a directory server which implements a wide range of Lightweight Direct
 
 ## Requirements
 
-Kubernetes: `>=v1.19.0-0`
+Kubernetes: `>=v1.18.0-0`
 
 ## Values
 
@@ -35,6 +35,8 @@ Kubernetes: `>=v1.19.0-0`
 | OpenDjVolumeMounts.ldif.name | string | `"opendj-volume"` |  |
 | OpenDjVolumeMounts.logs.mountPath | string | `"/opt/opendj/logs"` |  |
 | OpenDjVolumeMounts.logs.name | string | `"opendj-volume"` |  |
+| additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
+| additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | dnsConfig | object | `{}` | Add custom dns config |
 | dnsPolicy | string | `""` | Add custom dns policy |
 | fullnameOverride | string | `""` |  |

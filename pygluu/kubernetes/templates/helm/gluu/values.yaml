@@ -355,7 +355,7 @@ nginx-ingress:
   ingress:
     enabled: true
     # -- Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18
-    legacy: false
+    legacy: true
     path: /
     # -- Enable Admin UI endpoints /identity
     adminUiEnabled: true
