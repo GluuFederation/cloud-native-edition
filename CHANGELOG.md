@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.11](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.10...v1.6.11) (2021-10-08)
+
+
+### Bug Fixes
+
+* add labels annotations ([#369](https://www.github.com/GluuFederation/cloud-native-edition/issues/369)) ([2b4a67c](https://www.github.com/GluuFederation/cloud-native-edition/commit/2b4a67c71cc2ec0abfd8e6d19bfc77fbd9057bf4))
+
 ### [1.6.10](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.9...v1.6.10) (2021-10-06)
 
 
