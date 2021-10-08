@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.11](https://img.shields.io/badge/Version-1.6.11-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.18.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.6.9 |
-|  | config | 1.6.9 |
-|  | cr-rotate | 1.6.9 |
-|  | fido2 | 1.6.9 |
-|  | gluu-alb-ingress | 1.6.9 |
-|  | gluu-istio-ingress | 1.6.9 |
-|  | jackrabbit | 1.6.9 |
-|  | nginx-ingress | 1.6.9 |
-|  | opendj | 1.6.9 |
-|  | oxauth | 1.6.9 |
-|  | oxauth-key-rotation | 1.6.9 |
-|  | oxd-server | 1.6.9 |
-|  | oxpassport | 1.6.9 |
-|  | oxshibboleth | 1.6.9 |
-|  | oxtrust | 1.6.9 |
-|  | persistence | 1.6.9 |
-|  | scim | 1.6.9 |
+|  | casa | 1.6.11 |
+|  | config | 1.6.11 |
+|  | cr-rotate | 1.6.11 |
+|  | fido2 | 1.6.11 |
+|  | gluu-alb-ingress | 1.6.11 |
+|  | gluu-istio-ingress | 1.6.11 |
+|  | jackrabbit | 1.6.11 |
+|  | nginx-ingress | 1.6.11 |
+|  | opendj | 1.6.11 |
+|  | oxauth | 1.6.11 |
+|  | oxauth-key-rotation | 1.6.11 |
+|  | oxd-server | 1.6.11 |
+|  | oxpassport | 1.6.11 |
+|  | oxshibboleth | 1.6.11 |
+|  | oxtrust | 1.6.11 |
+|  | persistence | 1.6.11 |
+|  | scim | 1.6.11 |
 
 ## Values
 
@@ -306,7 +306,7 @@ Kubernetes: `>=v1.18.0-0`
 | jackrabbit.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | jackrabbit.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | jackrabbit.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerEnabled":true,"authServerLabels":{},"casaEnabled":false,"casaLabels":{},"enabled":true,"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"hosts":["demoexample.gluu.org"],"legacy":true,"openidConfigEnabled":true,"openidConfigLabels":{},"passportShibEnabled":false,"passportShibLabels":{},"path":"/","scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
+| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerEnabled":true,"authServerLabels":{},"casaEnabled":false,"casaLabels":{},"enabled":true,"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"hosts":["demoexample.gluu.org"],"legacy":false,"openidConfigEnabled":true,"openidConfigLabels":{},"passportShibEnabled":false,"passportShibLabels":{},"path":"/","scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
 | nginx-ingress.ingress.additionalAnnotations | object | `{"kubernetes.io/ingress.class":"nginx"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken Enable client certificate authentication nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional" Create the secret containing the trusted ca certificates nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate" Specify the verification depth in the client certificates chain nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1" Specify if certificates are passed to upstream server nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true" |
 | nginx-ingress.ingress.additionalAnnotations."kubernetes.io/ingress.class" | string | `"nginx"` | Required annotation below. Use kubernetes.io/ingress.class: "public" for microk8s. |
 | nginx-ingress.ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
@@ -320,7 +320,7 @@ Kubernetes: `>=v1.18.0-0`
 | nginx-ingress.ingress.fido2ConfigLabels | object | `{}` | fido2 config ingress resource labels. key app is taken |
 | nginx-ingress.ingress.fido2Enabled | bool | `false` | Enable all fido2 endpoints |
 | nginx-ingress.ingress.fido2Labels | object | `{}` | fido2 ingress resource labels. key app is taken |
-| nginx-ingress.ingress.legacy | bool | `true` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18 |
+| nginx-ingress.ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18 |
 | nginx-ingress.ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
 | nginx-ingress.ingress.openidConfigLabels | object | `{}` | openid-configuration ingress resource labels. key app is taken |
 | nginx-ingress.ingress.passportShibEnabled | bool | `false` | Enable passport and oxshibboleth endpoints /idp and /passport |
