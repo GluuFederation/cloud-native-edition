@@ -312,7 +312,7 @@ client-api:
   # -- Configure the readiness healthcheck for the auth server if needed.
   readinessProbe:
     tcpSocket:
-      port: 1636
+      port: 8443
     initialDelaySeconds: 60
     timeoutSeconds: 5
     periodSeconds: 25
