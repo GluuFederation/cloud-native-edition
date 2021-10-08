@@ -5,6 +5,15 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "oxtrust.fullname" . }}
+  labels:
+{{ include "oxtrust.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

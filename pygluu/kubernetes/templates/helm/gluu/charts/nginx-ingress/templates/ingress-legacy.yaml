@@ -1,10 +1,10 @@
-{{ if and (.Values.ingress.enabled) (not .Values.ingress.legacy) -}}
+{{ if and (.Values.ingress.enabled) (.Values.ingress.legacy) -}}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 {{ if .Values.ingress.adminUiEnabled -}}
 {{- $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-base
@@ -44,10 +44,8 @@ spec:
           - path: {{ $ingressPath }}
             pathType: Prefix
             backend:
-              service:
-               name: oxtrust
-               port:
-                number: 8080
+              serviceName: oxtrust
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -56,11 +54,11 @@ spec:
 {{ if .Values.ingress.openidConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-openid-config
-  labels: 
+  labels:
     app: {{ $fullName }}-oxauth
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -95,10 +93,8 @@ spec:
           - path: /.well-known/openid-configuration
             pathType: Exact
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -107,11 +103,11 @@ spec:
 {{ if .Values.ingress.uma2ConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-uma2-config
-  labels: 
+  labels:
     app: {{ $fullName }}-oxauth
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -146,10 +142,8 @@ spec:
           - path: /.well-known/uma2-configuration
             pathType: Exact
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -158,11 +152,11 @@ spec:
 {{ if .Values.ingress.webfingerEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webfinger
-  labels: 
+  labels:
     app: {{ $fullName }}-oxauth
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -197,10 +191,8 @@ spec:
           - path: /.well-known/webfinger
             pathType: Exact
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
 
   {{- end }}
 {{- end }}
@@ -210,11 +202,11 @@ spec:
 {{ if .Values.ingress.webdiscoveryEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-webdiscovery
-  labels: 
+  labels:
     app: {{ $fullName }}-oxauth
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -249,10 +241,8 @@ spec:
           - path: /.well-known/simple-web-discovery
             pathType: Exact
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -261,7 +251,7 @@ spec:
 {{ if .Values.ingress.scimConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-scim-config
@@ -300,10 +290,8 @@ spec:
           - path: /.well-known/scim-configuration
             pathType: Exact
             backend:
-              service:
-                name: scim
-                port:
-                  number: 8080
+              serviceName: scim
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -312,7 +300,7 @@ spec:
 {{ if .Values.ingress.scimEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu-scim
@@ -348,10 +336,8 @@ spec:
           - path: /scim
             pathType: Prefix
             backend:
-              service:
-                name: scim
-                port:
-                  number: 8080
+              serviceName: scim
+              servicePort: 8080
 
   {{- end }}
 {{- end }}
@@ -361,7 +347,7 @@ spec:
 {{ if .Values.ingress.u2fConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-u2f-config
@@ -400,10 +386,8 @@ spec:
           - path: /.well-known/fido-configuration
             pathType: Exact
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -412,7 +396,7 @@ spec:
 {{ if .Values.ingress.fido2ConfigEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-fido2-configuration
@@ -451,10 +435,8 @@ spec:
           - path: /.well-known/fido2-configuration
             pathType: Exact
             backend:
-              service:
-                name: fido2
-                port:
-                  number: 8080
+              serviceName: fido2
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -463,7 +445,7 @@ spec:
 {{ if .Values.ingress.fido2Enabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-fido2
@@ -500,23 +482,20 @@ spec:
           - path: /fido2
             pathType: Prefix
             backend:
-              service:
-                name: fido2
-                port:
-                  number: 8080
+              serviceName: fido2
+              servicePort: 8080
   {{- end }}
 {{- end }}
-
 ---
 
 {{ if .Values.ingress.authServerEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gluu
-  labels: 
+  labels:
     app: {{ $fullName }}-oxauth
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -548,10 +527,9 @@ spec:
           - path: /oxauth
             pathType: Prefix
             backend:
-              service:
-                name: oxauth
-                port:
-                  number: 8080
+              serviceName: oxauth
+              servicePort: 8080
+
   {{- end }}
 {{- end }}
 
@@ -560,11 +538,11 @@ spec:
 {{ if .Values.ingress.passportShibEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-stateful
-  labels: 
+  labels:
     app: {{ $fullName }}-shib-passport
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -600,17 +578,14 @@ spec:
           - path: /idp
             pathType: Prefix
             backend:
-              service:
-                name: oxshibboleth
-                port:
-                  number: 8080
+              serviceName: oxshibboleth
+              servicePort: 8080
           - path: /passport
             pathType: Prefix
             backend:
-              service:
-                name: oxpassport
-                port:
-                  number: 8090
+              serviceName: oxpassport
+              servicePort: 8090
+
   {{- end }}
 {{- end }}
 
@@ -619,7 +594,7 @@ spec:
 {{ if .Values.ingress.adminUiEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-admin-ui
@@ -659,10 +634,8 @@ spec:
           - path: /identity
             pathType: Prefix
             backend:
-              service:
-                name: oxtrust
-                port:
-                  number: 8080
+              serviceName: oxtrust
+              servicePort: 8080
   {{- end }}
 {{- end }}
 
@@ -671,11 +644,11 @@ spec:
 {{ if .Values.ingress.casaEnabled -}}
 {{ $fullName := include "nginx-ingress.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-casa
-  labels: 
+  labels:
     app: {{ $fullName }}-casa
 {{- if .Values.ingress.additionalLabels }}
 {{ toYaml .Values.ingress.additionalLabels | indent 4 }}
@@ -710,10 +683,8 @@ spec:
           - path: /casa
             pathType: Prefix
             backend:
-              service:
-                name: casa
-                port:
-                  number: 8080
+              serviceName: casa
+              servicePort: 8080
   {{- end }}
 {{- end }}
 

@@ -6,6 +6,16 @@ kind: VirtualService
 metadata:
   name: {{ .Release.Name }}-istio-casa
   namespace: {{.Release.Namespace}}
+  labels:
+    APP_NAME: casa
+{{ include "casa.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   gateways:
   - {{ .Release.Name }}-global-gtw
