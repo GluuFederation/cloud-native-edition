@@ -284,6 +284,9 @@ class Helm(object):
             values_file_parser["nginx-ingress"]["ingress"]["fido2Enabled"] = True
             values_file_parser["global"]["alb"]["ingress"]["fido2ConfigEnabled"] = True
             values_file_parser["global"]["alb"]["ingress"]["fido2Enabled"] = True
+        # Remove legacy setting after moving to next version
+        if self.settings.get("NGINX_LEGACY") == "Y":
+            values_file_parser["nginx-ingress"]["ingress"]["legacy"] = True
         values_file_parser["global"]["scim"]["enabled"] = False
         if self.settings.get("ENABLE_SCIM") == "Y":
             values_file_parser["global"]["scim"]["enabled"] = True

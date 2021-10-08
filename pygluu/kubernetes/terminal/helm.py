@@ -97,3 +97,7 @@ class PromptHelm:
         if not self.settings.get("NGINX_INGRESS_NAMESPACE") and self.settings.get("AWS_LB_TYPE") != "alb":
             self.settings.set("NGINX_INGRESS_NAMESPACE", click.prompt("Please enter nginx-ingress helm namespace",
                                                                       default="ingress-nginx"))
+        # Remove legacy setting after moving to next version
+        if not self.settings.get("NGINX_LEGACY") and self.settings.get("AWS_LB_TYPE") != "alb":
+            self.settings.set("NGINX_LEGACY",
+                              confirm_yesno("Is this a legacy kubernetes cluster version >1.18 < 1.19 ?"))
