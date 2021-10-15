@@ -66,3 +66,29 @@ Create user custom defined secret envs
       key: {{ $key }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create optional scopes list
+*/}}
+{{- define "config.optionalScopes"}}
+{{ $newList := list }}
+{{- if eq .Values.configmap.cnCacheType "REDIS" }}
+{{ $newList = append $newList ("redis" | quote )  }}
+{{- end}}
+{{ if or (eq .Values.global.cnPersistenceType "couchbase") (eq .Values.global.cnPersistenceType "hybrid") }}
+{{ $newList = append $newList ("couchbase" | quote) }}
+{{- end}}
+{{- if .Values.global.opendj.enabled}}
+{{ $newList = append $newList ("ldap" | quote) }}
+{{- end}}
+{{- if .Values.global.fido2.enabled}}
+{{ $newList = append $newList ("fido2" | quote) }}
+{{- end}}
+{{- if .Values.global.scim.enabled}}
+{{ $newList = append $newList ("scim" | quote) }}
+{{- end}}
+{{- if index .Values "global" "client-api" "enabled"}}
+{{ $newList = append $newList ("client-api" |quote) }}
+{{- end}}
+{{ toJson $newList }}
+{{- end }}
