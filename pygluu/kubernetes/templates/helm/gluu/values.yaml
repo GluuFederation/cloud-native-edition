@@ -710,6 +710,37 @@ global:
     authServerServiceName: auth-server
     # -- Boolean flag to enable/disable auth-server chart. You should never set this to false.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-auth.log target
+      authLogTarget: "STDOUT"
+      # -- jans-auth.log level
+      authLogLevel: "INFO"
+      # -- http_request_response.log target
+      httpLogTarget: "FILE"
+      # -- http_request_response.log level
+      httpLogLevel: "INFO"
+      # -- jans-auth_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-auth_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-auth_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-auth_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-auth_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-auth_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      scriptStatsLogTarget: "FILE"
+      # -- jans-auth_script.log level
+      scriptStatsLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      auditStatsLogTarget: "FILE"
+      # -- jans-auth_audit.log level
+      auditStatsLogLevel: "INFO"
+
   auth-server-key-rotation:
     # -- Boolean flag to enable/disable the auth-server-key rotation cronjob chart.
     enabled: false
