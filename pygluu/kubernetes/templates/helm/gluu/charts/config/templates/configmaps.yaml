@@ -74,8 +74,8 @@ data:
   | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
   | replace "ldapStatsLogTarget" "ldap_stats_log_target"
   | replace "ldapStatsLogLevel" "ldap_stats_log_level"
-  | replace "scriptStatsLogTarget" "script_log_target"
-  | replace "scriptStatsLogLevel" "script_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
   | replace "auditStatsLogTarget" "audit_log_target"
   | replace "auditStatsLogLevel" "audit_log_level"
   }}
@@ -148,6 +148,19 @@ data:
   {{- if .Values.global.scim.enabled }}
   CN_SCIM_ENABLED: {{ .Values.global.scim.enabled | quote }}
   CN_SCIM_PROTECTION_MODE: {{ .Values.configmap.cnScimProtectionMode | quote }}
+  CN_SCIM_APP_LOGGERS: {{ .Values.global.scim.appLoggers
+  | toJson
+  | replace "scimLogTarget" "scim_log_target"
+  | replace "scimLogLevel" "scim_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
+  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  }}
   {{- end }}
 
 ---

@@ -733,9 +733,9 @@ global:
       # -- jans-auth_persistence_ldap_statistics.log level
       ldapStatsLogLevel: "INFO"
       # -- jans-auth_script.log target
-      scriptStatsLogTarget: "FILE"
+      scriptLogTarget: "FILE"
       # -- jans-auth_script.log level
-      scriptStatsLogLevel: "INFO"
+      scriptLogLevel: "INFO"
       # -- jans-auth_script.log target
       auditStatsLogTarget: "FILE"
       # -- jans-auth_audit.log level
@@ -855,6 +855,28 @@ global:
     scimServiceName: scim
     # -- Boolean flag to enable/disable the SCIM chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-scim.log target
+      scimLogTarget: "STDOUT"
+      # -- jans-scim.log level
+      scimLogLevel: "INFO"
+      # -- jans-scim_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-scim_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-scim_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-scim_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-scim_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-scim_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-scim_script.log target
+      scriptLogTarget: "FILE"
+      # -- jans-scim_script.log level
+      scriptLogLevel: "INFO"
   # -- StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed.
   storageClass:
     allowVolumeExpansion: true
