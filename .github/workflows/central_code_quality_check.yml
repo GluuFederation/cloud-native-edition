@@ -25,6 +25,7 @@ jobs:
         GluuFederation/fido2
         GluuFederation/oxd
         GluuFederation/casa
+        GluuFederation/gluu-opendj4
       NON_JVM_PROJECTS: |
         GluuFederation/gluu-passport
         GluuFederation/gluu-admin-ui
@@ -64,6 +65,10 @@ jobs:
                     ;&
             "GluuFederation/casa")
                     ;&
+            "GluuFederation/gluu-opendj4")
+                  echo "Build opendj-sdk first for gluu-opendj4"
+                  mvn -B -f opendj-sdk/pom.xml -DskipTests clean install
+                  ;&
             "GluuFederation/oxd")
                   echo "Run Sonar analysis without test execution"
                   mvn -B -DskipTests=true install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
