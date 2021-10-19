@@ -807,6 +807,12 @@ global:
     configApiServerServiceName: config-api
     # -- Boolean flag to enable/disable the config-api chart.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- configapi.log target
+      configApiLogTarget: "STDOUT"
+      # -- configapi.log level
+      configApiLogLevel: "INFO"
   cr-rotate:
     # -- Boolean flag to enable/disable the cr-rotate chart.
     enabled: false

@@ -685,7 +685,22 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the config-api chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "configApiLogTarget":{
+                        "description":"configapi.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "configApiLogLevel":{
+                        "description":"configapi.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "cr-rotate":{
