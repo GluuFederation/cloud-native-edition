@@ -563,7 +563,22 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the client-api chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "clientApiLogTarget":{
+                        "description":"client-api.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "clientApiLogLevel":{
+                        "description":"client-api.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "cloud":{
