@@ -19,7 +19,7 @@ OpenDJ is a directory server which implements a wide range of Lightweight Direct
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -40,10 +40,13 @@ Kubernetes: `>=v1.17.0-0`
 | image.tag | string | `"5.0.0_dev"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for OpenDJ if needed. https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py |
 | livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. |
+| multiCluster.clusterId | string | `""` | This id needs to be unique to each kubernetes cluster in a multi cluster setup west, east, south, north, region ...etc If left empty it will be randomly generated. |
 | multiCluster.enabled | bool | `false` | Enable OpenDJ multiCluster mode. This flag enables loading keys under `opendj.multiCluster` |
-| multiCluster.serfAdvertiseAddrSuffix | string | `"firstldap.gluu.org:30946"` | OpenDJ Serf advertise address for the cluster |
+| multiCluster.namespaceIntId | int | `0` | Namespace int id. This id needs to be a unique number 0-9 per gluu installation per namespace. Used when gluu is installed in the same kubernetes cluster more than once. |
+| multiCluster.replicaCount | int | `1` | The number of opendj non scalabble statefulsets to create. Each pod created must be resolvable as it follows the patterm RELEASE-NAME-opendj-CLUSTERID-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }} If set to 1, with a release name of gluu,  the address of the pod would be gluu-opendj-regional-0-regional.gluu.org |
+| multiCluster.serfAdvertiseAddrSuffix | string | `"regional.gluu.org:30946"` | OpenDJ Serf advertise address suffix that will be added to each opendj replica. i.e RELEASE-NAME-opendj-regional-{{statefulset pod number}}-{{ $.Values.multiCluster.serfAdvertiseAddrSuffix }} |
 | multiCluster.serfKey | string | `"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk="` | Serf key. This key will automatically sync across clusters. |
-| multiCluster.serfPeers | list | `["firstldap.gluu.org:30946","secondldap.gluu.org:31946"]` | Serf peer addresses. One per cluster. |
+| multiCluster.serfPeers | list | `["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]` | Serf peer addresses. One per cluster. |
 | nameOverride | string | `""` |  |
 | openDjVolumeMounts.config.mountPath | string | `"/opt/opendj/config"` |  |
 | openDjVolumeMounts.config.name | string | `"opendj-volume"` |  |

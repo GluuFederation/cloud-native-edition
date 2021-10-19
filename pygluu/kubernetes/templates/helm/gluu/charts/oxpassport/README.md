@@ -20,7 +20,7 @@ Gluu interface to Passport.js to support social login and inbound identity.
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -53,7 +53,6 @@ Kubernetes: `>=v1.17.0-0`
 | resources.requests.cpu | string | `"700m"` | CPU request. |
 | resources.requests.memory | string | `"900Mi"` | Memory request. |
 | service.name | string | `"http-passport"` | The name of the oxPassport port within the oxPassport service. Please keep it as default. |
-| service.oxPassportServiceName | string | `"oxpassport"` | Name of the oxPassport service. Please keep it as default. |
 | service.port | int | `8090` | Port of the oxPassport service. Please keep it as default. |
 | tolerations | list | `[]` |  |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |

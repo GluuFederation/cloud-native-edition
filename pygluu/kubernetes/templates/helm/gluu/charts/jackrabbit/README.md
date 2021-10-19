@@ -21,7 +21,7 @@ Jackrabbit Oak is a complementary implementation of the JCR specification. It is
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
