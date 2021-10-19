@@ -25,12 +25,19 @@ jobs:
           git-user-signingkey: true
           git-commit-gpgsign: true
 
-      #- name: Running General Workflow Sync
-      #  env:
-      #    REPOSITORIES: |
-      #      GluuFederation/gluu-admin-ui
-      #      GluuFederation/gluu-passport
-      #      GluuFederation/casa
+      - name: Running General Workflow Sync
+        env:
+          REPOSITORIES: |
+            GluuFederation/gluu-admin-ui
+            GluuFederation/gluu-passport
+            GluuFederation/casa
+            GluuFederation/oxTrust
+            GluuFederation/oxAuth
+            GluuFederation/scim
+            GluuFederation/fido2
+            GluuFederation/gluu-opendj4
+            GluuFederation/oxd
+            GluuFederation/oxshibboleth
       #      GluuFederation/cloud-native-edition
       #      GluuFederation/docker-oxd
       #      GluuFederation/docker-radius
@@ -46,9 +53,7 @@ jobs:
       #      GluuFederation/pygluu-containerlib
       #      GluuFederation/docker-config-init
       #      GluuFederation/community-edition-setup
-      #      GluuFederation/oxTrust
-      #      GluuFederation/oxAuth
-      ##      GluuFederation/docker-certmanager
+       #      GluuFederation/docker-certmanager
        #     GluuFederation/docker-jackrabbit
        #     GluuFederation/gluu-passport-testing
        #     GluuFederation/openbanking
@@ -57,18 +62,17 @@ jobs:
        #     GluuFederation/docker-upgrade
        #     GluuFederation/gluu-admin-ui-api
        #     GluuFederation/oxtrust-api
-       #     GluuFederation/scim
-       #   WORKFLOW_FILES: |
-       #     .github/workflows/commit-check.yml=.github/workflows/commit-check.yml
-       #     .github/workflows/central_code_quality_check.yml=.github/workflows/central_code_quality_check.yml
-       #   GITHUB_TOKEN: ${{ secrets.MOWORKFLOWTOKEN }}
-       #   GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
-       #   PR_BRANCH_NAME: repo_sync
-       # run: |
-       #   echo
-       #   wget https://raw.githubusercontent.com/mo-auto/scripts/main/org_workflows_sync.sh
-       #   chmod u+x org_workflows_sync.sh
-       #   bash org_workflows_sync.sh
+          WORKFLOW_FILES: |
+            .github/workflows/commit-check.yml=.github/workflows/commit-check.yml
+            .github/workflows/central_code_quality_check.yml=.github/workflows/central_code_quality_check.yml
+          GITHUB_TOKEN: ${{ secrets.MOWORKFLOWTOKEN }}
+          GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
+          PR_BRANCH_NAME: repo_sync
+        run: |
+          echo
+          wget https://raw.githubusercontent.com/mo-auto/scripts/main/org_workflows_sync.sh
+          chmod u+x org_workflows_sync.sh
+          bash org_workflows_sync.sh
 
       - name: Running Docker Workflow Sync
         env:
@@ -106,3 +110,14 @@ jobs:
           wget https://raw.githubusercontent.com/mo-auto/scripts/main/org_workflows_sync.sh
           chmod u+x org_workflows_sync.sh
           bash org_workflows_sync.sh
+
+      - name: Running CODEOWNERS Workflow Sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.MOWORKFLOWTOKEN }}
+          GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
+          PR_BRANCH_NAME: code_owner_repo_sync
+        run: |
+          wget https://raw.githubusercontent.com/mo-auto/scripts/main/org_workflows_sync.sh
+          chmod u+x org_workflows_sync.sh
+
+          for FILE in .github/GLUUFEDERATION_CODEOWNERS/*_CODEOWNERS; do FILENAME=$(basename -- "$FILE"); repo="${FILENAME%_CODEOWNERS}"; echo "$repo"; export REPOSITORIES="JanssenProject/$repo"; export WORKFLOW_FILES="$FILE=.github/CODEOWNERS"; bash org_workflows_sync.sh; done
