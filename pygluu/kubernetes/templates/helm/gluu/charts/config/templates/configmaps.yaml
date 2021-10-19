@@ -62,8 +62,42 @@ data:
   {{- end }}
   DOMAIN: {{ .Values.global.fqdn | quote }}
   CN_AUTH_SERVER_BACKEND: {{ cat ( index .Values "global" "auth-server" "authServerServiceName" ) ":8080" | quote | nospace }}
+  CN_AUTH_APP_LOGGERS: {{ index .Values "global" "auth-server" "appLoggers"
+  | toJson
+  | replace "authLogTarget" "auth_log_target"
+  | replace "authLogLevel" "auth_log_level"
+  | replace "httpLogTarget" "http_log_target"
+  | replace "httpLogLevel" "http_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
+  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  | replace "auditStatsLogTarget" "audit_log_target"
+  | replace "auditStatsLogLevel" "audit_log_level"
+  | squote
+  }}
+  {{- if index .Values "global" "client-api" "enabled" }}
   CN_CLIENT_API_SERVER_URL: {{ cat ( index .Values "global" "client-api" "clientApiServerServiceName" ) ":8443" | quote | nospace }}
   CN_CLIENT_API_BIND_IP_ADDRESSES: {{ .Values.configmap.cnClientApiBindIpAddresses | quote }}
+  CN_CLIENT_API_APP_LOGGERS: {{ index .Values "global" "client-api" "appLoggers"
+  | toJson
+  | replace "clientApiLogTarget" "client_api_log_target"
+  | replace "clientApiLogLevel" "client_api_log_level"
+  | squote
+  }}
+  {{- end }}
+  {{- if index .Values "global" "config-api" "enabled" }}
+  CN_CONFIG_API_APP_LOGGERS: {{ index .Values "global" "config-api" "appLoggers"
+  | toJson
+  | replace "configApiLogTarget" "config_api_log_target"
+  | replace "configApiLogLevel" "config_api_log_level"
+  | squote
+  }}
+  {{- end }}
   {{- if and (not .Values.global.isFqdnRegistered ) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
@@ -131,6 +165,30 @@ data:
   {{- if .Values.global.scim.enabled }}
   CN_SCIM_ENABLED: {{ .Values.global.scim.enabled | quote }}
   CN_SCIM_PROTECTION_MODE: {{ .Values.configmap.cnScimProtectionMode | quote }}
+  CN_SCIM_APP_LOGGERS: {{ .Values.global.scim.appLoggers
+  | toJson
+  | replace "scimLogTarget" "scim_log_target"
+  | replace "scimLogLevel" "scim_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
+  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  | squote
+  }}
+  {{- end }}
+  {{- if .Values.global.fido2.enabled }}
+  CN_FIDO2_APP_LOGGERS: {{ .Values.global.fido2.appLoggers
+  | toJson
+  | replace "fido2LogTarget" "fido2_log_target"
+  | replace "fido2LogLevel" "fido2_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | squote
+  }}
   {{- end }}
 
 ---

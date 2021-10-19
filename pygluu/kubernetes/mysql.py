@@ -21,7 +21,7 @@ class MySQL(object):
 
     def install_mysql(self):
         self.uninstall_mysql()
-        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.mysql.namespace"),
+        self.kubernetes.create_namespace(name=self.settings.get("installer-settings.sql.namespace"),
                                          labels={"app": "mysql"})
 
         exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
@@ -36,14 +36,14 @@ class MySQL(object):
                                           self.settings.get("config.configmap.cnSqlDbName"),
                                           self.settings.get("config.configmap.cnSqlDbUser"),
                                           self.settings.get("config.configmap.cnSqldbUserPassword"),
-                                          self.settings.get("installer-settings.mysql.namespace")))
+                                          self.settings.get("installer-settings.sql.namespace")))
 
         if not self.settings.get("installer-settings.aws.lbType") == "alb":
-            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.mysql.namespace"), "app=mysql",
+            self.kubernetes.check_pods_statuses(self.settings.get("installer-settings.sql.namespace"), "app=mysql",
                                                 self.timeout)
 
     def uninstall_mysql(self):
         logger.info("Removing gluu-mysql...")
         logger.info("Removing mysql...")
         exec_cmd("helm delete {} --namespace={}".format("gluu",
-                                                        self.settings.get("installer-settings.mysql.namespace")))
+                                                        self.settings.get("installer-settings.sql.namespace")))

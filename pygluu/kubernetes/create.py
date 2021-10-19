@@ -116,7 +116,7 @@ def main():
 
         elif args.subparser_name == "install":
             gluu = Gluu()
-            if settings.get("installer-settings.jackrabbit.clusterMode"):
+            if settings.get("installer-settings.postgres.install"):
                 from pygluu.kubernetes.postgres import Postgres
                 postgres = Postgres()
                 postgres.install_postgres()
@@ -125,6 +125,11 @@ def main():
                 redis = Redis()
                 redis.uninstall_redis()
                 redis.install_redis()
+            if settings.get("installer-settings.sql.install") and \
+                    settings.get("config.configmap.cnSqlDbDialect") == "mysql":
+                from pygluu.kubernetes.mysql import MySQL
+                sql = MySQL()
+                sql.install_mysql()
             gluu.install_gluu()
 
         elif args.subparser_name == "uninstall":

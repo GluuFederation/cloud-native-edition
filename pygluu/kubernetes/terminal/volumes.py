@@ -98,11 +98,11 @@ class PromptVolumes:
             self.settings.set("global.azureStorageAccountType",
                               click.prompt("Please enter the volume type.", default="StandardSSD_LRS"))
 
-        elif self.settings.get("installer-settings.volumeProvisionStrategy") == "microk8sDynamic":
-            self.settings.set("global.storageClass.provisioner", "microk8s.io/hostpath")
+        elif self.settings.get("global.storageClass.provisioner") == "microk8s.io/hostpath":
+            self.settings.set("installer-settings.volumeProvisionStrategy", "microk8sDynamic")
 
-        elif self.settings.get("installer-settings.volumeProvisionStrategy") == "minikubeDynamic":
-                            self.settings.set("global.storageClass.provisioner", "k8s.io/minikube-hostpath")
+        elif self.settings.get("global.storageClass.provisioner") == "k8s.io/minikube-hostpath":
+            self.settings.set("installer-settings.volumeProvisionStrategy", "minikubeDynamic")
 
         elif self.settings.get("installer-settings.volumeProvisionStrategy") == "awsEbsDynamic":
             logger.info("AWS EKS Options ('gp2', 'io1', `io2`, 'st1', 'sc1')")

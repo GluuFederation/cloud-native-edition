@@ -450,7 +450,82 @@
                      "description":"Name of the auth-server service. Please keep it as default.",
                      "type":"string",
                      "pattern":"^[a-z0-9-]+$"
+                           },
+               "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "authLogTarget":{
+                        "description":"jans-auth.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "authLogLevel":{
+                        "description":"jans-auth.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "httpLogTarget":{
+                        "description":"http_request_response target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "httpLogLevel":{
+                        "description":"http_request_response level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceLogTarget":{
+                        "description":"jans-auth_persistence.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceLogLevel":{
+                        "description":"jans-auth_persistence.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceDurationLogTarget":{
+                        "description":"jans-auth_persistence_duration.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceDurationLogLevel":{
+                        "description":"jans-auth_persistence_duration.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "ldapStatsLogTarget":{
+                        "description":"jans-auth_persistence_ldap_statistics.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "ldapStatsLogLevel":{
+                        "description":"jans-auth_persistence_ldap_statistics.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "scriptLogTarget":{
+                        "description":"jans-auth_script.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "scriptLogLevel":{
+                        "description":"jans-auth_script.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "auditStatsLogTarget":{
+                        "description":"jans-auth_audit.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "auditStatsLogLevel":{
+                        "description":"jans-auth_audit.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
                            }
+                  }
+            }
                }
             },
             "auth-server-key-rotation":{
@@ -488,7 +563,22 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the client-api chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "clientApiLogTarget":{
+                        "description":"client-api.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "clientApiLogLevel":{
+                        "description":"client-api.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "cloud":{
@@ -595,7 +685,22 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the config-api chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "configApiLogTarget":{
+                        "description":"configapi.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "configApiLogLevel":{
+                        "description":"configapi.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "cr-rotate":{
@@ -614,10 +719,40 @@
             "fido2":{
                "type":"object",
                "properties":{
+                  "fido2ServiceName":{
+                     "description":"Name of the fido2 service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                  },
                   "enabled":{
                      "description":"Boolean flag to enable/disable the fido2 chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "fido2LogTarget":{
+                        "description":"fido2.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "fido2LogLevel":{
+                        "description":"fido2.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceLogTarget":{
+                        "description":"fido2_persistence.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceLogLevel":{
+                        "description":"fido2_persistence.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "gcePdStorageType":{
@@ -716,7 +851,67 @@
                   "enabled":{
                      "description":"Boolean flag to enable/disable the SCIM chart.",
                      "type":"boolean"
+                  },
+               "scimServiceName":{
+                     "description":"Name of the scim service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                           },
+               "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "authLogTarget":{
+                        "description":"jans-scim.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "authLogLevel":{
+                        "description":"jans-scim.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceLogTarget":{
+                        "description":"jans-scim_persistence.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceLogLevel":{
+                        "description":"jans-scim_persistence.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceDurationLogTarget":{
+                        "description":"jans-scim_persistence_duration.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceDurationLogLevel":{
+                        "description":"jans-scim_persistence_duration.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "ldapStatsLogTarget":{
+                        "description":"jans-scim_persistence_ldap_statistics.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "ldapStatsLogLevel":{
+                        "description":"jans-scim_persistence_ldap_statistics.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "scriptLogTarget":{
+                        "description":"jans-scim_script.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "scriptLogLevel":{
+                        "description":"jans-scim_script.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "storageClass":{

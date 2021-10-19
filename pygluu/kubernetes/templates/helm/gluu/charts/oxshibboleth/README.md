@@ -20,7 +20,7 @@ Shibboleth project for the Gluu Server's SAML IDP functionality.
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -53,8 +53,7 @@ Kubernetes: `>=v1.17.0-0`
 | resources.requests.cpu | string | `"1000m"` | CPU request. |
 | resources.requests.memory | string | `"1000Mi"` | Memory request. |
 | service.name | string | `"http-oxshib"` | Port of the oxShibboleth service. Please keep it as default. |
-| service.oxShibbolethServiceName | string | `"oxshibboleth"` | Name of the oxShibboleth service. Please keep it as default. |
-| service.port | int | `8080` | The name of the oxPassport port within the oxPassport service. Please keep it as default. |
+| service.port | int | `8080` | The name of the oxShibboleth port within the oxPassport service. Please keep it as default. |
 | service.targetPort | int | `8080` |  |
 | tolerations | list | `[]` |  |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |

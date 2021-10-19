@@ -710,6 +710,37 @@ global:
     authServerServiceName: auth-server
     # -- Boolean flag to enable/disable auth-server chart. You should never set this to false.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-auth.log target
+      authLogTarget: "STDOUT"
+      # -- jans-auth.log level
+      authLogLevel: "INFO"
+      # -- http_request_response.log target
+      httpLogTarget: "FILE"
+      # -- http_request_response.log level
+      httpLogLevel: "INFO"
+      # -- jans-auth_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-auth_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-auth_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-auth_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-auth_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-auth_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      scriptLogTarget: "FILE"
+      # -- jans-auth_script.log level
+      scriptLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      auditStatsLogTarget: "FILE"
+      # -- jans-auth_audit.log level
+      auditStatsLogLevel: "INFO"
+
   auth-server-key-rotation:
     # -- Boolean flag to enable/disable the auth-server-key rotation cronjob chart.
     enabled: false
@@ -727,6 +758,12 @@ global:
     clientApiServerServiceName: client-api
     # -- Boolean flag to enable/disable the client-api chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- client-api.log target
+      clientApiLogTarget: "STDOUT"
+      # -- client-api.log level
+      clientApiLogLevel: "INFO"
   cloud:
     # -- Boolean flag if enabled will strip resources requests and limits from all services.
     testEnviroment: false
@@ -770,6 +807,12 @@ global:
     configApiServerServiceName: config-api
     # -- Boolean flag to enable/disable the config-api chart.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- configapi.log target
+      configApiLogTarget: "STDOUT"
+      # -- configapi.log level
+      configApiLogLevel: "INFO"
   cr-rotate:
     # -- Boolean flag to enable/disable the cr-rotate chart.
     enabled: false
@@ -780,6 +823,16 @@ global:
     fido2ServiceName: fido2
     # -- Boolean flag to enable/disable the fido2 chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- fido2.log target
+      fido2LogTarget: "STDOUT"
+      # -- fido2.log level
+      fido2LogLevel: "INFO"
+      # -- fido2_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- fido2_persistence.log level
+      persistenceLogLevel: "INFO"
   # -- GCE storage kind if using Google disks
   gcePdStorageType: pd-standard
   # -- Boolean flag to enable mapping global.lbIp  to global.fqdn inside pods on clouds that provide static ip for loadbalancers. On cloud that provide only addresses to the LB this flag will enable a script to actively scan config.configmap.lbAddr and update the hosts file inside the pods automatically.
@@ -824,6 +877,28 @@ global:
     scimServiceName: scim
     # -- Boolean flag to enable/disable the SCIM chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-scim.log target
+      scimLogTarget: "STDOUT"
+      # -- jans-scim.log level
+      scimLogLevel: "INFO"
+      # -- jans-scim_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-scim_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-scim_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-scim_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-scim_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-scim_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-scim_script.log target
+      scriptLogTarget: "FILE"
+      # -- jans-scim_script.log level
+      scriptLogLevel: "INFO"
   # -- StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed.
   storageClass:
     allowVolumeExpansion: true

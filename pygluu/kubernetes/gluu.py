@@ -26,7 +26,7 @@ class Gluu(object):
         self.settings = ValuesHandler()
         self.kubernetes = Kubernetes()
         self.ldap_backup_release_name = self.settings.get("installer-settings.releaseName") + "-ldap-backup"
-        if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy") == "gke":
+        if "gke" in self.settings.get("installer-settings.volumeProvisionStrategy"):
             # Clusterrolebinding needs to be created for gke with CB installed
             if self.settings.get("config.configmap.cnCacheType") == "REDIS" or \
                     self.settings.get("installer-settings.couchbase.install"):
@@ -220,7 +220,7 @@ class Gluu(object):
             self.check_install_nginx_ingress(install_ingress)
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
-                self.settings.get('installer-settings.nginxIngress.releaseName'),
+                self.settings.get('installer-settings.releaseName'),
                 self.values_file, self.settings.get("installer-settings.namespace")))
 
             if self.settings.get("global.cnPersistenceType") in ("hybrid", "ldap"):

@@ -20,7 +20,7 @@ CacheRefreshRotation is a special container to monitor cache refresh on oxTrust 
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 

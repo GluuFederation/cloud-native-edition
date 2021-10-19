@@ -20,7 +20,7 @@ Middleware API to help application developers call an OAuth, OpenID or UMA serve
 
 ## Requirements
 
-Kubernetes: `>=v1.17.0-0`
+Kubernetes: `>=v1.19.0-0`
 
 ## Values
 
@@ -42,7 +42,7 @@ Kubernetes: `>=v1.17.0-0`
 | livenessProbe | object | `{"exec":{"command":["curl","-k","https://localhost:8443/health-check"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
 | livenessProbe.exec | object | `{"command":["curl","-k","https://localhost:8443/health-check"]}` | Executes the python3 healthcheck. |
 | nodeSelector | object | `{}` |  |
-| readinessProbe | object | `{"exec":{"command":["curl","-k","https://localhost:8443/health-check"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the auth server if needed. |
+| readinessProbe | object | `{"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":8443},"timeoutSeconds":5}` | Configure the readiness healthcheck for the auth server if needed. |
 | replicas | int | `1` | Service replica number. |
 | resources | object | `{"limits":{"cpu":"1000m","memory":"400Mi"},"requests":{"cpu":"1000m","memory":"400Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"1000m"` | CPU limit. |
