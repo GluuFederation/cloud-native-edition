@@ -704,10 +704,40 @@
             "fido2":{
                "type":"object",
                "properties":{
+                  "fido2ServiceName":{
+                     "description":"Name of the fido2 service. Please keep it as default.",
+                     "type":"string",
+                     "pattern":"^[a-z0-9-]+$"
+                  },
                   "enabled":{
                      "description":"Boolean flag to enable/disable the fido2 chart.",
                      "type":"boolean"
+                  },
+                  "appLoggers":{
+                  "type":"object",
+                  "properties":{
+                     "fido2LogTarget":{
+                        "description":"fido2.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "fido2LogLevel":{
+                        "description":"fido2.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           },
+                     "persistenceLogTarget":{
+                        "description":"fido2_persistence.log target",
+                        "type":"string",
+                        "pattern":"^(STDOUT|FILE)$"
+                                    },
+                     "persistenceLogLevel":{
+                        "description":"fido2_persistence.log level",
+                        "type":"string",
+                        "pattern":"^(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)$"
+                           }
                   }
+            }
                }
             },
             "gcePdStorageType":{

@@ -817,6 +817,16 @@ global:
     fido2ServiceName: fido2
     # -- Boolean flag to enable/disable the fido2 chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- fido2.log target
+      fido2LogTarget: "STDOUT"
+      # -- fido2.log level
+      fido2LogLevel: "INFO"
+      # -- fido2_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- fido2_persistence.log level
+      persistenceLogLevel: "INFO"
   # -- GCE storage kind if using Google disks
   gcePdStorageType: pd-standard
   # -- Boolean flag to enable mapping global.lbIp  to global.fqdn inside pods on clouds that provide static ip for loadbalancers. On cloud that provide only addresses to the LB this flag will enable a script to actively scan config.configmap.lbAddr and update the hosts file inside the pods automatically.

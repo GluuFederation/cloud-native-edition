@@ -169,6 +169,15 @@ data:
   | replace "scriptLogLevel" "script_log_level"
   }}
   {{- end }}
+  {{- if .Values.global.fido2.enabled }}
+  CN_FIDO2_APP_LOGGERS: {{ .Values.global.fido2.appLoggers
+  | toJson
+  | replace "fido2LogTarget" "fido2_log_target"
+  | replace "fido2LogLevel" "fido2_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  }}
+  {{- end }}
 
 ---
 
