@@ -1,4 +1,3 @@
-{{- if not .Values.global.upgrade.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 {{- if or (eq .Values.global.gluuPersistenceType "ldap") (eq .Values.global.gluuPersistenceType "hybrid") }}
@@ -13,11 +12,13 @@ metadata:
 {{- if .Values.additionalLabels }}
 {{ toYaml .Values.additionalLabels | indent 4 }}
 {{- end }}
-{{- if .Values.additionalAnnotations }}
   annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- if .Values.additionalAnnotations }}
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
 {{- end }}
-  annotations:
     # Annotation below is to keep the storage class during upgrade. Otherwise, due to the flag at line 1 which is needed, this resource will be deleted.
     helm.sh/resource-policy: keep
     storageclass.beta.kubernetes.io/is-default-class: "false"
@@ -55,5 +56,4 @@ volumeBindingMode: {{ .Values.global.storageClass.volumeBindingMode }}
 reclaimPolicy: {{ .Values.global.storageClass.reclaimPolicy }}
 mountOptions: {{ .Values.global.storageClass.mountOptions | toJson }}
 allowedTopologies: {{ .Values.global.storageClass.allowedTopologies | toJson }}
-{{- end }}
 {{- end }}

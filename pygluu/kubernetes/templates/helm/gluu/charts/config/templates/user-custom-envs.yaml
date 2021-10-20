@@ -5,6 +5,17 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-global-user-custom-envs
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- if .Values.additionalAnnotations }}
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 type: Opaque
 data:
   {{- range $key, $val := .Values.global.usrEnvs.secret }}
@@ -17,6 +28,17 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-global-user-custom-envs
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- if .Values.additionalAnnotations }}
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 data:
   {{- range $key, $val := .Values.global.usrEnvs.normal }}
   {{ $key }}: {{ $val }}
@@ -28,6 +50,17 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-user-custom-envs
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- if .Values.additionalAnnotations }}
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 type: Opaque
 data:
   {{- range $key, $val := .Values.usrEnvs.secret }}
