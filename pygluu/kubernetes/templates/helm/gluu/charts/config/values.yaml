@@ -143,9 +143,9 @@ countryCode: US
 email: support@gluu.org
 image:
   # -- Image  to use for deploying.
-  repository: janssenproject/configuration-manager
+  repository: janssenproject/configurator
   # -- Image  tag to use for deploying.
-  tag: 1.0.0_b9
+  tag: 1.0.0_b12
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- LDAP admin password if OpennDJ is used for persistence.

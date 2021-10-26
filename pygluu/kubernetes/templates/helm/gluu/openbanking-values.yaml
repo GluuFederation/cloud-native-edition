@@ -28,7 +28,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b9
+    tag: 1.0.0_b12
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -156,9 +156,9 @@ config:
   email: support@gluu.org
   image:
     # -- Image  to use for deploying.
-    repository: janssenproject/configuration-manager
+    repository: janssenproject/configurator
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b9
+    tag: 1.0.0_b12
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Organization name. Used for certificate creation.
@@ -218,7 +218,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b9
+    tag: 1.0.0_b12
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -277,6 +277,36 @@ global:
     authServerServiceName: auth-server
     # -- Boolean flag to enable/disable auth-server chart. You should never set this to false.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-auth.log target
+      authLogTarget: "STDOUT"
+      # -- jans-auth.log level
+      authLogLevel: "INFO"
+      # -- http_request_response.log target
+      httpLogTarget: "FILE"
+      # -- http_request_response.log level
+      httpLogLevel: "INFO"
+      # -- jans-auth_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-auth_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-auth_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-auth_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-auth_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-auth_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      scriptLogTarget: "FILE"
+      # -- jans-auth_script.log level
+      scriptLogLevel: "INFO"
+      # -- jans-auth_script.log target
+      auditStatsLogTarget: "FILE"
+      # -- jans-auth_audit.log level
+      auditStatsLogLevel: "INFO"
   awsStorageType: io1
   cloud:
     # -- Boolean flag if enabled will strip resources requests and limits from all services.
@@ -319,6 +349,12 @@ global:
     configApiServerServiceName: config-api
     # -- Boolean flag to enable/disable the config-api chart.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- configapi.log target
+      configApiLogTarget: "STDOUT"
+      # -- configapi.log level
+      configApiLogLevel: "INFO"
   # -- Fully qualified domain name to be used for Gluu installation. This address will be used to reach Gluu services.
   fqdn: demoexample.gluu.org
   # -- GCE storage kind if using Google disks
@@ -446,7 +482,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b9
+    tag: 1.0.0_b12
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
