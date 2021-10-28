@@ -478,20 +478,7 @@ class Helm(object):
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --timeout 10m0s --namespace={}".format(
                 self.settings.get('GLUU_HELM_RELEASE_NAME'), self.values_file, self.settings.get("GLUU_NAMESPACE")))
-
-            if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
-                    self.settings.get("PERSISTENCE_BACKEND") == "ldap":
-                values_file = Path("./helm/ldap-backup/values.yaml").resolve()
-                values_file_parser = Parser(values_file, True)
-                values_file_parser["ldapPass"] = self.settings.get("LDAP_PW")
-                if self.settings.get("DEPLOYMENT_ARCH") not in ("microk8s", "minikube"):
-                    values_file_parser["gluuLdapSchedule"] = self.settings.get("LDAP_BACKUP_SCHEDULE")
-                if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
-                    values_file_parser["multiCluster"]["enabled"] = True
-                values_file_parser.dump_it()
-
-                exec_cmd("helm install {} -f ./helm/ldap-backup/values.yaml ./helm/ldap-backup --namespace={}".format(
-                    self.ldap_backup_release_name, self.settings.get("GLUU_NAMESPACE")))
+    
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
