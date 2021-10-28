@@ -476,7 +476,7 @@ class Helm(object):
             self.check_install_nginx_ingress(install_ingress)
         self.analyze_global_values()
         try:
-            exec_cmd("helm install {} -f {} ./helm/gluu --namespace={}".format(
+            exec_cmd("helm install {} -f {} ./helm/gluu --timeout 10m0s --namespace={}".format(
                 self.settings.get('GLUU_HELM_RELEASE_NAME'), self.values_file, self.settings.get("GLUU_NAMESPACE")))
 
             if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
