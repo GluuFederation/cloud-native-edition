@@ -4,15 +4,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: {{ include "auth-server-key-rotation.fullname" . }}
-    labels:
-{{ include "auth-server-key-rotation.labels" . | indent 6 }}
+  name: {{ include "auth-server-key-rotation.fullname" . }}
+  labels:
+{{ include "auth-server-key-rotation.fullname" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
-    ports:
-        - name: http
-          port: 80
-          targetPort: 8080
-    selector:
-        app: {{ .Release.Name }}-{{ include "auth-server-key-rotation.name" . }}
-    type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: {{ .Release.Name }}-{{ include "auth-server-key-rotation.name" . }}
+  type: ClusterIP
 {{- end }}

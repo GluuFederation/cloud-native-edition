@@ -139,6 +139,10 @@ auth-server:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Responsible for regenerating auth-keys per x hours
 auth-server-key-rotation:
   # -- Add custom normal and secret envs to the service
@@ -181,6 +185,10 @@ auth-server-key-rotation:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Gluu Casa ("Casa") is a self-service web portal for end-users to manage authentication and authorization preferences for their account in a Gluu Server.
 casa:
   # -- Configure the HorizontalPodAutoscaler
@@ -251,6 +259,10 @@ casa:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Middleware API to help application developers call an OAuth, OpenID or UMA server. You may wonder why this is necessary. It makes it easier for client developers to use OpenID signing and encryption features, without becoming crypto experts. This API provides some high level endpoints to do some of the heavy lifting.
 client-api:
   # -- Configure the HorizontalPodAutoscaler
@@ -321,6 +333,10 @@ client-api:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Configuration parameters for setup and initial configuration secret and config layers used by Gluu services.
 config:
   # -- Add custom normal and secret envs to the service.
@@ -509,6 +525,10 @@ config:
    # Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json.
    migrationDataFormat: ldif
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Config Api endpoints can be used to configure the auth-server, which is an open-source OpenID Connect Provider (OP) and UMA Authorization Server (AS).
 config-api:
   # -- Configure the HorizontalPodAutoscaler
@@ -578,6 +598,10 @@ config-api:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- CacheRefreshRotation is a special container to monitor cache refresh on oxTrust containers. This may be depreciated.
 cr-rotate:
   # -- Add custom normal and secret envs to the service
@@ -621,6 +645,10 @@ cr-rotate:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- FIDO 2.0 (FIDO2) is an open authentication standard that enables leveraging common devices to authenticate to online services in both mobile and desktop environments.
 fido2:
   # -- Configure the HorizontalPodAutoscaler
@@ -690,6 +718,10 @@ fido2:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Parameters used globally across all services helm charts.
 global:
   # -- Add custom normal and secret envs to the service.
@@ -844,6 +876,10 @@ global:
     ingress: false
     # -- The namespace istio is deployed in. The is normally istio-system.
     namespace: istio-system
+    # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+    additionalLabels: { }
+    # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+    additionalAnnotations: { }
   jackrabbit:
     # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run.
     enabled: false
@@ -996,6 +1032,10 @@ jackrabbit:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Nginx ingress definitions chart
 nginx-ingress:
   ingress:
@@ -1204,6 +1244,10 @@ opendj:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Gluu interface to Passport.js to support social login and inbound identity.
 oxpassport:
   # -- Configure the HorizontalPodAutoscaler
@@ -1276,6 +1320,10 @@ oxpassport:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Shibboleth project for the Gluu Server's SAML IDP functionality.
 oxshibboleth:
   # -- Configure the HorizontalPodAutoscaler
@@ -1346,6 +1394,10 @@ oxshibboleth:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- Job to generate data and intial config for Gluu Server persistence layer.
 persistence:
   # -- Add custom normal and secret envs to the service
@@ -1386,6 +1438,10 @@ persistence:
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
 
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }
 # -- System for Cross-domain Identity Management (SCIM) version 2.0
 scim:
   # -- Configure the HorizontalPodAutoscaler
@@ -1454,3 +1510,8 @@ scim:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+
+  # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+  additionalLabels: { }
+  # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+  additionalAnnotations: { }

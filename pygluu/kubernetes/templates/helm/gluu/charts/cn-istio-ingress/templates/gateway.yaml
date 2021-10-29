@@ -3,6 +3,14 @@ kind: Gateway
 metadata:
   name: {{ .Release.Name }}-global-gtw
   namespace: {{ .Release.Namespace }}
+{{- if .Values.global.istio.additionalLabels }}
+  labels:
+{{ toYaml .Values.global.istio.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.global.istio.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.global.istio.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   selector:
     istio: ingressgateway

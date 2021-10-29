@@ -9,6 +9,13 @@ metadata:
     APP_NAME: auth-server-key-rotation
     release: {{ .Release.Name }}
 {{ include "auth-server-key-rotation.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   schedule: "0 */{{ .Values.keysLife }} * * *"
   concurrencyPolicy: Forbid

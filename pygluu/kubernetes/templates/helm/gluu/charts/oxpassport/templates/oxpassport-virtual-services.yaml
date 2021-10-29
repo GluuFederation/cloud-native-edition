@@ -6,6 +6,15 @@ kind: VirtualService
 metadata:
   name: {{ .Release.Name }}-istio-passport
   namespace: {{.Release.Namespace}}
+  labels:
+{{ include "oxpassport.labels" . | indent 4}}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   hosts:
   - {{ .Values.global.fqdn }}

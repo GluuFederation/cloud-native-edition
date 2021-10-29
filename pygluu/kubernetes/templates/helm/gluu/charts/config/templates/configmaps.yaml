@@ -5,6 +5,16 @@ kind: ConfigMap
 metadata: 
   name: {{ .Release.Name }}-config-cm
   namespace: {{ .Release.Namespace }}
+  labels:
+    APP_NAME: configuration-manager
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 data:
   # Jetty header size in bytes in the auth server
   CN_JETTY_REQUEST_HEADER_SIZE: {{ .Values.configmap.cnJettyRequestHeaderSize | quote }}

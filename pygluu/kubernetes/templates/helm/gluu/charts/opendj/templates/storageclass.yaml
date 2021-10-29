@@ -9,6 +9,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     storage: opendj
+{{ include "opendj.labels" $ | indent 4}}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
   annotations:
     # Annotation below is to keep the storage class during upgrade. Otherwise, due to the flag at line 1 which is needed, this resource will be deleted.
     helm.sh/resource-policy: keep

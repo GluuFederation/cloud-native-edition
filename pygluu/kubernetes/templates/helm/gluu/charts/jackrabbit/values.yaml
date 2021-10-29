@@ -104,3 +104,7 @@ jackrabbitVolumeMounts:
     mountPath: opt/jackrabbit/workspaces
     name: jackrabbit-volume
 
+# -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+additionalLabels: { }
+# -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+additionalAnnotations: { }

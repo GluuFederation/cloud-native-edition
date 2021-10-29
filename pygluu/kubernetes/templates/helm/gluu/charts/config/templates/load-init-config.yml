@@ -8,7 +8,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     APP_NAME: configuration-manager
-{{ include "config.labels" . | indent 4}}
+{{ include "config.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:

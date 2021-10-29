@@ -6,7 +6,15 @@ metadata:
   name: {{ .Values.global.oxshibboleth.oxShibbolethServiceName }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "oxshibboleth.labels" . | indent 4}}
+    APP_NAME: oxshibboleth
+{{ include "oxshibboleth.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   {{- if .Values.global.alb.ingress }}
   type: NodePort
