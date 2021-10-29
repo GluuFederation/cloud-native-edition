@@ -404,11 +404,11 @@ class Helm(object):
 
         if self.settings.get("ENABLE_OXPASSPORT_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
-            values_file_parser["nginx-ingress"]["ingress"]["passportShibEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["passportEnabled"] = True
             values_file_parser["global"]["alb"]["ingress"]["passportEnabled"] = True
         if self.settings.get("ENABLE_SAML_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
-            values_file_parser["nginx-ingress"]["ingress"]["passportShibEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["shibEnabled"] = True
             values_file_parser["global"]["alb"]["ingress"]["shibEnabled"] = True
 
         if self.settings.get("MIGRATION_ENABLED") == "Y":
