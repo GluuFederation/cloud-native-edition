@@ -66,11 +66,8 @@ def main():
     settings = ValuesHandler()
 
     try:
-        if args.subparser_name == "install-ldap-backup":
-            gluu = Gluu()
-            gluu.install_ldap_backup()
 
-        elif args.subparser_name == "uninstall-gluu":
+        if args.subparser_name == "uninstall-gluu":
             gluu = Gluu()
             gluu.uninstall_gluu()
             if settings.get("installer-settings.redis.install"):
@@ -88,7 +85,7 @@ def main():
             prompt_upgrade.prompt_upgrade()
             logger.info("Patching values.yaml for helm upgrade...")
             logger.info("Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
-                        "Continue with the steps found at https://gluu.org/docs/gluu-server/latest/upgrade/#helm")
+                        "Continue with the steps found at https://gluu.org/docs/gluu-server/4.3/upgrade/#helm")
 
         elif args.subparser_name == "install-couchbase":
             from pygluu.kubernetes.terminal.couchbase import PromptCouchbase

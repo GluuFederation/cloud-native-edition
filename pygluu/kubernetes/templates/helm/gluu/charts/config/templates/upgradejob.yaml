@@ -1,19 +1,19 @@
+{{- if.Values.global.upgrade.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "persistence.fullname" . }}
+  name: {{ include "config.fullname" . }}-upgrader
   namespace: {{ .Release.Namespace }}
   labels:
-    APP_NAME: persistence-loader
-{{ include "persistence.labels" . | indent 4 }}
+{{ include "config.labels" . | indent 4 }}
 {{- if .Values.additionalLabels }}
 {{ toYaml .Values.additionalLabels | indent 4 }}
 {{- end }}
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "3"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": before-hook-creation
 {{- if .Values.additionalAnnotations }}
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
@@ -21,10 +21,9 @@ metadata:
 spec:
   template:
     metadata:
-      name: {{ include "persistence.name" . }}
+      name: {{ include "config.name" . }}-upgrader
       labels:
-        APP_NAME: persistence-loader
-        app: {{ .Release.Name }}-{{ include "persistence.name" . }}
+        app: {{ include "config.name" . }}-upgrader
     spec:
     {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -35,27 +34,24 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
+        {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
+        - name: google-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-sa
+        {{- end }}
       restartPolicy: Never
       containers:
-      - name: {{ include "persistence.name" . }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        securityContext:
-          runAsUser: 1000
-          runAsNonRoot: true
-        env:
-          {{- include "persistence.usr-envs" . | indent 12 }}
-          {{- include "persistence.usr-secret-envs" . | indent 12 }}
-        {{- if .Values.global.istio.enabled }}
-        command:
-          - tini
-          - -g
-          - --
-          - /bin/sh
-          - -c
-          - |
-            /app/scripts/entrypoint.sh
-            curl -X POST http://localhost:15020/quitquitquit
-        {{- end }}
+      - name: {{ include "config.name" . }}-upgrader
+        image: "{{ .Values.global.upgrade.image.repository }}:{{ .Values.global.upgrade.image.tag }}"
+        args:
+        - "--source"
+        - {{ .Values.global.upgrade.sourceVersion | quote }}
+        - "--target"
+        - {{ .Values.global.upgrade.targetVersion | quote }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
@@ -73,8 +69,13 @@ spec:
           {{- end }}
         {{- if .Values.global.jackrabbit.enabled }}
           - name: cn-jackrabbit-admin-pass
-            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            mountPath: /etc/jans/conf/jackrabbit_admin_password
             subPath: jackrabbit_admin_password
+        {{- end }}
+        {{- if eq .Values.global.cnPersistenceType "sql" }}
+          - name: sql-pass
+            mountPath: "/etc/jans/conf/sql_password"
+            subPath: sql_password
         {{- end }}
         {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
           - mountPath: {{ .Values.global.cnGoogleApplicationCredentials }}
@@ -88,14 +89,11 @@ spec:
           - name: cb-super-pass
             mountPath: "/etc/jans/conf/couchbase_superuser_password"
             subPath: couchbase_superuser_password
-          - name: cb-crt 
+          {{- if not .Values.global.istio.enabled }}
+          - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
-        {{- end }}
-        {{- if eq .Values.global.cnPersistenceType "sql" }}
-          - name: sql-pass
-            mountPath: "/etc/jans/conf/sql_password"
-            subPath: sql_password
+          {{- end }}
         {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
@@ -108,6 +106,11 @@ spec:
           secret:
             secretName: cn-jackrabbit-admin-pass
       {{- end }}
+      {{- if eq .Values.global.cnPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
+        {{- end }}
       {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
         - name: google-sa
           secret:
@@ -120,12 +123,10 @@ spec:
         - name: cb-super-pass
           secret:
             secretName: {{ .Release.Name }}-superuser-cb-pass
-        - name: cb-crt 
+        {{- if not .Values.global.istio.enabled }}
+        - name: cb-crt
           secret:
             secretName: {{ .Release.Name }}-cb-crt
+        {{- end }}
       {{- end }}
-      {{- if eq .Values.global.cnPersistenceType "sql" }}
-        - name: sql-pass
-          secret:
-            secretName: {{ .Release.Name }}-sql-pass
-      {{- end }}
+{{- end }}
