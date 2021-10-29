@@ -1,18 +1,19 @@
+{{- if.Values.global.upgrade.enabled }}
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "persistence.fullname" . }}
+  name: {{ include "config.fullname" . }}-upgrader
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "persistence.labels" . | indent 4 }}
+{{ include "config.labels" . | indent 4 }}
 {{- if .Values.additionalLabels }}
 {{ toYaml .Values.additionalLabels | indent 4 }}
 {{- end }}
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "3"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": before-hook-creation
 {{- if .Values.additionalAnnotations }}
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
@@ -20,9 +21,9 @@ metadata:
 spec:
   template:
     metadata:
-      name: {{ include "persistence.name" . }}
+      name: {{ include "config.name" . }}-upgrader
       labels:
-        app: {{ include "persistence.name" . }}
+        app: {{ include "config.name" . }}-upgrader
     spec:
     {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -33,24 +34,24 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      volumes:
+      {{- with .Values.volumes }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
+        {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
+        - name: google-sa
+          secret:
+            secretName: {{ .Release.Name }}-google-sa
+        {{- end }}
       restartPolicy: Never
       containers:
-      - name: {{ include "persistence.name" . }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        env:
-          {{- include "persistence.usr-envs" . | indent 12 }}
-          {{- include "persistence.usr-secret-envs" . | indent 12 }}
-        {{- if .Values.global.istio.enabled }}
-        command:
-          - tini
-          - -g
-          - --
-          - /bin/sh
-          - -c
-          - |
-            /app/scripts/entrypoint.sh
-            curl -X POST http://localhost:15020/quitquitquit
-        {{- end }}
+      - name: {{ include "config.name" . }}-upgrader
+        image: "{{ .Values.global.upgrade.image.repository }}:{{ .Values.global.upgrade.image.tag }}"
+        args:
+        - "--source"
+        - {{ .Values.global.upgrade.sourceVersion | quote }}
+        - "--target"
+        - {{ .Values.global.upgrade.targetVersion | quote }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
@@ -89,7 +90,7 @@ spec:
             mountPath: "/etc/gluu/conf/couchbase_superuser_password"
             subPath: couchbase_superuser_password
           {{- if not .Values.global.istio.enabled }}
-          - name: cb-crt 
+          - name: cb-crt
             mountPath: "/etc/certs/couchbase.crt"
             subPath: couchbase.crt
           {{- end }}
@@ -123,8 +124,9 @@ spec:
           secret:
             secretName: {{ .Release.Name }}-superuser-cb-pass
         {{- if not .Values.global.istio.enabled }}
-        - name: cb-crt 
+        - name: cb-crt
           secret:
             secretName: {{ .Release.Name }}-cb-crt
         {{- end }}
       {{- end }}
+{{- end }}
