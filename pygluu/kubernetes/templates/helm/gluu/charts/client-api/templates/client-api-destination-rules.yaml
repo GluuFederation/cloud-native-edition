@@ -6,6 +6,16 @@ kind: DestinationRule
 metadata:
   name: {{ .Release.Name }}-client-api-mtls
   namespace: {{.Release.Namespace}}
+  labels:
+    APP_NAME: client-api
+{{ include "client-api.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   host: {{ index .Values "global" "client-api" "clientApiServerServiceName" }}.{{ .Release.Namespace }}.svc.cluster.local
   trafficPolicy:

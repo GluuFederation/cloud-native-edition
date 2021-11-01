@@ -66,11 +66,8 @@ def main():
     settings = ValuesHandler()
 
     try:
-        if args.subparser_name == "install-ldap-backup":
-            gluu = Gluu()
-            gluu.install_ldap_backup()
 
-        elif args.subparser_name == "uninstall-gluu":
+        if args.subparser_name == "uninstall-gluu":
             gluu = Gluu()
             gluu.uninstall_gluu()
             if settings.get("installer-settings.redis.install"):

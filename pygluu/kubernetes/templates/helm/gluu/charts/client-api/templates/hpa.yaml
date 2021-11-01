@@ -5,6 +5,16 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "client-api.fullname" . }}
+  labels:
+    APP_NAME: client-api
+{{ include "client-api.fullname" . | indent 4}}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

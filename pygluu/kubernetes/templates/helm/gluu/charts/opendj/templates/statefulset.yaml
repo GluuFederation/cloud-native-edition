@@ -17,6 +17,13 @@ metadata:
     {{- if $.Values.multiCluster.enabled }}
     appregion: {{ include "opendj.name" $ }}-regional-{{$v}}
     {{- end }}
+{{- if $.Values.additionalLabels }}
+{{ toYaml $.Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if $.Values.additionalAnnotations }}
+  annotations:
+{{ toYaml $.Values.additionalAnnotations | indent 4 }}
+{{- end }}
 spec:
   selector:
     matchLabels:
@@ -66,6 +73,11 @@ spec:
         - name: serfpeers
           configMap:
             name: {{ $.Release.Name }}-serf-peers
+      {{- end }}
+      {{- if $.Values.global.upgrade.enabled }}
+        - name: ox-ldif-cm
+          configMap:
+            name: {{ $.Release.Name }}-oxjans
       {{- end }}
       containers:
       - name: {{ include "opendj.name" $ }}
@@ -120,6 +132,11 @@ spec:
           - mountPath: "/etc/gluu/conf/serf-peers-static.json"
             name: serfpeers
             subPath: serf-peers-static.json
+        {{- end }}
+        {{- if $.Values.global.upgrade.enabled }}
+          - name: ox-ldif-cm
+            mountPath: /opt/opendj/config/schema/101-jans.ldif
+            subPath: 101-jans.ldif
         {{- end }}
         livenessProbe:
 {{- toYaml $.Values.livenessProbe | nindent 10 }}
