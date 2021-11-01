@@ -355,10 +355,12 @@ class Helm(object):
 
         if self.settings.get("ENABLE_OXPASSPORT_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuPassportEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["passportEnabled"] = True
         if self.settings.get("ENABLE_RADIUS_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuRadiusEnabled"] = True
         if self.settings.get("ENABLE_SAML_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuSamlEnabled"] = True
+            values_file_parser["nginx-ingress"]["ingress"]["shibEnabled"] = True
 
         values_file_parser["oxpassport"]["resources"] = {}
         values_file_parser["casa"]["image"]["repository"] = self.settings.get("CASA_IMAGE_NAME")
