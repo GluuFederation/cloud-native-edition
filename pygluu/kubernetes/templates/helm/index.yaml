@@ -33,7 +33,7 @@ entries:
       catalog.cattle.io/release-name: gluu
     apiVersion: v2
     appVersion: 5.0.0
-    created: "2021-11-04T08:13:34.594046-04:00"
+    created: "2021-11-04T09:10:05.810572-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -137,7 +137,7 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 5.0.0-scim
-    created: "2021-11-04T08:13:34.581056-04:00"
+    created: "2021-11-04T09:10:05.79837-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -253,7 +253,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.528508-04:00"
+    created: "2021-11-04T09:10:05.752108-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -373,7 +373,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.569878-04:00"
+    created: "2021-11-04T09:10:05.78673-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -477,7 +477,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.557367-04:00"
+    created: "2021-11-04T09:10:05.775475-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -595,7 +595,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.541721-04:00"
+    created: "2021-11-04T09:10:05.763141-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -715,7 +715,130 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.512646-04:00"
+    created: "2021-11-04T09:10:05.70932-04:00"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.5.10
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.5.10
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.5.10
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.5.10
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.5.10
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.5.10
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.5.10
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.5.10
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.5.10
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.5.10
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.5.10
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.5.10
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.5.10
+    - condition: config.configmap.gluuRadiusEnabled
+      name: radius
+      repository: ""
+      version: 1.5.10
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.5.10
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.5.10
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.5.10
+    description: Gluu Access and Identity Mangement
+    digest: 3b5985e8f3fd5fd6f7b24666517e4c46e485383a70809acda2a58ea8c49c5bce
+    home: https://www.gluu.org
+    icon: https://gluu.org/wp-content/uploads/2020/12/logo.png
+    kubeVersion: '>=v1.17.0-0<=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.5.10.tgz
+    version: 1.5.10
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.2.3 official chart release
+        - Upgraded jetty in casa, fido2, scim, oxauth, oxshibboleth and oxtrust
+        - Added label injection to ingress defs
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.2.3_04
+        - name: fido2
+          image: gluufederation/fido2:4.2.3_03
+        - name: scim
+          image: gluufederation/scim:4.2.3_05
+        - name: configuration-manager
+          image: gluufederation/config-init:4.2.3_03
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.2.3_05
+        - name: certmanager
+          image: gluufederation/certmanager:4.2.3_07
+        - name: opendj
+          image: gluufederation/opendj:4.2.3_02
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.2.3_04
+        - name: oxauth
+          image: gluufederation/oxauth:4.2.3_11
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.2.3_02
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.2.3_05
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.2.3_09
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.2.3_06
+        - name: persistence
+          image: gluufederation/persistence:4.2.3_03
+        - name: radius
+          image: gluufederation/radius:4.2.3_02
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.2.3
+    created: "2021-11-04T09:10:05.741276-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -838,7 +961,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.50673-04:00"
+    created: "2021-11-04T09:10:05.734104-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -960,7 +1083,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.498109-04:00"
+    created: "2021-11-04T09:10:05.724788-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1083,7 +1206,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.490463-04:00"
+    created: "2021-11-04T09:10:05.718362-04:00"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1169,7 +1292,7 @@ entries:
   ldap-backup:
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.59781-04:00"
+    created: "2021-11-04T09:10:05.813874-04:00"
     description: A backup strategy for LDAP
     digest: f00564718757bd0d53f1f3dbaa9399327695eb883000f5d6ade7690bb8a2d371
     home: https://gluu.org/docs/gluu-server
@@ -1192,7 +1315,7 @@ entries:
     version: 1.6.11
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.600638-04:00"
+    created: "2021-11-04T09:10:05.816284-04:00"
     description: A backup strategy for LDAP
     digest: 2fd5f9c62784f0bc6c4b30e5b90abb5edeca1a6cb865e414a3e87a42b115b647
     home: https://gluu.org/docs/gluu-server
@@ -1215,7 +1338,7 @@ entries:
     version: 1.6.9
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2021-11-04T08:13:34.599043-04:00"
+    created: "2021-11-04T09:10:05.81501-04:00"
     description: A backup strategy for LDAP
     digest: b5df0e1ee0feeb7981707e84a4a6cc53b5e81e6b4e5e0ac010a433494de525ff
     home: https://gluu.org/docs/gluu-server
@@ -1238,7 +1361,7 @@ entries:
     version: 1.6.7-b
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.596357-04:00"
+    created: "2021-11-04T09:10:05.812915-04:00"
     description: A backup strategy for LDAP
     digest: 838ca4b13bb22686f6ff7da98abc523878d64a105ec27cb85da5489d208bf8dc
     home: https://www.gluu.org
@@ -1256,7 +1379,7 @@ entries:
     version: 1.5.9
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2021-11-04T08:13:34.595449-04:00"
+    created: "2021-11-04T09:10:05.812156-04:00"
     description: A backup strategy for LDAP
     digest: 6ea292f401343c0def6aca74c1c2871785665fd04422780387955dfed3dffa91
     home: https://www.gluu.org
@@ -1271,4 +1394,4 @@ entries:
     urls:
     - ldap-backup-1.5.9-a.tgz
     version: 1.5.9-a
-generated: "2021-11-04T08:13:34.479484-04:00"
+generated: "2021-11-04T09:10:05.6984-04:00"
