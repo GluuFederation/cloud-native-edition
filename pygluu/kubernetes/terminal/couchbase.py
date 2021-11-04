@@ -126,12 +126,12 @@ class PromptCouchbase:
         self.find_couchbase_certs_or_set_san_cn()
 
     def prompt_override_couchbase_files(self):
-        if self.settings.get("config.configmap.customFileOverride") in (None, ''):
-            self.settings.set("config.configmap.customFileOverride", click.confirm(
+        if self.settings.get("installer-settings.couchbase.customFileOverride") in (None, ''):
+            self.settings.set("installer-settings.couchbase.customFileOverride", click.confirm(
                 "Override couchbase-cluster.yaml with a custom couchbase-cluster.yaml",
             ))
 
-        if self.settings.get("config.configmap.customFileOverride"):
+        if self.settings.get("installer-settings.couchbase.customFileOverride"):
             try:
                 shutil.copy(Path("./couchbase-cluster.yaml"), Path("./couchbase/couchbase-cluster.yaml"))
                 shutil.copy(Path("./couchbase-buckets.yaml"), Path("./couchbase/couchbase-buckets.yaml"))

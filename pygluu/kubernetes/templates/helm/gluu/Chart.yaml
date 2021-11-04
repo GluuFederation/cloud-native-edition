@@ -28,6 +28,9 @@ annotations:
       image: janssenproject/scim:1.0.0_b12
   artifacthub.io/license: Apache-2.0
   artifacthub.io/prerelease: "true"
+  catalog.cattle.io/certified: partner
+  catalog.cattle.io/release-name: gluu
+  catalog.cattle.io/display-name: Gluu Cloud Identity and Access Management
 apiVersion: v2
 appVersion: "5.0.0"
 icon: https://gluu.org/docs/gluu-server/favicon.ico
@@ -45,79 +48,63 @@ dependencies:
     - name: config
       condition: global.config.enabled
       version: 5.0.0
-      repository: ""
 
     - name: config-api
       condition: global.config-api.enabled
       version: 5.0.0
-      repository: ""
 
     - name: opendj
       condition: global.opendj.enabled
       version: 5.0.0
-      repository: ""
 
     - name: jackrabbit
       condition: global.jackrabbit.enabled
       version: 5.0.0
-      repository: ""
 
     - name: auth-server
       condition: global.auth-server.enabled
       version: 5.0.0
-      repository: ""
 
     - name: fido2
       condition: global.fido2.enabled
       version: 5.0.0
-      repository: ""
 
     - name: scim
       condition: global.scim.enabled
       version: 5.0.0
-      repository: ""
 
     - name: nginx-ingress
       condition: global.nginx-ingress.enabled
       version: 5.0.0
-      repository: ""
 
     - name: oxshibboleth
       condition: global.oxshibboleth.enabled
       version: 5.0.0
-      repository: ""
 
     - name: oxpassport
       version: 5.0.0
       condition: config.configmap.cnPassportEnabled
-      repository: ""
 
     - name: casa
       version: 5.0.0
       condition: config.configmap.cnCasaEnabled
-      repository: ""
 
     - name: auth-server-key-rotation
       condition: global.auth-server-key-rotation.enabled
       version: 5.0.0
-      repository: ""
 
     - name: cr-rotate
       version: 5.0.0
       condition: global.cr-rotate.enabled
-      repository: ""
 
     - name: client-api
       condition: global.client-api.enabled
       version: 5.0.0
-      repository: ""
 
     - name: persistence
       condition: global.persistence.enabled
       version: 5.0.0
-      repository: ""
 
     - name: cn-istio-ingress
       condition: global.istio.ingress
       version: 5.0.0
-      repository: ""

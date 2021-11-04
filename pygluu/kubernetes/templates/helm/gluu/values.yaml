@@ -696,6 +696,11 @@ fido2:
       cpu: 500m
       # -- Memory request.
       memory: 500Mi
+  service:
+    # -- The name of the fido2 port within the fido2 service. Please keep it as default.
+    name: http-fido2
+    # -- Port of the fido2 service. Please keep it as default.
+    port: 8080
   # -- Configure the liveness healthcheck for the fido2 if needed.
   livenessProbe:
     # -- http liveness probe endpoint
@@ -800,9 +805,9 @@ global:
     # -- Boolean flag if enabled will strip resources requests and limits from all services.
     testEnviroment: false
   # -- Boolean flag if enabled will enable jackrabbit in cluster mode with Postgres.
-  cnJackrabbitCluster: true
+  cnJackrabbitCluster: false
   # -- Persistence backend to run Gluu with ldap|couchbase|hybrid|sql|spanner.
-  cnPersistenceType: ldap
+  cnPersistenceType: sql
   # -- Open banking external signing jwks uri. Used in SSA Validation.
   cnObExtSigningJwksUri: ""
   # -- Open banking external signing jwks AS certificate authority string. Used in SSA Validation. This must be encoded using base64.. Used when `.global.cnObExtSigningJwksUri` is set.
@@ -854,7 +859,7 @@ global:
     # -- Name of the fido2 service. Please keep it as default.
     fido2ServiceName: fido2
     # -- Boolean flag to enable/disable the fido2 chart.
-    enabled: false
+    enabled: true
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     appLoggers:
       # -- fido2.log target
@@ -886,7 +891,7 @@ global:
     # -- Name of the Jackrabbit service. Please keep it as default.
     jackRabbitServiceName: jackrabbit
   # -- The Loadbalancer IP created by nginx or istio on clouds that provide static IPs. This is not needed if `global.fqdn` is globally resolvable.
-  lbIp: ""
+  lbIp: 22.22.22.22
   nginx-ingress:
     # -- Boolean flag to enable/disable the nginx-ingress definitions chart.
     enabled: true
@@ -912,7 +917,7 @@ global:
     # -- Name of the scim service. Please keep it as default.
     scimServiceName: scim
     # -- Boolean flag to enable/disable the SCIM chart.
-    enabled: false
+    enabled: true
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     appLoggers:
       # -- jans-scim.log target
@@ -1270,11 +1275,9 @@ opendj:
   # -- Configure the readiness healthcheck for OpenDJ if needed.
   # https://github.com/GluuFederation/docker-opendj/blob/master/scripts/healthcheck.py
   readinessProbe:
-    exec:
-      command:
-      - python3
-      - /app/scripts/healthcheck.py
-    initialDelaySeconds: 25
+    tcpSocket:
+      port: 1636
+    initialDelaySeconds: 60
     timeoutSeconds: 5
     periodSeconds: 25
     failureThreshold: 20
@@ -1527,6 +1530,11 @@ scim:
       cpu: 1000m
       # -- Memory request.
       memory: 1000Mi
+  service:
+    # -- The name of the scim port within the scim service. Please keep it as default.
+    name: http-scim
+    # -- Port of the scim service. Please keep it as default.
+    port: 8080
   # -- Configure the liveness healthcheck for SCIM if needed.
   livenessProbe:
     httpGet:

@@ -27,9 +27,9 @@ class PromptDistribution:
         if self.settings.get("global.distribution") not in gluu_distribution_map.values() \
                 and self.settings.get("global.distribution") in ("None", ''):
             print("|------------------------------------------------------------------|")
-            print("|                     Cache layer                                  |")
+            print("|                     Gluu Distribution                            |")
             print("|------------------------------------------------------------------|")
-            print("| [1] default [default]                                           |")
+            print("| [1] default [default]                                            |")
             print("| [2] OpenBanking                                                  |")
             print("|------------------------------------------------------------------|")
             choice = click.prompt("Gluu distribution", default=1)

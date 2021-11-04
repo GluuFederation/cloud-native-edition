@@ -142,7 +142,7 @@ spec:
           configMap:
             name: {{ .Release.Name }}-updatelbip
         {{- end }}
-      {{- if not .Values.global.isFqdnRegistered  }}
+      {{- if not .Values.global.isFqdnRegistered }}
       hostAliases:
       - ip: {{ .Values.global.lbIp }}
         hostnames:
