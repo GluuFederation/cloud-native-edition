@@ -625,7 +625,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.3_08
+    tag: 4.2.3_11
     pullPolicy: Always
     pullSecrets: []
   resources:
