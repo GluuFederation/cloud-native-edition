@@ -120,4 +120,4 @@ jobs:
           wget https://raw.githubusercontent.com/mo-auto/scripts/main/org_workflows_sync.sh
           chmod u+x org_workflows_sync.sh
 
-          for FILE in .github/GLUUFEDERATION_CODEOWNERS/*_CODEOWNERS; do FILENAME=$(basename -- "$FILE"); repo="${FILENAME%_CODEOWNERS}"; echo "$repo"; export REPOSITORIES="JanssenProject/$repo"; export WORKFLOW_FILES="$FILE=.github/CODEOWNERS"; bash org_workflows_sync.sh; done
+          for FILE in .github/GLUUFEDERATION_CODEOWNERS/*_CODEOWNERS; do FILENAME=$(basename -- "$FILE"); repo="${FILENAME%_CODEOWNERS}"; echo "$repo"; export REPOSITORIES="GluuFederation/$repo"; export WORKFLOW_FILES="$FILE=.github/CODEOWNERS"; bash org_workflows_sync.sh; done
