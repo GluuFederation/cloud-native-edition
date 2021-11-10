@@ -319,10 +319,35 @@ global:
       auditStatsLogTarget: "FILE"
       # -- jans-auth_audit.log level
       auditStatsLogLevel: "INFO"
+
+  auth-server-key-rotation:
+    # -- Boolean flag to enable/disable the auth-server-key rotation cronjob chart.
+    enabled: false
+  # -- Volume storage type if using AWS volumes.
   awsStorageType: io1
+  # -- Volume storage type if using Azure disks.
+  azureStorageAccountType: Standard_LRS
+  # -- Azure storage kind if using Azure disks
+  azureStorageKind: Managed
+  casa:
+    # -- Name of the casa service. Please keep it as default.
+    casaServiceName: casa
+  client-api:
+    # -- Name of the client-api service. Please keep it as default.
+    clientApiServerServiceName: client-api
+    # -- Boolean flag to enable/disable the client-api chart.
+    enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- client-api.log target
+      clientApiLogTarget: "STDOUT"
+      # -- client-api.log level
+      clientApiLogLevel: "INFO"
   cloud:
     # -- Boolean flag if enabled will strip resources requests and limits from all services.
     testEnviroment: false
+  # -- Boolean flag if enabled will enable jackrabbit in cluster mode with Postgres.
+  cnJackrabbitCluster: false
   # -- Persistence backend to run Gluu with ldap|couchbase|hybrid|sql|spanner.
   cnPersistenceType: sql
   # -- Open banking external signing jwks uri. Used in SSA Validation.
@@ -341,7 +366,7 @@ global:
   cnObTransportCrt: ""
   # -- Open banking AS transport key. Used in SSA Validation. This must be encoded using base64.
   cnObTransportKey: ""
-  # -- Open banking AS transport key passphrase to unlock AS transport key. This must be encoded using base64.
+  # -- Open banking AS transport key pas`sphrase to unlock AS transport key. This must be encoded using base64.
   cnObTransportKeyPassPhrase: ""
   # -- Open banking transport Alias used inside the JVM.
   cnObTransportAlias: ""
@@ -367,12 +392,30 @@ global:
       configApiLogTarget: "STDOUT"
       # -- configapi.log level
       configApiLogLevel: "INFO"
+  cr-rotate:
+    # -- Boolean flag to enable/disable the cr-rotate chart.
+    enabled: false
   # -- Fully qualified domain name to be used for Gluu installation. This address will be used to reach Gluu services.
   fqdn: demoexample.gluu.org
+  fido2:
+    # -- Name of the fido2 service. Please keep it as default.
+    fido2ServiceName: fido2
+    # -- Boolean flag to enable/disable the fido2 chart.
+    enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- fido2.log target
+      fido2LogTarget: "STDOUT"
+      # -- fido2.log level
+      fido2LogLevel: "INFO"
+      # -- fido2_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- fido2_persistence.log level
+      persistenceLogLevel: "INFO"
   # -- GCE storage kind if using Google disks
   gcePdStorageType: pd-standard
   # -- Boolean flag to enable mapping global.lbIp  to global.fqdn inside pods on clouds that provide static ip for loadbalancers. On cloud that provide only addresses to the LB this flag will enable a script to actively scan config.configmap.lbAddr and update the hosts file inside the pods automatically.
-  isFqdnRegistered: true
+  isFqdnRegistered: false
   istio:
     # -- Boolean flag that enables using istio side cars with Gluu services.
     enabled: false
@@ -380,8 +423,17 @@ global:
     ingress: false
     # -- The namespace istio is deployed in. The is normally istio-system.
     namespace: istio-system
+    # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
+    additionalLabels: { }
+    # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
+    additionalAnnotations: { }
+  jackrabbit:
+    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run.
+    enabled: false
+    # -- Name of the Jackrabbit service. Please keep it as default.
+    jackRabbitServiceName: jackrabbit
   # -- The Loadbalancer IP created by nginx or istio on clouds that provide static IPs. This is not needed if `global.fqdn` is globally resolvable.
-  lbIp: ""
+  lbIp: 22.22.22.22
   nginx-ingress:
     # -- Boolean flag to enable/disable the nginx-ingress definitions chart.
     enabled: true
@@ -390,6 +442,33 @@ global:
   persistence:
     # -- Boolean flag to enable/disable the persistence chart.
     enabled: true
+  scim:
+    # -- Name of the scim service. Please keep it as default.
+    scimServiceName: scim
+    # -- Boolean flag to enable/disable the SCIM chart.
+    enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    appLoggers:
+      # -- jans-scim.log target
+      scimLogTarget: "STDOUT"
+      # -- jans-scim.log level
+      scimLogLevel: "INFO"
+      # -- jans-scim_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- jans-scim_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- jans-scim_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- jans-scim_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- jans-scim_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- jans-scim_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- jans-scim_script.log target
+      scriptLogTarget: "FILE"
+      # -- jans-scim_script.log level
+      scriptLogLevel: "INFO"
   # -- StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed.
   storageClass:
     allowVolumeExpansion: true
@@ -406,33 +485,23 @@ global:
     provisioner: microk8s.io/hostpath
     reclaimPolicy: Retain
     volumeBindingMode: WaitForFirstConsumer
-  upgrade:
-    # -- Boolean flag used when running helm upgrade command. This allows upgrading the chart without immutable objects errors.
-    enabled: false
-  opendj:
-    # -- Boolean flag to enable/disable the OpenDJ  chart. Not part of the openbanking distribution. Keep as default.
-    enabled: false
-  jackrabbit:
-    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run. Not part of the openbanking distribution. Keep as default.
-    enabled: false
-  fido2:
-    # -- Boolean flag to enable/disable the fido2 chart. Not part of the openbanking distribution. Keep as default.
-    enabled: false
-  scim:
-    # -- Boolean flag to enable/disable the SCIM chart. Not part of the openbanking distribution. Keep as default.
-    enabled: false
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart. Not part of the openbanking distribution. Keep as default.
     enabled: false
-  cr-rotate:
-    # -- Boolean flag to enable/disable the cr-rotate chart. Not part of the openbanking distribution. Keep as default.
+  upgrade:
+    # -- Boolean flag used when running upgrading through versions command.
     enabled: false
-  client-api:
-    # -- Boolean flag to enable/disable the client-api chart. Not part of the openbanking distribution. Keep as default.
-    enabled: false
-  auth-server-key-rotation:
-    # -- Boolean flag to enable/disable the auth-server-key rotation cronjob chart. Not part of the openbanking distribution. Keep as default.
-    enabled: false
+    image:
+      # -- Image  to use for deploying.
+      repository: gluufederation/upgrade
+      # -- Image  tag to use for deploying.
+      tag: 4.3.0_01
+    # -- Source version currently running. This is normally one minor version down.
+    # The step should only be one minor version per upgrade
+    sourceVersion: "4.2"
+    # -- Target version currently running. This is normally one minor version up.
+    # The step should only be one minor version per upgrade
+    targetVersion: "4.3"
 
 # -- Nginx ingress definitions chart
 nginx-ingress:
