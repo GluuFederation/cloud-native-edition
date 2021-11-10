@@ -488,6 +488,9 @@ global:
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart. Not part of the openbanking distribution. Keep as default.
     enabled: false
+  opendj:
+    # -- Boolean flag to enable/disable the OpenDJ  chart. Not part of the openbanking distribution. Keep as default.
+    enabled: false
   upgrade:
     # -- Boolean flag used when running upgrading through versions command.
     enabled: false
