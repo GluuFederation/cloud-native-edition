@@ -13,6 +13,7 @@ def test_helm_release_name(monkeypatch, settings, given, expected):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
     settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
+    settings.set("NGINX_LEGACY", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
@@ -28,9 +29,10 @@ def test_helm_ingress_release_name(monkeypatch, settings, given, expected):
 
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
-    settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
     settings.set("NGINX_INGRESS_NAMESPACE", "ingress-nginx")
+    settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
     settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
+    settings.set("NGINX_LEGACY", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
@@ -49,11 +51,11 @@ def test_helm_ingress_namespace(monkeypatch, settings, given, expected):
     settings.set("NGINX_INGRESS_RELEASE_NAME", "ningress")
     settings.set("GLUU_HELM_RELEASE_NAME", "gluu")
     settings.set("GLUU_LDAP_MULTI_CLUSTER", "N")
-
+    settings.set("NGINX_LEGACY", "N")
+    
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
     assert settings.get("NGINX_INGRESS_NAMESPACE") == expected
-
 
 def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     from pygluu.kubernetes.terminal.helm import PromptHelm
@@ -71,6 +73,7 @@ def test_helm_ldap_multi_cluster_name(monkeypatch, settings):
     settings.set("GLUU_LDAP_MULTI_CLUSTER_CLUSTER_ID", "test")
     settings.set("GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID", "0")
     settings.set("GLUU_LDAP_MULTI_CLUSTERS_IDS", ["east","west"])
+    settings.set("NGINX_LEGACY", "N")
 
     prompt = PromptHelm(settings)
     prompt.prompt_helm()
