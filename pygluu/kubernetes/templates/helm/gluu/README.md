@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.11](https://img.shields.io/badge/Version-1.6.11-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.12](https://img.shields.io/badge/Version-1.6.12-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.18.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.6.11 |
-|  | config | 1.6.11 |
-|  | cr-rotate | 1.6.11 |
-|  | fido2 | 1.6.11 |
-|  | gluu-alb-ingress | 1.6.11 |
-|  | gluu-istio-ingress | 1.6.11 |
-|  | jackrabbit | 1.6.11 |
-|  | nginx-ingress | 1.6.11 |
-|  | opendj | 1.6.11 |
-|  | oxauth | 1.6.11 |
-|  | oxauth-key-rotation | 1.6.11 |
-|  | oxd-server | 1.6.11 |
-|  | oxpassport | 1.6.11 |
-|  | oxshibboleth | 1.6.11 |
-|  | oxtrust | 1.6.11 |
-|  | persistence | 1.6.11 |
-|  | scim | 1.6.11 |
+|  | casa | 1.6.12 |
+|  | config | 1.6.12 |
+|  | cr-rotate | 1.6.12 |
+|  | fido2 | 1.6.12 |
+|  | gluu-alb-ingress | 1.6.12 |
+|  | gluu-istio-ingress | 1.6.12 |
+|  | jackrabbit | 1.6.12 |
+|  | nginx-ingress | 1.6.12 |
+|  | opendj | 1.6.12 |
+|  | oxauth | 1.6.12 |
+|  | oxauth-key-rotation | 1.6.12 |
+|  | oxd-server | 1.6.12 |
+|  | oxpassport | 1.6.12 |
+|  | oxshibboleth | 1.6.12 |
+|  | oxtrust | 1.6.12 |
+|  | persistence | 1.6.12 |
+|  | scim | 1.6.12 |
 
 ## Values
 
@@ -218,7 +218,7 @@ Kubernetes: `>=v1.18.0-0`
 | fido2.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | fido2.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | fido2.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| global | object | `{"alb":{"ingress":{"additionalAnnotations":{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"},"additionalLabels":{},"adminUiEnabled":true,"authServerEnabled":true,"casaEnabled":false,"enabled":false,"fido2ConfigEnabled":false,"fido2Enabled":false,"openidConfigEnabled":true,"passportEnabled":false,"scimConfigEnabled":false,"scimEnabled":false,"shibEnabled":false,"u2fConfigEnabled":true,"uma2ConfigEnabled":true,"webdiscoveryEnabled":true,"webfingerEnabled":true}},"azureStorageAccountType":"Standard_LRS","azureStorageKind":"Managed","cloud":{"testEnviroment":false},"cnGoogleApplicationCredentials":"/etc/gluu/conf/google-credentials.json","config":{"enabled":true},"configAdapterName":"kubernetes","configSecretAdapter":"kubernetes","cr-rotate":{"enabled":false},"domain":"demoexample.gluu.org","fido2":{"enabled":false},"gcePdStorageType":"pd-standard","gluuJackrabbitCluster":"true","gluuPersistenceType":"couchbase","isDomainRegistered":"false","istio":{"additionalAnnotations":{},"additionalLabels":{},"enabled":false,"ingress":false,"namespace":"istio-system"},"jackrabbit":{"enabled":true},"lbIp":"","ldapServiceName":"opendj","nginx-ingress":{"enabled":true},"opendj":{"enabled":true},"oxauth":{"enabled":true},"oxauth-key-rotation":{"enabled":false},"oxd-server":{"enabled":false},"oxshibboleth":{"enabled":false},"oxtrust":{"enabled":true},"persistence":{"enabled":true},"scim":{"enabled":false},"storageClass":{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"},"upgrade":{"enabled":false},"usrEnvs":{"normal":{},"secret":{}}}` | Parameters used globally across all services helm charts. |
+| global | object | `{"alb":{"ingress":{"additionalAnnotations":{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"},"additionalLabels":{},"adminUiEnabled":true,"authServerEnabled":true,"casaEnabled":false,"enabled":false,"fido2ConfigEnabled":false,"fido2Enabled":false,"openidConfigEnabled":true,"passportEnabled":false,"scimConfigEnabled":false,"scimEnabled":false,"shibEnabled":false,"u2fConfigEnabled":true,"uma2ConfigEnabled":true,"webdiscoveryEnabled":true,"webfingerEnabled":true}},"azureStorageAccountType":"Standard_LRS","azureStorageKind":"Managed","cloud":{"testEnviroment":false},"cnGoogleApplicationCredentials":"/etc/gluu/conf/google-credentials.json","config":{"enabled":true},"configAdapterName":"kubernetes","configSecretAdapter":"kubernetes","cr-rotate":{"enabled":false},"domain":"demoexample.gluu.org","fido2":{"enabled":false},"gcePdStorageType":"pd-standard","gluuJackrabbitCluster":"true","gluuPersistenceType":"couchbase","isDomainRegistered":"false","istio":{"additionalAnnotations":{},"additionalLabels":{},"enabled":false,"ingress":false,"namespace":"istio-system"},"jackrabbit":{"enabled":true},"lbIp":"","ldapServiceName":"opendj","nginx-ingress":{"enabled":true},"opendj":{"enabled":true},"oxauth":{"enabled":true},"oxauth-key-rotation":{"enabled":false},"oxd-server":{"enabled":false},"oxshibboleth":{"enabled":false},"oxtrust":{"enabled":true},"persistence":{"enabled":true},"scim":{"enabled":false},"storageClass":{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"},"upgrade":{"enabled":false,"image":{"repository":"gluufederation/upgrade","tag":"4.3.0_01"},"sourceVersion":"4.2","targetVersion":"4.3"},"usrEnvs":{"normal":{},"secret":{}}}` | Parameters used globally across all services helm charts. |
 | global.alb.ingress.additionalAnnotations | object | `{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"} |
 | global.alb.ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
 | global.alb.ingress.adminUiEnabled | bool | `true` | Enable Admin UI endpoints /identity |
@@ -268,7 +268,11 @@ Kubernetes: `>=v1.18.0-0`
 | global.scim.enabled | bool | `false` | Boolean flag to enable/disable the SCIM chart. |
 | global.storageClass | object | `{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"}` | StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed. |
 | global.storageClass.parameters | object | `{}` | parameters: |
-| global.upgrade.enabled | bool | `false` | Boolean flag used when running helm upgrade command. This allows upgrading the chart without immutable objects errors. |
+| global.upgrade.enabled | bool | `false` | Boolean flag used when running upgrading through versions command. |
+| global.upgrade.image.repository | string | `"gluufederation/upgrade"` | Image  to use for deploying. |
+| global.upgrade.image.tag | string | `"4.3.0_01"` | Image  tag to use for deploying. |
+| global.upgrade.sourceVersion | string | `"4.2"` | Source version currently running. This is normally one minor version down. The step should only be one minor version per upgrade |
+| global.upgrade.targetVersion | string | `"4.3"` | Target version currently running. This is normally one minor version up. The step should only be one minor version per upgrade |
 | global.usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service. Envs defined in global.userEnvs will be globally available to all services |
 | global.usrEnvs.normal | object | `{}` | Add custom normal envs to the service. variable1: value1 |
 | global.usrEnvs.secret | object | `{}` | Add custom secret envs to the service. variable1: value1 |
@@ -306,40 +310,56 @@ Kubernetes: `>=v1.18.0-0`
 | jackrabbit.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | jackrabbit.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | jackrabbit.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerEnabled":true,"authServerLabels":{},"casaEnabled":false,"casaLabels":{},"enabled":true,"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"hosts":["demoexample.gluu.org"],"legacy":false,"openidConfigEnabled":true,"openidConfigLabels":{},"passportShibEnabled":false,"passportShibLabels":{},"path":"/","scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
+| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiAdditionalAnnotations":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerAdditionalAnnotations":{},"authServerEnabled":true,"authServerLabels":{},"casaAdditionalAnnotations":{},"casaEnabled":false,"casaLabels":{},"enabled":true,"fido2ConfigAdditionalAnnotations":{},"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"hosts":["demoexample.gluu.org"],"legacy":false,"openidAdditionalAnnotations":{},"openidConfigEnabled":true,"openidConfigLabels":{},"passportAdditionalAnnotations":{},"passportEnabled":false,"passportLabels":{},"path":"/","scimAdditionalAnnotations":{},"scimConfigAdditionalAnnotations":{},"scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"shibAdditionalAnnotations":{},"shibEnabled":false,"shibLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fAdditionalAnnotations":{},"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2AdditionalAnnotations":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryAdditionalAnnotations":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerAdditionalAnnotations":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
 | nginx-ingress.ingress.additionalAnnotations | object | `{"kubernetes.io/ingress.class":"nginx"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken Enable client certificate authentication nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional" Create the secret containing the trusted ca certificates nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate" Specify the verification depth in the client certificates chain nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1" Specify if certificates are passed to upstream server nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true" |
 | nginx-ingress.ingress.additionalAnnotations."kubernetes.io/ingress.class" | string | `"nginx"` | Required annotation below. Use kubernetes.io/ingress.class: "public" for microk8s. |
 | nginx-ingress.ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
+| nginx-ingress.ingress.adminUiAdditionalAnnotations | object | `{}` | Admin UI ingress resource additional annotations. |
 | nginx-ingress.ingress.adminUiEnabled | bool | `true` | Enable Admin UI endpoints /identity |
 | nginx-ingress.ingress.adminUiLabels | object | `{}` | Admin UI ingress resource labels. key app is taken. |
+| nginx-ingress.ingress.authServerAdditionalAnnotations | object | `{}` | Auth server ingress resource additional annotations. |
 | nginx-ingress.ingress.authServerEnabled | bool | `true` | Enable Auth server endpoints /oxauth |
 | nginx-ingress.ingress.authServerLabels | object | `{}` | Auth server config ingress resource labels. key app is taken |
+| nginx-ingress.ingress.casaAdditionalAnnotations | object | `{}` | Casa ingress resource additional annotations. |
 | nginx-ingress.ingress.casaEnabled | bool | `false` | Enable casa endpoints /casa |
 | nginx-ingress.ingress.casaLabels | object | `{}` | Casa ingress resource labels. key app is taken |
+| nginx-ingress.ingress.fido2ConfigAdditionalAnnotations | object | `{}` | fido2 config ingress resource additional annotations. |
 | nginx-ingress.ingress.fido2ConfigEnabled | bool | `false` | Enable endpoint /.well-known/fido2-configuration |
 | nginx-ingress.ingress.fido2ConfigLabels | object | `{}` | fido2 config ingress resource labels. key app is taken |
 | nginx-ingress.ingress.fido2Enabled | bool | `false` | Enable all fido2 endpoints |
 | nginx-ingress.ingress.fido2Labels | object | `{}` | fido2 ingress resource labels. key app is taken |
-| nginx-ingress.ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18 |
+| nginx-ingress.ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18. This flag should be removed next version release along with nginx-ingress/templates/ingress-legacy.yaml. |
+| nginx-ingress.ingress.openidAdditionalAnnotations | object | `{}` | openid-configuration ingress resource additional annotations. |
 | nginx-ingress.ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
 | nginx-ingress.ingress.openidConfigLabels | object | `{}` | openid-configuration ingress resource labels. key app is taken |
-| nginx-ingress.ingress.passportShibEnabled | bool | `false` | Enable passport and oxshibboleth endpoints /idp and /passport |
-| nginx-ingress.ingress.passportShibLabels | object | `{}` | passport and oxshibboleth ingress resource labels. key app is taken. |
+| nginx-ingress.ingress.passportAdditionalAnnotations | object | `{}` | passport ingress resource additional annotations. |
+| nginx-ingress.ingress.passportEnabled | bool | `false` | Enable passport endpoints /idp |
+| nginx-ingress.ingress.passportLabels | object | `{}` | passport ingress resource labels. key app is taken. |
+| nginx-ingress.ingress.scimAdditionalAnnotations | object | `{}` | SCIM ingress resource additional annotations. |
+| nginx-ingress.ingress.scimConfigAdditionalAnnotations | object | `{}` | SCIM config ingress resource additional annotations. |
 | nginx-ingress.ingress.scimConfigEnabled | bool | `false` | Enable endpoint /.well-known/scim-configuration |
 | nginx-ingress.ingress.scimConfigLabels | object | `{}` | webdiscovery ingress resource labels. key app is taken |
 | nginx-ingress.ingress.scimEnabled | bool | `false` | Enable SCIM endpoints /scim |
 | nginx-ingress.ingress.scimLabels | object | `{}` | scim config ingress resource labels. key app is taken |
+| nginx-ingress.ingress.shibAdditionalAnnotations | object | `{}` | shibboleth ingress resource additional annotations. |
+| nginx-ingress.ingress.shibEnabled | bool | `false` | Enable shibboleth endpoints /idp |
+| nginx-ingress.ingress.shibLabels | object | `{}` | shibboleth ingress resource labels. key app is taken. |
+| nginx-ingress.ingress.u2fAdditionalAnnotations | object | `{}` | u2f config ingress resource additional annotations. |
 | nginx-ingress.ingress.u2fConfigEnabled | bool | `true` | Enable endpoint /.well-known/fido-configuration |
 | nginx-ingress.ingress.u2fConfigLabels | object | `{}` | u2f config ingress resource labels. key app is taken |
+| nginx-ingress.ingress.uma2AdditionalAnnotations | object | `{}` | uma2 config ingress resource additional annotations. |
 | nginx-ingress.ingress.uma2ConfigEnabled | bool | `true` | Enable endpoint /.well-known/uma2-configuration |
 | nginx-ingress.ingress.uma2ConfigLabels | object | `{}` | uma 2 config ingress resource labels. key app is taken |
+| nginx-ingress.ingress.webdiscoveryAdditionalAnnotations | object | `{}` | webdiscovery ingress resource additional annotations. |
 | nginx-ingress.ingress.webdiscoveryEnabled | bool | `true` | Enable endpoint /.well-known/simple-web-discovery |
 | nginx-ingress.ingress.webdiscoveryLabels | object | `{}` | webdiscovery ingress resource labels. key app is taken |
+| nginx-ingress.ingress.webfingerAdditionalAnnotations | object | `{}` | webfinger ingress resource additional annotations. |
 | nginx-ingress.ingress.webfingerEnabled | bool | `true` | Enable endpoint /.well-known/webfinger |
 | nginx-ingress.ingress.webfingerLabels | object | `{}` | webfinger ingress resource labels. key app is taken |
-| opendj | object | `{"additionalAnnotations":{},"additionalLabels":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.3.0_01"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"multiCluster":{"clusterId":"","enabled":false,"namespaceIntId":0,"replicaCount":1,"serfAdvertiseAddrSuffix":"regional.gluu.org","serfKey":"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=","serfPeers":["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
+| opendj | object | `{"additionalAnnotations":{},"additionalLabels":{},"backup":{"cronJobSchedule":"*/59 * * * *","enabled":true},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.3.0_01"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"multiCluster":{"clusterId":"","enabled":false,"namespaceIntId":0,"replicaCount":1,"serfAdvertiseAddrSuffix":"regional.gluu.org","serfKey":"Z51b6PgKU1MZ75NCZOTGGoc0LP2OF3qvF6sjxHyQCYk=","serfPeers":["gluu-opendj-regional-0-regional.gluu.org:30946","gluu-opendj-regional-0-regional.gluu.org:31946"]},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
 | opendj.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | opendj.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
+| opendj.backup | object | `{"cronJobSchedule":"*/59 * * * *","enabled":true}` | Configure ldap backup cronjob |
 | opendj.dnsConfig | object | `{}` | Add custom dns config |
 | opendj.dnsPolicy | string | `""` | Add custom dns policy |
 | opendj.hpa | object | `{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50}` | Configure the HorizontalPodAutoscaler |
