@@ -1,5 +1,17 @@
 # Changelog
 
+### [1.6.12](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.12...v1.6.12) (2021-11-16)
+
+
+### Bug Fixes
+
+* sonar integration workflow ([#379](https://www.github.com/GluuFederation/cloud-native-edition/issues/379)) ([65a18d0](https://www.github.com/GluuFederation/cloud-native-edition/commit/65a18d0104c4b4e802fbdd408cf46d3e839e251a))
+
+
+### Miscellaneous Chores
+
+* release 1.6.12 ([33827b2](https://www.github.com/GluuFederation/cloud-native-edition/commit/33827b2a957dba0fe2b229ecb924afa8444731ae))
+
 ### [1.6.11](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.10...v1.6.11) (2021-10-08)
 
 
