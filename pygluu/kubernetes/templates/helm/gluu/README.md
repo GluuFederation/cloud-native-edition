@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.12](https://img.shields.io/badge/Version-1.6.12-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![Version: 1.6.13](https://img.shields.io/badge/Version-1.6.13-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.18.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.6.12 |
-|  | config | 1.6.12 |
-|  | cr-rotate | 1.6.12 |
-|  | fido2 | 1.6.12 |
-|  | gluu-alb-ingress | 1.6.12 |
-|  | gluu-istio-ingress | 1.6.12 |
-|  | jackrabbit | 1.6.12 |
-|  | nginx-ingress | 1.6.12 |
-|  | opendj | 1.6.12 |
-|  | oxauth | 1.6.12 |
-|  | oxauth-key-rotation | 1.6.12 |
-|  | oxd-server | 1.6.12 |
-|  | oxpassport | 1.6.12 |
-|  | oxshibboleth | 1.6.12 |
-|  | oxtrust | 1.6.12 |
-|  | persistence | 1.6.12 |
-|  | scim | 1.6.12 |
+|  | casa | 1.6.13 |
+|  | config | 1.6.13 |
+|  | cr-rotate | 1.6.13 |
+|  | fido2 | 1.6.13 |
+|  | gluu-alb-ingress | 1.6.13 |
+|  | gluu-istio-ingress | 1.6.13 |
+|  | jackrabbit | 1.6.13 |
+|  | nginx-ingress | 1.6.13 |
+|  | opendj | 1.6.13 |
+|  | oxauth | 1.6.13 |
+|  | oxauth-key-rotation | 1.6.13 |
+|  | oxd-server | 1.6.13 |
+|  | oxpassport | 1.6.13 |
+|  | oxshibboleth | 1.6.13 |
+|  | oxtrust | 1.6.13 |
+|  | persistence | 1.6.13 |
+|  | scim | 1.6.13 |
 
 ## Values
 
