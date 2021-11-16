@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.13](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.12...v1.6.13) (2021-11-16)
+
+
+### Bug Fixes
+
+* alb ingress reference ([2a5a971](https://www.github.com/GluuFederation/cloud-native-edition/commit/2a5a971df38d7a3bf1b5edee0f29468cf6aff786))
+
 ### [1.6.12](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.12...v1.6.12) (2021-11-16)
 
 
