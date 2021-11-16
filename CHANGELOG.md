@@ -1,13 +1,5 @@
 # Changelog
 
-### [1.6.12](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.11...v1.6.12) (2021-11-08)
-
-
-### Bug Fixes
-
-* add per ingress annotations ([44d4359](https://www.github.com/GluuFederation/cloud-native-edition/commit/44d43591753392e2b2cfb29e3128b6ee9f235d71))
-* use helm hooks ([#376](https://www.github.com/GluuFederation/cloud-native-edition/issues/376)) ([e8f3929](https://www.github.com/GluuFederation/cloud-native-edition/commit/e8f3929a285b2f86973116677e03fd33312f6d0c))
-
 ### [1.6.11](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.10...v1.6.11) (2021-10-08)
 
 
