@@ -40,8 +40,8 @@ metadata:
     {{ if .Values.ingress.adminUiEnabled -}}
     alb.ingress.kubernetes.io/actions.main-page-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path":"/identity/", "StatusCode": "HTTP_301"}}'
     {{- end }}
-{{- if .Values.ingress.additionalAnnotations }}
-{{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
+{{- if .Values.global.alb.ingress.additionalAnnotations }}
+{{ toYaml .Values.global.alb.ingress.additionalAnnotations | indent 4 }}
 {{- end }}
 spec:
   rules:
