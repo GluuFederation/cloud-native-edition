@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.14](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.13...v1.6.14) (2021-11-16)
+
+
+### Bug Fixes
+
+* refactor values calls ([a199105](https://www.github.com/GluuFederation/cloud-native-edition/commit/a199105f691c2241716ea3dd5bc4e0e0537986d6))
+
 ### [1.6.13](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.12...v1.6.13) (2021-11-16)
 
 
