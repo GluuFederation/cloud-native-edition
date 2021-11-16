@@ -81,7 +81,6 @@ jobs:
             GluuFederation/docker-oxtrust
             GluuFederation/docker-nginx
             GluuFederation/docker-config-init
-            GluuFederation/docker-key-rotation
             GluuFederation/docker-oxshibboleth
             GluuFederation/docker-opendj
             GluuFederation/docker-oxPassport
@@ -95,7 +94,6 @@ jobs:
             GluuFederation/docker-fido2
             GluuFederation/docker-scim
             GluuFederation/docker-cn
-            GluuFederation/docker-gluu-admin-ui
           WORKFLOW_FILES: |
             .github/docker/central_docker_imagescan.yml=.github/workflows/imagescan.yml
             .github/docker/central_docker_release.yml=.github/workflows/release.yaml
