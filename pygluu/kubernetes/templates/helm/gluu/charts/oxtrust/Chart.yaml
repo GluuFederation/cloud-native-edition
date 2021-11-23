@@ -3,7 +3,7 @@
 apiVersion: v2
 name: oxtrust
 version: 1.6.14
-kubeVersion: ">=v1.18.0-0"
+kubeVersion: ">=v1.21.0-0"
 description: Gluu Admin UI. This shouldn't be internet facing.
 type: application
 keywords:
