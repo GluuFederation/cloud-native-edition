@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.14](https://img.shields.io/badge/Version-1.6.14-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
+![version: 1.6.15](https://img.shields.io/badge/Version-1.6.14-informational?style=flat-square) ![AppVersion: 4.3.0](https://img.shields.io/badge/AppVersion-4.3.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
