@@ -6,24 +6,22 @@ metadata:
   name: {{ include "config.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    APP_NAME: configuration-manager
+    APP_NAME: configurator
 {{ include "config.labels" . | indent 4 }}
 {{- if .Values.additionalLabels }}
 {{ toYaml .Values.additionalLabels | indent 4 }}
 {{- end }}
-  annotations:
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "3"
-    "helm.sh/hook-delete-policy": before-hook-creation
 {{- if .Values.additionalAnnotations }}
+  annotations:
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
 {{- end }}
 spec:
+  ttlSecondsAfterFinished: 120
   template:
     metadata:
       name: {{ include "config.name" . }}-job
       labels:
-        APP_NAME: configuration-manager
+        APP_NAME: configurator
         app: {{ .Release.Name }}-{{ include "config.name" . }}-init-load
     spec:
     {{- with .Values.image.pullSecrets }}

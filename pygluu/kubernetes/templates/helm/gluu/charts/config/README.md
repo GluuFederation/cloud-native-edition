@@ -15,7 +15,7 @@ Configuration parameters for setup and initial configuration secret and config l
 ## Source Code
 
 * <https://gluu.org/docs/gluu-server/reference/container-configs/>
-* <https://github.com/JanssenProject/docker-jans-configuration-manager>
+* <https://github.com/JanssenProject/docker-jans-configurator>
 * <https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/config>
 
 ## Requirements

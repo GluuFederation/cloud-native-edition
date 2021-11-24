@@ -5,16 +5,13 @@ kind: ClusterRoleBinding
 metadata:
   name: {{ .Release.Name }}-{{ .Release.Namespace }}-cluster-admin-binding
   labels:
-    APP_NAME: configuration-manager
+    APP_NAME: configurator
 {{ include "config.labels" . | indent 4 }}
 {{- if .Values.additionalLabels }}
 {{ toYaml .Values.additionalLabels | indent 4 }}
 {{- end }}
-  annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation
 {{- if .Values.additionalAnnotations }}
+  annotations:
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
 {{- end }}
 roleRef:
@@ -36,6 +33,10 @@ metadata:
   labels:
     app: {{ include "config.name" . }}-load
   name: {{ .Release.Name }}-{{ .Release.Namespace }}-rolebinding
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
