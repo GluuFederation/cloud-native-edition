@@ -742,6 +742,10 @@ global:
     # -- Activates ALB ingress
     ingress: false
 
+  admin-ui:
+    # -- Boolean flag to enable/disable the admin-ui plugin.
+    enabled: false
+
   auth-server:
     # -- Name of the auth-server service. Please keep it as default.
     authServerServiceName: auth-server
@@ -1059,6 +1063,8 @@ nginx-ingress:
     adminUiEnabled: true
     # -- Admin UI ingress resource labels. key app is taken.
     adminUiLabels: { }
+    # -- openid-configuration ingress resource additional annotations.
+    adminUiAdditionalAnnotations: { }
     # -- Enable endpoint /.well-known/openid-configuration
     openidConfigEnabled: true
     # -- openid-configuration ingress resource labels. key app is taken
