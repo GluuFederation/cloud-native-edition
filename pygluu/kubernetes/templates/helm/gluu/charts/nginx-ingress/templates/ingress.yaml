@@ -47,7 +47,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ index .Values "global" "admin-ui" "authServerServiceName" }}
+                name: {{ index .Values "global" "admin-ui" "adminUiServiceName" }}
                 port:
                   number: 8080
   {{- end }}
