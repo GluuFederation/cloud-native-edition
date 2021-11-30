@@ -817,7 +817,7 @@ global:
   admin-ui:
     # -- Boolean flag to enable/disable the admin-ui plugin.
     enabled: false
-    # -- Name of the auth-server service. Please keep it as default.
+    # -- Name of the admin-ui service. Please keep it as default.
     adminUiServiceName: admin-ui
     # License parameters
     # -- Admin UI license API key.
