@@ -2,7 +2,7 @@
 
 ![Version: 5.0.1](https://img.shields.io/badge/Version-5.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
 
-OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization Server--this is the main Internet facing component of Gluu. It's the service that returns tokens, JWT's and identity assertions. This service must be Internet facing.
+Admin GUI. Requires license.
 
 **Homepage:** <https://gluu.org/docs/gluu-server>
 
@@ -14,8 +14,7 @@ OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization S
 
 ## Source Code
 
-* <https://github.com/JanssenProject/jans-admin-ui>
-* <https://github.com/JanssenProject/docker-jans-admin-ui>
+* <https://github.com/GluuFederation/docker-gluu-admin-ui>
 * <https://github.com/GluuFederation/cloud-native-edition/tree/master/pygluu/kubernetes/templates/helm/gluu/charts/admin-ui>
 
 ## Requirements
@@ -38,19 +37,18 @@ Kubernetes: `>=v1.21.0-0`
 | hpa.targetCPUUtilizationPercentage | int | `50` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
-| image.repository | string | `"janssenproject/admin-ui"` | Image  to use for deploying. |
+| image.repository | string | `"gluufederation/admin-ui"` | Image  to use for deploying. |
 | image.tag | string | `"1.0.0_b12"` | Image  tag to use for deploying. |
-| livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
-| livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py |
-| readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the auth server if needed. https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py |
+| livenessProbe | object | `{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5}` | Configure the liveness healthcheck for the admin ui if needed. |
+| readinessProbe | object | `{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5}` | Configure the readiness healthcheck for the admin ui if needed. |
 | replicas | int | `1` | Service replica number. |
 | resources | object | `{"limits":{"cpu":"2500m","memory":"2500Mi"},"requests":{"cpu":"2500m","memory":"2500Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"2500m"` | CPU limit. |
 | resources.limits.memory | string | `"2500Mi"` | Memory limit. |
 | resources.requests.cpu | string | `"2500m"` | CPU request. |
 | resources.requests.memory | string | `"2500Mi"` | Memory request. |
-| service.name | string | `"http-auth"` | The name of the oxauth port within the oxauth service. Please keep it as default. |
-| service.port | int | `8080` | Port of the oxauth service. Please keep it as default. |
+| service.name | string | `"http-admin-ui"` | The name of the admin ui port within the admin service. Please keep it as default. |
+| service.port | int | `8080` | Port of the admin ui service. Please keep it as default. |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |
 | usrEnvs.normal | object | `{}` | Add custom normal envs to the service variable1: value1 |
 | usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
