@@ -65,6 +65,10 @@ dependencies:
       condition: global.auth-server.enabled
       version: 5.0.1
 
+    - name: admin-ui
+      condition: global.admin-ui.enabled
+      version: 5.0.1
+
     - name: fido2
       condition: global.fido2.enabled
       version: 5.0.1

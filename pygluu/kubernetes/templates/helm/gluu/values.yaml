@@ -815,7 +815,7 @@ global:
     ingress: false
 
   admin-ui:
-    # -- Boolean flag to enable/disable the admin-ui plugin.
+    # -- Boolean flag to enable/disable the admin-ui chart and admin ui config api plugin.
     enabled: false
     # -- Name of the admin-ui service. Please keep it as default.
     adminUiServiceName: admin-ui
