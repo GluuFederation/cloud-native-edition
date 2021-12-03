@@ -1140,7 +1140,7 @@ jackrabbit:
 nginx-ingress:
   ingress:
     # -- Enable Admin UI endpoints. COMING SOON.
-    adminUiEnabled: true
+    adminUiEnabled: false
     # -- Admin UI ingress resource labels. key app is taken.
     adminUiLabels: { }
     # -- openid-configuration ingress resource additional annotations.
