@@ -58,7 +58,7 @@ global:
 EOF
 sudo helm repo add gluu https://gluufederation.github.io/cloud-native-edition/pygluu/kubernetes/templates/helm
 sudo helm repo update
-sudo helm install gluu gluu/gluu -n gluu --version=5.0.0 -f override.yaml --kubeconfig="$KUBECONFIG"
+sudo helm install gluu gluu/gluu -n gluu --version=5.0.1 -f override.yaml --kubeconfig="$KUBECONFIG"
 echo "Waiting for auth-server to come up....Please do not cancel out...This will wait for the auth-server to be ready.."
 sleep 120
 cat << EOF > testendpoints.sh
