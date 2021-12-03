@@ -96,7 +96,7 @@ admin-ui:
     # -- Image  to use for deploying.
     repository: gluufederation/admin-ui
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -168,7 +168,7 @@ auth-server:
     # -- Image  to use for deploying.
     repository: janssenproject/auth-server
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -235,7 +235,7 @@ auth-server-key-rotation:
     # -- Image  to use for deploying.
     repository: janssenproject/certmanager
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours
@@ -365,7 +365,7 @@ client-api:
     # -- Image  to use for deploying.
     repository: janssenproject/client-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -556,7 +556,7 @@ config:
     # -- Image  to use for deploying.
     repository: janssenproject/configurator
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- LDAP admin password if OpennDJ is used for persistence.
@@ -631,7 +631,7 @@ config-api:
     # -- Image  to use for deploying.
     repository: janssenproject/config-api
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -751,7 +751,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: janssenproject/fido2
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1052,19 +1052,8 @@ global:
     reclaimPolicy: Retain
     volumeBindingMode: WaitForFirstConsumer
   upgrade:
-    # -- Boolean flag used when running upgrading through versions command.
+    # -- Boolean flag used when running upgrading through versions command. Used when upgrading with LDAP as the persistence to load the 101x ldif.
     enabled: false
-    image:
-      # -- Image  to use for deploying.
-      repository: gluufederation/upgrade
-      # -- Image  tag to use for deploying.
-      tag: 4.3.0_01
-    # -- Source version currently running. This is normally one minor version down.
-    # The step should only be one minor version per upgrade
-    sourceVersion: "4.2"
-    # -- Target version currently running. This is normally one minor version up.
-    # The step should only be one minor version per upgrade
-    targetVersion: "4.3"
 
 # -- Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications
 # https://jackrabbit.apache.org/jcr/index.html
@@ -1557,7 +1546,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: janssenproject/persistence-loader
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1611,7 +1600,7 @@ scim:
     # -- Image  to use for deploying.
     repository: janssenproject/scim
     # -- Image  tag to use for deploying.
-    tag: 1.0.0_b12
+    tag: 1.0.0-beta.13
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
