@@ -120,12 +120,84 @@ global:
   oxauth:
     # -- Boolean flag to enable/disable oxauth chart. You should never set this to false.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- oxauth.log target
+      authLogTarget: "STDOUT"
+      # -- oxauth.log level
+      authLogLevel: "INFO"
+      # -- http_request_response.log target
+      httpLogTarget: "FILE"
+      # -- http_request_response.log level
+      httpLogLevel: "INFO"
+      # -- oxauth_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- oxauth_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- oxauth_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- oxauth_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- oxauth_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- oxauth_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- oxauth_script.log target
+      scriptLogTarget: "FILE"
+      # -- oxauth_script.log level
+      scriptLogLevel: "INFO"
+      # -- oxauth_script.log target
+      auditStatsLogTarget: "FILE"
+      # -- oxauth_audit.log level
+      auditStatsLogLevel: "INFO"
+      # -- cleaner log target
+      cleanerLogTarget: "FILE"
+      # -- cleaner log level
+      cleanerLogLevel: "INFO"
   fido2:
     # -- Boolean flag to enable/disable the fido2 chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- fido2.log target
+      fido2LogTarget: "STDOUT"
+      # -- fido2.log level
+      fido2LogLevel: "INFO"
+      # -- fido2_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- fido2_persistence.log level
+      persistenceLogLevel: "INFO"
   scim:
     # -- Boolean flag to enable/disable the SCIM chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- scim.log target
+      scimLogTarget: "STDOUT"
+      # -- scim.log level
+      scimLogLevel: "INFO"
+      # -- scim_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- scim_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- scim_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- scim_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- scim_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- scim_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- scim_script.log target
+      scriptLogTarget: "FILE"
+      # -- scim_script.log level
+      scriptLogLevel: "INFO"
   config:
     # -- Boolean flag to enable/disable the configuration chart. This normally should never be false
     enabled: true
@@ -138,15 +210,96 @@ global:
   oxtrust:
     # -- Boolean flag to enable/disable the oxtrust chart.
     enabled: true
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- oxtrust.log target
+      oxtrustLogTarget: "STDOUT"
+      # -- oxtrust.log level
+      oxtrustLogLevel: "INFO"
+      # -- http_request_response.log target
+      httpLogTarget: "FILE"
+      # -- http_request_response.log level
+      httpLogLevel: "INFO"
+      # -- oxtrust_persistence.log target
+      persistenceLogTarget: "FILE"
+      # -- oxtrust_persistence.log level
+      persistenceLogLevel: "INFO"
+      # -- oxtrust_persistence_duration.log target
+      persistenceDurationLogTarget: "FILE"
+      # -- oxtrust_persistence_duration.log level
+      persistenceDurationLogLevel: "INFO"
+      # -- oxtrust_persistence_ldap_statistics.log target
+      ldapStatsLogTarget: "FILE"
+      # -- oxtrust_persistence_ldap_statistics.log level
+      ldapStatsLogLevel: "INFO"
+      # -- oxtrust_script.log target
+      scriptLogTarget: "FILE"
+      # -- oxtrust_script.log level
+      scriptLogLevel: "INFO"
+      # -- oxtrust_script.log target
+      auditStatsLogTarget: "FILE"
+      # -- oxtrust_audit.log level
+      auditStatsLogLevel: "INFO"
+      # -- cleaner log target
+      cleanerLogTarget: "FILE"
+      # -- cleaner log target
+      cleanerLogLevel: "INFO"
+      # -- velocity log level
+      velocityLogLevel: "INFO"
+      # -- velocity log target
+      velocityLogTarget: "FILE"
+      # -- cache refresh log level
+      cacheRefreshLogLevel: "INFO"
+      # -- cache refresh log target
+      cacheRefreshLogTarget: "FILE"
+      # -- cleaner log level
+      cacheRefreshPythonLogLevel: "INFO"
+      # -- cache refresh python log target
+      cacheRefreshPythonLogTarget: "FILE"
+      # -- apachehc log level
+      apachehcLogLevel: "INFO"
+      # -- apachehc log target
+      apachehcLogTarget: "FILE"
   opendj:
     # -- Boolean flag to enable/disable the OpenDJ  chart.
     enabled: true
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- idp-process.log target
+      idpLogTarget: "STDOUT"
+      # -- idp-process.log level
+      idpLogLevel: "INFO"
+      # -- idp script.log target
+      scriptLogTarget: "FILE"
+      # -- idp script.log level
+      scriptLogLevel: "INFO"
+      # -- idp-audit.log target
+      auditStatsLogTarget: "FILE"
+      # -- idp-audit.log level
+      auditStatsLogLevel: "INFO"
+      # -- idp-consent-audit.log target
+      consentAuditLogTarget: "FILE"
+      # -- idp-consent-audit.log level
+      consentAuditLogLevel: "INFO"
+
   oxd-server:
     # -- Boolean flag to enable/disable the oxd-server chart.
     enabled: false
+    # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
+    # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+    # Targets are "STDOUT" and "FILE"
+    appLoggers:
+      # -- oxd-server.log target
+      oxdServerLogTarget: "STDOUT"
+      # -- oxd-server.log level
+      oxdServerLogLevel: "INFO"
   nginx-ingress:
     # -- Boolean flag to enable/disable the nginx-ingress definitions chart.
     enabled: true
