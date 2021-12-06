@@ -170,8 +170,6 @@ data:
   | replace "persistenceLogLevel" "persistence_log_level"
   | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
   | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
-  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
-  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
   | replace "scriptLogTarget" "script_log_target"
   | replace "scriptLogLevel" "script_log_level"
   | squote
