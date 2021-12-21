@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.15](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.14...v1.6.15) (2021-12-21)
+
+
+### Bug Fixes
+
+* update Kubernetes version ([#389](https://www.github.com/GluuFederation/cloud-native-edition/issues/389)) ([ca1e64c](https://www.github.com/GluuFederation/cloud-native-edition/commit/ca1e64c4993b57b32f15917c14efb882c5c957a2))
+
 ### [1.6.14](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.13...v1.6.14) (2021-11-16)
 
 
