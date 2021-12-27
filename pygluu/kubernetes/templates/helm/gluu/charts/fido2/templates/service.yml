@@ -16,4 +16,8 @@ spec:
     name: {{ .Values.service.name }}
   selector:
     app: {{ include "fido2.name" . }} #fido2
-    
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

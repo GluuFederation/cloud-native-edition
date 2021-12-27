@@ -12,6 +12,10 @@ replicas: 1
 service:
   # This must match config.configMap.gluuOxdApplicationCertCn
   oxdServerServiceName: oxd-server
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 image:
   repository: gluufederation/oxd-server
   tag: 4.2.3_01

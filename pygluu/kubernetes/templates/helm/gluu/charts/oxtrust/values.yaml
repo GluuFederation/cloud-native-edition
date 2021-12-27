@@ -22,6 +22,10 @@ service:
   port: 8080
   clusterIp: None
   oxTrustServiceName: oxtrust
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
 livenessProbe:
   exec:

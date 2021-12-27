@@ -38,6 +38,10 @@ service:
   fido2ServiceName: fido2
   name: http-fido2
   port: 8080
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
 volumes: []
   # Configure any additional volumes need to be attached to the pod

@@ -23,6 +23,10 @@ service:
   oxPassportServiceName: oxpassport
   port: 8090
   name: http-passport
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
 livenessProbe:
   httpGet:

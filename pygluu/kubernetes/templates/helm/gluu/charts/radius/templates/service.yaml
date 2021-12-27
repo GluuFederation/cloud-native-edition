@@ -19,3 +19,8 @@ spec:
     {{- end }}
   selector:
     app: {{ include "radius.name" . }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

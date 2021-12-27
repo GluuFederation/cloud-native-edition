@@ -401,7 +401,7 @@ oxauth:
   replicas: 1
   image:
     repository: gluufederation/oxauth
-    tag: 4.2.3_11
+    tag: 4.2.3_14
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -433,7 +433,7 @@ oxtrust:
   replicas: 1
   image:
     repository: gluufederation/oxtrust
-    tag: 4.2.3_06
+    tag: 4.2.3_09
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -465,7 +465,7 @@ fido2:
   replicas: 1
   image:
     repository: gluufederation/fido2
-    tag: 4.2.3_03
+    tag: 4.2.3_06
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -497,7 +497,7 @@ scim:
   replicas: 1
   image:
     repository: gluufederation/scim
-    tag: 4.2.3_05
+    tag: 4.2.3_08
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -529,7 +529,7 @@ oxd-server:
   replicas: 1
   image:
     repository: gluufederation/oxd-server
-    tag: 4.2.3_02
+    tag: 4.2.3_04
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -561,7 +561,7 @@ casa:
   replicas: 1
   image:
     repository: gluufederation/casa
-    tag: 4.2.3_05
+    tag: 4.2.3_08
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -593,7 +593,7 @@ oxpassport:
   replicas: 1
   image:
     repository: gluufederation/oxpassport
-    tag: 4.2.3_05
+    tag: 4.2.3_06
     pullPolicy: Always
     pullSecrets: []
   resources:
@@ -625,7 +625,7 @@ oxshibboleth:
   replicas: 1
   image:
     repository: gluufederation/oxshibboleth
-    tag: 4.2.3_11
+    tag: 4.2.3_14
     pullPolicy: Always
     pullSecrets: []
   resources:

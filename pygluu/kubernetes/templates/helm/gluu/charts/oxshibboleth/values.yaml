@@ -24,6 +24,10 @@ service:
   targetPort: 8080
   oxShibbolethServiceName: oxshibboleth
   name: http-oxshib
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
 resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious

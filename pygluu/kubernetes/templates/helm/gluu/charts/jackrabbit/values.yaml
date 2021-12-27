@@ -17,6 +17,10 @@ service:
   jackRabbitServiceName: jackrabbit
   name: http-jackrabbit
   port: 8080
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 # StatefulSet
 # values declaration
 replicas: 1

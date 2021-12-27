@@ -16,3 +16,8 @@ spec:
       name: tcp-{{ include "oxd-server.name" . }}-app-connector
   selector:
     app: {{ include "oxd-server.name" . }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

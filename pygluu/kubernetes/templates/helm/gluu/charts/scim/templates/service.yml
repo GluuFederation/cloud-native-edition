@@ -16,4 +16,8 @@ spec:
     name: {{ .Values.service.name }}
   selector:
     app: {{ include "scim.name" . }} #scim
-    
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

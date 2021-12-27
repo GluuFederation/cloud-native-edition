@@ -20,6 +20,10 @@ service:
   crRotateServiceName: cr-rotate
   port: 8084
   name: http-cr-rotate
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 volumes: []
   # Configure any additional volumes that need to be attached to the pod
   # - name: mycustomcert

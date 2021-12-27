@@ -29,6 +29,10 @@ service:
       port: 1813
     http-jetty-service:
       port: 8080
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 
 livenessProbe:
   exec:
