@@ -606,7 +606,6 @@ spec:
       http:
         paths:
           - path: /idp
-            pathType: Prefix
             backend:
               serviceName: oxshibboleth
               servicePort: 8080
