@@ -24,4 +24,8 @@ spec:
     name: {{ .Values.service.name }}
   selector:
     app: {{ include "oxauth.name" . }} #oxauth
-    
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

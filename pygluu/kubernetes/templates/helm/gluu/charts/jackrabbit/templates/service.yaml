@@ -21,3 +21,8 @@ spec:
   clusterIP: None
   selector:
     app: {{ include "jackrabbit.name" . }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

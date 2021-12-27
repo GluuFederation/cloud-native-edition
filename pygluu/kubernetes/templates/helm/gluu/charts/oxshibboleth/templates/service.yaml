@@ -28,3 +28,8 @@ spec:
   selector:
     app: {{ include "oxshibboleth.name" . }}
     release: {{ .Release.Name }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

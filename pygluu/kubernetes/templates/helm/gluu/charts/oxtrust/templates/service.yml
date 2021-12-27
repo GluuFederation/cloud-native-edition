@@ -25,3 +25,8 @@ spec:
     name: {{ .Values.service.name }}
   selector:
     app: {{ include "oxtrust.name" . }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+{{ toYaml . | indent 4 }}
+  {{- end }}

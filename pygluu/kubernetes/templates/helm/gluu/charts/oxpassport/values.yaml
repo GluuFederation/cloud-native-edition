@@ -53,6 +53,12 @@ service:
   port: 8090
    # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
   name: http-passport
+  # -- Default set to None If you want to make sure that connections from a particular client are passed to the same Pod each time, you can select the session affinity based on the client's IP addresses by setting this to ClientIP
+  sessionAffinity: None
+  # -- the maximum session sticky time if sessionAffinity is ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
 # -- Configure the liveness healthcheck for oxPassport if needed.
 livenessProbe:
   httpGet:
