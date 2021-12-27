@@ -48,8 +48,34 @@ data:
   GLUU_JACKRABBIT_URL: {{ .Values.configmap.gluuJackrabbitUrl | quote }}
   DOMAIN: {{ .Values.global.domain | quote }}
   GLUU_OXAUTH_BACKEND: {{ .Values.configmap.gluuOxauthBackend | quote }}
+  GLUU_OXAUTH_APP_LOGGERS: {{ .Values.global.oxauth.appLoggers
+  | toJson
+  | replace "authLogTarget" "oxauth_log_target"
+  | replace "authLogLevel" "oxauth_log_level"
+  | replace "httpLogTarget" "http_log_target"
+  | replace "httpLogLevel" "http_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
+  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  | replace "auditStatsLogTarget" "audit_log_target"
+  | replace "auditStatsLogLevel" "audit_log_level"
+  | replace "cleanerLogTarget" "cleaner_log_target"
+  | replace "cleanerLogLevel" "cleaner_log_level"
+  | squote
+  }}
   GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
   GLUU_OXD_BIND_IP_ADDRESSES: {{ .Values.configmap.gluuOxdBindIpAddresses | quote }}
+  GLUU_OXD_APP_LOGGERS: {{ index .Values "global" "oxd-server" "appLoggers"
+  | toJson
+  | replace "oxdServerLogTarget" "oxd_log_target"
+  | replace "oxdServerLogLevel" "oxd_log_level"
+  | squote
+  }}
   {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
   LB_ADDR: {{ .Values.configmap.lbAddr }}
   {{- end }}
@@ -82,6 +108,42 @@ data:
   GLUU_CERT_ALT_NAME: {{ .Values.global.ldapServiceName }} #{{ template "gluu.fullname" . }}-service
   GLUU_SYNC_CASA_MANIFESTS: {{ .Values.configmap.gluuSyncCasaManifests | quote }}
   GLUU_OXTRUST_BACKEND: {{ .Values.configmap.gluuOxtrustBackend | quote }}
+  GLUU_OXTRUST_APP_LOGGERS: {{ .Values.global.oxtrust.appLoggers
+  | toJson
+  | replace "oxtrustLogTarget" "oxtrust_log_target"
+  | replace "oxtrustLogLevel" "oxtrust_log_level"
+  | replace "httpLogTarget" "http_log_target"
+  | replace "httpLogLevel" "http_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "ldapStatsLogTarget" "ldap_stats_log_target"
+  | replace "ldapStatsLogLevel" "ldap_stats_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  | replace "auditStatsLogTarget" "audit_log_target"
+  | replace "auditStatsLogLevel" "audit_log_level"
+  | replace "cleanerLogTarget" "cleaner_log_target"
+  | replace "cleanerLogLevel" "cleaner_log_level"
+  | replace "velocityLogLevel" "velocity_log_level"
+  | replace "velocityLogTarget" "velocity_log_target"
+  | replace "cacheRefreshLogLevel" "cache_refresh_log_level"
+  | replace "cacheRefreshLogTarget" "cache_refresh_log_target"
+  | replace "cacheRefreshPythonLogLevel" "cache_refresh_python_log_level"
+  | replace "cacheRefreshPythonLogTarget" "cache_refresh_python_log_target"
+  | replace "apachehcLogLevel" "apachehc_log_level"
+  | replace "apachehcLogTarget" "apachehc_log_target"
+  | squote
+  }}
+  GLUU_FIDO2_APP_LOGGERS: {{ .Values.global.fido2.appLoggers
+  | toJson
+  | replace "fido2LogTarget" "fido2_log_target"
+  | replace "fido2LogLevel" "fido2_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | squote
+  }}
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
@@ -100,8 +162,28 @@ data:
   GLUU_PASSPORT_ENABLED: {{ .Values.configmap.gluuPassportEnabled | quote }}
   GLUU_SCIM_ENABLED: {{ .Values.global.scim.enabled | quote }}
   GLUU_SCIM_PROTECTION_MODE: {{ .Values.configmap.gluuScimProtectionMode | quote }}
+  GLUU_SCIM_APP_LOGGERS: {{ .Values.global.scim.appLoggers
+  | toJson
+  | replace "scimLogTarget" "scim_log_target"
+  | replace "scimLogLevel" "scim_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "persistenceDurationLogTarget" "persistence_duration_log_target"
+  | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
+  | squote
+  }}
   {{- if .Values.global.oxshibboleth.enabled }}
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
+  GLUU_OXSHIBBOLETH_APP_LOGGERS: {{ .Values.global.oxshibboleth.appLoggers
+  | toJson
+  | replace "fido2LogTarget" "fido2_log_target"
+  | replace "fido2LogLevel" "fido2_log_level"
+  | replace "persistenceLogTarget" "persistence_log_target"
+  | replace "persistenceLogLevel" "persistence_log_level"
+  | squote
+  }}
   {{- end }}
   GLUU_OXD_APPLICATION_CERT_CN: {{ .Values.configmap.gluuOxdApplicationCertCn | quote }}
   GLUU_OXD_ADMIN_CERT_CN: {{ .Values.configmap.gluuOxdAdminCertCn | quote }}
