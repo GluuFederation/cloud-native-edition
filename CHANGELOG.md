@@ -1,5 +1,14 @@
 # Changelog
 
+### [1.6.15](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.14...v1.6.15) (2022-01-17)
+
+
+### Bug Fixes
+
+* add injection of service properties ([73a417f](https://github.com/GluuFederation/cloud-native-edition/commit/73a417f81cc5ac7514d2364b82c5666403f7a36a))
+* app loggers ([#396](https://github.com/GluuFederation/cloud-native-edition/issues/396)) ([5e309eb](https://github.com/GluuFederation/cloud-native-edition/commit/5e309ebcb60579e83a301ba902dc693261156568))
+* update Kubernetes version ([#389](https://github.com/GluuFederation/cloud-native-edition/issues/389)) ([ca1e64c](https://github.com/GluuFederation/cloud-native-edition/commit/ca1e64c4993b57b32f15917c14efb882c5c957a2))
+
 ### [1.6.14](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.13...v1.6.14) (2021-11-16)
 
 
