@@ -1,0 +1,12 @@
+title: 'Gluu Authorization Server'
+remote_theme: benc-uk/theme-msdark
+favicon: https://www.gluu.org/wp-content/uploads/2020/01/Gluu-Green-Icon-64.png
+buttons:
+  - b0:
+    text: Installer
+    href: /cloud-native-edition
+  - b1:
+    text: Instructions
+    href: /cloud-native-edition/pygluu/kubernetes/templates/helm
+gems:
+  - jekyll-seo-tag
