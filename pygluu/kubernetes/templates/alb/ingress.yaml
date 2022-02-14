@@ -1,5 +1,3 @@
-# Licensed under the Gluu Support License
-# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -29,164 +27,122 @@ spec:
   - host: FQDN
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: ssl-redirect
             port:
               name: use-annotation
-      - path: /.well-known/scim-configuration
-        pathType: Exact
-        backend:
+        path: /
+        pathType: Prefix
+      - backend:
           service:
             name: scim-redirect
             port:
               name: use-annotation
-      - path: /.well-known/openid-configuration
+        path: /.well-known/scim-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: openid-redirect
             port:
               name: use-annotation
-      - path: /.well-known/uma2-configuration
+        path: /.well-known/openid-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: uma-redirect
             port:
               name: use-annotation
-      - path: /.well-known/webfinger
+        path: /.well-known/uma2-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: webfinger-redirect
             port:
               name: use-annotation
-      - path: /.well-known/simple-web-discovery
+        path: /.well-known/webfinger
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: simple-web-discovery-redirect
             port:
               name: use-annotation
-      - path: /.well-known/fido-configuration
+        path: /.well-known/simple-web-discovery
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: fido-redirect
             port:
               name: use-annotation
-      - path: /.well-known/fido2-configuration
+        path: /.well-known/fido-configuration
         pathType: Exact
-        backend:
-          service:
-            name: fido2-redirect
-            port:
-              name: use-annotation
-      - path: /
-        pathType: Exact
-        backend:
+      - backend:
           service:
             name: main-page-redirect
             port:
               name: use-annotation
-      - path: /.well-known/scim-configuration
+        path: /
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: scim
             port:
               number: 8080
-      - path: /.well-known/openid-configuration
+        path: /.well-known/scim-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: oxauth
             port:
               number: 8080
-      - path: /.well-known/uma2-configuration
+        path: /.well-known/openid-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: oxauth
             port:
               number: 8080
-      - path: /.well-known/webfinger
+        path: /.well-known/uma2-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: oxauth
             port:
               number: 8080
-      - path: /.well-known/simple-web-discovery
+        path: /.well-known/webfinger
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: oxauth
             port:
               number: 8080
-      - path: /.well-known/fido-configuration
+        path: /.well-known/simple-web-discovery
         pathType: Exact
-        backend:
+      - backend:
           service:
             name: oxauth
             port:
               number: 8080
-      - path: /.well-known/fido2-configuration
+        path: /.well-known/fido-configuration
         pathType: Exact
-        backend:
+      - backend:
           service:
-            name: fido2
+            name: oxauth
             port:
               number: 8080
-      - path: /oxauth
+        path: /oxauth
         pathType: Prefix
-        backend:
-          service:
-            name: oxauth
-            port:
-              number: 8080
-      - path: /identity
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: oxtrust
             port:
               number: 8080
-      - path: /idp
+        path: /identity
         pathType: Prefix
-        backend:
-          service:
-            name: oxshibboleth
-            port:
-              number: 8080
-      - path: /scim
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: scim
             port:
               number: 8080
-      - path: /fido2
+        path: /scim
         pathType: Prefix
-        backend:
-          service:
-            name: fido2
-            port:
-              number: 8080
-      - path: /passport
-        pathType: Prefix
-        backend:
-          service:
-            name: oxpassport
-            port:
-              number: 8090
-      - path: /casa
-        pathType: Prefix
-        backend:
-          service:
-            name: casa
-            port:
-              number: 8080
