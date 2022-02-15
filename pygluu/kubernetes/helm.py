@@ -42,16 +42,10 @@ class Helm(object):
                                                             cluster_role_name="cluster-admin")
 
     def redeploy_gluu_to_load_alb(self):
-        while True:
-            try:
-                if lb_hostname:
-                    break
-                lb_hostname = self.kubernetes.read_namespaced_ingress(
-                    name="gluu", namespace="gluu").status.load_balancer.ingress[0].hostname
-            except TypeError:
-                logger.info("Waiting for loadbalancer address..")
-                time.sleep(10)
+        prompt = input("Please input the DNS of the Application load balancer found on AWS UI Loadbalancer page: ")
+        lb_hostname = prompt
         self.settings.set("LB_ADD", lb_hostname)
+        self.analyze_global_values()
         exec_cmd("helm upgrade {} -f {} ./helm/gluu --timeout 10m0s --namespace={}".format(
             self.settings.get('GLUU_HELM_RELEASE_NAME'), self.values_file, self.settings.get("GLUU_NAMESPACE")))
 
@@ -175,9 +169,6 @@ class Helm(object):
                 self.settings.get("ARN_AWS_IAM")
             if not self.settings.get("ARN_AWS_IAM"):
                 del values_file_parser["global"]["alb"]["ingress"]["additionalAnnotations"]["alb.ingress.kubernetes.io/certificate-arn"]
-
-            if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
-                self.redeploy_gluu_to_load_alb()
         values_file_parser["global"]["storageClass"]["provisioner"] = provisioner
         values_file_parser["global"]["lbIp"] = self.settings.get("HOST_EXT_IP")
         values_file_parser["global"]["domain"] = self.settings.get("GLUU_FQDN")
@@ -443,6 +434,8 @@ class Helm(object):
             self.settings = SettingsHandler()
         if self.settings.get("AWS_LB_TYPE") != "alb" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
             self.check_install_nginx_ingress(install_ingress)
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+            self.settings.set("LB_ADD", "im.going.tochange")
         self.analyze_global_values()
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --timeout 10m0s --namespace={}".format(
@@ -452,6 +445,9 @@ class Helm(object):
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
             raise SystemExit(1)
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+            time.sleep(10)
+            self.redeploy_gluu_to_load_alb()
 
     def uninstall_gluu(self):
         exec_cmd("helm delete {} --namespace={}".format(self.settings.get('GLUU_HELM_RELEASE_NAME'),

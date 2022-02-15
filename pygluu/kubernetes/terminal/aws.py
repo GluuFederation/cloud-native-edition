@@ -47,6 +47,7 @@ class PromptAws:
             self.settings.set("AWS_LB_TYPE", lb_map.get(choice, "clb"))
             if self.settings.get("AWS_LB_TYPE") == "alb":
                 logger.info("A prompt later during installation will appear to input the ALB DNS address")
+                self.settings.set("USE_ARN", "Y")
 
         if not self.settings.get("USE_ARN"):
             self.settings.set("USE_ARN", confirm_yesno(
