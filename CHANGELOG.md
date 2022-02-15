@@ -1,5 +1,16 @@
 # Changelog
 
+### [1.6.16](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.15...v1.6.16) (2022-02-15)
+
+
+### Bug Fixes
+
+* **alb:** force arn to be used ([95b6e26](https://github.com/GluuFederation/cloud-native-edition/commit/95b6e263ba05cdd2f0565e40a4adaf74528a5863))
+* **helm:** remove v5 pacakges ([392f4f2](https://github.com/GluuFederation/cloud-native-edition/commit/392f4f23c7a0fe7ce86d94836f7ef3a0c9b0a2f6))
+* **helm:** remove v5 packages ([c80ed55](https://github.com/GluuFederation/cloud-native-edition/commit/c80ed551ac1fa29a22e34ff8eff34f9d2a0a3e23))
+* **pygluu:** remove alb parse in helm installation. ([9040783](https://github.com/GluuFederation/cloud-native-edition/commit/904078388c60c566b5cbbe5da59e158f8a3998f9))
+* **version:** update dev tags ([dab67fa](https://github.com/GluuFederation/cloud-native-edition/commit/dab67fab0c584f7925fe567e9d7f306c25978a88))
+
 ### [1.6.15](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.14...v1.6.15) (2022-01-17)
 
 
