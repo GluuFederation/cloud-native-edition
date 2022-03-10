@@ -287,7 +287,9 @@ class Helm(object):
         if self.settings.get("ENABLE_OXTRUST_TEST_MODE_BOOLEAN") == "true":
             values_file_parser["config"]["configmap"]["gluuOxtrustApiTestMode"] = True
         values_file_parser["global"]["gluuJackrabbitCluster"] = "false"
+        values_file_parser["jackrabbit"]["clusterId"] = "first"
         if self.settings.get("JACKRABBIT_CLUSTER") == "Y":
+            values_file_parser["jackrabbit"]["clusterId"] = ""
             values_file_parser["global"]["gluuJackrabbitCluster"] = "true"
             values_file_parser["config"]["configmap"]["gluuJackrabbitAdminId"] = \
                 self.settings.get("JACKRABBIT_ADMIN_ID")
@@ -303,7 +305,6 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                 self.settings.get("PERSISTENCE_BACKEND") == "ldap":
             values_file_parser["global"]["opendj"]["enabled"] = True
-            values_file_parser["opendj"]["multiCluster"]["clusterId"] = "first"
             # ALPHA-FEATURE: Multi cluster ldap replication
             if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
