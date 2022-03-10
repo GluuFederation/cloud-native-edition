@@ -28,9 +28,9 @@ class Postgres(object):
             exec_cmd("helm repo add bitnami https://charts.bitnami.com/bitnami")
             exec_cmd("helm repo update")
             exec_cmd("helm install {} bitnami/postgresql "
-                     "--set global.postgresql.postgresqlDatabase={} "
-                     "--set global.postgresql.postgresqlPassword={} "
-                     "--set global.postgresql.postgresqlUsername={} "
+                     "--set global.postgresql.auth.database={} "
+                     "--set global.postgresql.auth.password={} "
+                     "--set global.postgresql.auth.username={} "
                      "--namespace={}".format("postgresql",
                                              self.settings.get("JACKRABBIT_DATABASE"),
                                              self.settings.get("JACKRABBIT_PG_PASSWORD"),

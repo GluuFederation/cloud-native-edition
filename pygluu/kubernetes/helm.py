@@ -303,6 +303,7 @@ class Helm(object):
         if self.settings.get("PERSISTENCE_BACKEND") == "hybrid" or \
                 self.settings.get("PERSISTENCE_BACKEND") == "ldap":
             values_file_parser["global"]["opendj"]["enabled"] = True
+            values_file_parser["opendj"]["multiCluster"]["clusterId"] = "first"
             # ALPHA-FEATURE: Multi cluster ldap replication
             if self.settings.get("GLUU_LDAP_MULTI_CLUSTER") == "Y":
                 values_file_parser["opendj"]["multiCluster"]["enabled"] = True
