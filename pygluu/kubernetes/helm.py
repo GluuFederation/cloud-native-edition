@@ -436,7 +436,7 @@ class Helm(object):
             self.settings = SettingsHandler()
         if self.settings.get("AWS_LB_TYPE") != "alb" and self.settings.get("USE_ISTIO_INGRESS") != "Y":
             self.check_install_nginx_ingress(install_ingress)
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y" and self.settings.get("AWS_LB_TYPE") == "alb":
             self.settings.set("LB_ADD", "im.going.tochange")
         self.analyze_global_values()
         try:
