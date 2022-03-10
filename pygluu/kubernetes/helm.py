@@ -446,7 +446,7 @@ class Helm(object):
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")
             raise SystemExit(1)
-        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y":
+        if self.settings.get("IS_GLUU_FQDN_REGISTERED") != "Y" and self.settings.get("AWS_LB_TYPE") == "alb":
             time.sleep(10)
             self.redeploy_gluu_to_load_alb()
 
