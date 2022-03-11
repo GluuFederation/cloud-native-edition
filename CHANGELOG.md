@@ -1,5 +1,15 @@
 # Changelog
 
+### [1.6.17](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.16...v1.6.17) (2022-03-11)
+
+
+### Bug Fixes
+
+* **alb:** hide alb prompt for non alb setups ([b05dee3](https://github.com/GluuFederation/cloud-native-edition/commit/b05dee3952f613d1db7116e1048989559261ebe8))
+* **jackrabbit:** default clusterid ([9ae84c7](https://github.com/GluuFederation/cloud-native-edition/commit/9ae84c7f109acc2c57befbb2f5cee50d3b1ee862))
+* **lb:** stop the change of the lb address after getting it when using nginx ([2f986bd](https://github.com/GluuFederation/cloud-native-edition/commit/2f986bd172138f01010240cac603a6f5cd415616))
+* **postgres:** update postgres helm keys ([c305ff3](https://github.com/GluuFederation/cloud-native-edition/commit/c305ff3f29dcb6462bb178bd5b2e1678360939fb))
+
 ### [1.6.16](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.15...v1.6.16) (2022-02-15)
 
 
