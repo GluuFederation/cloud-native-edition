@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.6.17](https://img.shields.io/badge/Version-1.6.17-informational?style=flat-square) ![AppVersion: 4.3.1](https://img.shields.io/badge/AppVersion-4.3.1-informational?style=flat-square)
+![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![AppVersion: 4.3.1](https://img.shields.io/badge/AppVersion-4.3.1-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.6.17 |
-|  | config | 1.6.17 |
-|  | cr-rotate | 1.6.17 |
-|  | fido2 | 1.6.17 |
-|  | gluu-alb-ingress | 1.6.17 |
-|  | gluu-istio-ingress | 1.6.17 |
-|  | jackrabbit | 1.6.17 |
-|  | nginx-ingress | 1.6.17 |
-|  | opendj | 1.6.17 |
-|  | oxauth | 1.6.17 |
-|  | oxauth-key-rotation | 1.6.17 |
-|  | oxd-server | 1.6.17 |
-|  | oxpassport | 1.6.17 |
-|  | oxshibboleth | 1.6.17 |
-|  | oxtrust | 1.6.17 |
-|  | persistence | 1.6.17 |
-|  | scim | 1.6.17 |
+|  | casa | 1.6.18 |
+|  | config | 1.6.18 |
+|  | cr-rotate | 1.6.18 |
+|  | fido2 | 1.6.18 |
+|  | gluu-alb-ingress | 1.6.18 |
+|  | gluu-istio-ingress | 1.6.18 |
+|  | jackrabbit | 1.6.18 |
+|  | nginx-ingress | 1.6.18 |
+|  | opendj | 1.6.18 |
+|  | oxauth | 1.6.18 |
+|  | oxauth-key-rotation | 1.6.18 |
+|  | oxd-server | 1.6.18 |
+|  | oxpassport | 1.6.18 |
+|  | oxshibboleth | 1.6.18 |
+|  | oxtrust | 1.6.18 |
+|  | persistence | 1.6.18 |
+|  | scim | 1.6.18 |
 
 ## Values
 
@@ -381,7 +381,7 @@ Kubernetes: `>=v1.21.0-0`
 | jackrabbit.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | jackrabbit.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | jackrabbit.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiAdditionalAnnotations":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerAdditionalAnnotations":{},"authServerEnabled":true,"authServerLabels":{},"casaAdditionalAnnotations":{},"casaEnabled":false,"casaLabels":{},"enabled":true,"fido2ConfigAdditionalAnnotations":{},"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"hosts":["demoexample.gluu.org"],"legacy":false,"openidAdditionalAnnotations":{},"openidConfigEnabled":true,"openidConfigLabels":{},"passportAdditionalAnnotations":{},"passportEnabled":false,"passportLabels":{},"path":"/","scimAdditionalAnnotations":{},"scimConfigAdditionalAnnotations":{},"scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"shibAdditionalAnnotations":{},"shibEnabled":false,"shibLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fAdditionalAnnotations":{},"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2AdditionalAnnotations":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryAdditionalAnnotations":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerAdditionalAnnotations":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
+| nginx-ingress | object | `{"ingress":{"additionalAnnotations":{"kubernetes.io/ingress.class":"nginx"},"additionalLabels":{},"adminUiAdditionalAnnotations":{},"adminUiEnabled":true,"adminUiLabels":{},"authServerAdditionalAnnotations":{},"authServerEnabled":true,"authServerLabels":{},"casaAdditionalAnnotations":{},"casaEnabled":false,"casaLabels":{},"deviceCodeAdditionalAnnotations":{},"deviceCodeEnabled":true,"deviceCodeLabels":{},"enabled":true,"fido2ConfigAdditionalAnnotations":{},"fido2ConfigEnabled":false,"fido2ConfigLabels":{},"fido2Enabled":false,"fido2Labels":{},"firebaseMessagingAdditionalAnnotations":{},"firebaseMessagingEnabled":true,"firebaseMessagingLabels":{},"hosts":["demoexample.gluu.org"],"legacy":false,"openidAdditionalAnnotations":{},"openidConfigEnabled":true,"openidConfigLabels":{},"passportAdditionalAnnotations":{},"passportEnabled":false,"passportLabels":{},"path":"/","scimAdditionalAnnotations":{},"scimConfigAdditionalAnnotations":{},"scimConfigEnabled":false,"scimConfigLabels":{},"scimEnabled":false,"scimLabels":{},"shibAdditionalAnnotations":{},"shibEnabled":false,"shibLabels":{},"tls":[{"hosts":["demoexample.gluu.org"],"secretName":"tls-certificate"}],"u2fAdditionalAnnotations":{},"u2fConfigEnabled":true,"u2fConfigLabels":{},"uma2AdditionalAnnotations":{},"uma2ConfigEnabled":true,"uma2ConfigLabels":{},"webdiscoveryAdditionalAnnotations":{},"webdiscoveryEnabled":true,"webdiscoveryLabels":{},"webfingerAdditionalAnnotations":{},"webfingerEnabled":true,"webfingerLabels":{}}}` | Nginx ingress definitions chart |
 | nginx-ingress.ingress.additionalAnnotations | object | `{"kubernetes.io/ingress.class":"nginx"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken Enable client certificate authentication nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional" Create the secret containing the trusted ca certificates nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate" Specify the verification depth in the client certificates chain nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1" Specify if certificates are passed to upstream server nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true" |
 | nginx-ingress.ingress.additionalAnnotations."kubernetes.io/ingress.class" | string | `"nginx"` | Required annotation below. Use kubernetes.io/ingress.class: "public" for microk8s. |
 | nginx-ingress.ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
@@ -394,11 +394,17 @@ Kubernetes: `>=v1.21.0-0`
 | nginx-ingress.ingress.casaAdditionalAnnotations | object | `{}` | Casa ingress resource additional annotations. |
 | nginx-ingress.ingress.casaEnabled | bool | `false` | Enable casa endpoints /casa |
 | nginx-ingress.ingress.casaLabels | object | `{}` | Casa ingress resource labels. key app is taken |
+| nginx-ingress.ingress.deviceCodeAdditionalAnnotations | object | `{}` | device-code ingress resource additional annotations. |
+| nginx-ingress.ingress.deviceCodeEnabled | bool | `true` | Enable endpoint /device-code |
+| nginx-ingress.ingress.deviceCodeLabels | object | `{}` | device-code ingress resource labels. key app is taken |
 | nginx-ingress.ingress.fido2ConfigAdditionalAnnotations | object | `{}` | fido2 config ingress resource additional annotations. |
 | nginx-ingress.ingress.fido2ConfigEnabled | bool | `false` | Enable endpoint /.well-known/fido2-configuration |
 | nginx-ingress.ingress.fido2ConfigLabels | object | `{}` | fido2 config ingress resource labels. key app is taken |
 | nginx-ingress.ingress.fido2Enabled | bool | `false` | Enable all fido2 endpoints |
 | nginx-ingress.ingress.fido2Labels | object | `{}` | fido2 ingress resource labels. key app is taken |
+| nginx-ingress.ingress.firebaseMessagingAdditionalAnnotations | object | `{}` | Firebase Messaging ingress resource additional annotations. |
+| nginx-ingress.ingress.firebaseMessagingEnabled | bool | `true` | Enable endpoint /firebase-messaging-sw.js |
+| nginx-ingress.ingress.firebaseMessagingLabels | object | `{}` | Firebase Messaging ingress resource labels. key app is taken |
 | nginx-ingress.ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18. This flag should be removed next version release along with nginx-ingress/templates/ingress-legacy.yaml. |
 | nginx-ingress.ingress.openidAdditionalAnnotations | object | `{}` | openid-configuration ingress resource additional annotations. |
 | nginx-ingress.ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
