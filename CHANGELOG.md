@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.6.18](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.17...v1.6.18) (2022-03-21)
+
+
+### Bug Fixes
+
+* **cr:** mount missing google creds when using spanner as a persistence ([ff2dc86](https://github.com/GluuFederation/cloud-native-edition/commit/ff2dc8686f725de2d5fb20f5eea518d8a4fe6556)), closes [#413](https://github.com/GluuFederation/cloud-native-edition/issues/413)
+* **ingress:** add device-code and firebase messaging ingress ([a7fe730](https://github.com/GluuFederation/cloud-native-edition/commit/a7fe7305da32f3ece33f89a3063e6424840539ed))
+
 ### [1.6.17](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.16...v1.6.17) (2022-03-11)
 
 
