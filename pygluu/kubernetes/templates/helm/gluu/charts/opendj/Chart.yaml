@@ -12,10 +12,10 @@ keywords:
 home: https://gluu.org/docs/gluu-server
 sources:
   - https://github.com/GluuFederation/docker-opendj
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/opendj
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/opendj
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org
     url: https://github.com/moabu
 icon: https://gluu.org/docs/gluu-server/favicon.ico
-appVersion: "4.3.1"
+appVersion: "4.4.0"

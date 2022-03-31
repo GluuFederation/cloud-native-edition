@@ -29,7 +29,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/opendj
   # -- Image  tag to use for deploying.
-  tag: 4.3.1_01
+  tag: 4.4.0_01
   # -- Image Pull Secrets
   pullSecrets: [ ]
 multiCluster:
@@ -104,7 +104,7 @@ resources:
     # -- Memory request.
     memory: 2000Mi
 # -- Configure the liveness healthcheck for OpenDJ if needed.
-# https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py
+# https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
 livenessProbe:
   # -- Executes the python3 healthcheck.
   exec:
@@ -116,7 +116,7 @@ livenessProbe:
   timeoutSeconds: 5
   failureThreshold: 20
 # -- Configure the readiness healthcheck for OpenDJ if needed.
-# https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py
+# https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
 readinessProbe:
   tcpSocket:
     port: 1636

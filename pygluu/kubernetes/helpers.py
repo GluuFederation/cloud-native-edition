@@ -232,20 +232,4 @@ def prompt_password(password, length=6):
             return pw_prompt
 
 
-def generate_main_config(settings):
-    """Prepare generate.json and output it
-    """
-    config_settings = {"hostname": settings.get("GLUU_FQDN"), "country_code": settings.get("COUNTRY_CODE"),
-                       "state": settings.get("STATE"), "city": settings.get("CITY"),
-                       "admin_pw": settings.get("ADMIN_PW"), "ldap_pw": settings.get("LDAP_PW"),
-                       "email": settings.get("EMAIL"),
-                       "org_name": settings.get("ORG_NAME"), "redis_pw": settings.get("REDIS_PW")}
-    if settings.get("PERSISTENCE_BACKEND") == "couchbase":
-        config_settings["ldap_pw"] = settings.get("COUCHBASE_PASSWORD")
-    with open(Path('./config/base/generate.json').resolve(), 'w+') as file:
-        logger.warning("Main configuration settings has been outputted to file: "
-                       "./config/base/generate.json. Please store this file safely or delete it.")
-        json.dump(config_settings, file)
-
-
 logger = get_logger("gluu-common        ")

@@ -1,40 +1,40 @@
 # License terms and conditions for Gluu Cloud Native Edition:
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
-appVersion: "4.3.1"
+appVersion: "4.4.0"
 kubeVersion: ">=v1.21.0-0"
 annotations:
   artifacthub.io/changes: |
-    - Gluu 4.3.1 official chart release
+    - Gluu 4.4.0 official chart release
   artifacthub.io/images: |
     - name: casa
-      image: gluufederation/casa:4.3.1_dev
+      image: gluufederation/casa:4.4.0_dev
     - name: fido2
-      image: gluufederation/fido2:4.3.1_dev
+      image: gluufederation/fido2:4.4.0_dev
     - name: scim
-      image: gluufederation/scim:4.3.1_dev
+      image: gluufederation/scim:4.4.0_dev
     - name: configuration-manager
-      image: gluufederation/config-init:4.3.1_dev
+      image: gluufederation/config-init:4.4.0_dev
     - name: cr-rotate
-      image: gluufederation/cr-rotate:4.3.1_dev
+      image: gluufederation/cr-rotate:4.4.0_dev
     - name: certmanager
-      image: gluufederation/certmanager:4.3.1_dev
+      image: gluufederation/certmanager:4.4.0_dev
     - name: opendj
-      image: gluufederation/opendj:4.3.1_dev
+      image: gluufederation/opendj:4.4.0_dev
     - name: jackrabbit
-      image: gluufederation/jackrabbit:4.3.1_dev
+      image: gluufederation/jackrabbit:4.4.0_dev
     - name: oxauth
-      image: gluufederation/oxauth:4.3.1_dev
+      image: gluufederation/oxauth:4.4.0_dev
     - name: oxd-server
-      image: gluufederation/oxd-server:4.3.1_dev
+      image: gluufederation/oxd-server:4.4.0_dev
     - name: oxpassport
-      image: gluufederation/oxpassport:4.3.1_dev
+      image: gluufederation/oxpassport:4.4.0_dev
     - name: oxshibboleth
-      image: gluufederation/oxshibboleth:4.3.1_dev
+      image: gluufederation/oxshibboleth:4.4.0_dev
     - name: persistence
-      image: gluufederation/persistence:4.3.1_dev
+      image: gluufederation/persistence:4.4.0_dev
     - name: oxtrust
-      image: gluufederation/oxtrust:4.3.1_dev
+      image: gluufederation/oxtrust:4.4.0_dev
   artifacthub.io/license: Apache-2.0
 icon: https://gluu.org/docs/gluu-server/favicon.ico
 home: https://www.gluu.org

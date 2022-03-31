@@ -1,6 +1,6 @@
 # persistence
 
-![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.1](https://img.shields.io/badge/AppVersion-4.3.1-informational?style=flat-square)
+![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.0](https://img.shields.io/badge/AppVersion-4.4.0-informational?style=flat-square)
 
 Job to generate data and initial config for Gluu Server persistence layer.
 
@@ -15,7 +15,7 @@ Job to generate data and initial config for Gluu Server persistence layer.
 ## Source Code
 
 * <https://github.com/GluuFederation/docker-persistence>
-* <https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/persistence>
+* <https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/persistence>
 
 ## Requirements
 
@@ -33,7 +33,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/persistence"` | Image  to use for deploying. |
-| image.tag | string | `"4.3.1_01"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.4.0_01"` | Image  tag to use for deploying. |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | resources | object | `{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource specs. |

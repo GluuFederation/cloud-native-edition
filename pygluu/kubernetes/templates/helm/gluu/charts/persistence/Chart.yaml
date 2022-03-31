@@ -11,11 +11,11 @@ keywords:
 home: https://gluu.org/docs/gluu-server
 sources:
   - https://github.com/GluuFederation/docker-persistence
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/persistence
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/persistence
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org
     url: https://github.com/moabu
 icon: https://gluu.org/docs/gluu-server/favicon.ico
-appVersion: "4.3.1"
+appVersion: "4.4.0"
 

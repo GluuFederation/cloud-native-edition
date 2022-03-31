@@ -14,10 +14,10 @@ sources:
   - https://gluu.org/docs/gluu-server/installation-guide/install-kubernetes/#working-with-jackrabbit
   - https://github.com/GluuFederation/docker-jackrabbit
   - https://jackrabbit.apache.org/jcr/index.html
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/jackrabbit
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/jackrabbit
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org
     url: https://github.com/moabu
 icon: https://gluu.org/docs/gluu-server/favicon.ico
-appVersion: "4.3.1"
+appVersion: "4.4.0"

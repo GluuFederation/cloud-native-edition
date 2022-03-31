@@ -198,7 +198,7 @@ data:
   GLUU_COUCHBASE_TRUSTSTORE_ENABLE: "false"
   GLUU_LDAP_USE_SSL: "false"
   {{- end }}
-  # BELOW TEMP ENV. TO BE REMOVED IN 4.3
+  # BELOW TEMP ENV. TO BE REMOVED IN 4.4
   GLUU_PASSPORT_FAILURE_REDIRECT_URL: {{ .Values.configmap.gluuPassportFailureRedirectUrl | quote }}
 
 ---

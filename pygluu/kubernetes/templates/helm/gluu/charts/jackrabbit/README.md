@@ -1,6 +1,6 @@
 # jackrabbit
 
-![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.1](https://img.shields.io/badge/AppVersion-4.3.1-informational?style=flat-square)
+![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.0](https://img.shields.io/badge/AppVersion-4.4.0-informational?style=flat-square)
 
 Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications.
 
@@ -17,7 +17,7 @@ Jackrabbit Oak is a complementary implementation of the JCR specification. It is
 * <https://gluu.org/docs/gluu-server/installation-guide/install-kubernetes/#working-with-jackrabbit>
 * <https://github.com/GluuFederation/docker-jackrabbit>
 * <https://jackrabbit.apache.org/jcr/index.html>
-* <https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/jackrabbit>
+* <https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/jackrabbit>
 
 ## Requirements
 
@@ -39,7 +39,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/jackrabbit"` | Image  to use for deploying. |
-| image.tag | string | `"4.3.1_01"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.4.0_01"` | Image  tag to use for deploying. |
 | jackrabbitVolumeMounts.repository.mountPath | string | `"/opt/jackrabbit/repository"` |  |
 | jackrabbitVolumeMounts.repository.name | string | `"jackrabbit-volume"` |  |
 | jackrabbitVolumeMounts.version.mountPath | string | `"/opt/jackrabbit/version"` |  |

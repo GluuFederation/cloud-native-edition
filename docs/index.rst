@@ -24,7 +24,6 @@ This part of the documentation lists the API reference of public classes and fun
    helm
    helpers
    kubeapi
-   kustomize
    pycert
    settings
    terminal

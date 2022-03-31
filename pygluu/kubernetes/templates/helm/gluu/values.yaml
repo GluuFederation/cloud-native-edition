@@ -70,13 +70,13 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.3.1_02
+      tag: 4.4.0_02
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
-    sourceVersion: "4.2"
+    sourceVersion: "4.4"
     # -- Target version currently running. This is normally one minor version up.
     # The step should only be one minor version per upgrade
-    targetVersion: "4.3"
+    targetVersion: "4.4"
   # -- StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed.
   storageClass:
     allowVolumeExpansion: true
@@ -463,7 +463,7 @@ config:
     gluuScimProtectionMode: "OAUTH"
     # -- Boolean flag to enable/disable passport chart
     gluuPassportEnabled: false
-    # --  TEMP KEY TO BE REMOVED IN 4.3 which allows passport failure redirect url to be specified.
+    # --  TEMP KEY TO BE REMOVED IN 4.4 which allows passport failure redirect url to be specified.
     gluuPassportFailureRedirectUrl: ""
     # -- Enable Casa flag .
     gluuCasaEnabled: false
@@ -473,7 +473,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
@@ -512,6 +512,15 @@ config:
 
 # -- Nginx ingress definitions chart
 nginx-ingress:
+  certManager:
+    # Enable deploying a certificate that uses dns01 challenge instead of passing an annotation nginx-ingress.ingress.additionalAnnotations for nginx http01 challenge.
+    certificate:
+      enabled: false
+      issuerKind: ClusterIssuer
+      # Issuer name which you will create manually. Can be letsencrypt-production.
+      issuerName: ""
+      issuerGroup: cert-manager.io
+
   ingress:
     enabled: true
     # -- Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18. This flag should be removed next version release along with nginx-ingress/templates/ingress-legacy.yaml.
@@ -663,7 +672,7 @@ jackrabbit:
     # -- Image  to use for deploying.
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -757,7 +766,7 @@ opendj:
     # -- Image  to use for deploying.
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   multiCluster:
@@ -831,7 +840,7 @@ opendj:
       # -- Memory request.
       memory: 2000Mi
   # -- Configure the liveness healthcheck for OpenDJ if needed.
-  # https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py
+  # https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
   livenessProbe:
     # -- Executes the python3 healthcheck.
     exec:
@@ -843,7 +852,7 @@ opendj:
     timeoutSeconds: 5
     failureThreshold: 20
   # -- Configure the readiness healthcheck for OpenDJ if needed.
-  # https://github.com/GluuFederation/docker-opendj/blob/4.3/scripts/healthcheck.py
+  # https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     tcpSocket:
       port: 1636
@@ -880,7 +889,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -934,7 +943,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -961,7 +970,7 @@ oxauth:
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+    # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -970,7 +979,7 @@ oxauth:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the auth server if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+  # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:
@@ -1018,7 +1027,7 @@ oxtrust:
     # -- Image  to use for deploying.
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1046,7 +1055,7 @@ oxtrust:
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+    # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -1055,7 +1064,7 @@ oxtrust:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the auth server if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
+  # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:
@@ -1103,7 +1112,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1183,7 +1192,7 @@ scim:
     # -- Image  to use for deploying.
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1263,7 +1272,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1344,7 +1353,7 @@ casa:
     # -- Image  to use for deploying.
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1425,7 +1434,7 @@ oxpassport:
     # -- Image  to use for deploying.
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number
@@ -1508,7 +1517,7 @@ oxshibboleth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1579,7 +1588,7 @@ cr-rotate:
     # -- Image  to use for deploying.
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_02
+    tag: 4.4.0_02
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1630,7 +1639,7 @@ oxauth-key-rotation:
     # -- Image  to use for deploying.
     repository: gluufederation/certmanager
     # -- Image  tag to use for deploying.
-    tag: 4.3.1_03
+    tag: 4.4.0_03
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours

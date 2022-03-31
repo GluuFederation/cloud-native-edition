@@ -1,6 +1,6 @@
 # scim
 
-![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.3.1](https://img.shields.io/badge/AppVersion-4.3.1-informational?style=flat-square)
+![Version: 1.6.18](https://img.shields.io/badge/Version-1.6.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.0](https://img.shields.io/badge/AppVersion-4.4.0-informational?style=flat-square)
 
 System for Cross-domain Identity Management (SCIM) version 2.0
 
@@ -16,7 +16,7 @@ System for Cross-domain Identity Management (SCIM) version 2.0
 
 * <https://gluu.org/docs/gluu-server/api-guide/scim-api/>
 * <https://github.com/GluuFederation/docker-scim>
-* <https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/scim>
+* <https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/scim>
 
 ## Requirements
 
@@ -36,7 +36,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/scim"` | Image  to use for deploying. |
-| image.tag | string | `"4.3.1_01"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.4.0_01"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for SCIM if needed. |
 | livenessProbe.httpGet.path | string | `"/scim/restv1/scim/v2/ServiceProviderConfig"` | http liveness probe endpoint |
 | readinessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the SCIM if needed. |
