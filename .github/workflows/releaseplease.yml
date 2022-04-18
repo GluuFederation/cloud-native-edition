@@ -1,14 +1,15 @@
-on:
- push:
-   branches:
-     - 4.3
 name: release-please
-jobs:
- release-please:
-   runs-on: ubuntu-latest
-   steps:
-     - uses: GoogleCloudPlatform/release-please-action@v3.1
-       with:
-         token: ${{ secrets.MOWORKFLOWTOKEN }}
-         release-type: python
+on:
+  push:
+    branches:
+      - 4.3
 
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: GoogleCloudPlatform/release-please-action@v3.1
+        with:
+          token: ${{ secrets.MOWORKFLOWTOKEN }}
+          release-type: python

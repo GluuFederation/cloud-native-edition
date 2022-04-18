@@ -13,13 +13,16 @@ on:
 jobs:
   All_Repos_Common_Workflows:
     runs-on: ubuntu-latest
+
     steps:
       - name: Fetching Local Repository
         uses: actions/checkout@master
+        
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
         with:
+          # aadded and saved
           gpg_private_key: ${{ secrets.MOAUTO_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.MOAUTO_GPG_PRIVATE_KEY_PASSPHRASE }}
           git_user_signingkey: true
@@ -65,7 +68,7 @@ jobs:
           WORKFLOW_FILES: |
             .github/workflows/commit-check.yml=.github/workflows/commit-check.yml
             .github/workflows/central_code_quality_check.yml=.github/workflows/central_code_quality_check.yml
-          GITHUB_TOKEN: ${{ secrets.MOWORKFLOWTOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
           PR_BRANCH_NAME: repo_sync
         run: |

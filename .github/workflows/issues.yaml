@@ -1,0 +1,35 @@
+name: Label and Comment on issues
+on:
+  issues:
+    types:
+      - labeled
+      - reopened
+      - opened
+
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      
+    steps:
+      - name: Label issues with 'enhancement'
+        uses: andymckay/labeler@e6c4322d0397f3240f0e7e30a33b5c5df2d39e90
+        with:
+          add-labels: "enhancement"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  add-comment:
+    if: github.event.label.name == 'bug'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Add comment to an Issue labeled 'bug'
+        uses: peter-evans/create-or-update-comment@a35cf36e5301d70b76f316e867e7788a55a31dae
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+           Thanks for reporting what you think is a bug. **We sure are going to take a look and try replicating it.** \
+           Thank you for your contribution! :sparkles:
