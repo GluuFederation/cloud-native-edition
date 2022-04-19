@@ -1,5 +1,25 @@
 # Changelog
 
+### [1.6.15](https://www.github.com/GluuFederation/cloud-native-edition/compare/v1.6.14...v1.6.15) (2022-04-19)
+
+
+### Bug Fixes
+
+* add injection of service properties ([73a417f](https://www.github.com/GluuFederation/cloud-native-edition/commit/73a417f81cc5ac7514d2364b82c5666403f7a36a))
+* **alb:** force arn to be used ([95b6e26](https://www.github.com/GluuFederation/cloud-native-edition/commit/95b6e263ba05cdd2f0565e40a4adaf74528a5863))
+* **alb:** hide alb prompt for non alb setups ([b05dee3](https://www.github.com/GluuFederation/cloud-native-edition/commit/b05dee3952f613d1db7116e1048989559261ebe8))
+* app loggers ([#396](https://www.github.com/GluuFederation/cloud-native-edition/issues/396)) ([5e309eb](https://www.github.com/GluuFederation/cloud-native-edition/commit/5e309ebcb60579e83a301ba902dc693261156568))
+* **cr:** mount missing google creds when using spanner as a persistence ([ff2dc86](https://www.github.com/GluuFederation/cloud-native-edition/commit/ff2dc8686f725de2d5fb20f5eea518d8a4fe6556)), closes [#413](https://www.github.com/GluuFederation/cloud-native-edition/issues/413)
+* **helm:** remove v5 pacakges ([392f4f2](https://www.github.com/GluuFederation/cloud-native-edition/commit/392f4f23c7a0fe7ce86d94836f7ef3a0c9b0a2f6))
+* **helm:** remove v5 packages ([c80ed55](https://www.github.com/GluuFederation/cloud-native-edition/commit/c80ed551ac1fa29a22e34ff8eff34f9d2a0a3e23))
+* **ingress:** add device-code and firebase messaging ingress ([a7fe730](https://www.github.com/GluuFederation/cloud-native-edition/commit/a7fe7305da32f3ece33f89a3063e6424840539ed))
+* **jackrabbit:** default clusterid ([9ae84c7](https://www.github.com/GluuFederation/cloud-native-edition/commit/9ae84c7f109acc2c57befbb2f5cee50d3b1ee862))
+* **lb:** stop the change of the lb address after getting it when using nginx ([2f986bd](https://www.github.com/GluuFederation/cloud-native-edition/commit/2f986bd172138f01010240cac603a6f5cd415616))
+* **postgres:** update postgres helm keys ([c305ff3](https://www.github.com/GluuFederation/cloud-native-edition/commit/c305ff3f29dcb6462bb178bd5b2e1678360939fb))
+* **pygluu:** remove alb parse in helm installation. ([9040783](https://www.github.com/GluuFederation/cloud-native-edition/commit/904078388c60c566b5cbbe5da59e158f8a3998f9))
+* update Kubernetes version ([#389](https://www.github.com/GluuFederation/cloud-native-edition/issues/389)) ([ca1e64c](https://www.github.com/GluuFederation/cloud-native-edition/commit/ca1e64c4993b57b32f15917c14efb882c5c957a2))
+* **version:** update dev tags ([dab67fa](https://www.github.com/GluuFederation/cloud-native-edition/commit/dab67fab0c584f7925fe567e9d7f306c25978a88))
+
 ### [1.6.18](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.17...v1.6.18) (2022-03-21)
 
 
