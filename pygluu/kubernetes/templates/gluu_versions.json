@@ -15,9 +15,9 @@
     "LDAP_IMAGE_NAME": "gluufederation/opendj",
     "LDAP_IMAGE_TAG": "4.3.1_02",
     "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
-    "JACKRABBIT_IMAGE_TAG": "4.3.1_02",
+    "JACKRABBIT_IMAGE_TAG": "4.3.1_04",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
-    "OXAUTH_IMAGE_TAG": "4.3.1_02",
+    "OXAUTH_IMAGE_TAG": "4.3.1_04",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
     "OXD_IMAGE_TAG": "4.3.1_02",
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
@@ -25,11 +25,11 @@
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
     "OXSHIBBOLETH_IMAGE_TAG": "4.3.1_02",
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
-    "OXTRUST_IMAGE_TAG": "4.3.1_02",
+    "OXTRUST_IMAGE_TAG": "4.3.1_03",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
     "PERSISTENCE_IMAGE_TAG": "4.3.1_02",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.3.1_02"
+    "UPGRADE_IMAGE_TAG": "4.3.1_03"
   },
   "4.3.2_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",

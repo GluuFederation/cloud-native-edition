@@ -33,7 +33,7 @@ def determine_final_official_and_dev_version(tag_list):
         if "dev" not in tag and "a" not in tag and tag[4:5] == highest_major_minor_patch_number:
             versions_list.append(int(tag[6:8]))
     # A case were only a dev version of a new patch is available then a lower stable patch should be checked.
-    # i.e there is no 4.3.0_01 but there is 4.2.2_dev
+    # i.e there is no 4.2.3_01 but there is 4.2.2_dev
     if not versions_list:
         highest_major_minor_patch_number = str(int(highest_major_minor_patch_number) - 1)
         for tag in tag_list:
@@ -42,6 +42,7 @@ def determine_final_official_and_dev_version(tag_list):
             # Exclude any tag with the following
             if "dev" not in tag and "a" not in tag and tag[4:5] == highest_major_minor_patch_number:
                 versions_list.append(int(tag[6:8]))
+
 
     # Remove duplicates
     versions_list = list(set(versions_list))
@@ -204,8 +205,8 @@ def main():
         all_repos_tags.update(get_docker_repo_tag(org, repo))
 
     major_official_version = str(determine_major_version(all_repos_tags))
-
-    filtered_all_repos_tags = filter_all_repo_dictionary_tags(all_repos_tags, major_official_version)
+    # inserted major_official_version manually as 4.2
+    filtered_all_repos_tags = filter_all_repo_dictionary_tags(all_repos_tags, "4.3")
     final_gluu_versions_dict = analyze_filtered_dict_return_final_dict(filtered_all_repos_tags, major_official_version)
     update_json_file(final_gluu_versions_dict, '../pygluu/kubernetes/templates/gluu_versions.json')
 
