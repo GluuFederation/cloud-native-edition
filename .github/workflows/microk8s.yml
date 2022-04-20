@@ -20,7 +20,7 @@ jobs:
         python-version: [3.7]
         gluu-version: ['"4.3.2_dev"']
         test-cases: ["install", "helm-install"]
-        persistence-backends: ['"ldap"','"sql"','"pgsql"']
+        persistence-backends: ['"ldap"','"couchbase"','"sql"','"pgsql"']
 
     steps:
     - name: Checkout code

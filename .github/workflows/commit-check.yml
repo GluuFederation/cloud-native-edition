@@ -20,21 +20,17 @@ jobs:
   check-commit-message:
     name: Check Commit Message
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14]
-        fetch-depth: [2]
 
     steps:
       - name: Checkout Project
         uses: actions/checkout@v2
         with:
           # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
-          fetch-depth: ${{ matrix.fetch-depth }}
+          fetch-depth: 2
 
       - uses: actions/setup-node@v2.5.1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14
 
       - run: |
           npm install --save-dev @commitlint/{config-conventional,cli}
