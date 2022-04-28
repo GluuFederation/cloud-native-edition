@@ -31,7 +31,8 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
-      {{- if eq .Values.global.isDomainRegistered "false"}}
+      # handle edge case with ALB in a non FQDN setup .Values.global.alb.ingress.enabled
+      {{- if and (eq .Values.global.isDomainRegistered "false") (.Values.global.alb.ingress.enabled) }}
       hostAliases:
        - ip: {{ .Values.global.lbIp }}
          hostnames:
