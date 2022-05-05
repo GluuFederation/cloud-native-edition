@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.19](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.18...v1.6.19) (2022-04-28)
+
+
+### Bug Fixes
+
+* handle ALB edge case ([f4c5e01](https://github.com/GluuFederation/cloud-native-edition/commit/f4c5e014385d00462c91acf3ea186b9bcd75f9b9))
+
 ### [1.6.18](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.17...v1.6.18) (2022-03-21)
 
 
