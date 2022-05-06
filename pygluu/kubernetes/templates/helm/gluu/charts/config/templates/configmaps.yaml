@@ -30,6 +30,7 @@ data:
   # [google_spanner_envs] Envs related to using Google Secret Manager to store config and secret layer
   GLUU_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.configmap.cnGoogleSpannerInstanceId | quote }}
   GLUU_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.configmap.cnGoogleSpannerDatabaseId | quote }}
+  SPANNER_EMULATOR_HOST: {{ .Values.configmap.cnGoogleSpannerEmulatorHost | quote }}
   # [google_spanner_envs] END
   # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
   GLUU_SECRET_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnSecretGoogleSecretVersionId | quote }}

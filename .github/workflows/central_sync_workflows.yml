@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - main
-      - 4.3
+      - "4.4"
     paths:
       - ".github/**"
   workflow_dispatch:
@@ -28,7 +28,6 @@ jobs:
       - name: Running General Workflow Sync
         env:
           REPOSITORIES: |
-            GluuFederation/gluu-admin-ui
             GluuFederation/gluu-passport
             GluuFederation/casa
             GluuFederation/oxTrust
@@ -93,7 +92,6 @@ jobs:
             GluuFederation/docker-jackrabbit
             GluuFederation/docker-fido2
             GluuFederation/docker-scim
-            GluuFederation/docker-cn
           WORKFLOW_FILES: |
             .github/docker/central_docker_imagescan.yml=.github/workflows/imagescan.yml
             .github/docker/central_docker_release.yml=.github/workflows/release.yaml

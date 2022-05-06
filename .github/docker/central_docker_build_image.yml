@@ -9,7 +9,7 @@ on:
     branches:
       - master
       - main
-      - 4.3
+      - "4.4"
       # below branch is triggered by jenkins which triggers dev image
       - update-source-build-date
   workflow_dispatch:
@@ -21,14 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo python3 -m pip install --upgrade pip
+          sudo pip3 install setuptools --upgrade
+          sudo pip3 install -r ./automation/requirements.txt
+          sudo apt-get update
+
       - name: Prepare
         id: prep
         run: |
-          MAIN_VERSION=$(python3 -c 'import __version__ ; print(str(__version__.__version__)[:5])')
+          MAIN_VERSION=$(python3 -c "from dockerfile_parse import DockerfileParser ; dfparser = DockerfileParser('./') ; print(dfparser.labels['version'])")
           DOCKER_IMAGE=gluufederation/$(python3 -c 'import os ; REPO = os.environ.get("GITHUB_REPOSITORY") ; print(str(REPO).split("/")[1][7:])')
           VERSION=${MAIN_VERSION}_dev
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
+            VERSION=${GITHUB_REF#refs/tags/v}
           fi
           TAGS="${DOCKER_IMAGE}:${VERSION}"
           if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\_[a-b]{1}[0-9]{1,3}$ ]]; then

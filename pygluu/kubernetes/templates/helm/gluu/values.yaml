@@ -439,6 +439,8 @@ config:
     cnGoogleSpannerInstanceId: ""
     # -- Google Spanner Database ID. Used only when global.gluuPersistenceType is spanner.
     cnGoogleSpannerDatabaseId: ""
+    # -- Google Spanner Emulator Host. Used only when global.gluuPersistenceType is spanner and during testing if needed.
+    cnGoogleSpannerEmulatorHost: ""
     # [google_spanner_envs] END
     # [google_secret_manager_envs] Envs related to using Google Secret Manager to store config and secret layer
     # -- Secret version to be used for secret configuration. Defaults to latest and should normally always stay that way. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
