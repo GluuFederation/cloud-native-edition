@@ -339,7 +339,7 @@ config:
     cnSqlDbHost: my-release-mysql.default.svc.cluster.local
     # -- SQL database port.
     cnSqlDbPort: 3306
-    # -- SQL database username.
+    # -- SQL database name.
     cnSqlDbName: gluu
     # -- SQL database username.
     cnSqlDbUser: gluu
@@ -433,7 +433,7 @@ config:
     # [google_envs] Envs related to using Google
     # -- Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnGoogleServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
-    # -- Project id of the google project the secret manager belongs to. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
+    # -- Project id of the google project the secret manager and/or spanner instance belongs to. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnGoogleProjectId: google-project-to-save-config-and-secrets-to
     # -- Google Spanner ID. Used only when global.gluuPersistenceType is spanner.
     cnGoogleSpannerInstanceId: ""

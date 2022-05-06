@@ -224,6 +224,8 @@ class Helm(object):
                 self.settings.get("GLUU_SQL_DB_PASSWORD")
             
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
+            values_file_parser["config"]["configmap"]["cnGoogleSpannerEmulatorHost"] = \
+                self.settings.get("SPANNER_EMULATOR_HOST")
             values_file_parser["config"]["configmap"]["cnGoogleSpannerInstanceId"] = \
                 self.settings.get("GOOGLE_SPANNER_INSTANCE_ID")
             values_file_parser["config"]["configmap"]["cnGoogleSpannerDatabaseId"] = \
