@@ -101,7 +101,7 @@ data:
   GLUU_CONTAINER_MAIN_NAME: {{ .Release.Name }}-oxauth
   {{- if eq .Values.global.isDomainRegistered "false" }}
   GLUU_SSL_CERT_FROM_SECRETS: "true"
-  {{-else }}
+  {{- else }}
   GLUU_SSL_CERT_FROM_SECRETS: "false"
   {{- end }}
   # options: default/user/site/cache/statistic used only if GLUU_PERSISTENCE_TYPE is hybrid or hybrid
