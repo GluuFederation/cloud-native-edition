@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.7.1](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.0...v1.7.1) (2022-05-09)
+
+
+### Bug Fixes
+
+* pass spanner emulator env ([1565347](https://github.com/GluuFederation/cloud-native-edition/commit/1565347d600b66d7a37dce6384eb3e6ab26226c1))
+
 ## [1.7.0](https://github.com/GluuFederation/cloud-native-edition/compare/v1.6.18...v1.7.0) (2022-05-06)
 
 
