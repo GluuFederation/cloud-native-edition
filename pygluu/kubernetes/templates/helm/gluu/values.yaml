@@ -322,7 +322,7 @@ config:
   email: support@gluu.com
   # -- Admin password to log in to the UI.
   adminPass: P@ssw0rd
-  # -- LDAP admin password if OpennDJ is used for persistence.
+  # -- LDAP admin password if OpenDJ is used for persistence.
   ldapPass: P@ssw0rd
   # -- Redis admin password if `config.configmap.gluuCacheType` is set to `REDIS`.
   redisPass: P@assw0rd
