@@ -20,7 +20,6 @@ jobs:
         python-version: [3.7]
         gluu-version: ['"4.3.2_dev"']
         test-cases: ["install", "helm-install"]
-        persistence-backends: ['"ldap"','"couchbase"','"sql"','"pgsql"']
 
     steps:
     - name: Checkout code
@@ -95,7 +94,7 @@ jobs:
           "REDIS_PW": "",
           "REDIS_USE_SSL": "false",
           "DEPLOYMENT_ARCH": "microk8s",
-          "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
+          "PERSISTENCE_BACKEND": "ldap",
           "INSTALL_JACKRABBIT": "Y",
           "JACKRABBIT_STORAGE_SIZE": "4Gi",
           "JACKRABBIT_URL": "http://jackrabbit:8080",
@@ -216,26 +215,6 @@ jobs:
         chmod 700 get_helm.sh
         ./get_helm.sh
         sudo helm version
-
-    - name: SQL
-      if: ${{ matrix.persistence-backends == '"sql"' }}
-      run: |
-          cd /home/runner/work/test/
-          sudo microk8s config > config
-          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local"/"GLUU_SQL_DB_HOST": "gluu-mysql.sql.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
-          touch sqlfile
-
-    - name: PostGRE
-      if: ${{ matrix.persistence-backends == '"pgsql"' }}
-      run: |
-          cd /home/runner/work/test/
-          cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"GLUU_SQL_DB_DIALECT": "mysql"/"GLUU_SQL_DB_DIALECT": "pgsql"/g' > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"PERSISTENCE_BACKEND": "pgsql"/"PERSISTENCE_BACKEND": "sql"/g' > tmpfile.py && mv tmpfile.py settings.json
-          touch sqlfile
 
     - name: Test Pygluu kubernetes
       id: test_kubernetes

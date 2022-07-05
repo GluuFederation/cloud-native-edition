@@ -13,6 +13,7 @@ def test_aws_loadbalancer(monkeypatch, settings, given, expected):
     monkeypatch.setattr("click.prompt", lambda x, default: given or expected)
 
     settings.set("USE_ARN", "N")
+    settings.set("ARN_AWS_IAM", "Y")
     PromptAws(settings).prompt_aws_lb()
     assert settings.get("AWS_LB_TYPE") == expected
 

@@ -5,18 +5,20 @@ on:
     tags:
       - '*'
   workflow_dispatch:
+
 jobs:
   publish:
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        python-version: [3.7]
         include:
           - os: ubuntu-latest
             artifact_name: pygluu-kubernetes.pyz
             asset_name: pygluu-kubernetes-linux-amd64.pyz
           #- os: windows-latest
-          #  artifact_name: pygluu-kubernetes-windows
+          #  artifact_name: pygluu-kubernetes-windows.exe
           #  asset_name: pygluu-kubernetes-windows-amd64
           - os: macos-latest
             artifact_name: pygluu-kubernetes.pyz
@@ -25,10 +27,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@master
-    - name: Set up Python 3.7
+
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2.3.2
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
@@ -43,10 +46,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Checkout code
-      uses: actions/checkout@master
-
-    - name: Build Zipapp
+    - name: Build pygluu
       run: |
         sudo apt-get update || brew install jq
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
@@ -59,13 +59,10 @@ jobs:
         echo "::set-output name=gituser::$(python3 -c 'import os ; REPO = os.environ.get("GITHUB_REPOSITORY") ; print(str(REPO).split("/")[0])')"
         echo "::set-output name=gitproject::$(python3 -c 'import os ; REPO = os.environ.get("GITHUB_REPOSITORY") ; print(str(REPO).split("/")[1])')"
 
-    - name: Get latest tag
+    - name: Get latest tag and print version
       id: previoustag
       run: |
         echo "::set-output name=tag::$(curl https://api.github.com/repos/${{ steps.project.outputs.gituser }}/${{ steps.project.outputs.gitproject }}/releases/latest -s | grep "tag_name" | cut -d '"' -f 4)"
-
-    - name: Print Version
-      run: |
         echo "${{ steps.previoustag.outputs.tag }}"
 
 

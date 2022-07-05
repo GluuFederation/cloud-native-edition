@@ -8,11 +8,14 @@ on:
     branches:
       - master
       - main
+      - 4.3
   pull_request:
     branches:
       - master
       - main
+      - 4.3
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +42,7 @@ jobs:
         if: contains(env.JVM_PROJECTS, github.repository)
         uses: actions/setup-java@v2.5.0
         with:
-          java-version: '11'
+          java-version: 11
           distribution: 'adopt'
 
       - name: Cache SonarCloud packages for JVM based project
