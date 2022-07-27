@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.2](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.1...v1.7.2) (2022-07-24)
+
+
+### Bug Fixes
+
+* add 101 ox ldif as yaml ([1f1155e](https://github.com/GluuFederation/cloud-native-edition/commit/1f1155eaae0882954ca0628e83be56a8078335e2))
+* add 101-ox for ldap upgrading ([3071303](https://github.com/GluuFederation/cloud-native-edition/commit/30713038aa43e48b613c776133c857dd5720a6dc))
+* cherry committed from 4.3 ([47794fc](https://github.com/GluuFederation/cloud-native-edition/commit/47794fc1289e68000fac4db20170748ca1df6f0b))
+* **gui:** avoid fixed version pinning for dependencies ([#440](https://github.com/GluuFederation/cloud-native-edition/issues/440)) ([1b8b932](https://github.com/GluuFederation/cloud-native-edition/commit/1b8b93299c791645889353c352ce0142015cb950))
+* resolve Mapping from collections module ([#456](https://github.com/GluuFederation/cloud-native-edition/issues/456)) ([2acc537](https://github.com/GluuFederation/cloud-native-edition/commit/2acc5370d8634b51b95a53ff3dfe59c06c06231c))
+* resources assignments ([#448](https://github.com/GluuFederation/cloud-native-edition/issues/448)) ([5a3f8cc](https://github.com/GluuFederation/cloud-native-edition/commit/5a3f8cc1e3b439a5a66ceacfd973f302d7ac8057))
+
 ### [1.7.1](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.0...v1.7.1) (2022-05-09)
 
 
