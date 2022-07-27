@@ -17,9 +17,6 @@ jobs:
           - os: ubuntu-latest
             artifact_name: pygluu-kubernetes.pyz
             asset_name: pygluu-kubernetes-linux-amd64.pyz
-          #- os: windows-latest
-          #  artifact_name: pygluu-kubernetes-windows.exe
-          #  asset_name: pygluu-kubernetes-windows-amd64
           - os: macos-latest
             artifact_name: pygluu-kubernetes.pyz
             asset_name: pygluu-kubernetes-macos-amd64.pyz
