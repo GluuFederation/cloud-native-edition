@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.3...v1.7.4) (2022-08-08)
+
+
+### Bug Fixes
+
+* add job ttl and set deault to 300s ([#461](https://github.com/GluuFederation/cloud-native-edition/issues/461)) ([861dc48](https://github.com/GluuFederation/cloud-native-edition/commit/861dc480051242daea57f6970180b24729f2080f))
+
 ## [1.7.3](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.2...v1.7.3) (2022-08-01)
 
 
