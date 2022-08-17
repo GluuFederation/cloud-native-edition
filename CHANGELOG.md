@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.5](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.4...v1.7.5) (2022-08-17)
+
+
+### Bug Fixes
+
+* remove cluster role bindings ([#466](https://github.com/GluuFederation/cloud-native-edition/issues/466)) ([ae50dde](https://github.com/GluuFederation/cloud-native-edition/commit/ae50dde784e1a6c6caa090f36b8bc056bba6b2b3))
+
 ## [1.7.4](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.3...v1.7.4) (2022-08-08)
 
 
