@@ -272,9 +272,9 @@ global:
       idpLogTarget: "STDOUT"
       # -- idp-process.log level
       idpLogLevel: "INFO"
-      # -- idp script.log target
+      # -- idp-script.log target
       scriptLogTarget: "FILE"
-      # -- idp script.log level
+      # -- idp-script.log level
       scriptLogLevel: "INFO"
       # -- idp-audit.log target
       auditStatsLogTarget: "FILE"

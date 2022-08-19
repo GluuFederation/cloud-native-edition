@@ -178,10 +178,14 @@ data:
   GLUU_SAML_ENABLED: {{ .Values.configmap.gluuSamlEnabled | quote }}
   GLUU_OXSHIBBOLETH_APP_LOGGERS: {{ .Values.global.oxshibboleth.appLoggers
   | toJson
-  | replace "fido2LogTarget" "fido2_log_target"
-  | replace "fido2LogLevel" "fido2_log_level"
-  | replace "persistenceLogTarget" "persistence_log_target"
-  | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "auditStatsLogTarget" "audit_log_target"
+  | replace "auditStatsLogLevel" "audit_log_level"
+  | replace "consentAuditLogTarget" "consent_audit_log_target"
+  | replace "consentAuditLogLevel" "consent_audit_log_level"
+  | replace "idpLogTarget" "idp_log_target"
+  | replace "idpLogLevel" "idp_log_level"
+  | replace "scriptLogTarget" "script_log_target"
+  | replace "scriptLogLevel" "script_log_level"
   | squote
   }}
   {{- end }}

@@ -41,71 +41,71 @@ entries:
     - condition: global.config.enabled
       name: config
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.opendj.enabled
       name: opendj
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.jackrabbit.enabled
       name: jackrabbit
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.oxauth.enabled
       name: oxauth
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.fido2.enabled
       name: fido2
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.scim.enabled
       name: scim
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.oxtrust.enabled
       name: oxtrust
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.nginx-ingress.enabled
       name: nginx-ingress
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.oxshibboleth.enabled
       name: oxshibboleth
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: config.configmap.gluuPassportEnabled
       name: oxpassport
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: config.configmap.gluuCasaEnabled
       name: casa
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.oxauth-key-rotation.enabled
       name: oxauth-key-rotation
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.cr-rotate.enabled
       name: cr-rotate
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.oxd-server.enabled
       name: oxd-server
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.persistence.enabled
       name: persistence
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.istio.ingress
       name: gluu-istio-ingress
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     - condition: global.alb.ingress
       name: gluu-alb-ingress
       repository: ""
-      version: 1.6.18
+      version: 1.6.19
     description: Gluu Access and Identity Mangement
     digest: 86d534a07a3e65628645afbba19ee139618fd5c50d4bad295827772fe3bf3c2d
     home: https://www.gluu.org
@@ -119,8 +119,8 @@ entries:
     - https://gluu.org/docs/gluu-server
     - https://github.com/GluuFederation/cloud-native-edition
     urls:
-    - gluu-1.6.18.tgz
-    version: 1.6.18
+    - gluu-1.6.19.tgz
+    version: 1.6.19
   - annotations:
       artifacthub.io/changes: |
         - Gluu 4.3.1 official chart release
