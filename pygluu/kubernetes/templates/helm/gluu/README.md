@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.7.5](https://img.shields.io/badge/Version-1.7.5-informational?style=flat-square) ![AppVersion: 4.4.1](https://img.shields.io/badge/AppVersion-4.4.1-informational?style=flat-square)
+![Version: 1.7.6](https://img.shields.io/badge/Version-1.7.6-informational?style=flat-square) ![AppVersion: 4.4.1](https://img.shields.io/badge/AppVersion-4.4.1-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.7.5 |
-|  | config | 1.7.5 |
-|  | cr-rotate | 1.7.5 |
-|  | fido2 | 1.7.5 |
-|  | gluu-alb-ingress | 1.7.5 |
-|  | gluu-istio-ingress | 1.7.5 |
-|  | jackrabbit | 1.7.5 |
-|  | nginx-ingress | 1.7.5 |
-|  | opendj | 1.7.5 |
-|  | oxauth | 1.7.5 |
-|  | oxauth-key-rotation | 1.7.5 |
-|  | oxd-server | 1.7.5 |
-|  | oxpassport | 1.7.5 |
-|  | oxshibboleth | 1.7.5 |
-|  | oxtrust | 1.7.5 |
-|  | persistence | 1.7.5 |
-|  | scim | 1.7.5 |
+|  | casa | 1.7.6 |
+|  | config | 1.7.6 |
+|  | cr-rotate | 1.7.6 |
+|  | fido2 | 1.7.6 |
+|  | gluu-alb-ingress | 1.7.6 |
+|  | gluu-istio-ingress | 1.7.6 |
+|  | jackrabbit | 1.7.6 |
+|  | nginx-ingress | 1.7.6 |
+|  | opendj | 1.7.6 |
+|  | oxauth | 1.7.6 |
+|  | oxauth-key-rotation | 1.7.6 |
+|  | oxd-server | 1.7.6 |
+|  | oxpassport | 1.7.6 |
+|  | oxshibboleth | 1.7.6 |
+|  | oxtrust | 1.7.6 |
+|  | persistence | 1.7.6 |
+|  | scim | 1.7.6 |
 
 ## Values
 
@@ -299,8 +299,8 @@ Kubernetes: `>=v1.21.0-0`
 | global.oxshibboleth.appLoggers.consentAuditLogTarget | string | `"FILE"` | idp-consent-audit.log target |
 | global.oxshibboleth.appLoggers.idpLogLevel | string | `"INFO"` | idp-process.log level |
 | global.oxshibboleth.appLoggers.idpLogTarget | string | `"STDOUT"` | idp-process.log target |
-| global.oxshibboleth.appLoggers.scriptLogLevel | string | `"INFO"` | idp script.log level |
-| global.oxshibboleth.appLoggers.scriptLogTarget | string | `"FILE"` | idp script.log target |
+| global.oxshibboleth.appLoggers.scriptLogLevel | string | `"INFO"` | idp-script.log level |
+| global.oxshibboleth.appLoggers.scriptLogTarget | string | `"FILE"` | idp-script.log target |
 | global.oxshibboleth.enabled | bool | `false` | Boolean flag to enable/disable the oxShibbboleth chart. |
 | global.oxtrust.appLoggers | object | `{"apachehcLogLevel":"INFO","apachehcLogTarget":"FILE","auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","cacheRefreshLogLevel":"INFO","cacheRefreshLogTarget":"FILE","cacheRefreshPythonLogLevel":"INFO","cacheRefreshPythonLogTarget":"FILE","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","oxtrustLogLevel":"INFO","oxtrustLogTarget":"STDOUT","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE","velocityLogLevel":"INFO","velocityLogTarget":"FILE"}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxtrust.appLoggers.apachehcLogLevel | string | `"INFO"` | apachehc log level |
