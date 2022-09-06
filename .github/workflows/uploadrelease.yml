@@ -12,6 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: [3.7]
         include:
           - os: ubuntu-latest
@@ -20,7 +21,9 @@ jobs:
           - os: macos-latest
             artifact_name: pygluu-kubernetes.pyz
             asset_name: pygluu-kubernetes-macos-amd64.pyz
-
+          - os: windows-latest
+            artifact_name: pygluu-kubernetes.pyz
+            asset_name: pygluu-kubernetes-windows-amd64.pyz
     steps:
     - name: Checkout code
       uses: actions/checkout@master
