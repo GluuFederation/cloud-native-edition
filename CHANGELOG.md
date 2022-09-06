@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.6](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.5...v1.7.6) (2022-09-06)
+
+
+### Bug Fixes
+
+* incorrect conversion of global.oxshibboleth.appLoggers value ([#469](https://github.com/GluuFederation/cloud-native-edition/issues/469)) ([35d7752](https://github.com/GluuFederation/cloud-native-edition/commit/35d775249bdd202ab910f93433b96b399781b7c5))
+* **istio:** revisit istio virtualservices ([#475](https://github.com/GluuFederation/cloud-native-edition/issues/475)) ([d6f6b99](https://github.com/GluuFederation/cloud-native-edition/commit/d6f6b9995d906f7a477ccc85fc75ee3249a1ffe4))
+
 ## [1.7.5](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.4...v1.7.5) (2022-08-17)
 
 
