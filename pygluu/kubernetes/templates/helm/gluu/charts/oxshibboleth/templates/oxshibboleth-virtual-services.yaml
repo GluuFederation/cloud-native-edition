@@ -26,8 +26,6 @@ spec:
     match:
     - uri:
         prefix: /idp
-    rewrite:
-      uri: /identity
     route:
     - destination:
         host: {{ .Values.service.oxShibbolethServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
