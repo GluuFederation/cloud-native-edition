@@ -15,7 +15,7 @@ spec:
           dnsPolicy: {{ .Values.dnsPolicy | quote }}
         {{- with .Values.dnsConfig }}
           dnsConfig:
-    {{ toYaml . | indent 12 }}
+{{ toYaml . | indent 12 }}
         {{- end }}
           containers:
             - name: {{ include "opendj.fullname" . }}-backup
