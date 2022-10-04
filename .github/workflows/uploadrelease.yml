@@ -33,7 +33,7 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        pip3 install jq
+        pip3 install jq cffi
 
     - name: Lint with flake8
       run: |
