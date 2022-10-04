@@ -13,7 +13,7 @@
     "CERT_MANAGER_IMAGE_NAME": "gluufederation/certmanager",
     "CERT_MANAGER_IMAGE_TAG": "4.4.1-1",
     "LDAP_IMAGE_NAME": "gluufederation/opendj",
-    "LDAP_IMAGE_TAG": "4.4.1-1",
+    "LDAP_IMAGE_TAG": "4.4.1-2",
     "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
     "JACKRABBIT_IMAGE_TAG": "4.4.1-1",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",

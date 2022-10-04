@@ -770,7 +770,7 @@ opendj:
     # -- Image  to use for deploying.
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.1-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   multiCluster:
