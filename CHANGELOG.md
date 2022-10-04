@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.7](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.6...v1.7.7) (2022-10-04)
+
+
+### Bug Fixes
+
+* indentation on cronjob ([d09a7f5](https://github.com/GluuFederation/cloud-native-edition/commit/d09a7f57870c443d3986c741ff2174fb7e681fb7))
+* update cronjob api versions ([b9998b8](https://github.com/GluuFederation/cloud-native-edition/commit/b9998b8fe7429ff377ec882fbc43048158250462))
+
 ## [1.7.6](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.5...v1.7.6) (2022-09-06)
 
 
