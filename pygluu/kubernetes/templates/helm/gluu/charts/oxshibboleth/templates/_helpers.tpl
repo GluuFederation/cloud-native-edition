@@ -66,3 +66,48 @@ Create user custom defined secret envs
       key: {{ $key }}
 {{- end }}
 {{- end }}
+{{/*
+Create GLUU_JAVA_OPTIONS ENV for passing detailed logs
+*/}}
+{{- define "oxshibboleth.detailedLogs"}}
+{{ $ldap := "" }}
+{{ $messages := "" }}
+{{ $encryption := "" }}
+{{ $opensaml := "" }}
+{{ $props := "" }}
+{{ $httpclient := "" }}
+{{ $spring := "" }}
+{{ $container := "" }}
+{{ $xmlsec := "" }}
+
+{{- if .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
+{{ $ldap = printf "-Didp.loglevel.ldap=%s " .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.messagesLogLevel }}
+{{ $messages = printf "-Didp.loglevel.messages=%s " .Values.global.oxshibboleth.appLoggers.messagesLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.encryptionLogLevel }}
+{{ $encryption = printf "-Didp.loglevel.encryption=%s " .Values.global.oxshibboleth.appLoggers.encryptionLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.opensamlLogLevel }}
+{{ $opensaml = printf "-Didp.loglevel.opensaml=%s " .Values.global.oxshibboleth.appLoggers.opensamlLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.propsLogLevel }}
+{{ $props = printf "-Didp.loglevel.props=%s " .Values.global.oxshibboleth.appLoggers.propsLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.httpclientLogLevel }}
+{{ $httpclient = printf "-Didp.loglevel.httpclient=%s " .Values.global.oxshibboleth.appLoggers.httpclientLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.springLogLevel }}
+{{ $spring = printf "-Didp.loglevel.spring=%s " .Values.global.oxshibboleth.appLoggers.springLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.containerLogLevel }}
+{{ $container = printf "-Didp.loglevel.container=%s " .Values.global.oxshibboleth.appLoggers.containerLogLevel }}
+{{- end}}
+{{- if .Values.global.oxshibboleth.appLoggers.xmlsecLogLevel }}
+{{ $xmlsec = printf "-Didp.loglevel.xmlsec=%s " .Values.global.oxshibboleth.appLoggers.xmlsecLogLevel }}
+{{- end}}
+
+{{ $detailLogs := printf "%s%s%s%s%s%s%s%s%s" $ldap $messages $encryption $opensaml $props $httpclient $spring $container $xmlsec }}
+{{ $detailLogs | trimSuffix " " | quote }}
+{{- end }}

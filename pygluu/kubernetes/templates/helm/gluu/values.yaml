@@ -265,7 +265,7 @@ global:
     enabled: true
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
-    enabled: false
+    enabled: true
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -286,7 +286,17 @@ global:
       consentAuditLogTarget: "FILE"
       # -- idp-consent-audit.log level
       consentAuditLogLevel: "INFO"
-
+      # -- https://github.com/GluuFederation/docker-oxshibboleth#additional-logger-configuration
+      # The below are very noisy logs and are better left untouched
+      ldapLogLevel: ""
+      messagesLogLevel: ""
+      encryptionLogLevel: ""
+      opensamlLogLevel: ""
+      propsLogLevel: ""
+      httpclientLogLevel: ""
+      springLogLevel: ""
+      containerLogLevel: ""
+      xmlsecLogLevel: ""
   oxd-server:
     # -- Boolean flag to enable/disable the oxd-server chart.
     enabled: false
