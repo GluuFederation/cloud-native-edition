@@ -265,7 +265,7 @@ global:
     enabled: true
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
-    enabled: true
+    enabled: false
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
