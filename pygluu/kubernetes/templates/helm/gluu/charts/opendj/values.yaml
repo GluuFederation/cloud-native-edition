@@ -29,7 +29,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/opendj
   # -- Image  tag to use for deploying.
-  tag: 4.4.1-1
+  tag: 4.4.2-1
   # -- Image Pull Secrets
   pullSecrets: [ ]
 multiCluster:
@@ -136,16 +136,16 @@ OpenDjVolumeMounts:
   config:
     mountPath: /opt/opendj/config
     name: opendj-volume
-  ldif: 
+  ldif:
     mountPath: /opt/opendj/ldif
     name: opendj-volume
-  logs: 
+  logs:
     mountPath: /opt/opendj/logs
     name: opendj-volume
-  db: 
+  db:
     mountPath: /opt/opendj/db
     name: opendj-volume
-  flag: 
+  flag:
     mountPath: /flag
     name: opendj-volume
 

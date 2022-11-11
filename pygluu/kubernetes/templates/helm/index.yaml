@@ -3,39 +3,39 @@ entries:
   gluu:
   - annotations:
       artifacthub.io/changes: |
-        - Gluu 4.4.1 official chart release
+        - Gluu 4.4.2 official chart release
       artifacthub.io/images: |
         - name: casa
-          image: gluufederation/casa:4.4.1_dev
+          image: gluufederation/casa:4.4.2_dev
         - name: fido2
-          image: gluufederation/fido2:4.4.1_dev
+          image: gluufederation/fido2:4.4.2_dev
         - name: scim
-          image: gluufederation/scim:4.4.1_dev
+          image: gluufederation/scim:4.4.2_dev
         - name: configuration-manager
-          image: gluufederation/config-init:4.4.1_dev
+          image: gluufederation/config-init:4.4.2_dev
         - name: cr-rotate
-          image: gluufederation/cr-rotate:4.4.1_dev
+          image: gluufederation/cr-rotate:4.4.2_dev
         - name: certmanager
-          image: gluufederation/certmanager:4.4.1_dev
+          image: gluufederation/certmanager:4.4.2_dev
         - name: opendj
-          image: gluufederation/opendj:4.4.1_dev
+          image: gluufederation/opendj:4.4.2_dev
         - name: jackrabbit
-          image: gluufederation/jackrabbit:4.4.1_dev
+          image: gluufederation/jackrabbit:4.4.2_dev
         - name: oxauth
-          image: gluufederation/oxauth:4.4.1_dev
+          image: gluufederation/oxauth:4.4.2_dev
         - name: oxd-server
-          image: gluufederation/oxd-server:4.4.1_dev
+          image: gluufederation/oxd-server:4.4.2_dev
         - name: oxpassport
-          image: gluufederation/oxpassport:4.4.1_dev
+          image: gluufederation/oxpassport:4.4.2_dev
         - name: oxshibboleth
-          image: gluufederation/oxshibboleth:4.4.1_dev
+          image: gluufederation/oxshibboleth:4.4.2_dev
         - name: persistence
-          image: gluufederation/persistence:4.4.1_dev
+          image: gluufederation/persistence:4.4.2_dev
         - name: oxtrust
-          image: gluufederation/oxtrust:4.4.1_dev
+          image: gluufederation/oxtrust:4.4.2_dev
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
-    appVersion: 4.4.1
+    appVersion: 4.4.2
     created: "2022-10-04T08:38:17.1287666Z"
     dependencies:
     - condition: global.config.enabled
@@ -123,39 +123,39 @@ entries:
     version: 1.7.7
   - annotations:
       artifacthub.io/changes: |
-        - Gluu 4.4.1 official chart release
+        - Gluu 4.4.2 official chart release
       artifacthub.io/images: |
         - name: casa
-          image: gluufederation/casa:4.4.1_dev
+          image: gluufederation/casa:4.4.2_dev
         - name: fido2
-          image: gluufederation/fido2:4.4.1_dev
+          image: gluufederation/fido2:4.4.2_dev
         - name: scim
-          image: gluufederation/scim:4.4.1_dev
+          image: gluufederation/scim:4.4.2_dev
         - name: configuration-manager
-          image: gluufederation/config-init:4.4.1_dev
+          image: gluufederation/config-init:4.4.2_dev
         - name: cr-rotate
-          image: gluufederation/cr-rotate:4.4.1_dev
+          image: gluufederation/cr-rotate:4.4.2_dev
         - name: certmanager
-          image: gluufederation/certmanager:4.4.1_dev
+          image: gluufederation/certmanager:4.4.2_dev
         - name: opendj
-          image: gluufederation/opendj:4.4.1_dev
+          image: gluufederation/opendj:4.4.2_dev
         - name: jackrabbit
-          image: gluufederation/jackrabbit:4.4.1_dev
+          image: gluufederation/jackrabbit:4.4.2_dev
         - name: oxauth
-          image: gluufederation/oxauth:4.4.1_dev
+          image: gluufederation/oxauth:4.4.2_dev
         - name: oxd-server
-          image: gluufederation/oxd-server:4.4.1_dev
+          image: gluufederation/oxd-server:4.4.2_dev
         - name: oxpassport
-          image: gluufederation/oxpassport:4.4.1_dev
+          image: gluufederation/oxpassport:4.4.2_dev
         - name: oxshibboleth
-          image: gluufederation/oxshibboleth:4.4.1_dev
+          image: gluufederation/oxshibboleth:4.4.2_dev
         - name: persistence
-          image: gluufederation/persistence:4.4.1_dev
+          image: gluufederation/persistence:4.4.2_dev
         - name: oxtrust
-          image: gluufederation/oxtrust:4.4.1_dev
+          image: gluufederation/oxtrust:4.4.2_dev
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
-    appVersion: 4.4.1
+    appVersion: 4.4.2
     created: "2022-10-04T08:38:17.1087686Z"
     dependencies:
     - condition: global.config.enabled
@@ -243,39 +243,39 @@ entries:
     version: 1.7.6
   - annotations:
       artifacthub.io/changes: |
-        - Gluu 4.4.1 official chart release
+        - Gluu 4.4.2 official chart release
       artifacthub.io/images: |
         - name: casa
-          image: gluufederation/casa:4.4.1_dev
+          image: gluufederation/casa:4.4.2_dev
         - name: fido2
-          image: gluufederation/fido2:4.4.1_dev
+          image: gluufederation/fido2:4.4.2_dev
         - name: scim
-          image: gluufederation/scim:4.4.1_dev
+          image: gluufederation/scim:4.4.2_dev
         - name: configuration-manager
-          image: gluufederation/config-init:4.4.1_dev
+          image: gluufederation/config-init:4.4.2_dev
         - name: cr-rotate
-          image: gluufederation/cr-rotate:4.4.1_dev
+          image: gluufederation/cr-rotate:4.4.2_dev
         - name: certmanager
-          image: gluufederation/certmanager:4.4.1_dev
+          image: gluufederation/certmanager:4.4.2_dev
         - name: opendj
-          image: gluufederation/opendj:4.4.1_dev
+          image: gluufederation/opendj:4.4.2_dev
         - name: jackrabbit
-          image: gluufederation/jackrabbit:4.4.1_dev
+          image: gluufederation/jackrabbit:4.4.2_dev
         - name: oxauth
-          image: gluufederation/oxauth:4.4.1_dev
+          image: gluufederation/oxauth:4.4.2_dev
         - name: oxd-server
-          image: gluufederation/oxd-server:4.4.1_dev
+          image: gluufederation/oxd-server:4.4.2_dev
         - name: oxpassport
-          image: gluufederation/oxpassport:4.4.1_dev
+          image: gluufederation/oxpassport:4.4.2_dev
         - name: oxshibboleth
-          image: gluufederation/oxshibboleth:4.4.1_dev
+          image: gluufederation/oxshibboleth:4.4.2_dev
         - name: persistence
-          image: gluufederation/persistence:4.4.1_dev
+          image: gluufederation/persistence:4.4.2_dev
         - name: oxtrust
-          image: gluufederation/oxtrust:4.4.1_dev
+          image: gluufederation/oxtrust:4.4.2_dev
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
-    appVersion: 4.4.1
+    appVersion: 4.4.2
     created: "2022-10-04T08:38:17.0877785Z"
     dependencies:
     - condition: global.config.enabled
@@ -363,39 +363,39 @@ entries:
     version: 1.7.5
   - annotations:
       artifacthub.io/changes: |
-        - Gluu 4.4.1 official chart release
+        - Gluu 4.4.2 official chart release
       artifacthub.io/images: |
         - name: casa
-          image: gluufederation/casa:4.4.1_dev
+          image: gluufederation/casa:4.4.2_dev
         - name: fido2
-          image: gluufederation/fido2:4.4.1_dev
+          image: gluufederation/fido2:4.4.2_dev
         - name: scim
-          image: gluufederation/scim:4.4.1_dev
+          image: gluufederation/scim:4.4.2_dev
         - name: configuration-manager
-          image: gluufederation/config-init:4.4.1_dev
+          image: gluufederation/config-init:4.4.2_dev
         - name: cr-rotate
-          image: gluufederation/cr-rotate:4.4.1_dev
+          image: gluufederation/cr-rotate:4.4.2_dev
         - name: certmanager
-          image: gluufederation/certmanager:4.4.1_dev
+          image: gluufederation/certmanager:4.4.2_dev
         - name: opendj
-          image: gluufederation/opendj:4.4.1_dev
+          image: gluufederation/opendj:4.4.2_dev
         - name: jackrabbit
-          image: gluufederation/jackrabbit:4.4.1_dev
+          image: gluufederation/jackrabbit:4.4.2_dev
         - name: oxauth
-          image: gluufederation/oxauth:4.4.1_dev
+          image: gluufederation/oxauth:4.4.2_dev
         - name: oxd-server
-          image: gluufederation/oxd-server:4.4.1_dev
+          image: gluufederation/oxd-server:4.4.2_dev
         - name: oxpassport
-          image: gluufederation/oxpassport:4.4.1_dev
+          image: gluufederation/oxpassport:4.4.2_dev
         - name: oxshibboleth
-          image: gluufederation/oxshibboleth:4.4.1_dev
+          image: gluufederation/oxshibboleth:4.4.2_dev
         - name: persistence
-          image: gluufederation/persistence:4.4.1_dev
+          image: gluufederation/persistence:4.4.2_dev
         - name: oxtrust
-          image: gluufederation/oxtrust:4.4.1_dev
+          image: gluufederation/oxtrust:4.4.2_dev
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
-    appVersion: 4.4.1
+    appVersion: 4.4.2
     created: "2022-10-04T08:38:17.0677949Z"
     dependencies:
     - condition: global.config.enabled
@@ -486,36 +486,36 @@ entries:
         - Gluu 4.4.0 official chart release
       artifacthub.io/images: |
         - name: casa
-          image: gluufederation/casa:4.4.1_dev
+          image: gluufederation/casa:4.4.2_dev
         - name: fido2
-          image: gluufederation/fido2:4.4.1_dev
+          image: gluufederation/fido2:4.4.2_dev
         - name: scim
-          image: gluufederation/scim:4.4.1_dev
+          image: gluufederation/scim:4.4.2_dev
         - name: configuration-manager
-          image: gluufederation/config-init:4.4.1_dev
+          image: gluufederation/config-init:4.4.2_dev
         - name: cr-rotate
-          image: gluufederation/cr-rotate:4.4.1_dev
+          image: gluufederation/cr-rotate:4.4.2_dev
         - name: certmanager
-          image: gluufederation/certmanager:4.4.1_dev
+          image: gluufederation/certmanager:4.4.2_dev
         - name: opendj
-          image: gluufederation/opendj:4.4.1_dev
+          image: gluufederation/opendj:4.4.2_dev
         - name: jackrabbit
-          image: gluufederation/jackrabbit:4.4.1_dev
+          image: gluufederation/jackrabbit:4.4.2_dev
         - name: oxauth
-          image: gluufederation/oxauth:4.4.1_dev
+          image: gluufederation/oxauth:4.4.2_dev
         - name: oxd-server
-          image: gluufederation/oxd-server:4.4.1_dev
+          image: gluufederation/oxd-server:4.4.2_dev
         - name: oxpassport
-          image: gluufederation/oxpassport:4.4.1_dev
+          image: gluufederation/oxpassport:4.4.2_dev
         - name: oxshibboleth
-          image: gluufederation/oxshibboleth:4.4.1_dev
+          image: gluufederation/oxshibboleth:4.4.2_dev
         - name: persistence
-          image: gluufederation/persistence:4.4.1_dev
+          image: gluufederation/persistence:4.4.2_dev
         - name: oxtrust
-          image: gluufederation/oxtrust:4.4.1_dev
+          image: gluufederation/oxtrust:4.4.2_dev
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
-    appVersion: 4.4.1
+    appVersion: 4.4.2
     created: "2022-10-04T08:38:17.0482418Z"
     dependencies:
     - condition: global.config.enabled

@@ -70,7 +70,7 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.4.1-1
+      tag: 4.4.2-1
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
     sourceVersion: "4.4"
@@ -487,7 +487,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
@@ -686,7 +686,7 @@ jackrabbit:
     # -- Image  to use for deploying.
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -780,7 +780,7 @@ opendj:
     # -- Image  to use for deploying.
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-2
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   multiCluster:
@@ -903,7 +903,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -957,7 +957,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1041,7 +1041,7 @@ oxtrust:
     # -- Image  to use for deploying.
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1126,7 +1126,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1206,7 +1206,7 @@ scim:
     # -- Image  to use for deploying.
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1286,7 +1286,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1367,7 +1367,7 @@ casa:
     # -- Image  to use for deploying.
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1448,7 +1448,7 @@ oxpassport:
     # -- Image  to use for deploying.
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number
@@ -1531,7 +1531,7 @@ oxshibboleth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1602,7 +1602,7 @@ cr-rotate:
     # -- Image  to use for deploying.
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1653,7 +1653,7 @@ oxauth-key-rotation:
     # -- Image  to use for deploying.
     repository: gluufederation/certmanager
     # -- Image  tag to use for deploying.
-    tag: 4.4.1-1
+    tag: 4.4.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours

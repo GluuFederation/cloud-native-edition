@@ -1,6 +1,6 @@
 # oxpassport
 
-![Version: 1.7.7](https://img.shields.io/badge/Version-1.7.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.1](https://img.shields.io/badge/AppVersion-4.4.1-informational?style=flat-square)
+![Version: 1.7.7](https://img.shields.io/badge/Version-1.7.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
 
 Gluu interface to Passport.js to support social login and inbound identity.
 
@@ -37,7 +37,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/oxpassport"` | Image  to use for deploying. |
-| image.tag | string | `"4.4.1-1"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.4.2-1"` | Image  tag to use for deploying. |
 | livenessProbe | object | `{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for oxPassport if needed. |
 | livenessProbe.httpGet.path | string | `"/passport/health-check"` | http liveness probe endpoint |
 | nameOverride | string | `""` |  |
