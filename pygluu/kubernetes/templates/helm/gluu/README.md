@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.7.7](https://img.shields.io/badge/Version-1.7.7-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
+![Version: 1.7.8](https://img.shields.io/badge/Version-1.7.8-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -10,7 +10,7 @@ Gluu Access and Identity Mangement
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| moabu | support@gluu.org |  |
+| moabu | <support@gluu.org> |  |
 
 ## Source Code
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.7.7 |
-|  | config | 1.7.7 |
-|  | cr-rotate | 1.7.7 |
-|  | fido2 | 1.7.7 |
-|  | gluu-alb-ingress | 1.7.7 |
-|  | gluu-istio-ingress | 1.7.7 |
-|  | jackrabbit | 1.7.7 |
-|  | nginx-ingress | 1.7.7 |
-|  | opendj | 1.7.7 |
-|  | oxauth | 1.7.7 |
-|  | oxauth-key-rotation | 1.7.7 |
-|  | oxd-server | 1.7.7 |
-|  | oxpassport | 1.7.7 |
-|  | oxshibboleth | 1.7.7 |
-|  | oxtrust | 1.7.7 |
-|  | persistence | 1.7.7 |
-|  | scim | 1.7.7 |
+|  | casa | 1.7.8 |
+|  | config | 1.7.8 |
+|  | cr-rotate | 1.7.8 |
+|  | fido2 | 1.7.8 |
+|  | gluu-alb-ingress | 1.7.8 |
+|  | gluu-istio-ingress | 1.7.8 |
+|  | jackrabbit | 1.7.8 |
+|  | nginx-ingress | 1.7.8 |
+|  | opendj | 1.7.8 |
+|  | oxauth | 1.7.8 |
+|  | oxauth-key-rotation | 1.7.8 |
+|  | oxd-server | 1.7.8 |
+|  | oxpassport | 1.7.8 |
+|  | oxshibboleth | 1.7.8 |
+|  | oxtrust | 1.7.8 |
+|  | persistence | 1.7.8 |
+|  | scim | 1.7.8 |
 
 ## Values
 
@@ -222,7 +222,7 @@ Kubernetes: `>=v1.21.0-0`
 | fido2.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | fido2.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | fido2.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| global | object | `{"alb":{"ingress":{"additionalAnnotations":{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"},"additionalLabels":{},"adminUiEnabled":true,"authServerEnabled":true,"casaEnabled":false,"enabled":false,"fido2ConfigEnabled":false,"fido2Enabled":false,"openidConfigEnabled":true,"passportEnabled":false,"scimConfigEnabled":false,"scimEnabled":false,"shibEnabled":false,"u2fConfigEnabled":true,"uma2ConfigEnabled":true,"webdiscoveryEnabled":true,"webfingerEnabled":true}},"azureStorageAccountType":"Standard_LRS","azureStorageKind":"Managed","cloud":{"testEnviroment":false},"cnGoogleApplicationCredentials":"/etc/gluu/conf/google-credentials.json","config":{"enabled":true},"configAdapterName":"kubernetes","configSecretAdapter":"kubernetes","cr-rotate":{"enabled":false},"domain":"demoexample.gluu.org","fido2":{"appLoggers":{"fido2LogLevel":"INFO","fido2LogTarget":"STDOUT","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE"},"enabled":false},"gcePdStorageType":"pd-standard","gluuJackrabbitCluster":"true","gluuPersistenceType":"couchbase","isDomainRegistered":"false","istio":{"additionalAnnotations":{},"additionalLabels":{},"enabled":false,"ingress":false,"namespace":"istio-system"},"jackrabbit":{"enabled":true},"jobTtlSecondsAfterFinished":300,"lbIp":"","ldapServiceName":"opendj","nginx-ingress":{"enabled":true},"opendj":{"enabled":true},"oxauth":{"appLoggers":{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","authLogLevel":"INFO","authLogTarget":"STDOUT","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE"},"enabled":true},"oxauth-key-rotation":{"enabled":false},"oxd-server":{"appLoggers":{"oxdServerLogLevel":"INFO","oxdServerLogTarget":"STDOUT"},"enabled":false},"oxshibboleth":{"appLoggers":{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","consentAuditLogLevel":"INFO","consentAuditLogTarget":"FILE","idpLogLevel":"INFO","idpLogTarget":"STDOUT","scriptLogLevel":"INFO","scriptLogTarget":"FILE"},"enabled":false},"oxtrust":{"appLoggers":{"apachehcLogLevel":"INFO","apachehcLogTarget":"FILE","auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","cacheRefreshLogLevel":"INFO","cacheRefreshLogTarget":"FILE","cacheRefreshPythonLogLevel":"INFO","cacheRefreshPythonLogTarget":"FILE","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","oxtrustLogLevel":"INFO","oxtrustLogTarget":"STDOUT","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE","velocityLogLevel":"INFO","velocityLogTarget":"FILE"},"enabled":true},"persistence":{"enabled":true},"scim":{"appLoggers":{"persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scimLogLevel":"INFO","scimLogTarget":"STDOUT","scriptLogLevel":"INFO","scriptLogTarget":"FILE"},"enabled":false},"storageClass":{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"},"upgrade":{"enabled":false,"image":{"repository":"gluufederation/upgrade","tag":"4.4.2-1"},"sourceVersion":"4.4","targetVersion":"4.4"},"usrEnvs":{"normal":{},"secret":{}}}` | Parameters used globally across all services helm charts. |
+| global | object | `{"alb":{"ingress":{"additionalAnnotations":{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"},"additionalLabels":{},"adminUiEnabled":true,"authServerEnabled":true,"casaEnabled":false,"enabled":false,"fido2ConfigEnabled":false,"fido2Enabled":false,"openidConfigEnabled":true,"passportEnabled":false,"scimConfigEnabled":false,"scimEnabled":false,"shibEnabled":false,"u2fConfigEnabled":true,"uma2ConfigEnabled":true,"webdiscoveryEnabled":true,"webfingerEnabled":true}},"azureStorageAccountType":"Standard_LRS","azureStorageKind":"Managed","cloud":{"testEnviroment":false},"cnGoogleApplicationCredentials":"/etc/gluu/conf/google-credentials.json","config":{"enabled":true},"configAdapterName":"kubernetes","configSecretAdapter":"kubernetes","cr-rotate":{"enabled":false},"domain":"demoexample.gluu.org","fido2":{"appLoggers":{"fido2LogLevel":"INFO","fido2LogTarget":"STDOUT","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE"},"enabled":false},"gcePdStorageType":"pd-standard","gluuJackrabbitCluster":"true","gluuPersistenceType":"couchbase","isDomainRegistered":"false","istio":{"additionalAnnotations":{},"additionalLabels":{},"enabled":false,"ingress":false,"namespace":"istio-system"},"jackrabbit":{"enabled":true},"jobTtlSecondsAfterFinished":300,"lbIp":"","ldapServiceName":"opendj","nginx-ingress":{"enabled":true},"opendj":{"enabled":true},"oxauth":{"appLoggers":{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","authLogLevel":"INFO","authLogTarget":"STDOUT","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE"},"enabled":true},"oxauth-key-rotation":{"enabled":false},"oxd-server":{"appLoggers":{"oxdServerLogLevel":"INFO","oxdServerLogTarget":"STDOUT"},"enabled":false},"oxshibboleth":{"appLoggers":{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","consentAuditLogLevel":"INFO","consentAuditLogTarget":"FILE","containerLogLevel":"","encryptionLogLevel":"","httpclientLogLevel":"","idpLogLevel":"INFO","idpLogTarget":"STDOUT","ldapLogLevel":"","messagesLogLevel":"","opensamlLogLevel":"","propsLogLevel":"","scriptLogLevel":"INFO","scriptLogTarget":"FILE","springLogLevel":"","xmlsecLogLevel":""},"enabled":false},"oxtrust":{"appLoggers":{"apachehcLogLevel":"INFO","apachehcLogTarget":"FILE","auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","cacheRefreshLogLevel":"INFO","cacheRefreshLogTarget":"FILE","cacheRefreshPythonLogLevel":"INFO","cacheRefreshPythonLogTarget":"FILE","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","oxtrustLogLevel":"INFO","oxtrustLogTarget":"STDOUT","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE","velocityLogLevel":"INFO","velocityLogTarget":"FILE"},"enabled":true},"persistence":{"enabled":true},"scim":{"appLoggers":{"persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scimLogLevel":"INFO","scimLogTarget":"STDOUT","scriptLogLevel":"INFO","scriptLogTarget":"FILE"},"enabled":false},"storageClass":{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"},"upgrade":{"enabled":false,"image":{"repository":"gluufederation/upgrade","tag":"4.4.2-1"},"sourceVersion":"4.4","targetVersion":"4.4"},"usrEnvs":{"normal":{},"secret":{}}}` | Parameters used globally across all services helm charts. |
 | global.alb.ingress.additionalAnnotations | object | `{"alb.ingress.kubernetes.io/auth-session-cookie":"custom-cookie","alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:us-west-2:xxxx:certificate/xxxxxx","alb.ingress.kubernetes.io/scheme":"internet-facing","kubernetes.io/ingress.class":"alb"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"} |
 | global.alb.ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
 | global.alb.ingress.adminUiEnabled | bool | `true` | Enable Admin UI endpoints /identity |
@@ -292,13 +292,14 @@ Kubernetes: `>=v1.21.0-0`
 | global.oxd-server.appLoggers.oxdServerLogLevel | string | `"INFO"` | oxd-server.log level |
 | global.oxd-server.appLoggers.oxdServerLogTarget | string | `"STDOUT"` | oxd-server.log target |
 | global.oxd-server.enabled | bool | `false` | Boolean flag to enable/disable the oxd-server chart. |
-| global.oxshibboleth.appLoggers | object | `{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","consentAuditLogLevel":"INFO","consentAuditLogTarget":"FILE","idpLogLevel":"INFO","idpLogTarget":"STDOUT","scriptLogLevel":"INFO","scriptLogTarget":"FILE"}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
+| global.oxshibboleth.appLoggers | object | `{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","consentAuditLogLevel":"INFO","consentAuditLogTarget":"FILE","containerLogLevel":"","encryptionLogLevel":"","httpclientLogLevel":"","idpLogLevel":"INFO","idpLogTarget":"STDOUT","ldapLogLevel":"","messagesLogLevel":"","opensamlLogLevel":"","propsLogLevel":"","scriptLogLevel":"INFO","scriptLogTarget":"FILE","springLogLevel":"","xmlsecLogLevel":""}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxshibboleth.appLoggers.auditStatsLogLevel | string | `"INFO"` | idp-audit.log level |
 | global.oxshibboleth.appLoggers.auditStatsLogTarget | string | `"FILE"` | idp-audit.log target |
 | global.oxshibboleth.appLoggers.consentAuditLogLevel | string | `"INFO"` | idp-consent-audit.log level |
 | global.oxshibboleth.appLoggers.consentAuditLogTarget | string | `"FILE"` | idp-consent-audit.log target |
 | global.oxshibboleth.appLoggers.idpLogLevel | string | `"INFO"` | idp-process.log level |
 | global.oxshibboleth.appLoggers.idpLogTarget | string | `"STDOUT"` | idp-process.log target |
+| global.oxshibboleth.appLoggers.ldapLogLevel | string | `""` | https://github.com/GluuFederation/docker-oxshibboleth#additional-logger-configuration The below are very noisy logs and are better left untouched |
 | global.oxshibboleth.appLoggers.scriptLogLevel | string | `"INFO"` | idp-script.log level |
 | global.oxshibboleth.appLoggers.scriptLogTarget | string | `"FILE"` | idp-script.log target |
 | global.oxshibboleth.enabled | bool | `false` | Boolean flag to enable/disable the oxShibbboleth chart. |
@@ -340,7 +341,7 @@ Kubernetes: `>=v1.21.0-0`
 | global.scim.appLoggers.scriptLogTarget | string | `"FILE"` | scim_script.log target |
 | global.scim.enabled | bool | `false` | Boolean flag to enable/disable the SCIM chart. |
 | global.storageClass | object | `{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"}` | StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed. |
-| global.storageClass.parameters | object | `{}` | parameters: |
+| global.storageClass.parameters | object | `{}` | parameters: fsType: "" kind: "" pool: "" storageAccountType: "" type: "" |
 | global.upgrade.enabled | bool | `false` | Boolean flag used when running upgrading through versions command. |
 | global.upgrade.image.repository | string | `"gluufederation/upgrade"` | Image  to use for deploying. |
 | global.upgrade.image.tag | string | `"4.4.2-1"` | Image  tag to use for deploying. |
@@ -686,4 +687,4 @@ Kubernetes: `>=v1.21.0-0`
 | scim.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.7.0](https://github.com/norwoodj/helm-docs/releases/v1.7.0)
+Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
