@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.8](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.7...v1.7.8) (2022-11-14)
+
+
+### Bug Fixes
+
+* add detailed oxShibboleth apploggers https://github.com/GluuFederation/docker-oxshibboleth/issues/48 ([0733a3b](https://github.com/GluuFederation/cloud-native-edition/commit/0733a3be662f3ac8baa74fa547f0114ceec71d11))
+* keep oxsshipoleth disabled by default ([7632a89](https://github.com/GluuFederation/cloud-native-edition/commit/7632a89dcf19062270f4549a2d78fcde4a6ea511))
+
 ## [1.7.7](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.6...v1.7.7) (2022-10-04)
 
 
