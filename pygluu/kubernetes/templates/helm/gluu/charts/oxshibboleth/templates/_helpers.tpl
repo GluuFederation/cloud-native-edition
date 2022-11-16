@@ -50,7 +50,7 @@ Create user custom defined  envs
 {{- define "oxshibboleth.usr-envs"}}
 {{- range $key, $val := .Values.usrEnvs.normal }}
 - name: {{ $key }}
-  value: {{ $val }}
+  value: {{ $val | quote }}
 {{- end }}
 {{- end }}
 
@@ -63,9 +63,10 @@ Create user custom defined secret envs
   valueFrom:
     secretKeyRef:
       name: {{ $.Release.Name }}-{{ $.Chart.Name }}-user-custom-envs
-      key: {{ $key }}
+      key: {{ $key | quote }}
 {{- end }}
 {{- end }}
+
 {{/*
 Create GLUU_JAVA_OPTIONS ENV for passing detailed logs
 */}}
@@ -110,4 +111,34 @@ Create GLUU_JAVA_OPTIONS ENV for passing detailed logs
 
 {{ $detailLogs := printf "%s%s%s%s%s%s%s%s%s" $ldap $messages $encryption $opensaml $props $httpclient $spring $container $xmlsec }}
 {{ $detailLogs | trimSuffix " " | quote }}
+{{- end }}
+
+{{/*
+Create topologySpreadConstraints lists
+*/}}
+{{- define "oxshibboleth.topology-spread-constraints"}}
+{{- range $key, $val := .Values.topologySpreadConstraints }}
+- maxSkew: {{ $val.maxSkew }}
+  {{- if $val.minDomains }}
+  minDomains: {{ $val.minDomains }} # optional; beta since v1.25
+  {{- end}}
+  {{- if $val.topologyKey }}
+  topologyKey: {{ $val.topologyKey }}
+  {{- end}}
+  {{- if $val.whenUnsatisfiable }}
+  whenUnsatisfiable: {{ $val.whenUnsatisfiable }}
+  {{- end}}
+  labelSelector:
+    matchLabels:
+      app: {{ $.Release.Name }}-{{ include "oxshibboleth.name" $ }}
+  {{- if $val.matchLabelKeys }}
+  matchLabelKeys: {{ $val.matchLabelKeys }} # optional; alpha since v1.25
+  {{- end}}
+  {{- if $val.nodeAffinityPolicy }}
+  nodeAffinityPolicy: {{ $val.nodeAffinityPolicy }} # optional; alpha since v1.25
+  {{- end}}
+  {{- if $val.nodeTaintsPolicy }}
+  nodeTaintsPolicy: {{ $val.nodeTaintsPolicy }} # optional; alpha since v1.25
+  {{- end}}
+{{- end }}
 {{- end }}

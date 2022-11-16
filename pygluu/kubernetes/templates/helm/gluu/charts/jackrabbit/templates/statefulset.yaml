@@ -50,6 +50,10 @@ spec:
           secret:
             secretName: gluu-jackrabbit-postgres-pass
       {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- include "jackrabbit.topology-spread-constraints" . | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ include "jackrabbit.name" . }}
         env:

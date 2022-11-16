@@ -44,6 +44,10 @@ spec:
     {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- include "casa.topology-spread-constraints" . | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ include "casa.name" . }}
           securityContext:

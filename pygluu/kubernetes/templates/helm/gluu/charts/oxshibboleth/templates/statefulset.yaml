@@ -42,6 +42,10 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- include "oxshibboleth.topology-spread-constraints" . | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ include "oxshibboleth.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

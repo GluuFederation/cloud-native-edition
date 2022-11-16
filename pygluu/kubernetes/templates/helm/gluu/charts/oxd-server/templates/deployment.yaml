@@ -39,6 +39,10 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- include "oxd-server.topology-spread-constraints" . | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ include "oxd-server.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

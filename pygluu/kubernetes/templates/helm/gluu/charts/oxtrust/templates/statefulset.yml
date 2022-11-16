@@ -40,6 +40,10 @@ spec:
       dnsConfig:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- include "oxtrust.topology-spread-constraints" . | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ include "oxtrust.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

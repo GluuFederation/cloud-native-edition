@@ -6,7 +6,6 @@ metadata:
   name: {{ include "oxauth-key-rotation.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "oxauth-key-rotation.name" . }}
     release: {{ .Release.Name }}
 {{ include "oxauth-key-rotation.labels" . | indent 4 }}
 {{- if .Values.additionalLabels }}

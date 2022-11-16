@@ -65,7 +65,7 @@ Create user custom defined  envs
 {{- define "jackrabbit.usr-envs"}}
 {{- range $key, $val := .Values.usrEnvs.normal }}
 - name: {{ $key }}
-  value: {{ $val }}
+  value: {{ $val | quote }}
 {{- end }}
 {{- end }}
 
@@ -78,6 +78,36 @@ Create user custom defined secret envs
   valueFrom:
     secretKeyRef:
       name: {{ $.Release.Name }}-{{ $.Chart.Name }}-user-custom-envs
-      key: {{ $key }}
+      key: {{ $key | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create topologySpreadConstraints lists
+*/}}
+{{- define "jackrabbit.topology-spread-constraints"}}
+{{- range $key, $val := .Values.topologySpreadConstraints }}
+- maxSkew: {{ $val.maxSkew }}
+  {{- if $val.minDomains }}
+  minDomains: {{ $val.minDomains }} # optional; beta since v1.25
+  {{- end}}
+  {{- if $val.topologyKey }}
+  topologyKey: {{ $val.topologyKey }}
+  {{- end}}
+  {{- if $val.whenUnsatisfiable }}
+  whenUnsatisfiable: {{ $val.whenUnsatisfiable }}
+  {{- end}}
+  labelSelector:
+    matchLabels:
+      app: {{ $.Release.Name }}-{{ include "jackrabbit.name" $ }}
+  {{- if $val.matchLabelKeys }}
+  matchLabelKeys: {{ $val.matchLabelKeys }} # optional; alpha since v1.25
+  {{- end}}
+  {{- if $val.nodeAffinityPolicy }}
+  nodeAffinityPolicy: {{ $val.nodeAffinityPolicy }} # optional; alpha since v1.25
+  {{- end}}
+  {{- if $val.nodeTaintsPolicy }}
+  nodeTaintsPolicy: {{ $val.nodeTaintsPolicy }} # optional; alpha since v1.25
+  {{- end}}
 {{- end }}
 {{- end }}

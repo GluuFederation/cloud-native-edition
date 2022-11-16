@@ -1,6 +1,4 @@
 {{ if .Values.hpa.enabled -}}
-# License terms and conditions for Gluu Cloud Native Edition:
-# https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
