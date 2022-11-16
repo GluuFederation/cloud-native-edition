@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.9](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.8...v1.7.9) (2022-11-16)
+
+
+### Features
+
+* **charts:** add pdb and topology spread constrants ([ffaa227](https://github.com/GluuFederation/cloud-native-edition/commit/ffaa227e84ca3b6aeb2a4509e521d7ee520e69d5))
+
+
+### Miscellaneous Chores
+
+* release 1.7.9 ([fd07327](https://github.com/GluuFederation/cloud-native-edition/commit/fd0732747f371e14d040ddd47d7650e8ba3997b7))
+
 ## [1.7.8](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.7...v1.7.8) (2022-11-14)
 
 
