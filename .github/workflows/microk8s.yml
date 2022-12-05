@@ -15,7 +15,7 @@ jobs:
       max-parallel: 6
       matrix:
         python-version: [3.7]
-        gluu-version: ['"4.4.1_dev"']
+        gluu-version: ['"4.5.0_dev"']
         test-cases: ["install", "helm-install"]
         # add '"pgsql" when supported
         persistence-backends: ['"ldap"','"couchbase"','"sql"']

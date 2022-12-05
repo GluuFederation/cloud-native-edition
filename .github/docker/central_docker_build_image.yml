@@ -9,7 +9,7 @@ on:
     branches:
       - master
       - main
-      - "4.4"
+      - "4.5"
       # below branch is triggered by jenkins which triggers dev image
       - update-source-build-date
   workflow_dispatch:

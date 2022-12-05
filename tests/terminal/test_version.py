@@ -7,23 +7,23 @@ import pytest
 def test_version_no_prompt(settings):
     from pygluu.kubernetes.terminal.version import PromptVersion
 
-    prompt = PromptVersion(settings, version="4.4")
+    prompt = PromptVersion(settings, version="4.5")
     prompt.prompt_version()
-    assert settings.get("GLUU_VERSION") == "4.4"
+    assert settings.get("GLUU_VERSION") == "4.5"
 
 
 @pytest.mark.parametrize("given, expected", [
-    ("", "4.4.2-1"),  # default if empty
-    ("4.4.2_dev", "4.4.2_dev"),  # non-empty shouldn't be overriden
+    ("", "4.5.0-1"),  # default if empty
+    ("4.5.0_dev", "4.5.0_dev"),  # non-empty shouldn't be overriden
 ])
 def test_version_merge_names_tags(settings, given, expected):
     import json
     from pygluu.kubernetes.terminal.version import PromptVersion
 
     with open("./gluu_versions.json", "w") as f:
-        json.dump({"4.4": {"LDAP_IMAGE_TAG": "4.4.2-1"}}, f)
+        json.dump({"4.5": {"LDAP_IMAGE_TAG": "4.5.0-1"}}, f)
 
-    settings.set("GLUU_VERSION", "4.4")
+    settings.set("GLUU_VERSION", "4.5")
     settings.set("LDAP_IMAGE_TAG", given)
 
     PromptVersion(settings)
@@ -34,8 +34,8 @@ def test_version_merge_names_tags(settings, given, expected):
 
 
 @pytest.mark.parametrize("given, expected", [
-    ("", "4.4"),
-    ("4.4", "4.4"),
+    ("", "4.5"),
+    ("4.5", "4.5"),
 ])
 def test_version(monkeypatch, settings, given, expected):
     from pygluu.kubernetes.terminal.version import PromptVersion

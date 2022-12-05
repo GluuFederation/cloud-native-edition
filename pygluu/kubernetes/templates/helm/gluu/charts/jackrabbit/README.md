@@ -1,6 +1,6 @@
 # jackrabbit
 
-![Version: 1.7.9](https://img.shields.io/badge/Version-1.7.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
+![Version: 1.8.0](https://img.shields.io/badge/Version-1.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
 
 Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications.
 
@@ -39,7 +39,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/jackrabbit"` | Image  to use for deploying. |
-| image.tag | string | `"4.4.2-1"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.5.0-1"` | Image  tag to use for deploying. |
 | jackrabbitVolumeMounts.repository.mountPath | string | `"/opt/jackrabbit/repository"` |  |
 | jackrabbitVolumeMounts.repository.name | string | `"jackrabbit-volume"` |  |
 | jackrabbitVolumeMounts.version.mountPath | string | `"/opt/jackrabbit/version"` |  |

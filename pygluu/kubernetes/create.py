@@ -110,7 +110,7 @@ def main():
             logger.info("Patching values.yaml for helm upgrade...")
             helm.analyze_global_values()
             logger.info("Please find your patched values.yaml at the location ./helm/gluu/values.yaml."
-                        "Continue with the steps found at https://gluu.org/docs/gluu-server/4.4/upgrade/#helm")
+                        "Continue with the steps found at https://gluu.org/docs/gluu-server/4.5/upgrade/#helm")
 
         elif args.subparser_name == "install-couchbase":
             from pygluu.kubernetes.terminal.couchbase import PromptCouchbase
