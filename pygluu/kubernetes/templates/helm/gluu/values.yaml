@@ -111,12 +111,18 @@ global:
   gluuPersistenceType: couchbase
   # -- Boolean flag if enabled will enable jackrabbit in cluster mode with Postgres.
   gluuJackrabbitCluster: "true"
-  # -- The config backend adapter that will hold Gluu configuration layer. google|kubernetes
+  # -- The config backend adapter that will hold Gluu configuration layer. aws|google|kubernetes. OpenDJ as a persistence is restricted to kubernetes ONLY!
   configAdapterName: kubernetes
-  # -- The config backend adapter that will hold Gluu secret layer. google|kubernetes
+  # -- The config backend adapter that will hold Gluu secret layer. aws|google|kubernetes OpenDJ as a persistence is restricted to kubernetes ONLY!
   configSecretAdapter: kubernetes
-  # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner.
+  # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner. Leave as this is a sensible default.
   cnGoogleApplicationCredentials: /etc/gluu/conf/google-credentials.json
+  # The location of the shared credentials file used by the client (see https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).Leave as this is a sensible default.
+  cnAwsSharedCredentialsFile: /etc/gluu/conf/aws_shared_credential_file
+  # The location of the config file used by the client (see https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html). Leave as this is a sensible default.
+  cnAwsConfigFile: /etc/gluu/conf/aws_config_file
+  # The location of file contains replica regions definition (if any). This file is mostly used in primary region. Example of contents of the file: `[{"Region": "us-west-1"}]`.  Used only when global.configAdapterName and global.configSecretAdapter is set to aws. Leave as this is a sensible default.
+  cnAwsSecretsReplicaRegionsFile: /etc/gluu/conf/aws_secrets_replica_regions
   oxauth:
     # -- Boolean flag to enable/disable oxauth chart. You should never set this to false.
     enabled: true
@@ -467,6 +473,24 @@ config:
     cnConfigGoogleSecretNamePrefix: gluu
     # [google_secret_manager_envs] END
     # [google_envs] END
+    # [aws_envs] Envs related to using AWS
+    # [aws_secret_manager_envs]
+    # AWS Access key id  that belong to a user/id with SecretsManagerReadWrite policy
+    cnAwsAccessKeyId: ""
+    # AWS Secret Access key that belong to a user/id with SecretsManagerReadWrite policy
+    cnAwsSecretAccessKey: ""
+    # The URL of AWS secretsmanager service (if omitted, will use the one in specified region). Used only when global.configAdapterName and global.configSecretAdapter is set to aws.
+    cnAwsSecretsEndpointUrl: ""
+    # The prefix name of the secrets. Used only when global.configAdapterName and global.configSecretAdapter is set to aws.
+    cnAwsSecretsNamePrefix: gluu
+    # The default AWS Region to use, for example, `us-west-1` or `us-west-2`.
+    cnAwsDefaultRegion: us-west-1
+    # The default profile to use.
+    cnAwsProfile: "gluu"
+    # Example replicated region [{"Region": "us-west-1"}, {"Region": "us-west-2"}]
+    cnAwsSecretsReplicaRegions: []
+    # [aws_secret_manager_envs] END
+    # [aws_envs] END
     # -- Loadbalancer address for AWS if the FQDN is not registered.
     lbAddr: ""
     # -- Enable oxTrust API
