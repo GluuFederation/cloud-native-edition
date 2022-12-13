@@ -29,7 +29,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/oxshibboleth
   # -- Image  tag to use for deploying.
-  tag: 4.5.0-1
+  tag: 4.5.0-2
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- Service replica number.
@@ -60,24 +60,24 @@ service:
   sessionAffinityConfig:
     clientIP:
       timeoutSeconds: 10800
-# -- Configure the liveness healthcheck for the oxShibboleth if needed.
-livenessProbe:
-  httpGet:
-    # -- http liveness probe endpoint
-    path: /idp
-    port: http-oxshib
-  initialDelaySeconds: 30
-  periodSeconds: 30
-  timeoutSeconds: 5
-# -- Configure the readiness healthcheck for the casa if needed.
-readinessProbe:
-  httpGet:
-    # -- http liveness probe endpoint
-    path: /idp
-    port: http-oxshib
-  initialDelaySeconds: 25
-  periodSeconds: 25
-  timeoutSeconds: 5
+  # -- Configure the liveness healthcheck for the oxshibboleth if needed.
+  livenessProbe:
+    # -- Executes the python3 healthcheck.
+    # https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+  # -- Configure the readiness healthcheck for the oxshibboleth if needed.
+  # https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py
+  readinessProbe:
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
 # -- Configure any additional volumes that need to be attached to the pod
 volumes: []
 # -- Configure any additional volumesMounts that need to be attached to the containers

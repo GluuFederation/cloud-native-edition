@@ -511,7 +511,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
@@ -944,7 +944,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1017,7 +1017,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1120,7 +1120,7 @@ oxtrust:
     # -- Image  to use for deploying.
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1224,7 +1224,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1323,7 +1323,7 @@ scim:
     # -- Image  to use for deploying.
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1422,7 +1422,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1522,7 +1522,7 @@ casa:
     # -- Image  to use for deploying.
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1622,7 +1622,7 @@ oxpassport:
     # -- Image  to use for deploying.
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number
@@ -1724,7 +1724,7 @@ oxshibboleth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1748,21 +1748,24 @@ oxshibboleth:
     oxShibbolethServiceName: oxshibboleth
     # -- Port of the oxShibboleth service. Please keep it as default.
     name: http-oxshib
-  # -- Configure the liveness healthcheck for the oxShibboleth if needed.
+  # -- Configure the liveness healthcheck for the oxshibboleth if needed.
   livenessProbe:
-    httpGet:
-      # -- http liveness probe endpoint
-      path: /idp
-      port: http-oxshib
+    # -- Executes the python3 healthcheck.
+    # https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
-  # -- Configure the readiness healthcheck for the casa if needed.
+  # -- Configure the readiness healthcheck for the oxshibboleth if needed.
+  # https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py
   readinessProbe:
-    httpGet:
-      # -- http liveness probe endpoint
-      path: /idp
-      port: http-oxshib
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
@@ -1846,7 +1849,7 @@ oxauth-key-rotation:
     # -- Image  to use for deploying.
     repository: gluufederation/certmanager
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours
