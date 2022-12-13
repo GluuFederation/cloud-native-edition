@@ -53,6 +53,9 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
           env:
             {{- include "casa.usr-envs" . | indent 12 }}
             {{- include "casa.usr-secret-envs" . | indent 12 }}

@@ -39,6 +39,9 @@ spec:
       containers:
         - name: {{ include "cr-rotate.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          #securityContext:
+          #  runAsUser: 1000
+          #  runAsNonRoot: true
           env:
             {{- include "cr-rotate.usr-envs" . | indent 12 }}
             {{- include "cr-rotate.usr-secret-envs" . | indent 12 }}

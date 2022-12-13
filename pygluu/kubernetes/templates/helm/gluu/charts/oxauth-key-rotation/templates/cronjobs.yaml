@@ -34,6 +34,9 @@ spec:
           containers:
             - name: {{ include "oxauth-key-rotation.name" . }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              securityContext:
+                runAsUser: 1000
+                runAsNonRoot: true
               env:
                 {{- include "oxauth-key-rotation.usr-envs" . | indent 16 }}
                 {{- include "oxauth-key-rotation.usr-secret-envs" . | indent 16 }}

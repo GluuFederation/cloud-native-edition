@@ -46,6 +46,9 @@ spec:
       containers:
       - name: {{ include "oxpassport.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
             - name: PASSPORT_LOG_LEVEL
               value: "info"
