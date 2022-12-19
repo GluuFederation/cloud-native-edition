@@ -61,9 +61,9 @@ spec:
           {{- include "jackrabbit.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        #securityContext:
-        #  runAsUser: 1000
-        #  runAsNonRoot: true
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm

@@ -70,7 +70,7 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.5.0-1
+      tag: 4.5.0-2
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
     sourceVersion: "4.4"
@@ -729,7 +729,7 @@ jackrabbit:
     # -- Image  to use for deploying.
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -842,7 +842,7 @@ opendj:
     # -- Image  to use for deploying.
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   persistence:
@@ -1798,7 +1798,7 @@ cr-rotate:
     # -- Image  to use for deploying.
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
-    tag: 4.5.0-1
+    tag: 4.5.0-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.

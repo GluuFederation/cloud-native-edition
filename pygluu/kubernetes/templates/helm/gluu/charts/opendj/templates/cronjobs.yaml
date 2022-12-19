@@ -18,6 +18,9 @@ spec:
           containers:
             - name: {{ include "opendj.fullname" . }}-backup
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              securityContext:
+                runAsUser: 1000
+                runAsNonRoot: true
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-config-cm
