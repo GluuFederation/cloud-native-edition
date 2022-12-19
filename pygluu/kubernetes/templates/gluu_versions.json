@@ -9,13 +9,13 @@
     "CONFIG_IMAGE_NAME": "gluufederation/config-init",
     "CONFIG_IMAGE_TAG": "4.5.0-2",
     "CACHE_REFRESH_ROTATE_IMAGE_NAME": "gluufederation/cr-rotate",
-    "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.5.0-1",
+    "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.5.0-2",
     "CERT_MANAGER_IMAGE_NAME": "gluufederation/certmanager",
     "CERT_MANAGER_IMAGE_TAG": "4.5.0-2",
     "LDAP_IMAGE_NAME": "gluufederation/opendj",
-    "LDAP_IMAGE_TAG": "4.5.0-1",
+    "LDAP_IMAGE_TAG": "4.5.0-2",
     "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
-    "JACKRABBIT_IMAGE_TAG": "4.5.0-1",
+    "JACKRABBIT_IMAGE_TAG": "4.5.0-2",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
     "OXAUTH_IMAGE_TAG": "4.5.0-2",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
@@ -29,7 +29,7 @@
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
     "PERSISTENCE_IMAGE_TAG": "4.5.0-2",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.5.0-1"
+    "UPGRADE_IMAGE_TAG": "4.5.0-2"
   },
   "4.5.0_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
