@@ -35,6 +35,9 @@ spec:
       containers:
       - name: {{ include "persistence.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "persistence.usr-envs" . | indent 12 }}
           {{- include "persistence.usr-secret-envs" . | indent 12 }}

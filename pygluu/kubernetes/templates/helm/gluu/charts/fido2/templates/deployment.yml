@@ -47,6 +47,9 @@ spec:
       - name: {{ include "fido2.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "fido2.usr-envs" . | indent 12 }}
           {{- include "fido2.usr-secret-envs" . | indent 12 }}

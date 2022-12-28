@@ -54,6 +54,9 @@ spec:
       - name: {{ include "opendj.name" $ }}
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "opendj.usr-envs" $ | indent 12 }}
           {{- include "opendj.usr-secret-envs" $ | indent 12 }}

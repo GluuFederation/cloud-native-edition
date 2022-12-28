@@ -37,22 +37,21 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/oxshibboleth"` | Image  to use for deploying. |
-| image.tag | string | `"4.5.0-1"` | Image  tag to use for deploying. |
-| livenessProbe | object | `{"httpGet":{"path":"/idp","port":"http-oxshib"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxShibboleth if needed. |
-| livenessProbe.httpGet.path | string | `"/idp"` | http liveness probe endpoint |
+| image.tag | string | `"4.5.0-2"` | Image  tag to use for deploying. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
-| readinessProbe | object | `{"httpGet":{"path":"/idp","port":"http-oxshib"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the casa if needed. |
-| readinessProbe.httpGet.path | string | `"/idp"` | http liveness probe endpoint |
 | replicas | int | `1` | Service replica number. |
 | resources | object | `{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"1000m"` | CPU limit. |
 | resources.limits.memory | string | `"1000Mi"` | Memory limit. |
 | resources.requests.cpu | string | `"1000m"` | CPU request. |
 | resources.requests.memory | string | `"1000Mi"` | Memory request. |
+| service.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxshibboleth if needed. |
+| service.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py |
 | service.name | string | `"http-oxshib"` | Port of the oxShibboleth service. Please keep it as default. |
 | service.oxShibbolethServiceName | string | `"oxshibboleth"` | Name of the oxShibboleth service. Please keep it as default. |
 | service.port | int | `8080` | The name of the oxPassport port within the oxPassport service. Please keep it as default. |
+| service.readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]}}` | Configure the readiness healthcheck for the oxshibboleth if needed. https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py |
 | service.sessionAffinity | string | `"None"` | Default set to None If you want to make sure that connections from a particular client are passed to the same Pod each time, you can select the session affinity based on the client's IP addresses by setting this to ClientIP |
 | service.sessionAffinityConfig | object | `{"clientIP":{"timeoutSeconds":10800}}` | the maximum session sticky time if sessionAffinity is ClientIP |
 | service.targetPort | int | `8080` |  |

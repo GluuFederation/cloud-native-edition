@@ -47,6 +47,9 @@ spec:
       - name: {{ include "scim.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "scim.usr-envs" . | indent 12 }}
           {{- include "scim.usr-secret-envs" . | indent 12 }}

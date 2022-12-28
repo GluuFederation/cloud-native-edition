@@ -49,6 +49,9 @@ spec:
       containers:
       - name: {{ include "oxshibboleth.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "oxshibboleth.usr-envs" . | indent 12 }}
           {{- include "oxshibboleth.usr-secret-envs" . | indent 12 }}

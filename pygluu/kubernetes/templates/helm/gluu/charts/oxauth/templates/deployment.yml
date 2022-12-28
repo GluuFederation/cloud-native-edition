@@ -47,6 +47,9 @@ spec:
       - name: {{ template "oxauth.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "oxauth.usr-envs" . | indent 12 }}
           {{- include "oxauth.usr-secret-envs" . | indent 12 }}
