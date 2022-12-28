@@ -130,6 +130,8 @@ global:
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
     appLoggers:
+      # -- Enable log prefixing which enables prepending the STDOUT logs with the file name. i.e oxauth-script ===> 2022-12-20 17:49:55,744 INFO
+      enableStdoutLogPrefix: "true"
       # -- oxauth.log target
       authLogTarget: "STDOUT"
       # -- oxauth.log level
@@ -169,6 +171,8 @@ global:
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
     appLoggers:
+      # -- Enable log prefixing which enables prepending the STDOUT logs with the file name. i.e fido2-persistence ===> 2022-12-20 17:49:55,744 INFO
+      enableStdoutLogPrefix: "true"
       # -- fido2.log target
       fido2LogTarget: "STDOUT"
       # -- fido2.log level
@@ -184,6 +188,8 @@ global:
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
     appLoggers:
+      # -- Enable log prefixing which enables prepending the STDOUT logs with the file name. i.e scim-script ===> 2022-12-20 17:49:55,744 INFO
+      enableStdoutLogPrefix: "true"
       # -- scim.log target
       scimLogTarget: "STDOUT"
       # -- scim.log level
@@ -218,6 +224,8 @@ global:
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
     appLoggers:
+      # -- Enable log prefixing which enables prepending the STDOUT logs with the file name. i.e oxtrust-script ===> 2022-12-20 17:49:55,744 INFO
+      enableStdoutLogPrefix: "true"
       # -- oxtrust.log target
       oxtrustLogTarget: "STDOUT"
       # -- oxtrust.log level
@@ -276,6 +284,8 @@ global:
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
     appLoggers:
+      # -- Enable log prefixing which enables prepending the STDOUT logs with the file name. i.e idp-script ===> 2022-12-20 17:49:55,744 INFO
+      enableStdoutLogPrefix: "true"
       # -- idp-process.log target
       idpLogTarget: "STDOUT"
       # -- idp-process.log level

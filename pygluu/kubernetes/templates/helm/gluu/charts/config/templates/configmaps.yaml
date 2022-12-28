@@ -67,6 +67,7 @@ data:
   | replace "auditStatsLogLevel" "audit_log_level"
   | replace "cleanerLogTarget" "cleaner_log_target"
   | replace "cleanerLogLevel" "cleaner_log_level"
+  | replace "enableStdoutLogPrefix" "enable_stdout_log_prefix"
   | squote
   }}
   GLUU_OXD_SERVER_URL: {{ .Values.configmap.gluuOxdServerUrl | quote }}
@@ -139,6 +140,7 @@ data:
   | replace "cacheRefreshPythonLogTarget" "cache_refresh_python_log_target"
   | replace "apachehcLogLevel" "apachehc_log_level"
   | replace "apachehcLogTarget" "apachehc_log_target"
+  | replace "enableStdoutLogPrefix" "enable_stdout_log_prefix"
   | squote
   }}
   GLUU_FIDO2_APP_LOGGERS: {{ .Values.global.fido2.appLoggers
@@ -147,6 +149,7 @@ data:
   | replace "fido2LogLevel" "fido2_log_level"
   | replace "persistenceLogTarget" "persistence_log_target"
   | replace "persistenceLogLevel" "persistence_log_level"
+  | replace "enableStdoutLogPrefix" "enable_stdout_log_prefix"
   | squote
   }}
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
@@ -177,6 +180,7 @@ data:
   | replace "persistenceDurationLogLevel" "persistence_duration_log_level"
   | replace "scriptLogTarget" "script_log_target"
   | replace "scriptLogLevel" "script_log_level"
+  | replace "enableStdoutLogPrefix" "enable_stdout_log_prefix"
   | squote
   }}
   {{- if .Values.global.oxshibboleth.enabled }}
@@ -191,6 +195,7 @@ data:
   | replace "idpLogLevel" "idp_log_level"
   | replace "scriptLogTarget" "script_log_target"
   | replace "scriptLogLevel" "script_log_level"
+  | replace "enableStdoutLogPrefix" "enable_stdout_log_prefix"
   | squote
   }}
   {{- end }}
