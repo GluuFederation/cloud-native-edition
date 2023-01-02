@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.9...v1.8.0) (2023-01-02)
+
+
+### Features
+
+* add AWS secret manager support ([#494](https://github.com/GluuFederation/cloud-native-edition/issues/494)) ([35c8010](https://github.com/GluuFederation/cloud-native-edition/commit/35c8010d0a4b8892b389e725dd72a7df1d9446e4))
+* add security context ([#501](https://github.com/GluuFederation/cloud-native-edition/issues/501)) ([4b85f4f](https://github.com/GluuFederation/cloud-native-edition/commit/4b85f4f7b1956d0a418dae2e0cb3a218b0a9611b))
+
 ## [1.7.9](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.8...v1.7.9) (2022-11-16)
 
 
