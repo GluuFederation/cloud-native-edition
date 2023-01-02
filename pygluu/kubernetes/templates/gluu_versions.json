@@ -23,7 +23,7 @@
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
     "OXPASSPORT_IMAGE_TAG": "4.5.0-2",
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
-    "OXSHIBBOLETH_IMAGE_TAG": "4.5.0-2",
+    "OXSHIBBOLETH_IMAGE_TAG": "4.5.0-3",
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
     "OXTRUST_IMAGE_TAG": "4.5.0-2",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
