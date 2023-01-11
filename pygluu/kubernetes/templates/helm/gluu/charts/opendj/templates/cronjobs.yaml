@@ -15,12 +15,14 @@ spec:
           dnsConfig:
     {{ toYaml . | indent 12 }}
         {{- end }}
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            #fsGroupChangePolicy: "OnRootMismatch" enable once 1.23 is the lowest version
           containers:
             - name: {{ include "opendj.fullname" . }}-backup
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-              securityContext:
-                runAsUser: 1000
-                runAsNonRoot: true
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-config-cm
