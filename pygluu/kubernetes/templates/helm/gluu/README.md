@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.0](https://img.shields.io/badge/Version-1.8.0-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.1](https://img.shields.io/badge/Version-1.8.1-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.0 |
-|  | config | 1.8.0 |
-|  | cr-rotate | 1.8.0 |
-|  | fido2 | 1.8.0 |
-|  | gluu-alb-ingress | 1.8.0 |
-|  | gluu-istio-ingress | 1.8.0 |
-|  | jackrabbit | 1.8.0 |
-|  | nginx-ingress | 1.8.0 |
-|  | opendj | 1.8.0 |
-|  | oxauth | 1.8.0 |
-|  | oxauth-key-rotation | 1.8.0 |
-|  | oxd-server | 1.8.0 |
-|  | oxpassport | 1.8.0 |
-|  | oxshibboleth | 1.8.0 |
-|  | oxtrust | 1.8.0 |
-|  | persistence | 1.8.0 |
-|  | scim | 1.8.0 |
+|  | casa | 1.8.1 |
+|  | config | 1.8.1 |
+|  | cr-rotate | 1.8.1 |
+|  | fido2 | 1.8.1 |
+|  | gluu-alb-ingress | 1.8.1 |
+|  | gluu-istio-ingress | 1.8.1 |
+|  | jackrabbit | 1.8.1 |
+|  | nginx-ingress | 1.8.1 |
+|  | opendj | 1.8.1 |
+|  | oxauth | 1.8.1 |
+|  | oxauth-key-rotation | 1.8.1 |
+|  | oxd-server | 1.8.1 |
+|  | oxpassport | 1.8.1 |
+|  | oxshibboleth | 1.8.1 |
+|  | oxtrust | 1.8.1 |
+|  | persistence | 1.8.1 |
+|  | scim | 1.8.1 |
 
 ## Values
 
@@ -447,7 +447,7 @@ Kubernetes: `>=v1.21.0-0`
 | nginx-ingress.ingress.webfingerAdditionalAnnotations | object | `{}` | webfinger ingress resource additional annotations. |
 | nginx-ingress.ingress.webfingerEnabled | bool | `true` | Enable endpoint /.well-known/webfinger |
 | nginx-ingress.ingress.webfingerLabels | object | `{}` | webfinger ingress resource labels. key app is taken |
-| opendj | object | `{"additionalAnnotations":{},"additionalLabels":{},"backup":{"cronJobSchedule":"*/59 * * * *","enabled":true},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.5.0-2"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"pdb":{"enabled":true,"maxUnavailable":1},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
+| opendj | object | `{"additionalAnnotations":{},"additionalLabels":{},"backup":{"cronJobSchedule":"*/59 * * * *","enabled":true},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/opendj","tag":"4.5.0-4"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"pdb":{"enabled":true,"maxUnavailable":1},"persistence":{"size":"5Gi"},"ports":{"tcp-admin":{"nodePort":"","port":4444,"protocol":"TCP","targetPort":4444},"tcp-ldap":{"nodePort":"","port":1389,"protocol":"TCP","targetPort":1389},"tcp-ldaps":{"nodePort":"","port":1636,"protocol":"TCP","targetPort":1636},"tcp-repl":{"nodePort":"","port":8989,"protocol":"TCP","targetPort":8989},"tcp-serf":{"nodePort":"","port":7946,"protocol":"TCP","targetPort":7946},"udp-serf":{"nodePort":"","port":7946,"protocol":"UDP","targetPort":7946}},"readinessProbe":{"failureThreshold":20,"initialDelaySeconds":60,"periodSeconds":25,"tcpSocket":{"port":1636},"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1500m","memory":"2000Mi"},"requests":{"cpu":"1500m","memory":"2000Mi"}},"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OpenDJ is a directory server which implements a wide range of Lightweight Directory Access Protocol and related standards, including full compliance with LDAPv3 but also support for Directory Service Markup Language (DSMLv2).Written in Java, OpenDJ offers multi-master replication, access control, and many extensions. |
 | opendj.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | opendj.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | opendj.backup | object | `{"cronJobSchedule":"*/59 * * * *","enabled":true}` | Configure ldap backup cronjob |
@@ -459,7 +459,7 @@ Kubernetes: `>=v1.21.0-0`
 | opendj.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | opendj.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | opendj.image.repository | string | `"gluufederation/opendj"` | Image  to use for deploying. |
-| opendj.image.tag | string | `"4.5.0-2"` | Image  tag to use for deploying. |
+| opendj.image.tag | string | `"4.5.0-4"` | Image  tag to use for deploying. |
 | opendj.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for OpenDJ if needed. https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py |
 | opendj.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. |
 | opendj.pdb | object | `{"enabled":true,"maxUnavailable":1}` | Configure the PodDisruptionBudget |
@@ -590,7 +590,7 @@ Kubernetes: `>=v1.21.0-0`
 | oxpassport.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | oxpassport.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | oxpassport.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| oxshibboleth | object | `{"additionalAnnotations":{},"additionalLabels":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxshibboleth","tag":"4.5.0-2"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"pdb":{"enabled":true,"maxUnavailable":1},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}},"service":{"name":"http-oxshib","oxShibbolethServiceName":"oxshibboleth","port":8080},"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Shibboleth project for the Gluu Server's SAML IDP functionality. |
+| oxshibboleth | object | `{"additionalAnnotations":{},"additionalLabels":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxshibboleth","tag":"4.5.0-3"},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"pdb":{"enabled":true,"maxUnavailable":1},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}},"service":{"name":"http-oxshib","oxShibbolethServiceName":"oxshibboleth","port":8080},"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Shibboleth project for the Gluu Server's SAML IDP functionality. |
 | oxshibboleth.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxshibboleth.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | oxshibboleth.dnsConfig | object | `{}` | Add custom dns config |
@@ -601,7 +601,7 @@ Kubernetes: `>=v1.21.0-0`
 | oxshibboleth.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | oxshibboleth.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxshibboleth.image.repository | string | `"gluufederation/oxshibboleth"` | Image  to use for deploying. |
-| oxshibboleth.image.tag | string | `"4.5.0-2"` | Image  tag to use for deploying. |
+| oxshibboleth.image.tag | string | `"4.5.0-3"` | Image  tag to use for deploying. |
 | oxshibboleth.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxshibboleth if needed. |
 | oxshibboleth.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py |
 | oxshibboleth.pdb | object | `{"enabled":true,"maxUnavailable":1}` | Configure the PodDisruptionBudget |
