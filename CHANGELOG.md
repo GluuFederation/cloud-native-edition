@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.8.1](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.0...v1.8.1) (2023-01-13)
+
+
+### Bug Fixes
+
+* add init containers for adjusting ownership on upgrade ([c1c80d9](https://github.com/GluuFederation/cloud-native-edition/commit/c1c80d9a02b7747d7838b33dccbd4312f9b92a65))
+* add init containers for adjusting ownership on upgrade ([dd9359f](https://github.com/GluuFederation/cloud-native-edition/commit/dd9359fca732645f512708a0525b199b089f2ef4))
+* ass fsGroup for sts ([3158281](https://github.com/GluuFederation/cloud-native-edition/commit/315828191e0ec582734f20492b6651c8b0e7a4e2))
+* update opendj to v4.5.0-3 ([#507](https://github.com/GluuFederation/cloud-native-edition/issues/507)) ([0451de1](https://github.com/GluuFederation/cloud-native-edition/commit/0451de11ccc6c0159e3643089ab822d9f7b673ed))
+
 ## [1.8.0](https://github.com/GluuFederation/cloud-native-edition/compare/v1.7.9...v1.8.0) (2023-01-02)
 
 
