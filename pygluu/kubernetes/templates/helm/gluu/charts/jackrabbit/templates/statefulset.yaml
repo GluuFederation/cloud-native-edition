@@ -54,16 +54,27 @@ spec:
       topologySpreadConstraints:
         {{- include "jackrabbit.topology-spread-constraints" . | indent 8 }}
       {{- end }}
+      initContainers:
+      - command:
+        - /bin/sh
+        - -c
+        - /bin/chown -R 1000:1000 /etc/gluu || echo "No folder /etc/gluu"
+        image: busybox:latest
+        imagePullPolicy: Always
+        name: change-etc-gluu-ownership
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
       containers:
       - name: {{ include "jackrabbit.name" . }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         env:
           {{- include "jackrabbit.usr-envs" . | indent 12 }}
           {{- include "jackrabbit.usr-secret-envs" . | indent 12 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        securityContext:
-          runAsUser: 1000
-          runAsNonRoot: true
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
