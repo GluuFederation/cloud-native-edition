@@ -19,7 +19,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/certmanager
   # -- Image  tag to use for deploying.
-  tag: 4.5.0-2
+  tag: 4.5.0-3
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- Auth server key rotation keys life in hours
