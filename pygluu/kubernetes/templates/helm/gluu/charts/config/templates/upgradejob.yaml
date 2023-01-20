@@ -48,6 +48,9 @@ spec:
       containers:
       - name: {{ include "config.name" . }}-upgrader
         image: "{{ .Values.global.upgrade.image.repository }}:{{ .Values.global.upgrade.image.tag }}"
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
         args:
         - "--source"
         - {{ .Values.global.upgrade.sourceVersion | quote }}

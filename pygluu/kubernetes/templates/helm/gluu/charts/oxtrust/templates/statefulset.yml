@@ -48,9 +48,15 @@ spec:
       - name: {{ include "oxtrust.name" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if and (and (eq .Values.global.isDomainRegistered "false") (eq .Values.global.enableSecurityContextWithNonRegisteredDomain "false" )) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        {{- else }}
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
+        {{- end }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
         command:
           - /bin/sh

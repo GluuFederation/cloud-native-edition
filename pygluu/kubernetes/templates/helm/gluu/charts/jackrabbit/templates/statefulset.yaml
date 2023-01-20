@@ -58,13 +58,30 @@ spec:
       - command:
         - /bin/sh
         - -c
-        - /bin/chown -R 1000:1000 /etc/gluu || echo "No folder /etc/gluu"
+        - ls -l /etc/gluu; /bin/chown -R 1000:1000 /etc/gluu; ls -l /opt/jackrabbit; /bin/chown -R 1000:1000 /opt/jackrabbit || echo "did not work"; ls -l /etc/gluu; ls -l /opt/jackrabbit; sleep 5
         image: busybox:latest
         imagePullPolicy: Always
         name: change-etc-gluu-ownership
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+        volumeMounts:
+          {{- with .Values.volumeMounts }}
+{{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: gluu-jackrabbit-admin-pass
+            mountPath: /etc/gluu/conf/jackrabbit_admin_password
+            subPath: jackrabbit_admin_password
+        {{- if eq .Values.global.gluuJackrabbitCluster "true" }}
+          - name: gluu-jackrabbit-postgres-pass
+            mountPath: /etc/gluu/conf/postgres_password
+            subPath: postgres_password
+        {{- end }}
+        {{- range $key, $values := .Values.jackrabbitVolumeMounts }}
+          - mountPath: {{$values.mountPath}}
+            name: {{$values.name}}
+            subPath: {{$key}}
+        {{- end }}
       containers:
       - name: {{ include "jackrabbit.name" . }}
         securityContext:
