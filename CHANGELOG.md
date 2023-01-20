@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.2](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.1...v1.8.2) (2023-01-20)
+
+
+### Bug Fixes
+
+* appVersion ([46d8afd](https://github.com/GluuFederation/cloud-native-edition/commit/46d8afd1fe943dc9d5110798d93bf05ef3f00ebb))
+* permission issues and allow for security override in non FQDN setups ([5bdb12f](https://github.com/GluuFederation/cloud-native-edition/commit/5bdb12fe8404c4010feb2f46798fdfef6fbbefc6))
+
 ## [1.8.1](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.0...v1.8.1) (2023-01-13)
 
 
