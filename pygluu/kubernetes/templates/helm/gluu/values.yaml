@@ -106,7 +106,7 @@ global:
   # -- Boolean flag to enable mapping global.lbIp  to global.fqdn inside pods on clouds that provide static ip for loadbalancers. On cloud that provide only addresses to the LB this flag will enable a script to actively scan config.configmap.lbAddr and update the hosts file inside the pods automatically.
   # This flag also runs containers in root. Please be advised as your setup should have the domain registered.
   isDomainRegistered: "false"
-  # To forcefully set the security user to 1000 and run as non-root while running a non-registered domain enable the below flag. This flag is only used when global.isDomainRegistered is set to "true"
+  # To forcefully set the security user to 1000 and run as non-root while running a non-registered domain enable the below flag. This flag is only used when global.isDomainRegistered is set to "false"
   enableSecurityContextWithNonRegisteredDomain: "true"
   # -- Name of the OpenDJ service. Please keep it as default.
   ldapServiceName: opendj
