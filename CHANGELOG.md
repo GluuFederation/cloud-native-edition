@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.2...v1.8.3) (2023-01-23)
+
+
+### Bug Fixes
+
+* upgrade syntax and sts additional volumeMount ([f499e16](https://github.com/GluuFederation/cloud-native-edition/commit/f499e16796ac2cafe6c127814b9bfaa1e4390f59))
+
 ## [1.8.2](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.1...v1.8.2) (2023-01-20)
 
 
