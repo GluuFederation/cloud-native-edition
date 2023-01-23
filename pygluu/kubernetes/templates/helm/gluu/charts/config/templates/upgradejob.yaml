@@ -39,10 +39,33 @@ spec:
       {{- with .Values.volumes }}
 {{- toYaml . | nindent 8 }}
       {{- end }}
+        {{- if .Values.global.jackrabbit.enabled }}
+        - name: gluu-jackrabbit-admin-pass
+          secret:
+            secretName: gluu-jackrabbit-admin-pass
+        {{- end }}
+        {{- if eq .Values.global.gluuPersistenceType "sql" }}
+        - name: sql-pass
+          secret:
+            secretName: {{ .Release.Name }}-sql-pass
+        {{- end }}
         {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
         - name: google-sa
           secret:
             secretName: {{ .Release.Name }}-google-sa
+        {{- end }}
+        {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
+        - name: cb-pass
+          secret:
+            secretName: {{ .Release.Name }}-cb-pass
+        - name: cb-super-pass
+          secret:
+            secretName: {{ .Release.Name }}-superuser-cb-pass
+        {{- if not .Values.global.istio.enabled }}
+        - name: cb-crt
+          secret:
+            secretName: {{ .Release.Name }}-cb-crt
+        {{- end }}
         {{- end }}
       restartPolicy: Never
       containers:
@@ -101,36 +124,4 @@ spec:
         {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
-      volumes:
-      {{- with .Values.volumes }}
-{{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.global.jackrabbit.enabled }}
-        - name: gluu-jackrabbit-admin-pass
-          secret:
-            secretName: gluu-jackrabbit-admin-pass
-      {{- end }}
-      {{- if eq .Values.global.gluuPersistenceType "sql" }}
-        - name: sql-pass
-          secret:
-            secretName: {{ .Release.Name }}-sql-pass
-        {{- end }}
-      {{ if or (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
-        - name: google-sa
-          secret:
-            secretName: {{ .Release.Name }}-google-sa
-      {{- end }}
-      {{- if or (eq .Values.global.gluuPersistenceType "couchbase") (eq .Values.global.gluuPersistenceType "hybrid")  }}
-        - name: cb-pass
-          secret:
-            secretName: {{ .Release.Name }}-cb-pass
-        - name: cb-super-pass
-          secret:
-            secretName: {{ .Release.Name }}-superuser-cb-pass
-        {{- if not .Values.global.istio.enabled }}
-        - name: cb-crt
-          secret:
-            secretName: {{ .Release.Name }}-cb-crt
-        {{- end }}
-      {{- end }}
 {{- end }}
