@@ -155,6 +155,14 @@ data:
   GLUU_SYNC_SHIB_MANIFESTS: {{ .Values.configmap.gluuSyncShibManifests | quote }}
   GLUU_OXTRUST_API_ENABLED: {{ .Values.configmap.gluuOxtrustApiEnabled | quote }}
   GLUU_OXTRUST_API_TEST_MODE: {{ .Values.configmap.gluuOxtrustApiTestMode | quote }}
+  {{ if .Values.global.jackrabbit.enabled }}
+  GLUU_JACKRABBIT_APP_LOGGERS: {{ .Values.global.jackrabbit.appLoggers
+  | toJson
+  | replace "jackrabbitLogTarget" "jackrabbit_log_target"
+  | replace "jackrabbitLogLevel" "jackrabbit_log_level"
+  | squote
+  }}
+  {{- end }}
   {{ if eq .Values.global.gluuJackrabbitCluster "true" }}
   GLUU_JACKRABBIT_ADMIN_ID: {{ .Values.configmap.gluuJackrabbitAdminId | quote }}
   GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE: {{ .Values.configmap.gluuJackrabbitAdminPassFile | quote }}
