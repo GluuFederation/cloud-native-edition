@@ -124,4 +124,15 @@ spec:
         {{- end }}
         resources:
 {{- toYaml .Values.resources | nindent 10 }}
+        command:
+          - tini
+          - -g
+          - --
+          - /bin/sh
+          - -c
+          - |
+              /app/scripts/entrypoint.sh
+              {{- if .Values.global.istio.enabled }}
+              curl -X POST http://localhost:15020/quitquitquit
+              {{- end }}
 {{- end }}
