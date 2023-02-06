@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.8.4](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.3...v1.8.4) (2023-02-06)
+
+
+### Features
+
+* add appLoggers for jackrabbit ([81cb26b](https://github.com/GluuFederation/cloud-native-edition/commit/81cb26bf05152afb78b0b9b838db52cb33d12374))
+
+
+### Bug Fixes
+
+* exit upgrade job in istio correctly ([7a565c9](https://github.com/GluuFederation/cloud-native-edition/commit/7a565c9cec4f38b39796b05e06eacf33f4f407ce))
+* use appLoggers ([c19e86d](https://github.com/GluuFederation/cloud-native-edition/commit/c19e86d50dcae376f88c85ce80a8ec84bcaf92f6))
+
+
+### Miscellaneous Chores
+
+* release 1.8.4 ([492c1c5](https://github.com/GluuFederation/cloud-native-edition/commit/492c1c50c6b48c3c5303bd974350d8927aeae059))
+
 ## [1.8.3](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.2...v1.8.3) (2023-01-23)
 
 
