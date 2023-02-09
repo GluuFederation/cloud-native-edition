@@ -45,6 +45,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "scim.name" . }}
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         {{- if and (and (eq .Values.global.isDomainRegistered "false") (eq .Values.global.enableSecurityContextWithNonRegisteredDomain "false" )) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}

@@ -38,6 +38,11 @@ spec:
     {{- end }}
       containers:
         - name: {{ include "cr-rotate.name" . }}
+          {{- with .Values.preStop }}
+          lifecycle:
+            preStop:
+{{ toYaml . | indent 14 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
             runAsUser: 1000
