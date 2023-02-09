@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.6](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.5...v1.8.6) (2023-02-09)
+
+
+### Bug Fixes
+
+* upgrade job arbs section ([8fcd713](https://github.com/GluuFederation/cloud-native-edition/commit/8fcd713ae045fa7d8cf671c0eb1f21ca53f585cf))
+
 ## [1.8.5](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.4...v1.8.5) (2023-02-09)
 
 
