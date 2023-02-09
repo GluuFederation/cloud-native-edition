@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.5](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.4...v1.8.5) (2023-02-09)
+
+
+### Bug Fixes
+
+* add preStop configuration ([76e67a9](https://github.com/GluuFederation/cloud-native-edition/commit/76e67a943122f4303526e78c7c1f09decaa6307a))
+
 ## [1.8.4](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.3...v1.8.4) (2023-02-06)
 
 
