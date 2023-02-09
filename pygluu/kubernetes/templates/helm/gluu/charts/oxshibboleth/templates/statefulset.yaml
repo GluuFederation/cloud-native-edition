@@ -48,6 +48,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "oxshibboleth.name" . }}
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
           {{- include "oxshibboleth.usr-envs" . | indent 12 }}

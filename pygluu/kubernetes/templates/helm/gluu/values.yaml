@@ -494,6 +494,9 @@ config:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -695,6 +698,9 @@ jackrabbit:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -808,6 +814,9 @@ opendj:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -910,6 +919,9 @@ persistence:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -983,6 +995,9 @@ oxauth:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1086,6 +1101,9 @@ oxtrust:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1190,6 +1208,9 @@ fido2:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1289,6 +1310,9 @@ scim:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1388,6 +1412,9 @@ oxd-server:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1488,6 +1515,9 @@ casa:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1588,6 +1618,9 @@ oxpassport:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1690,6 +1723,9 @@ oxshibboleth:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1761,6 +1797,9 @@ cr-rotate:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1812,6 +1851,9 @@ oxauth-key-rotation:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
+  # -- Add custom preStop
+  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
+  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config

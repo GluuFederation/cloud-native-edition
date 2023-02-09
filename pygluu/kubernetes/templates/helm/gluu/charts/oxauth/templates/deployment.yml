@@ -45,6 +45,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ template "oxauth.name" . }}
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:

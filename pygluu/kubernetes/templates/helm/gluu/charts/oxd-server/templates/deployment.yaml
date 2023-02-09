@@ -45,6 +45,11 @@ spec:
       {{- end }}
       containers:
         - name: {{ include "oxd-server.name" . }}
+          {{- with .Values.preStop }}
+          lifecycle:
+            preStop:
+  {{ toYaml . | indent 14 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           env:
             {{- include "oxd-server.usr-envs" . | indent 12 }}

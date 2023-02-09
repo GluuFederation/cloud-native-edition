@@ -56,6 +56,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "jackrabbit.name" . }}
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         env:
           {{- include "jackrabbit.usr-envs" . | indent 12 }}
           {{- include "jackrabbit.usr-secret-envs" . | indent 12 }}

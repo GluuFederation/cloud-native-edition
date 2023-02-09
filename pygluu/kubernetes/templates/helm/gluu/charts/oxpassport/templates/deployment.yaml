@@ -45,6 +45,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "oxpassport.name" . }}
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
             - name: PASSPORT_LOG_LEVEL

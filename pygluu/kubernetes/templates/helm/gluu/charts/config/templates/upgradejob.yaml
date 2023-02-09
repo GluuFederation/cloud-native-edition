@@ -47,6 +47,11 @@ spec:
       restartPolicy: Never
       containers:
       - name: {{ include "config.name" . }}-upgrader
+        {{- with .Values.preStop }}
+        lifecycle:
+          preStop:
+{{ toYaml . | indent 12 }}
+        {{- end }}
         image: "{{ .Values.global.upgrade.image.repository }}:{{ .Values.global.upgrade.image.tag }}"
         args:
         - "--source"
