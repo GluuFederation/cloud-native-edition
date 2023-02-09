@@ -79,11 +79,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
-        args:
-        - "--source"
-        - {{ .Values.global.upgrade.sourceVersion | quote }}
-        - "--target"
-        - {{ .Values.global.upgrade.targetVersion | quote }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config-cm
@@ -136,7 +131,7 @@ spec:
           - /bin/sh
           - -c
           - |
-              /app/scripts/entrypoint.sh
+              /app/scripts/entrypoint.sh --source {{ .Values.global.upgrade.sourceVersion | quote }} --target {{ .Values.global.upgrade.targetVersion | quote }}
               {{- if .Values.global.istio.enabled }}
               curl -X POST http://localhost:15020/quitquitquit
               {{- end }}
