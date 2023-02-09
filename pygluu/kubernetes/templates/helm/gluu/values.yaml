@@ -70,7 +70,7 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.4.2-1
+      tag: 4.4.2-2
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
     sourceVersion: "4.4"
@@ -932,7 +932,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
-    tag: 4.4.2-1
+    tag: 4.4.2-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1008,7 +1008,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.4.2-1
+    tag: 4.4.2-3
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.

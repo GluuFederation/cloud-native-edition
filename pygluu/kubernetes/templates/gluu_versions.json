@@ -17,7 +17,7 @@
     "JACKRABBIT_IMAGE_NAME": "gluufederation/jackrabbit",
     "JACKRABBIT_IMAGE_TAG": "4.4.2-1",
     "OXAUTH_IMAGE_NAME": "gluufederation/oxauth",
-    "OXAUTH_IMAGE_TAG": "4.4.2-1",
+    "OXAUTH_IMAGE_TAG": "4.4.2-3",
     "OXD_IMAGE_NAME": "gluufederation/oxd-server",
     "OXD_IMAGE_TAG": "4.4.2-1",
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
@@ -27,9 +27,9 @@
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
     "OXTRUST_IMAGE_TAG": "4.4.2-2",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-    "PERSISTENCE_IMAGE_TAG": "4.4.2-1",
+    "PERSISTENCE_IMAGE_TAG": "4.4.2-2",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.4.2-1"
+    "UPGRADE_IMAGE_TAG": "4.4.2-2"
   },
   "4.4.2_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
