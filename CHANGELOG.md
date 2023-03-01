@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.7](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.6...v1.8.7) (2023-03-01)
+
+
+### Bug Fixes
+
+* upstream fixes ([7357cae](https://github.com/GluuFederation/cloud-native-edition/commit/7357cae12c4cbe963992f4d023163e81aecb6a57))
+
 ## [1.8.6](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.5...v1.8.6) (2023-02-09)
 
 
