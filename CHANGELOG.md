@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.8](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.7...v1.8.8) (2023-03-06)
+
+
+### Bug Fixes
+
+* add aws envs and unquote aws config ([7e40c38](https://github.com/GluuFederation/cloud-native-edition/commit/7e40c38534a032ae0f75d0d046a70635d6f003ab))
+
 ## [1.8.7](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.6...v1.8.7) (2023-03-01)
 
 
