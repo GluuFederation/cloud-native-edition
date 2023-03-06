@@ -39,6 +39,15 @@ data:
   GLUU_CONFIG_GOOGLE_SECRET_VERSION_ID: {{ .Values.configmap.cnConfigGoogleSecretVersionId | quote }}
   GLUU_CONFIG_GOOGLE_SECRET_NAME_PREFIX: {{ .Values.configmap.cnConfigGoogleSecretNamePrefix | quote }}
   # [google_secret_manager_envs] END
+  # [aws_envs] Envs related to using AWS
+  GLUU_AWS_SECRETS_ENDPOINT_URL: {{ .Values.configmap.cnAwsSecretsEndpointUrl }}
+  GLUU_AWS_SECRETS_PREFIX: {{ .Values.configmap.cnAwsSecretsNamePrefix }}
+  GLUU_AWS_SECRETS_REPLICA_FILE: {{ .Values.global.cnAwsSecretsReplicaRegionsFile }}
+  AWS_DEFAULT_REGION: {{ .Values.configmap.cnAwsDefaultRegion }}
+  AWS_SHARED_CREDENTIALS_FILE: {{ .Values.global.cnAwsSharedCredentialsFile }}
+  AWS_CONFIG_FILE: {{ .Values.global.cnAwsConfigFile }}
+  #AWS_PROFILE
+  # [aws_envs] END
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}

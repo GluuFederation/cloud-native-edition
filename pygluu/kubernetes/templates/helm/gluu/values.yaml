@@ -507,7 +507,7 @@ config:
     # The default AWS Region to use, for example, `us-west-1` or `us-west-2`.
     cnAwsDefaultRegion: us-west-1
     # The default profile to use.
-    cnAwsProfile: "gluu"
+    cnAwsProfile: gluu
     # Example replicated region [{"Region": "us-west-1"}, {"Region": "us-west-2"}]
     cnAwsSecretsReplicaRegions: []
     # [aws_secret_manager_envs] END
