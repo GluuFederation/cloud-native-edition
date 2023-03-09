@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.9](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.8...v1.8.9) (2023-03-09)
+
+
+### Bug Fixes
+
+* release 1.8.10 ([54a5762](https://github.com/GluuFederation/cloud-native-edition/commit/54a5762d8ede0b05b99b4048cf3c61ae1ef84684))
+* release 1.8.9 ([5ae27c6](https://github.com/GluuFederation/cloud-native-edition/commit/5ae27c6ae9225ece7ca316388c7c502df886611a))
+* release 1.8.9 with memory leak fix ([e246191](https://github.com/GluuFederation/cloud-native-edition/commit/e246191901665d7701870dd12fa8bfb08b998a2f))
+
 ## [1.8.8](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.7...v1.8.8) (2023-03-06)
 
 
