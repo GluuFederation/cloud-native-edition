@@ -231,6 +231,8 @@ global:
   oxtrust:
     # -- Boolean flag to enable/disable the oxtrust chart.
     enabled: true
+    # -- passing custom  java options to oxTrust.
+    gluuCustomJavaOptions: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -291,6 +293,8 @@ global:
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
     enabled: false
+    # -- passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers.
+    gluuCustomJavaOptions: ""
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -1799,6 +1803,7 @@ oxshibboleth:
       # -- Memory request.
       memory: 1000Mi
   service:
+    sessionAffinity: ClientIP
     # -- The name of the oxPassport port within the oxPassport service. Please keep it as default.
     port: 8080
     # -- Name of the oxShibboleth service. Please keep it as default.
