@@ -43,6 +43,12 @@ spec:
       topologySpreadConstraints:
         {{- include "oxpassport.topology-spread-constraints" . | indent 8 }}
       {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+      {{- with .Values.tolerations }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
       containers:
       - name: {{ include "oxpassport.name" . }}
         {{- with .Values.preStop }}

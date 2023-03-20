@@ -50,26 +50,12 @@ spec:
       topologySpreadConstraints:
         {{- include "opendj.topology-spread-constraints" . | indent 8 }}
       {{- end }}
-      initContainers:
-      - command:
-        - /bin/sh
-        - -c
-        - ls -l /opt/opendj; /bin/chown -R 1000:1000 /opt/opendj || echo "did not work"; ls -l /opt/opendj; sleep 5
-        image: busybox:latest
-        imagePullPolicy: Always
-        name: change-folders-ownership
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        {{- range $key, $values := $.Values.openDjVolumeMounts }}
-          - mountPath: {{$values.mountPath}}
-            name: {{$values.name}}
-            subPath: {{$key}}
-        {{- end }}
-        {{- with $.Values.volumeMounts }}
-{{- toYaml . | nindent 10 }}
-        {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+      {{- with .Values.tolerations }}
+{{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
       containers:
       - name: {{ include "opendj.name" $ }}
         {{- with .Values.preStop }}

@@ -114,3 +114,5 @@ jackrabbitVolumeMounts:
 additionalLabels: { }
 # -- Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"}
 additionalAnnotations: { }
+# -- https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
