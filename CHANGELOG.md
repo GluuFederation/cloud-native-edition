@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.11](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.10...v1.8.11) (2023-03-20)
+
+
+### Bug Fixes
+
+* add support for toleration lists in values.yaml ([005fabd](https://github.com/GluuFederation/cloud-native-edition/commit/005fabd04941ac52c3425b36616904f48fa34366)), closes [#527](https://github.com/GluuFederation/cloud-native-edition/issues/527)
+
 ## [1.8.10](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.9...v1.8.10) (2023-03-15)
 
 
