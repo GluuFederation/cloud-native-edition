@@ -61,6 +61,7 @@ Kubernetes: `>=v1.21.0-0`
 | resources.limits.memory | string | `"2000Mi"` | Memory limit. |
 | resources.requests.cpu | string | `"1500m"` | CPU request. |
 | resources.requests.memory | string | `"2000Mi"` | Memory request. |
+| tolerations | list | `[]` | https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/ |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service |
 | usrEnvs.normal | object | `{}` | Add custom normal envs to the service variable1: value1 |
 | usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
