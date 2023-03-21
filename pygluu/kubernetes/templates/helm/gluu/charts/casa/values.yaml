@@ -102,3 +102,6 @@ additionalLabels: { }
 additionalAnnotations: { }
 # -- https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 tolerations: []
+# -- https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+affinity: {}
+nodeSelector: {}
