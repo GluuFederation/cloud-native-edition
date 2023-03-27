@@ -307,12 +307,12 @@ data:
         # returns empty string if not found
         ssl_cert = manager.secret.get("ssl_cert")
         if ssl_cert:
-            ssl_cert = b64encode(ssl_cert.encode()).decode()
+            ssl_cert = b64encode(ssl_cert)
 
         # returns empty string if not found
         ssl_key = manager.secret.get("ssl_key")
         if ssl_key:
-            ssl_key = b64encode(ssl_key.encode()).decode()
+            ssl_key = b64encode(ssl_key)
         return ssl_cert, ssl_key
 
 
