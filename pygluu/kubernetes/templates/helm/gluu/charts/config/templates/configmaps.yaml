@@ -242,6 +242,8 @@ data:
     from kubernetes import config, client
     import logging
 
+    from pygluu.containerlib import get_manager
+
     log_format = '%(asctime)s - %(name)8s - %(levelname)5s - %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
     logger = logging.getLogger("tls-generator")
@@ -291,25 +293,23 @@ data:
             return False
 
     # check if gluu secret exists
-    def get_certs(secret_name, namespace):
-        """
+    def get_certs():
+        """Get cert and key from secret layer.
 
-        :param namespace:
-        :return:  ssl cert and key from gluu secrets
+        :return: ssl cert and key (if any)
         """
-        ssl_cert = None
-        ssl_key = None
-        if core_cli.read_namespaced_secret(secret_name, namespace):
-            ssl_cert = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_cert']
-            ssl_key = core_cli.read_namespaced_secret(secret_name, namespace).data['ssl_key']
-
+        manager = get_manager()
+        # returns empty string if not found
+        ssl_cert = manager.secret.get("ssl_cert")
+        # returns empty string if not found
+        ssl_key = manager.secret.get("ssl_key")
         return ssl_cert, ssl_key
 
 
     def main():
         namespace = {{.Release.Namespace | quote}}
         secret_name = "gluu"
-        cert, key = get_certs(secret_name, namespace)
+        cert, key = get_certs()
         # global vars
         name = "tls-certificate"
 
