@@ -241,6 +241,7 @@ data:
   tls_generator.py: |-
     from kubernetes import config, client
     import logging
+    import base64
 
     from pygluu.containerlib import get_manager
 
@@ -298,11 +299,20 @@ data:
 
         :return: ssl cert and key (if any)
         """
+        def b64encode(value):
+            return base64.b64encode(value.encode()).decode()
+
         manager = get_manager()
+
         # returns empty string if not found
         ssl_cert = manager.secret.get("ssl_cert")
+        if ssl_cert:
+            ssl_cert = b64encode(ssl_cert.encode()).decode()
+
         # returns empty string if not found
         ssl_key = manager.secret.get("ssl_key")
+        if ssl_key:
+            ssl_key = b64encode(ssl_key.encode()).decode()
         return ssl_cert, ssl_key
 
 
