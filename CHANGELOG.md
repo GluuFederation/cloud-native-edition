@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.12](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.11...v1.8.12) (2023-03-21)
+
+
+### Bug Fixes
+
+* add support for injecting affinty and nodeSelector ([91be257](https://github.com/GluuFederation/cloud-native-edition/commit/91be257c8988d895190f5eecbdf204a0f80224be))
+
 ## [1.8.11](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.10...v1.8.11) (2023-03-20)
 
 
