@@ -48,10 +48,7 @@ spec:
           containers:
             - name: {{ include "oxauth-key-rotation.name" . }}
               {{- with .Values.preStop }}
-              lifecycle:
-                preStop:
-{{ toYaml . | indent 18 }}
-              {{- end }}
+              lifecycle: {{ toYaml .Values.lifecycle | nindent 10 }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               securityContext:
                 runAsUser: 1000

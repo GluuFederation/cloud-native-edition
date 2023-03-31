@@ -60,10 +60,7 @@ spec:
       containers:
         - name: {{ include "oxd-server.name" . }}
           {{- with .Values.preStop }}
-          lifecycle:
-            preStop:
-  {{ toYaml . | indent 14 }}
-          {{- end }}
+          lifecycle: {{ toYaml .Values.lifecycle | nindent 10 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           {{- if and (and (eq .Values.global.isDomainRegistered "false") (eq .Values.global.enableSecurityContextWithNonRegisteredDomain "false" )) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
           securityContext:

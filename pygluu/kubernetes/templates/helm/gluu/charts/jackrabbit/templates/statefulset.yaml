@@ -99,10 +99,7 @@ spec:
       containers:
       - name: {{ include "jackrabbit.name" . }}
         {{- with .Values.preStop }}
-        lifecycle:
-          preStop:
-{{ toYaml . | indent 12 }}
-        {{- end }}
+        lifecycle: {{ toYaml .Values.lifecycle | nindent 10 }}
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
