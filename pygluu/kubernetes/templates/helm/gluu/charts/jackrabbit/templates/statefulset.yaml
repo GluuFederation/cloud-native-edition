@@ -98,8 +98,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "jackrabbit.name" . }}
-        {{- with .Values.preStop }}
-        lifecycle: {{ toYaml .Values.lifecycle | nindent 10 }}
+        lifecycle:
+{{- toYaml .Values.lifecycle | nindent 10 }}        
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true

@@ -64,8 +64,8 @@ spec:
       {{- end }}
       containers:
         - name: {{ include "casa.name" . }}
-          {{- with .Values.preStop }}
-          lifecycle: {{ toYaml .Values.lifecycle | nindent 10 }}
+          lifecycle:
+{{- toYaml .Values.lifecycle | nindent 12 }}          
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
