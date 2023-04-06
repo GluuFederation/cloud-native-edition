@@ -48,11 +48,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "persistence.name" . }}
-        {{- with .Values.preStop }}
         lifecycle:
-          preStop:
-{{ toYaml . | indent 12 }}
-        {{- end }}
+{{- toYaml .Values.lifecycle | nindent 10 }}        
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         securityContext:
           runAsUser: 1000

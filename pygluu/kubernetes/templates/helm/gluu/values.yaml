@@ -543,9 +543,14 @@ config:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -752,9 +757,6 @@ jackrabbit:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -820,6 +822,14 @@ jackrabbit:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across the gateway in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -874,9 +884,6 @@ opendj:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -964,6 +971,10 @@ opendj:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  lifecycle:
+    preStop:
+      exec:
+        command: ["/bin/sh", "-c", "python3 /app/scripts/deregister_peer.py 1>&/proc/1/fd/1"]
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -985,9 +996,6 @@ persistence:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1017,6 +1025,14 @@ persistence:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1067,9 +1083,6 @@ oxauth:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1129,6 +1142,14 @@ oxauth:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1179,9 +1200,6 @@ oxtrust:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1242,7 +1260,14 @@ oxtrust:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
-
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
   # -- Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken
@@ -1292,9 +1317,6 @@ fido2:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1350,6 +1372,14 @@ fido2:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1400,9 +1430,6 @@ scim:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1458,6 +1485,14 @@ scim:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1508,9 +1543,6 @@ oxd-server:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1566,6 +1598,14 @@ oxd-server:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1616,9 +1656,6 @@ casa:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1675,6 +1712,14 @@ casa:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
   # -- Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken
@@ -1724,9 +1769,6 @@ oxpassport:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1785,6 +1827,14 @@ oxpassport:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1835,9 +1885,6 @@ oxshibboleth:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1898,6 +1945,14 @@ oxshibboleth:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
@@ -1919,9 +1974,6 @@ cr-rotate:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -1958,6 +2010,14 @@ cr-rotate:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }
   # -- Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken
@@ -1978,9 +2038,6 @@ oxauth-key-rotation:
     # -- Add custom secret envs to the service
     # variable1: value1
     secret: {}
-  # -- Add custom preStop
-  # https://github.com/GluuFederation/cloud-native-edition/discussions/516
-  preStop: {}
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config
@@ -2012,6 +2069,14 @@ oxauth-key-rotation:
   volumes: []
   # -- Configure any additional volumesMounts that need to be attached to the containers
   volumeMounts: []
+  # Actions on lifecycle events such as postStart and preStop
+  # Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+  # Example postStart:
+  # lifecycle:
+  #   postStart:
+  #     exec:
+  #       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+  lifecycle: {}
 
   # -- Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"}
   additionalLabels: { }

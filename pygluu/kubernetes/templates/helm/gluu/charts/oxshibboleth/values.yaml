@@ -82,7 +82,14 @@ service:
 volumes: []
 # -- Configure any additional volumesMounts that need to be attached to the containers
 volumeMounts: []
-
+# Actions on lifecycle events such as postStart and preStop
+# Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+# Example postStart:
+# lifecycle:
+#   postStart:
+#     exec:
+#       command: ["sh", "-c", "mkdir /opt/gluu/jetty/oxauth/custom/static/stylesheet/"]
+lifecycle: {}
 nameOverride: ""
 fullnameOverride: ""
 

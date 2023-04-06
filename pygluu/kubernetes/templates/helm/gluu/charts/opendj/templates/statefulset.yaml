@@ -66,11 +66,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "opendj.name" $ }}
-        {{- with .Values.preStop }}
         lifecycle:
-          preStop:
-{{ toYaml . | indent 12 }}
-        {{- end }}
+{{- toYaml .Values.lifecycle | nindent 10 }}
         securityContext:
           runAsUser: 1000
           runAsNonRoot: true
@@ -79,10 +76,6 @@ spec:
         env:
           {{- include "opendj.usr-envs" $ | indent 12 }}
           {{- include "opendj.usr-secret-envs" $ | indent 12 }}
-        lifecycle:
-          preStop:
-            exec:
-              command: ["/bin/sh", "-c", "python3 /app/scripts/deregister_peer.py 1>&/proc/1/fd/1"]
         envFrom:
         - configMapRef:
             name: {{ $.Release.Name }}-config-cm

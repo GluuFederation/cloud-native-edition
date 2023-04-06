@@ -84,11 +84,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ include "config.name" . }}-upgrader
-        {{- with .Values.preStop }}
         lifecycle:
-          preStop:
-{{ toYaml . | indent 12 }}
-        {{- end }}
+{{- toYaml .Values.lifecycle | nindent 10 }}        
         image: "{{ .Values.global.upgrade.image.repository }}:{{ .Values.global.upgrade.image.tag }}"
         securityContext:
           runAsUser: 1000
