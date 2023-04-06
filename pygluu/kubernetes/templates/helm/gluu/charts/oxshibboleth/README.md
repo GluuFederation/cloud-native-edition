@@ -1,6 +1,6 @@
 # oxshibboleth
 
-![Version: 1.8.12](https://img.shields.io/badge/Version-1.8.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.13](https://img.shields.io/badge/Version-1.8.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Shibboleth project for the Gluu Server's SAML IDP functionality.
 
@@ -38,6 +38,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/oxshibboleth"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.0-5"` | Image  tag to use for deploying. |
+| lifecycle | object | `{}` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | replicas | int | `1` | Service replica number. |

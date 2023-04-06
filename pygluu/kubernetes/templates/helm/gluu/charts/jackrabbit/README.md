@@ -1,6 +1,6 @@
 # jackrabbit
 
-![Version: 1.8.12](https://img.shields.io/badge/Version-1.8.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.13](https://img.shields.io/badge/Version-1.8.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications.
 
@@ -47,6 +47,7 @@ Kubernetes: `>=v1.21.0-0`
 | jackrabbitVolumeMounts.version.name | string | `"jackrabbit-volume"` |  |
 | jackrabbitVolumeMounts.workspaces.mountPath | string | `"opt/jackrabbit/workspaces"` |  |
 | jackrabbitVolumeMounts.workspaces.name | string | `"jackrabbit-volume"` |  |
+| lifecycle | object | `{}` |  |
 | livenessProbe | object | `{"initialDelaySeconds":25,"periodSeconds":25,"tcpSocket":{"port":"http-jackrabbit"},"timeoutSeconds":5}` | Configure the liveness healthcheck for the Jackrabbit if needed. |
 | livenessProbe.tcpSocket | object | `{"port":"http-jackrabbit"}` | Executes tcp healthcheck. |
 | nameOverride | string | `""` |  |

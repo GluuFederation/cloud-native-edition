@@ -35,6 +35,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.repository | string | `"gluufederation/certmanager"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.0-4"` | Image  tag to use for deploying. |
 | keysLife | int | `48` | Auth server key rotation keys life in hours |
+| lifecycle | object | `{}` |  |
 | nodeSelector | object | `{}` |  |
 | resources | object | `{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"300m"` | CPU limit. |
