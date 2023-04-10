@@ -1,6 +1,6 @@
 # config
 
-![Version: 1.8.12](https://img.shields.io/badge/Version-1.8.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.14](https://img.shields.io/badge/Version-1.8.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Configuration parameters for setup and initial configuration secret and config layers used by Gluu services.
 
@@ -105,6 +105,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.repository | string | `"gluufederation/config-init"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.0-4"` | Image  tag to use for deploying. |
 | ldapPass | string | `"P@ssw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
+| lifecycle | object | `{}` |  |
 | migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
 | migration.enabled | bool | `false` | Boolean flag to enable migration from CE |
 | migration.migrationDataFormat | string | `"ldif"` | migration data-format depending on persistence backend. Supported data formats are ldif, couchbase+json, spanner+avro, postgresql+json, and mysql+json. |

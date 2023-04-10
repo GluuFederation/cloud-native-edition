@@ -25,11 +25,11 @@
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
     "OXSHIBBOLETH_IMAGE_TAG": "4.5.0-10",
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
-    "OXTRUST_IMAGE_TAG": "4.5.0-6",
+    "OXTRUST_IMAGE_TAG": "4.5.0-7",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-    "PERSISTENCE_IMAGE_TAG": "4.5.0-5",
+    "PERSISTENCE_IMAGE_TAG": "4.5.0-6",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.5.0-6"
+    "UPGRADE_IMAGE_TAG": "4.5.0-7"
   },
   "4.5.0_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",

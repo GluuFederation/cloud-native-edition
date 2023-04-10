@@ -19,7 +19,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-name: "base-route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 {{- if .Values.ingress.adminUiAdditionalAnnotations }}
 {{ toYaml .Values.ingress.adminUiAdditionalAnnotations | indent 4 }}
@@ -586,7 +586,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-name: "passport-statefulset-route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.passportAdditionalAnnotations }}
@@ -640,7 +640,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-name: "shib-stateful-route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.additionalAnnotations }}
@@ -689,7 +689,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/app-root: "/identity"
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-name: "admin-ui-route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.adminUiAdditionalAnnotations }}
@@ -742,7 +742,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
-    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/session-cookie-name: "casa-route"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout invalid_header http_500 http_502 http_503 http_504"
 {{- if .Values.ingress.casaAdditionalAnnotations }}
 {{ toYaml .Values.ingress.casaAdditionalAnnotations | indent 4 }}

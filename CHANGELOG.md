@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.8.14](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.13...v1.8.14) (2023-04-10)
+
+
+### Bug Fixes
+
+* update image tags to resolve API UMA mode ([#539](https://github.com/GluuFederation/cloud-native-edition/issues/539)) ([f5b4d1b](https://github.com/GluuFederation/cloud-native-edition/commit/f5b4d1bbe1a428ad508cb82767cee7cac908ff7c))
+
+## [1.8.13](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.12...v1.8.13) (2023-04-06)
+
+
+### Bug Fixes
+
+* ensure secrets are base64-encoded string ([#533](https://github.com/GluuFederation/cloud-native-edition/issues/533)) ([cca808b](https://github.com/GluuFederation/cloud-native-edition/commit/cca808b2fdfdb3247ce1051bdd196ee5d1466650))
+* get cert and key regardless of secrets layer ([#531](https://github.com/GluuFederation/cloud-native-edition/issues/531)) ([ffccc0a](https://github.com/GluuFederation/cloud-native-edition/commit/ffccc0a4512eb30b79e0ef6ff8de2c56a7e6a410))
+* set unique session-cookie-name of ingresses to avoid collision ([#537](https://github.com/GluuFederation/cloud-native-edition/issues/537)) ([1629f8e](https://github.com/GluuFederation/cloud-native-edition/commit/1629f8ea4681cf0eba6e530f1fad5bfb3bfab9ad))
+
+
+### Documentation
+
+* customization ([#535](https://github.com/GluuFederation/cloud-native-edition/issues/535)) ([2c53800](https://github.com/GluuFederation/cloud-native-edition/commit/2c5380077feb8e34ba965942e8e166beb7596967))
+
 ## [1.8.12](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.11...v1.8.12) (2023-03-21)
 
 
