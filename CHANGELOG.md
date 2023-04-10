@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.14](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.13...v1.8.14) (2023-04-10)
+
+
+### Bug Fixes
+
+* update image tags to resolve API UMA mode ([#539](https://github.com/GluuFederation/cloud-native-edition/issues/539)) ([f5b4d1b](https://github.com/GluuFederation/cloud-native-edition/commit/f5b4d1bbe1a428ad508cb82767cee7cac908ff7c))
+
 ## [1.8.13](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.12...v1.8.13) (2023-04-06)
 
 
