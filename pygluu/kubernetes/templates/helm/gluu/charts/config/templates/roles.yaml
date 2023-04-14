@@ -11,5 +11,5 @@ metadata:
 {{- end }}
 rules:
 - apiGroups: [""] # "" refers to the core API group
-  resources: ["configmaps", "secrets"]
+  resources: ["configmaps", "secrets", "pods", "pods/exec"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
