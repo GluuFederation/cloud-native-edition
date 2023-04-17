@@ -490,12 +490,6 @@ config:
     cnSecretGoogleSecretVersionId: "latest"
     # -- Prefix for Gluu secret in Google Secret Manager. Defaults to gluu. If left gluu-secret secret will be created. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnSecretGoogleSecretNamePrefix: gluu
-    # -- Passphrase for Gluu secret in Google Secret Manager. This is used for encrypting and decrypting data from the Google Secret Manager. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
-    cnGoogleSecretManagerPassPhrase: Test1234#
-    # -- Secret version to be used for configuration. Defaults to latest and should normally always stay that way. Used only when global.configAdapterName and global.configSecretAdapter is set to google. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
-    cnConfigGoogleSecretVersionId: "latest"
-    # -- Prefix for Gluu configuration secret in Google Secret Manager. Defaults to gluu. If left intact gluu-configuration secret will be created. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
-    cnConfigGoogleSecretNamePrefix: gluu
     # [google_secret_manager_envs] END
     # [google_envs] END
     # [aws_envs] Envs related to using AWS
@@ -510,8 +504,8 @@ config:
     cnAwsSecretsNamePrefix: gluu
     # The default AWS Region to use, for example, `us-west-1` or `us-west-2`.
     cnAwsDefaultRegion: us-west-1
-    # The named profile to use. https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
-    cnAwsProfile: default
+    # The aws named profile to use. Has to be created first. This is a sensible default and it's good to leave it as is. https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+    cnAwsProfile: gluu
     # Example replicated region [{"Region": "us-west-1"}, {"Region": "us-west-2"}]
     cnAwsSecretsReplicaRegions: []
     # [aws_secret_manager_envs] END
