@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.15](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.14...v1.8.15) (2023-04-17)
+
+
+### Bug Fixes
+
+* aws and google config ([#542](https://github.com/GluuFederation/cloud-native-edition/issues/542)) ([20e3d32](https://github.com/GluuFederation/cloud-native-edition/commit/20e3d32ed99da8a04315f6fb95f5acc2b16ddc8b))
+* missing pods and pods/exec permission for default Role ([#544](https://github.com/GluuFederation/cloud-native-edition/issues/544)) ([06edf2f](https://github.com/GluuFederation/cloud-native-edition/commit/06edf2f0bf759640c98d0ae9e20df093decac9f2))
+
 ## [1.8.14](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.13...v1.8.14) (2023-04-10)
 
 
