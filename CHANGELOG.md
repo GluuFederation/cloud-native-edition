@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.16](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.15...v1.8.16) (2023-05-08)
+
+
+### Bug Fixes
+
+* update oxauth image tag to include HttpService2 ([#547](https://github.com/GluuFederation/cloud-native-edition/issues/547)) ([b4fee12](https://github.com/GluuFederation/cloud-native-edition/commit/b4fee1251545195464ee6d4108fd09060aca57bb))
+
 ## [1.8.15](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.14...v1.8.15) (2023-04-17)
 
 
