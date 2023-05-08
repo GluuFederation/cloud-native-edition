@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.15](https://img.shields.io/badge/Version-1.8.15-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.16](https://img.shields.io/badge/Version-1.8.16-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.15 |
-|  | config | 1.8.15 |
-|  | cr-rotate | 1.8.15 |
-|  | fido2 | 1.8.15 |
-|  | gluu-alb-ingress | 1.8.15 |
-|  | gluu-istio-ingress | 1.8.15 |
-|  | jackrabbit | 1.8.15 |
-|  | nginx-ingress | 1.8.15 |
-|  | opendj | 1.8.15 |
-|  | oxauth | 1.8.15 |
-|  | oxauth-key-rotation | 1.8.15 |
-|  | oxd-server | 1.8.15 |
-|  | oxpassport | 1.8.15 |
-|  | oxshibboleth | 1.8.15 |
-|  | oxtrust | 1.8.15 |
-|  | persistence | 1.8.15 |
-|  | scim | 1.8.15 |
+|  | casa | 1.8.16 |
+|  | config | 1.8.16 |
+|  | cr-rotate | 1.8.16 |
+|  | fido2 | 1.8.16 |
+|  | gluu-alb-ingress | 1.8.16 |
+|  | gluu-istio-ingress | 1.8.16 |
+|  | jackrabbit | 1.8.16 |
+|  | nginx-ingress | 1.8.16 |
+|  | opendj | 1.8.16 |
+|  | oxauth | 1.8.16 |
+|  | oxauth-key-rotation | 1.8.16 |
+|  | oxd-server | 1.8.16 |
+|  | oxpassport | 1.8.16 |
+|  | oxshibboleth | 1.8.16 |
+|  | oxtrust | 1.8.16 |
+|  | persistence | 1.8.16 |
+|  | scim | 1.8.16 |
 
 ## Values
 
@@ -526,7 +526,7 @@ Kubernetes: `>=v1.21.0-0`
 | oxauth.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | oxauth.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxauth.image.repository | string | `"gluufederation/oxauth"` | Image  to use for deploying. |
-| oxauth.image.tag | string | `"4.5.0-8"` | Image  tag to use for deploying. |
+| oxauth.image.tag | string | `"4.5.0-10"` | Image  tag to use for deploying. |
 | oxauth.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
 | oxauth.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py |
 | oxauth.pdb | object | `{"enabled":true,"maxUnavailable":"90%"}` | Configure the PodDisruptionBudget |
