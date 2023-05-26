@@ -215,7 +215,8 @@ class SettingsHandler(object):
                                 GLUU_LDAP_MULTI_CLUSTER_NAMESPACE_INT_ID="",
                                 GLUU_LDAP_MULTI_CLUSTERS_IDS=[],
                                 NGINX_LEGACY="",
-                                SPANNER_EMULATOR_HOST=""
+                                SPANNER_EMULATOR_HOST="",
+                                CONTAINER_REGISTRY_SECRET_NAME="",
                                 )
         return default_settings
 

@@ -208,7 +208,7 @@ class Helm(object):
             values_file_parser["config"]["configmap"]["gluuCouchbasePass"] = self.settings.get("COUCHBASE_PASSWORD")
             values_file_parser["config"]["configmap"]["gluuCouchbaseSuperUserPass"] = \
                 self.settings.get("COUCHBASE_SUPERUSER_PASSWORD")
-            
+
         if self.settings.get("PERSISTENCE_BACKEND") == "sql":
             values_file_parser["config"]["configmap"]["cnSqlDbDialect"] = \
                 self.settings.get("GLUU_SQL_DB_DIALECT")
@@ -222,7 +222,7 @@ class Helm(object):
                 self.settings.get("GLUU_SQL_DB_USER")
             values_file_parser["config"]["configmap"]["cnSqldbUserPassword"] = \
                 self.settings.get("GLUU_SQL_DB_PASSWORD")
-            
+
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
             values_file_parser["config"]["configmap"]["cnGoogleSpannerEmulatorHost"] = \
                 self.settings.get("SPANNER_EMULATOR_HOST")
@@ -419,6 +419,42 @@ class Helm(object):
         values_file_parser["oxtrust"]["image"]["repository"] = self.settings.get("OXTRUST_IMAGE_NAME")
         values_file_parser["oxtrust"]["image"]["tag"] = self.settings.get("OXTRUST_IMAGE_TAG")
         values_file_parser["oxtrust"]["replicas"] = self.settings.get("OXTRUST_REPLICAS")
+
+        # append container registry credentials name
+        ctr_registry_cred_name = self.settings.get("CONTAINER_REGISTRY_SECRET_NAME")
+        if ctr_registry_cred_name:
+            for comp in [
+                "casa",
+                "fido2",
+                "scim",
+                "config",
+                "cr-rotate",
+                "oxauth-key-rotation",
+                "opendj",
+                "persistence",
+                "oxauth",
+                "oxd-server",
+                "oxpassport",
+                "oxshibboleth",
+                "jackrabbit",
+                "oxtrust",
+            ]:
+                # collect all creds and remove name matches ctr_registry_cred_name
+                # to avoid duplication
+                creds = [
+                    cred for cred in values_file_parser[comp]["image"]["pullSecrets"]
+                    if cred["name"] != ctr_registry_cred_name
+                ]
+                creds.append({"name": ctr_registry_cred_name})
+
+                # example of generated yaml
+                #
+                # oxauth:
+                #   image:
+                #     pullSecrets:
+                #       - name: regcred
+                values_file_parser[comp]["image"]["pullSecrets"] = creds
+
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
@@ -444,7 +480,7 @@ class Helm(object):
         try:
             exec_cmd("helm install {} -f {} ./helm/gluu --timeout 10m0s --namespace={}".format(
                 self.settings.get('GLUU_HELM_RELEASE_NAME'), self.values_file, self.settings.get("GLUU_NAMESPACE")))
-    
+
         except FileNotFoundError:
             logger.error("Helm v3 is not installed. Please install it to continue "
                          "https://helm.sh/docs/intro/install/")

@@ -104,5 +104,11 @@ class PromptConfiguration:
                                                    "postgresql+json, and mysql+json ",
                                                    default="ldif"))
 
+        if not self.settings.get("CONTAINER_REGISTRY_SECRET_NAME"):
+            self.settings.set(
+                "CONTAINER_REGISTRY_SECRET_NAME",
+                click.prompt("container registry secret name", default="regcred")
+            )
+
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
