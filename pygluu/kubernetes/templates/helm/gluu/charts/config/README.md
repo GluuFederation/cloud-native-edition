@@ -1,6 +1,6 @@
 # config
 
-![Version: 1.8.14](https://img.shields.io/badge/Version-1.8.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.16](https://img.shields.io/badge/Version-1.8.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
 
 Configuration parameters for setup and initial configuration secret and config layers used by Gluu services.
 
@@ -31,10 +31,14 @@ Kubernetes: `>=v1.21.0-0`
 | adminPass | string | `"P@ssw0rd"` | Admin password to log in to the UI. |
 | affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
 | city | string | `"Austin"` | City. Used for certificate creation. |
-| configmap.cnConfigGoogleSecretNamePrefix | string | `"gluu"` | Prefix for Gluu configuration secret in Google Secret Manager. Defaults to gluu. If left intact gluu-configuration secret will be created. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
-| configmap.cnConfigGoogleSecretVersionId | string | `"latest"` | Secret version to be used for configuration. Defaults to latest and should normally always stay that way. Used only when global.configAdapterName and global.configSecretAdapter is set to google. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
+| configmap.cnAwsAccessKeyId | string | `""` |  |
+| configmap.cnAwsDefaultRegion | string | `"us-west-1"` |  |
+| configmap.cnAwsProfile | string | `"gluu"` |  |
+| configmap.cnAwsSecretAccessKey | string | `""` |  |
+| configmap.cnAwsSecretsEndpointUrl | string | `""` |  |
+| configmap.cnAwsSecretsNamePrefix | string | `"gluu"` |  |
+| configmap.cnAwsSecretsReplicaRegions | list | `[]` |  |
 | configmap.cnGoogleProjectId | string | `"google-project-to-save-config-and-secrets-to"` | Project id of the google project the secret manager belongs to. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
-| configmap.cnGoogleSecretManagerPassPhrase | string | `"Test1234#"` | Passphrase for Gluu secret in Google Secret Manager. This is used for encrypting and decrypting data from the Google Secret Manager. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
 | configmap.cnGoogleServiceAccount | string | `"SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo="` | Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
 | configmap.cnGoogleSpannerDatabaseId | string | `""` | Google Spanner Database ID. Used only when global.gluuPersistenceType is spanner. |
 | configmap.cnGoogleSpannerInstanceId | string | `""` | Google Spanner ID. Used only when global.gluuPersistenceType is spanner. |
