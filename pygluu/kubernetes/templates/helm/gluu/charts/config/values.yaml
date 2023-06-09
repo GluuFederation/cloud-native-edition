@@ -25,6 +25,8 @@ countryCode: US
 state: TX
 # -- City. Used for certificate creation.
 city: Austin
+# -- Salt. Used for encoding/decoding sensitive data. If omitted or set to empty string, the value will be self-generated. Otherwise, a 24 alphanumeric characters are allowed as its value.
+salt: ""
 configmap:
   # -- SQL database dialect. `mysql` or `pgsql`
   cnSqlDbDialect: mysql
