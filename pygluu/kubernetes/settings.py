@@ -217,6 +217,8 @@ class SettingsHandler(object):
                                 NGINX_LEGACY="",
                                 SPANNER_EMULATOR_HOST="",
                                 CONTAINER_REGISTRY_SECRET_NAME="",
+                                USE_CUSTOM_SALT="",
+                                SALT="",
                                 )
         return default_settings
 

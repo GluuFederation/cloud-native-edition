@@ -12,6 +12,8 @@ from pathlib import Path
 import re
 import json
 import click
+import random
+import string
 
 from pygluu.kubernetes.helpers import get_logger, prompt_password
 from pygluu.kubernetes.terminal.helpers import confirm_yesno
@@ -109,6 +111,33 @@ class PromptConfiguration:
                 "CONTAINER_REGISTRY_SECRET_NAME",
                 click.prompt("container registry secret name", default="regcred")
             )
+
+        if not self.settings.get("USE_CUSTOM_SALT"):
+            self.settings.set(
+                "USE_CUSTOM_SALT",
+                confirm_yesno("Are you using custom salt"),
+            )
+
+        if self.settings.get("USE_CUSTOM_SALT") == "Y":
+            while True:
+                if not self.settings.get("SALT"):
+                    self.settings.set(
+                        "SALT",
+                        click.prompt(
+                            "Salt for encoding/decoding sensitive data",
+                            default="".join(random.choices(string.ascii_letters + string.digits, k=24)),
+                        ),
+                    )
+
+                salt = self.settings.get("SALT")
+
+                if len(salt) == 24 and salt.isalnum():
+                    break
+
+                logger.error("Salt value must be 24 characters of alphanumeric")
+
+                # reset to force prompt
+                self.settings.set("SALT", "")
 
         logger.info("You can mount your FQDN certification and key by placing them inside "
                     "gluu.crt and gluu.key respectivley at the same location pygluu-kubernetes.pyz is at.")
