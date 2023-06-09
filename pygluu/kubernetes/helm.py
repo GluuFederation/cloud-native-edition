@@ -455,6 +455,9 @@ class Helm(object):
                 #       - name: regcred
                 values_file_parser[comp]["image"]["pullSecrets"] = creds
 
+        # add custom salt
+        values_file_parser["config"]["salt"] = self.settings.get("SALT") or ""
+
         values_file_parser.dump_it()
 
     def install_gluu(self, install_ingress=True):
