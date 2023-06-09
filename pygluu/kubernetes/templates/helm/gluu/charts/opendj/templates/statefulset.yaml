@@ -72,6 +72,8 @@ spec:
       - name: {{ include "opendj.name" $ }}
         lifecycle:
 {{- toYaml .Values.lifecycle | nindent 10 }}
+        securityContext:
+          runAsNonRoot: true
         imagePullPolicy: {{ $.Values.image.pullPolicy }}
         image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
         env:
