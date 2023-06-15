@@ -1,6 +1,6 @@
 # config
 
-![Version: 1.8.16](https://img.shields.io/badge/Version-1.8.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.17](https://img.shields.io/badge/Version-1.8.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.1](https://img.shields.io/badge/AppVersion-4.5.1-informational?style=flat-square)
 
 Configuration parameters for setup and initial configuration secret and config layers used by Gluu services.
 
@@ -107,7 +107,7 @@ Kubernetes: `>=v1.21.0-0`
 | email | string | `"support@gluu.com"` | Email address of the administrator usually. Used for certificate creation. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/config-init"` | Image  to use for deploying. |
-| image.tag | string | `"4.5.0-4"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.5.1-1"` | Image  tag to use for deploying. |
 | ldapPass | string | `"P@ssw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
 | lifecycle | object | `{}` |  |
 | migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |
@@ -122,6 +122,7 @@ Kubernetes: `>=v1.21.0-0`
 | resources.limits.memory | string | `"300Mi"` | Memory limit. |
 | resources.requests.cpu | string | `"300m"` | CPU request. |
 | resources.requests.memory | string | `"300Mi"` | Memory request. |
+| salt | string | `""` | Salt. Used for encoding/decoding sensitive data. If omitted or set to empty string, the value will be self-generated. Otherwise, a 24 alphanumeric characters are allowed as its value. |
 | state | string | `"TX"` | State code. Used for certificate creation. |
 | tolerations | list | `[]` | https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/ |
 | usrEnvs | object | `{"normal":{},"secret":{}}` | Add custom normal and secret envs to the service. |
