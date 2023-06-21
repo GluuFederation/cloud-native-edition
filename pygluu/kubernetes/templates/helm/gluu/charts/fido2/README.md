@@ -1,6 +1,6 @@
 # fido2
 
-![Version: 1.8.16](https://img.shields.io/badge/Version-1.8.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.0](https://img.shields.io/badge/AppVersion-4.5.0-informational?style=flat-square)
+![Version: 1.8.17](https://img.shields.io/badge/Version-1.8.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.1](https://img.shields.io/badge/AppVersion-4.5.1-informational?style=flat-square)
 
 FIDO 2.0 (FIDO2) is an open authentication standard that enables leveraging common devices to authenticate to online services in both mobile and desktop environments.
 
@@ -37,7 +37,7 @@ Kubernetes: `>=v1.21.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/fido2"` | Image  to use for deploying. |
-| image.tag | string | `"4.5.0-4"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.5.1-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
 | livenessProbe | object | `{"httpGet":{"path":"/fido2/restv1/fido2/configuration","port":"http-fido2"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for the fido2 if needed. |
 | livenessProbe.httpGet | object | `{"path":"/fido2/restv1/fido2/configuration","port":"http-fido2"}` | http liveness probe endpoint |

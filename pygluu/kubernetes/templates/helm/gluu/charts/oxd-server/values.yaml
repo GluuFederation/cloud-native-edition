@@ -29,7 +29,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/oxd-server
   # -- Image  tag to use for deploying.
-  tag: 4.5.0-4
+  tag: 4.5.1-1
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- Service replica number.
@@ -81,7 +81,7 @@ volumes: []
 # -- Configure any additional volumesMounts that need to be attached to the containers
 volumeMounts: []
 # Actions on lifecycle events such as postStart and preStop
-# Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516 
+# Example postStop: https://github.com/GluuFederation/cloud-native-edition/discussions/516
 # Example postStart:
 # lifecycle:
 #   postStart:
