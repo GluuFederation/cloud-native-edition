@@ -75,7 +75,6 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /device-code /oxauth/device_authorization.htm$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/device_authorization.htm
 {{- if .Values.ingress.deviceCodeAdditionalAnnotations }}
 {{ toYaml .Values.ingress.deviceCodeAdditionalAnnotations | indent 4 }}
@@ -133,7 +132,6 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /firebase-messaging-sw.js /oxauth/firebase-messaging-sw.js$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/firebase-messaging-sw.js
 {{- if .Values.ingress.firebaseMessagingAdditionalAnnotations }}
 {{ toYaml .Values.ingress.firebaseMessagingAdditionalAnnotations | indent 4 }}
@@ -190,7 +188,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/openid-configuration /oxauth/.well-known/openid-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/openid-configuration
 {{- if .Values.ingress.openidAdditionalAnnotations }}
 {{ toYaml .Values.ingress.openidAdditionalAnnotations | indent 4 }}
@@ -244,7 +241,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/uma2-configuration /oxauth/restv1/uma2-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/uma2-configuration
 {{- if .Values.ingress.uma2AdditionalAnnotations }}
 {{ toYaml .Values.ingress.uma2AdditionalAnnotations | indent 4 }}
@@ -298,7 +294,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/webfinger /oxauth/.well-known/webfinger$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/webfinger
 {{- if .Values.ingress.webfingerAdditionalAnnotations }}
 {{ toYaml .Values.ingress.webfingerAdditionalAnnotations | indent 4 }}
@@ -353,7 +348,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/simple-web-discovery /oxauth/.well-known/simple-web-discovery$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/.well-known/simple-web-discovery
 {{- if .Values.ingress.webdiscoveryAdditionalAnnotations }}
 {{ toYaml .Values.ingress.webdiscoveryAdditionalAnnotations | indent 4 }}
@@ -407,7 +401,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/scim-configuration /scim/restv1/scim/scim-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /scim/restv1/scim/scim-configuration
 {{- if .Values.ingress.scimConfigAdditionalAnnotations }}
 {{ toYaml .Values.ingress.scimConfigAdditionalAnnotations | indent 4 }}
@@ -513,7 +506,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido-configuration /oxauth/restv1/fido-configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/restv1/fido-configuration
 {{- if .Values.ingress.u2fAdditionalAnnotations }}
 {{ toYaml .Values.ingress.u2fAdditionalAnnotations | indent 4 }}
@@ -567,7 +559,6 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/configuration-snippet: "rewrite /.well-known/fido2-configuration /fido2/restv1/fido2/configuration$1 break;"
     nginx.ingress.kubernetes.io/rewrite-target: /fido2/restv1/fido2/configuration
 {{- if .Values.ingress.fido2ConfigAdditionalAnnotations }}
 {{ toYaml .Values.ingress.fido2ConfigAdditionalAnnotations | indent 4 }}
