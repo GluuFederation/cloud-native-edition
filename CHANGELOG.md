@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.18](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.17...v1.8.18) (2023-07-10)
+
+
+### Bug Fixes
+
+* chore versions 4.4 ([f518668](https://github.com/GluuFederation/cloud-native-edition/commit/f51866876697024fcb02bf6e0fb786668ba39e21))
+* remove unneeded configuration snippet ([#559](https://github.com/GluuFederation/cloud-native-edition/issues/559)) ([3541c1d](https://github.com/GluuFederation/cloud-native-edition/commit/3541c1d409c3db4976a4377f38ac18690897908d))
+
+
+### Documentation
+
+* kubernetes fixes ([#561](https://github.com/GluuFederation/cloud-native-edition/issues/561)) ([4dc4d95](https://github.com/GluuFederation/cloud-native-edition/commit/4dc4d95400f80d8b38afcb9e883810df54354b23))
+
 ## [1.8.17](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.16...v1.8.17) (2023-06-15)
 
 
