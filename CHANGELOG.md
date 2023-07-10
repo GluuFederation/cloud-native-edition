@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.19](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.18...v1.8.19) (2023-07-10)
+
+
+### Bug Fixes
+
+* topology spread  constrains app label selector ([9e374ba](https://github.com/GluuFederation/cloud-native-edition/commit/9e374ba410be0b2ce8886d945dcb3095ad93a5df))
+
 ## [1.8.18](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.17...v1.8.18) (2023-07-10)
 
 
