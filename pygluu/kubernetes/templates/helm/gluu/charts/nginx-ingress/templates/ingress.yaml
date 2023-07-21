@@ -72,7 +72,6 @@ metadata:
 {{ toYaml .Values.ingress.deviceCodeLabels | indent 4 }}
 {{- end }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/device_authorization.htm
@@ -83,6 +82,7 @@ metadata:
 {{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
 {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
 {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls }}
@@ -129,7 +129,6 @@ metadata:
 {{ toYaml .Values.ingress.firebaseMessagingLabels | indent 4 }}
 {{- end }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/rewrite-target: /oxauth/firebase-messaging-sw.js
@@ -140,6 +139,7 @@ metadata:
 {{ toYaml .Values.ingress.additionalAnnotations | indent 4 }}
 {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
 {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls }}
