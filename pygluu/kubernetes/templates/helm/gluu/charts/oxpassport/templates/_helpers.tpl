@@ -84,7 +84,7 @@ Create topologySpreadConstraints lists
   {{- end}}
   labelSelector:
     matchLabels:
-      app: {{ $.Release.Name }}-{{ include "oxpassport.name" $ }}
+      app: {{ include "oxpassport.name" $ }}
   {{- if $val.matchLabelKeys }}
   matchLabelKeys: {{ $val.matchLabelKeys }} # optional; alpha since v1.25
   {{- end}}

@@ -95,7 +95,7 @@ Create topologySpreadConstraints lists
   {{- end}}
   labelSelector:
     matchLabels:
-      app: {{ $.Release.Name }}-{{ include "casa.name" $ }}
+      app: {{ include "casa.name" $ }}
   {{- if $val.matchLabelKeys }}
   matchLabelKeys: {{ $val.matchLabelKeys }} # optional; alpha since v1.25
   {{- end}}
