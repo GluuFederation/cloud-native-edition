@@ -205,9 +205,13 @@ jobs:
           "EDIT_IMAGE_NAMES_TAGS": "N",
           "CONFIRM_PARAMS": "Y",
           "GLUU_SCIM_PROTECTION_MODE": "OAUTH",
-          "NGINX_LEGACY": "N"
+          "NGINX_LEGACY": "N",
+          "SPANNER_EMULATOR_HOST": "",
+          "CONTAINER_REGISTRY_SECRET_NAME": "regcred",
+          "USE_CUSTOM_SALT": "N",
+          "SALT": ""
         }
-    
+
     - name: Install Couchbase
       run: |
         cd /home/runner/work/test/
