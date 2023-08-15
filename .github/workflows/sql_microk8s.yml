@@ -198,7 +198,11 @@ jobs:
           "GLUU_SQL_DB_USER": "gluu",
           "GLUU_SQL_DB_PASSWORD": "Test1234#",
           "GLUU_SCIM_PROTECTION_MODE": "OAUTH",
-          "NGINX_LEGACY": "N"
+          "NGINX_LEGACY": "N",
+          "SPANNER_EMULATOR_HOST": "",
+          "CONTAINER_REGISTRY_SECRET_NAME": "regcred",
+          "USE_CUSTOM_SALT": "N",
+          "SALT": ""
         }
         EOF
 
@@ -208,7 +212,7 @@ jobs:
         sudo snap alias microk8s.kubectl kubectl
         sudo microk8s.status --wait-ready
         sudo microk8s.enable dns registry ingress
-    
+
     - name: Install Helm
       run: |
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3

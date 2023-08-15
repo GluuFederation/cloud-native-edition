@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.20](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.19...v1.8.20) (2023-07-28)
+
+
+### Bug Fixes
+
+* property reference ([6b02fbc](https://github.com/GluuFederation/cloud-native-edition/commit/6b02fbcaada36ee0849e9d1be89550083d3e9150)), closes [#569](https://github.com/GluuFederation/cloud-native-edition/issues/569)
+
 ## [1.8.19](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.18...v1.8.19) (2023-07-10)
 
 

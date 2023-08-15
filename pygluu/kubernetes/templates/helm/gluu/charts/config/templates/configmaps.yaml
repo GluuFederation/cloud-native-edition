@@ -22,12 +22,12 @@ data:
   GLUU_SQL_DB_USER: {{ .Values.configmap.cnSqlDbUser }}
   GLUU_SQL_DB_TIMEZONE: {{ .Values.configmap.cnSqlDbTimezone }}
   GLUU_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
-  {{ if or (eq .Values.global.configAdapterName "google") (eq .Values.global.configSecretAdapter "google") (eq .Values.global.cnPersistenceType "spanner") }}
+  {{ if or (eq .Values.global.configAdapterName "google") (eq .Values.global.configSecretAdapter "google") (eq .Values.global.gluuPersistenceType "spanner") }}
   # [google_envs] Envs related to using Google 
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
   GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
   {{- end }}
-  {{ if eq .Values.global.cnPersistenceType "spanner" }}
+  {{ if eq .Values.global.gluuPersistenceType "spanner" }}
   # [google_spanner_envs] Envs related to using Google Cloud Spanner  
   GLUU_GOOGLE_SPANNER_INSTANCE_ID: {{ .Values.configmap.cnGoogleSpannerInstanceId | quote }}
   GLUU_GOOGLE_SPANNER_DATABASE_ID: {{ .Values.configmap.cnGoogleSpannerDatabaseId | quote }}
