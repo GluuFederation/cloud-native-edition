@@ -215,8 +215,8 @@ global:
   # -- https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/
   jobTtlSecondsAfterFinished: 300
   jackrabbit:
-    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run.
-    enabled: true
+    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit.
+    enabled: false
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -473,8 +473,8 @@ config:
     gluuJackrabbitUrl: http://jackrabbit:8080
     # -- The location of the Jackrabbit admin uid config.gluuJackrabbitAdminId. The file path must end with jackrabbit_admin_id.
     gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
-    # -- Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily.
-    gluuDocumentStoreType: JCA
+    # -- Document store type to use for shibboleth files DB, LOCAL, or JCA (deprecated). Note that if JCA is selected Apache Jackrabbit will be used.
+    gluuDocumentStoreType: DB
     # [google_envs] Envs related to using Google
     # -- Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnGoogleServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=

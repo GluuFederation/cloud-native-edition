@@ -66,7 +66,7 @@ Kubernetes: `>=v1.21.0-0`
 | configmap.gluuCouchbaseSuperUserPassFile | string | `"/etc/gluu/conf/couchbase_superuser_password"` | The location of the Couchbase restricted user config.configmap.gluuCouchbaseSuperUser password. The file path must end with couchbase_superuser_password. |
 | configmap.gluuCouchbaseUrl | string | `"cbgluu.default.svc.cluster.local"` | Couchbase URL. Used only when global.gluuPersistenceType is hybrid or couchbase. This should be in FQDN format for either remote or local Couchbase clusters. The address can be an internal address inside the kubernetes cluster |
 | configmap.gluuCouchbaseUser | string | `"gluu"` | Couchbase restricted user. Used only when global.gluuPersistenceType is hybrid or couchbase. |
-| configmap.gluuDocumentStoreType | string | `"JCA"` | Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily. |
+| configmap.gluuDocumentStoreType | string | `"DB"` | Document store type to use for shibboleth files DB, LOCAL, or JCA (deprecated). Note that if JCA is selected Apache Jackrabbit will be used. |
 | configmap.gluuJackrabbitAdminId | string | `"admin"` | Jackrabbit admin uid. |
 | configmap.gluuJackrabbitAdminIdFile | string | `"/etc/gluu/conf/jackrabbit_admin_id"` | The location of the Jackrabbit admin uid config.gluuJackrabbitAdminId. The file path must end with jackrabbit_admin_id. |
 | configmap.gluuJackrabbitAdminPassFile | string | `"/etc/gluu/conf/jackrabbit_admin_password"` | The location of the Jackrabbit admin password jackrabbit.secrets.gluuJackrabbitAdminPassword. The file path must end with jackrabbit_admin_password. |
