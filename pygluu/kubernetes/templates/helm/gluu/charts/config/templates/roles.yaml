@@ -13,3 +13,21 @@ rules:
 - apiGroups: [""] # "" refers to the core API group
   resources: ["configmaps", "secrets", "pods", "pods/exec"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+
+{{- if.Values.global.istio.ingress}} 
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-istio-role
+  namespace: {{.Values.global.istio.namespace | quote}} 
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
+rules:
+- apiGroups: [""] # "" refers to the core API group
+  resources: ["secrets"]
+  verbs: ["create", "patch"]
+{{- end}}
