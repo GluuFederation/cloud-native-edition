@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.21](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.20...v1.8.21) (2023-09-01)
+
+
+### Bug Fixes
+
+* **istio:** add permissions to create tls-certificate in istio ns ([#580](https://github.com/GluuFederation/cloud-native-edition/issues/580)) ([965a7b3](https://github.com/GluuFederation/cloud-native-edition/commit/965a7b3b0d7d541b9cbc85deec4149614f1900cb))
+* remove ingress.class annotation and add spec.ingressClassName  ([#567](https://github.com/GluuFederation/cloud-native-edition/issues/567)) ([ed49422](https://github.com/GluuFederation/cloud-native-edition/commit/ed49422326f0f7519b19fdae2c2aabf7ccfbfdc1))
+* stale request error when having multiple pod replicas ([#572](https://github.com/GluuFederation/cloud-native-edition/issues/572)) ([aa0b30c](https://github.com/GluuFederation/cloud-native-edition/commit/aa0b30cddf658f6c5dec79a9d5dab3a9cff058e8))
+
 ## [1.8.20](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.19...v1.8.20) (2023-07-28)
 
 
