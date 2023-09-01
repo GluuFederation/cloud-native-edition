@@ -1,6 +1,6 @@
 # nginx-ingress
 
-![Version: 1.8.20](https://img.shields.io/badge/Version-1.8.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
+![Version: 1.8.21](https://img.shields.io/badge/Version-1.8.21-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
 
 Nginx ingress definitions chart
 
@@ -28,8 +28,7 @@ Kubernetes: `>=v1.21.0-0`
 |-----|------|---------|-------------|
 | certManager | object | `{"certificate":{"enabled":false,"issuerGroup":"cert-manager.io","issuerKind":"ClusterIssuer","issuerName":""}}` | Nginx ingress definitions chart |
 | fullnameOverride | string | `""` |  |
-| ingress.additionalAnnotations | object | `{"kubernetes.io/ingress.class":"nginx"}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken Enable client certificate authentication nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional" Create the secret containing the trusted ca certificates nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate" Specify the verification depth in the client certificates chain nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1" Specify if certificates are passed to upstream server nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true" |
-| ingress.additionalAnnotations."kubernetes.io/ingress.class" | string | `"nginx"` | Required annotation below. Use kubernetes.io/ingress.class: "public" for microk8s. |
+| ingress.additionalAnnotations | object | `{}` | Additional annotations that will be added across all ingress definitions in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken Enable client certificate authentication nginx.ingress.kubernetes.io/auth-tls-verify-client: "optional" Create the secret containing the trusted ca certificates nginx.ingress.kubernetes.io/auth-tls-secret: "gluu/tls-certificate" Specify the verification depth in the client certificates chain nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1" Specify if certificates are passed to upstream server nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true" |
 | ingress.additionalLabels | object | `{}` | Additional labels that will be added across all ingress definitions in the format of {mylabel: "myapp"} |
 | ingress.adminUiAdditionalAnnotations | object | `{}` | Admin UI ingress resource additional annotations. |
 | ingress.adminUiEnabled | bool | `true` | Enable Admin UI endpoints /identity |
@@ -47,6 +46,7 @@ Kubernetes: `>=v1.21.0-0`
 | ingress.fido2Enabled | bool | `false` | Enable all fido2 endpoints |
 | ingress.fido2Labels | object | `{}` | fido2 ingress resource labels. key app is taken |
 | ingress.hosts[0] | string | `"demoexample.gluu.org"` |  |
+| ingress.ingressClassName | string | `"nginx"` |  |
 | ingress.legacy | bool | `false` | Enable use of legacy API version networking.k8s.io/v1beta1 to support kubernetes 1.18. This flag should be removed next version release along with nginx-ingress/templates/ingress-legacy.yaml. |
 | ingress.openidAdditionalAnnotations | object | `{}` | openid-configuration ingress resource additional annotations. |
 | ingress.openidConfigEnabled | bool | `true` | Enable endpoint /.well-known/openid-configuration |
