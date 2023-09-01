@@ -219,6 +219,7 @@ class SettingsHandler(object):
                                 CONTAINER_REGISTRY_SECRET_NAME="",
                                 USE_CUSTOM_SALT="",
                                 SALT="",
+                                DOCUMENT_STORE_TYPE="",
                                 )
         return default_settings
 

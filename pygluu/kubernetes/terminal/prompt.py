@@ -33,6 +33,8 @@ from pygluu.kubernetes.terminal.license import PromptLicense
 from pygluu.kubernetes.terminal.version import PromptVersion
 from pygluu.kubernetes.terminal.sql import PromptSQL
 from pygluu.kubernetes.terminal.google import PromptGoogle
+from pygluu.kubernetes.terminal.doc_store import PromptDocStore
+
 
 class Prompt:
     """Prompt is used for prompting users for input used in deploying Gluu.
@@ -163,7 +165,7 @@ class Prompt:
         if self.settings.get("PERSISTENCE_BACKEND") == "sql":
             spanner = PromptSQL(self.settings)
             spanner.prompt_sql()
-            
+
     def google(self):
         self.load_settings()
         if self.settings.get("PERSISTENCE_BACKEND") == "spanner":
@@ -186,7 +188,7 @@ class Prompt:
         self.arch()
         self.namespace()
         self.optional_services()
-        self.jackrabbit()
+        self.doc_store()
         self.istio()
         self.test_enviornment()
         self.network()
@@ -204,3 +206,15 @@ class Prompt:
         self.replicas()
         self.volumes()
         self.confirm_settings()
+
+    def doc_store(self):
+        self.load_settings()
+
+        pr = PromptDocStore(self.settings)
+        pr.prompt_doc_store()
+
+        if self.settings.get("DOCUMENT_STORE_TYPE") == "DB":
+            self.settings.set("INSTALL_JACKRABBIT", "N")
+
+        if self.settings.get("DOCUMENT_STORE_TYPE") == "JCA":
+            self.jackrabbit()

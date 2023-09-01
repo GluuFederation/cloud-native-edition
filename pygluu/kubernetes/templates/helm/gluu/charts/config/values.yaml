@@ -123,8 +123,8 @@ configmap:
   gluuJackrabbitUrl: http://jackrabbit:8080
   # -- The location of the Jackrabbit admin uid config.gluuJackrabbitAdminId. The file path must end with jackrabbit_admin_id.
   gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
-  # -- Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily.
-  gluuDocumentStoreType: JCA
+  # -- Document store type to use for shibboleth files DB, LOCAL, or JCA (deprecated). Note that if JCA is selected Apache Jackrabbit will be used.
+  gluuDocumentStoreType: DB
   # [google_envs] Envs related to using Google
   # -- Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
   cnGoogleServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
@@ -180,7 +180,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/config-init
   # -- Image  tag to use for deploying.
-  tag: 4.5.1-1
+  tag: 4.5.2-1
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- Configure any additional volumes that need to be attached to the pod
