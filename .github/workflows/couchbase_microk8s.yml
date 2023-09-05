@@ -209,7 +209,8 @@ jobs:
           "SPANNER_EMULATOR_HOST": "",
           "CONTAINER_REGISTRY_SECRET_NAME": "regcred",
           "USE_CUSTOM_SALT": "N",
-          "SALT": ""
+          "SALT": "",
+          "DOCUMENT_STORE_TYPE": "DB"
         }
 
     - name: Install Couchbase

@@ -27,9 +27,9 @@
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
     "OXTRUST_IMAGE_TAG": "4.5.2-2",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-    "PERSISTENCE_IMAGE_TAG": "4.5.2-1",
+    "PERSISTENCE_IMAGE_TAG": "4.5.2-2",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.5.2-1"
+    "UPGRADE_IMAGE_TAG": "4.5.2-2"
   },
   "4.5.2_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
