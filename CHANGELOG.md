@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.22](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.21...v1.8.22) (2023-09-05)
+
+
+### Bug Fixes
+
+* prepare hotfix release ([9d5c201](https://github.com/GluuFederation/cloud-native-edition/commit/9d5c201921276ab8bd99d7d090d3e7b3895e4978))
+* update image tags ([#582](https://github.com/GluuFederation/cloud-native-edition/issues/582)) ([a3865cd](https://github.com/GluuFederation/cloud-native-edition/commit/a3865cd3404026294563d5cfe161cf4b008ea383))
+* update image tags ([#585](https://github.com/GluuFederation/cloud-native-edition/issues/585)) ([401058d](https://github.com/GluuFederation/cloud-native-edition/commit/401058d0a7b757bcdb6da76406bd7fe6e06a3ef2))
+
 ## [1.8.21](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.20...v1.8.21) (2023-09-01)
 
 
