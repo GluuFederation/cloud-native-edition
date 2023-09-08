@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.23](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.22...v1.8.23) (2023-09-08)
+
+
+### Bug Fixes
+
+* error converting YAML to JSON using pygluu-kubernetes installer ([#587](https://github.com/GluuFederation/cloud-native-edition/issues/587)) ([3a6f5b0](https://github.com/GluuFederation/cloud-native-edition/commit/3a6f5b071adba12416acb117ef9a8c5af39f6033))
+
 ## [1.8.22](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.21...v1.8.22) (2023-09-05)
 
 
