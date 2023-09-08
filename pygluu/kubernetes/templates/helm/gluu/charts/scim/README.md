@@ -1,6 +1,6 @@
 # scim
 
-![Version: 1.8.22](https://img.shields.io/badge/Version-1.8.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
+![Version: 1.8.23](https://img.shields.io/badge/Version-1.8.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
 
 System for Cross-domain Identity Management (SCIM) version 2.0
 
