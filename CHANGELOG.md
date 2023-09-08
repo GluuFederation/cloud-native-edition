@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.8.23](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.22...v1.8.23) (2023-09-08)
+
+
+### Bug Fixes
+
+* error converting YAML to JSON using pygluu-kubernetes installer ([#587](https://github.com/GluuFederation/cloud-native-edition/issues/587)) ([3a6f5b0](https://github.com/GluuFederation/cloud-native-edition/commit/3a6f5b071adba12416acb117ef9a8c5af39f6033))
+
+## [1.8.22](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.21...v1.8.22) (2023-09-05)
+
+
+### Bug Fixes
+
+* prepare hotfix release ([9d5c201](https://github.com/GluuFederation/cloud-native-edition/commit/9d5c201921276ab8bd99d7d090d3e7b3895e4978))
+* update image tags ([#582](https://github.com/GluuFederation/cloud-native-edition/issues/582)) ([a3865cd](https://github.com/GluuFederation/cloud-native-edition/commit/a3865cd3404026294563d5cfe161cf4b008ea383))
+* update image tags ([#585](https://github.com/GluuFederation/cloud-native-edition/issues/585)) ([401058d](https://github.com/GluuFederation/cloud-native-edition/commit/401058d0a7b757bcdb6da76406bd7fe6e06a3ef2))
+
+## [1.8.21](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.20...v1.8.21) (2023-09-01)
+
+
+### Bug Fixes
+
+* **istio:** add permissions to create tls-certificate in istio ns ([#580](https://github.com/GluuFederation/cloud-native-edition/issues/580)) ([965a7b3](https://github.com/GluuFederation/cloud-native-edition/commit/965a7b3b0d7d541b9cbc85deec4149614f1900cb))
+* remove ingress.class annotation and add spec.ingressClassName  ([#567](https://github.com/GluuFederation/cloud-native-edition/issues/567)) ([ed49422](https://github.com/GluuFederation/cloud-native-edition/commit/ed49422326f0f7519b19fdae2c2aabf7ccfbfdc1))
+* stale request error when having multiple pod replicas ([#572](https://github.com/GluuFederation/cloud-native-edition/issues/572)) ([aa0b30c](https://github.com/GluuFederation/cloud-native-edition/commit/aa0b30cddf658f6c5dec79a9d5dab3a9cff058e8))
+
 ## [1.8.20](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.19...v1.8.20) (2023-07-28)
 
 

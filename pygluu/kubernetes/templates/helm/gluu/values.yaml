@@ -70,7 +70,7 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.5.1-1
+      tag: 4.5.2-2
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
     sourceVersion: "4.5"
@@ -215,8 +215,8 @@ global:
   # -- https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/
   jobTtlSecondsAfterFinished: 300
   jackrabbit:
-    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit. If disabled oxShibboleth cannot be run.
-    enabled: true
+    # -- Boolean flag to enable/disable the jackrabbit chart. For more information on how it is used inside Gluu https://gluu.org/docs/gluu-server/4.2/installation-guide/install-kubernetes/#working-with-jackrabbit.
+    enabled: false
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -473,8 +473,8 @@ config:
     gluuJackrabbitUrl: http://jackrabbit:8080
     # -- The location of the Jackrabbit admin uid config.gluuJackrabbitAdminId. The file path must end with jackrabbit_admin_id.
     gluuJackrabbitAdminIdFile: /etc/gluu/conf/jackrabbit_admin_id
-    # -- Document store type to use for shibboleth files JCA or LOCAL. Note that if JCA is selected Apache Jackrabbit will be used. Jackrabbit also enables loading custom files across all services easily.
-    gluuDocumentStoreType: JCA
+    # -- Document store type to use for shibboleth files DB, LOCAL, or JCA (deprecated). Note that if JCA is selected Apache Jackrabbit will be used.
+    gluuDocumentStoreType: DB
     # [google_envs] Envs related to using Google
     # -- Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google.
     cnGoogleServiceAccount: SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=
@@ -532,7 +532,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
@@ -763,7 +763,7 @@ jackrabbit:
     # -- Image  to use for deploying.
     repository: gluufederation/jackrabbit
      # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -890,7 +890,7 @@ opendj:
     # -- Image  to use for deploying.
     repository: gluufederation/opendj
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   persistence:
@@ -1002,7 +1002,7 @@ persistence:
     # -- Image  to use for deploying.
     repository: gluufederation/persistence
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -1089,7 +1089,7 @@ oxauth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxauth
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1206,7 +1206,7 @@ oxtrust:
     # -- Image  to use for deploying.
     repository: gluufederation/oxtrust
     # -- Image  tag to use for deploying.
-    tag: 4.5.2-1
+    tag: 4.5.2-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1323,7 +1323,7 @@ fido2:
     # -- Image  to use for deploying.
     repository: gluufederation/fido2
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1436,7 +1436,7 @@ scim:
     # -- Image  to use for deploying.
     repository: gluufederation/scim
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1549,7 +1549,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1662,7 +1662,7 @@ casa:
     # -- Image  to use for deploying.
     repository: gluufederation/casa
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1775,7 +1775,7 @@ oxpassport:
     # -- Image  to use for deploying.
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number
@@ -1891,7 +1891,7 @@ oxshibboleth:
     # -- Image  to use for deploying.
     repository: gluufederation/oxshibboleth
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
@@ -1980,7 +1980,7 @@ cr-rotate:
     # -- Image  to use for deploying.
     repository: gluufederation/cr-rotate
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Resource specs.
@@ -2044,7 +2044,7 @@ oxauth-key-rotation:
     # -- Image  to use for deploying.
     repository: gluufederation/certmanager
     # -- Image  tag to use for deploying.
-    tag: 4.5.1-1
+    tag: 4.5.2-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours

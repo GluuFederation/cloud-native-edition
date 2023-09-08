@@ -1,6 +1,6 @@
 # gluu-istio-ingress
 
-![Version: 1.8.20](https://img.shields.io/badge/Version-1.8.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.1](https://img.shields.io/badge/AppVersion-4.5.1-informational?style=flat-square)
+![Version: 1.8.23](https://img.shields.io/badge/Version-1.8.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
 
 Istio Gateway
 
