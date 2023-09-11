@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.24](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.23...v1.8.24) (2023-09-11)
+
+
+### Bug Fixes
+
+* release helm chart 1.8.24 containing client_id AS upgrade ([b9dc33b](https://github.com/GluuFederation/cloud-native-edition/commit/b9dc33bce093b7065f133b29cf30aa82b99e61d8))
+
 ## [1.8.23](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.22...v1.8.23) (2023-09-08)
 
 
