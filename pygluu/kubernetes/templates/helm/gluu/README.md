@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.23](https://img.shields.io/badge/Version-1.8.23-informational?style=flat-square) ![AppVersion: 4.5.1](https://img.shields.io/badge/AppVersion-4.5.1-informational?style=flat-square)
+![Version: 1.8.24](https://img.shields.io/badge/Version-1.8.24-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.23 |
-|  | config | 1.8.23 |
-|  | cr-rotate | 1.8.23 |
-|  | fido2 | 1.8.23 |
-|  | gluu-alb-ingress | 1.8.23 |
-|  | gluu-istio-ingress | 1.8.23 |
-|  | jackrabbit | 1.8.23 |
-|  | nginx-ingress | 1.8.23 |
-|  | opendj | 1.8.23 |
-|  | oxauth | 1.8.23 |
-|  | oxauth-key-rotation | 1.8.23 |
-|  | oxd-server | 1.8.23 |
-|  | oxpassport | 1.8.23 |
-|  | oxshibboleth | 1.8.23 |
-|  | oxtrust | 1.8.23 |
-|  | persistence | 1.8.23 |
-|  | scim | 1.8.23 |
+|  | casa | 1.8.24 |
+|  | config | 1.8.24 |
+|  | cr-rotate | 1.8.24 |
+|  | fido2 | 1.8.24 |
+|  | gluu-alb-ingress | 1.8.24 |
+|  | gluu-istio-ingress | 1.8.24 |
+|  | jackrabbit | 1.8.24 |
+|  | nginx-ingress | 1.8.24 |
+|  | opendj | 1.8.24 |
+|  | oxauth | 1.8.24 |
+|  | oxauth-key-rotation | 1.8.24 |
+|  | oxd-server | 1.8.24 |
+|  | oxpassport | 1.8.24 |
+|  | oxshibboleth | 1.8.24 |
+|  | oxtrust | 1.8.24 |
+|  | persistence | 1.8.24 |
+|  | scim | 1.8.24 |
 
 ## Values
 
@@ -492,7 +492,7 @@ Kubernetes: `>=v1.21.0-0`
 | opendj.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | opendj.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | opendj.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| oxauth | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxauth","tag":"4.5.2-1"},"lifecycle":{},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":"90%"},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"2500m","memory":"2500Mi"},"requests":{"cpu":"2500m","memory":"2500Mi"}},"service":{"name":"http-oxauth","oxAuthServiceName":"oxauth","port":8080},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization Server--this is the main Internet facing component of Gluu. It's the service that returns tokens, JWT's and identity assertions. This service must be Internet facing. |
+| oxauth | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxauth","tag":"4.5.2-2"},"lifecycle":{},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":"90%"},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"2500m","memory":"2500Mi"},"requests":{"cpu":"2500m","memory":"2500Mi"}},"service":{"name":"http-oxauth","oxAuthServiceName":"oxauth","port":8080},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization Server--this is the main Internet facing component of Gluu. It's the service that returns tokens, JWT's and identity assertions. This service must be Internet facing. |
 | oxauth-key-rotation | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"dnsConfig":{},"dnsPolicy":"","image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/certmanager","tag":"4.5.2-1"},"keysLife":48,"keysPushDelay":0,"keysPushStrategy":"NEWER","keysStrategy":"NEWER","lifecycle":{},"nodeSelector":{},"resources":{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}},"tolerations":[],"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Responsible for regenerating auth-keys per x hours |
 | oxauth-key-rotation.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxauth-key-rotation.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
@@ -529,7 +529,7 @@ Kubernetes: `>=v1.21.0-0`
 | oxauth.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | oxauth.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxauth.image.repository | string | `"gluufederation/oxauth"` | Image  to use for deploying. |
-| oxauth.image.tag | string | `"4.5.2-1"` | Image  tag to use for deploying. |
+| oxauth.image.tag | string | `"4.5.2-2"` | Image  tag to use for deploying. |
 | oxauth.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
 | oxauth.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py |
 | oxauth.pdb | object | `{"enabled":true,"maxUnavailable":"90%"}` | Configure the PodDisruptionBudget |
