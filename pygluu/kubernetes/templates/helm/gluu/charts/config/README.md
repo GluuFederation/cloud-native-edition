@@ -107,7 +107,7 @@ Kubernetes: `>=v1.21.0-0`
 | email | string | `"support@gluu.com"` | Email address of the administrator usually. Used for certificate creation. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/config-init"` | Image  to use for deploying. |
-| image.tag | string | `"4.5.2-1"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.5.2-2"` | Image  tag to use for deploying. |
 | ldapPass | string | `"P@ssw0rd"` | LDAP admin password if OpennDJ is used for persistence. |
 | lifecycle | object | `{}` |  |
 | migration | object | `{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"}` | CE to CN Migration section |

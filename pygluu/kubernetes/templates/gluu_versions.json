@@ -7,7 +7,7 @@
     "SCIM_IMAGE_NAME": "gluufederation/scim",
     "SCIM_IMAGE_TAG": "4.5.2-1",
     "CONFIG_IMAGE_NAME": "gluufederation/config-init",
-    "CONFIG_IMAGE_TAG": "4.5.2-1",
+    "CONFIG_IMAGE_TAG": "4.5.2-2",
     "CACHE_REFRESH_ROTATE_IMAGE_NAME": "gluufederation/cr-rotate",
     "CACHE_REFRESH_ROTATE_IMAGE_TAG": "4.5.2-1",
     "CERT_MANAGER_IMAGE_NAME": "gluufederation/certmanager",
