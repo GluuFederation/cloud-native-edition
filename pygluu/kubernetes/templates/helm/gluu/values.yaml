@@ -344,6 +344,8 @@ config:
   state: TX
   # -- City. Used for certificate creation.
   city: Austin
+# -- Salt. Used for encoding/decoding sensitive data. If omitted or set to empty string, the value will be self-generated. Otherwise, a 24 alphanumeric characters are allowed as its value.
+  salt: ""
   configmap:
     # -- SQL database dialect. `mysql` or `pgsql`
     cnSqlDbDialect: mysql
@@ -487,7 +489,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.4.2-3
+    tag: 4.4.2-4
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
@@ -1869,6 +1871,12 @@ oxauth-key-rotation:
     pullSecrets: [ ]
   # -- Auth server key rotation keys life in hours
   keysLife: 48
+  # -- Set key selection strategy used by Auth server
+  keysStrategy: NEWER
+  # -- Delay (in seconds) before pushing private keys to Auth server
+  keysPushDelay: 0
+  # -- Set key selection strategy after pushing private keys to Auth server (only takes effect when keysPushDelay value is greater than 0)
+  keysPushStrategy: NEWER
   # -- Resource specs.
   resources:
     limits:
