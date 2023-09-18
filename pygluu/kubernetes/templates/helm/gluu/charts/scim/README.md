@@ -1,6 +1,6 @@
 # scim
 
-![Version: 1.7.11](https://img.shields.io/badge/Version-1.7.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
+![Version: 1.7.12](https://img.shields.io/badge/Version-1.7.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.4.2](https://img.shields.io/badge/AppVersion-4.4.2-informational?style=flat-square)
 
 System for Cross-domain Identity Management (SCIM) version 2.0
 
@@ -20,7 +20,7 @@ System for Cross-domain Identity Management (SCIM) version 2.0
 
 ## Requirements
 
-Kubernetes: `>=v1.21.0-0`
+Kubernetes: `>=v1.22.0-0`
 
 ## Values
 
