@@ -2,8 +2,8 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name:  gluu-istio-ingress
-version: 1.8.24
-kubeVersion: ">=v1.21.0-0"
+version: 1.8.25
+kubeVersion: ">=v1.22.0-0"
 description: Istio Gateway
 type: application
 keywords:
