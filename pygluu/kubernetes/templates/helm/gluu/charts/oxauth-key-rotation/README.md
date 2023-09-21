@@ -19,7 +19,7 @@ Responsible for regenerating auth-keys per x hours
 
 ## Requirements
 
-Kubernetes: `>=v1.21.0-0`
+Kubernetes: `>=v1.22.0-0`
 
 ## Values
 
