@@ -19,7 +19,7 @@ OpenDJ is a directory server which implements a wide range of Lightweight Direct
 
 ## Requirements
 
-Kubernetes: `>=v1.21.0-0`
+Kubernetes: `>=v1.22.0-0`
 
 ## Values
 
