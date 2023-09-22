@@ -389,8 +389,8 @@ data:
     def backup(hosts):
         timenow = time.strftime("%c")
         timestamp = "Backup occurred %s \n" % timenow
-        logger.info("Backing up hosts file to /etc/hosts.back ...")
-        with open('/etc/hosts.back', 'a+') as f:
+        logger.info("Backing up hosts file to /etc/gluu/hosts.back ...")
+        with open('/etc/gluu/hosts.back', 'a+') as f:
             f.write(timestamp)
             for line in hosts:
                 f.write(line)
