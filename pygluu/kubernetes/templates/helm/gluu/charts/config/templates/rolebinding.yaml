@@ -24,7 +24,7 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: istio-rolebinding
+  name: {{ .Release.Namespace }}-istio-rolebinding
   namespace: {{.Values.global.istio.namespace | quote}}
 {{- if .Values.additionalAnnotations }}
   annotations:
