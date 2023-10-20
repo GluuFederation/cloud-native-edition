@@ -116,7 +116,7 @@ global:
   # -- The config backend adapter that will hold Gluu secret layer. google|kubernetes
   configSecretAdapter: kubernetes
   # -- Validate certificate is downloaded from given domain. If set to true (default to false), raise an error if cert is not downloaded. Note that the flag is ignored if mounted SSL cert and key files exist
-  sslCertFromDomain: false
+  sslCertFromDomain: "false"
   # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner.
   cnGoogleApplicationCredentials: /etc/gluu/conf/google-credentials.json
   oxauth:
