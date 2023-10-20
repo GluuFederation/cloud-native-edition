@@ -55,6 +55,7 @@ data:
   {{- end }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+  GLUU_SSL_CERT_FROM_DOMAIN: {{ .Values.global.sslCertFromDomain | quote }}
   GLUU_CONFIG_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_SECRET_KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
   GLUU_CONTAINER_METADATA: {{ .Values.configmap.containerMetadataName | quote }}

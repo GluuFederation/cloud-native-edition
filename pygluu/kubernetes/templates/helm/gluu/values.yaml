@@ -118,6 +118,8 @@ global:
   configAdapterName: kubernetes
   # -- The config backend adapter that will hold Gluu secret layer. aws|google|kubernetes OpenDJ as a persistence is restricted to kubernetes ONLY!
   configSecretAdapter: kubernetes
+  # -- Validate certificate is downloaded from given domain. If set to true (default to false), raise an error if cert is not downloaded. Note that the flag is ignored if mounted SSL cert and key files exist
+  sslCertFromDomain: "false"
   # -- Base64 encoded service account. The sa must have roles/secretmanager.admin to use Google secrets and roles/spanner.databaseUser to use Spanner. Leave as this is a sensible default.
   cnGoogleApplicationCredentials: /etc/gluu/conf/google-credentials.json
   # The location of the shared credentials file used by the client (see https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).Leave as this is a sensible default.
@@ -532,7 +534,7 @@ config:
     # -- Image  to use for deploying.
     repository: gluufederation/config-init
     # -- Image  tag to use for deploying.
-    tag: 4.5.2-2
+    tag: 4.5.2-3
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Configure any additional volumes that need to be attached to the pod
