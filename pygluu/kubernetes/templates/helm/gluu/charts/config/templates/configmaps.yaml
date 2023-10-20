@@ -24,6 +24,7 @@ data:
   GLUU_SQL_PASSWORD_FILE: {{ .Values.configmap.cnSqlPasswordFile }}
   GLUU_CONFIG_ADAPTER: {{ .Values.global.configAdapterName }}
   GLUU_SECRET_ADAPTER: {{ .Values.global.configSecretAdapter }}
+  GLUU_SSL_CERT_FROM_DOMAIN: {{ .Values.global.sslCertFromDomain | quote }}
   # [google_envs] Envs related to using Google
   GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.global.cnGoogleApplicationCredentials | quote }}
   GOOGLE_PROJECT_ID: {{ .Values.configmap.cnGoogleProjectId | quote }}
