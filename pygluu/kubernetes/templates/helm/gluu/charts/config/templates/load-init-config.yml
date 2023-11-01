@@ -150,7 +150,7 @@ spec:
               {{- else }}
               /app/scripts/entrypoint.sh load
               {{- end }}
-              {{- if eq .Values.global.sslCertFromDomain "true"}}
+              {{- if eq .Values.global.sslCertFromDomain "false"}}
               /usr/bin/python3 /scripts/tls_generator.py
               {{- end }}
               {{- if .Values.global.istio.enabled }}
