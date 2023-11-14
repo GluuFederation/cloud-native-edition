@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.27](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.26...v1.8.27) (2023-11-01)
+
+
+### Bug Fixes
+
+* wrong condition on sslCertFromDomain ([a153cb6](https://github.com/GluuFederation/cloud-native-edition/commit/a153cb64e21bff37e1a59334ca7db6fe71bf797a))
+
 ## [1.8.26](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.25...v1.8.26) (2023-10-20)
 
 
