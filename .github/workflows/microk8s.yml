@@ -10,33 +10,21 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       max-parallel: 6
       matrix:
-        python-version: [3.7]
-        gluu-version: ['"4.5.0_dev"']
+        gluu-version: ['"4.5"']
         test-cases: ["install", "helm-install"]
         # add '"pgsql" when supported
         persistence-backends: ['"ldap"','"couchbase"','"sql"']
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.7.1
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo python3 -m pip install --upgrade pip
-        sudo pip3 install setuptools --upgrade
-        sudo pip3 install pyOpenSSL --upgrade
-        sudo pip3 install requests --upgrade
-
+        
     - name: Lint with flake8
       run: |
+        sudo apt-get update
         sudo pip3 install flake8
         # stop the build if there are Python syntax errors or undefined names
         sudo flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -45,7 +33,6 @@ jobs:
 
     - name: Build Zipapp
       run: |
-        sudo apt-get update
         sudo apt-get install build-essential
         sudo pip3 install shiv
         mkdir /home/runner/work/test
@@ -56,8 +43,7 @@ jobs:
     - name: Test 1 settings(LDAP)
       id: test1_settings
       run: |
-        default_iface=$(awk '$2 == 00000000 { print $1 }' /proc/net/route)
-        ip=$(ip addr show dev "$default_iface" | awk '$1 == "inet" { sub("/.*", "", $2); print $2 }')
+        ip=$(curl ipinfo.io/ip)
         cat <<EOF > /home/runner/work/test/settings.json
         {
           "ACCEPT_GLUU_LICENSE": "Y",
@@ -67,13 +53,13 @@ jobs:
           "NGINX_INGRESS_NAMESPACE": "ingress-nginx",
           "GLUU_HELM_RELEASE_NAME": "gluu",
           "NGINX_INGRESS_RELEASE_NAME": "ningress",
-          "INSTALL_POSTGRES": "Y",
-          "POSTGRES_NAMESPACE": "postgres",
-          "POSTGRES_URL": "postgres.postgres.svc.cluster.local",
+          "INSTALL_POSTGRES": "",
+          "POSTGRES_NAMESPACE": "",
+          "POSTGRES_URL": "",
           "USE_ISTIO": "N",
-          "USE_ISTIO_INGRESS": "N",
+          "USE_ISTIO_INGRESS": "",
           "MIGRATION_ENABLED": "N",
-          "ISTIO_SYSTEM_NAMESPACE": "istio-system",
+          "ISTIO_SYSTEM_NAMESPACE": "",
           "NODES_IPS": [
             "$ip"
           ],
@@ -92,15 +78,15 @@ jobs:
           "REDIS_USE_SSL": "false",
           "DEPLOYMENT_ARCH": "microk8s",
           "PERSISTENCE_BACKEND": ${{ matrix.persistence-backends }},
-          "INSTALL_JACKRABBIT": "Y",
-          "JACKRABBIT_STORAGE_SIZE": "4Gi",
-          "JACKRABBIT_URL": "http://jackrabbit:8080",
-          "JACKRABBIT_ADMIN_ID": "admin",
-          "JACKRABBIT_ADMIN_PASSWORD": "admin",
-          "JACKRABBIT_CLUSTER": "N",
-          "JACKRABBIT_PG_USER": "jackrabbit",
-          "JACKRABBIT_PG_PASSWORD": "jackrabbit",
-          "JACKRABBIT_DATABASE": "jackrabbit",
+          "INSTALL_JACKRABBIT": "N",
+          "JACKRABBIT_STORAGE_SIZE": "",
+          "JACKRABBIT_URL": "",
+          "JACKRABBIT_ADMIN_ID": "",
+          "JACKRABBIT_ADMIN_PASSWORD": "",
+          "JACKRABBIT_CLUSTER": "",
+          "JACKRABBIT_PG_USER": "",
+          "JACKRABBIT_PG_PASSWORD": "",
+          "JACKRABBIT_DATABASE": "",
           "INSTALL_COUCHBASE": "Y",
           "COUCHBASE_NAMESPACE": "cbns",
           "COUCHBASE_VOLUME_TYPE": "io1",
@@ -134,7 +120,7 @@ jobs:
           "USING_CODE_FLOW": "",
           "USING_SCIM_FLOW": "",
           "USING_RESOURCE_OWNER_PASSWORD_CRED_GRANT_FLOW": "",
-          "DEPLOY_MULTI_CLUSTER": "N",
+          "DEPLOY_MULTI_CLUSTER": "",
           "HYBRID_LDAP_HELD_DATA": "",
           "LDAP_JACKRABBIT_VOLUME": "",
           "APP_VOLUME_TYPE": 1,
@@ -189,8 +175,8 @@ jobs:
           "GLUU_INSTALL_SQL": "N",
           "GLUU_SQL_DB_DIALECT": "mysql",
           "GLUU_SQL_DB_NAMESPACE": "sql",
-          "GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local",
-          "GLUU_SQL_DB_PORT": "3306",
+          "GLUU_SQL_DB_HOST": "gluu-mysql.sql.svc.cluster.local",
+          "GLUU_SQL_DB_PORT": 3306,
           "GLUU_SQL_DB_NAME": "gluu",
           "GLUU_SQL_DB_USER": "gluu",
           "GLUU_SQL_DB_PASSWORD": "Test1234#",
@@ -207,13 +193,11 @@ jobs:
 
     - name: Install microk8s
       run: |
-        sudo snap install microk8s --classic --channel=1.21
-        sudo snap alias microk8s.kubectl kubectl
+        sudo snap install microk8s --classic
         sudo microk8s.status --wait-ready
-        sudo microk8s.enable dns registry ingress
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
+        sudo microk8s.enable dns registry ingress helm3
+        sudo snap alias microk8s.kubectl kubectl
+        sudo snap alias microk8s.helm3 helm
         sudo helm version
 
     - name: Install Couchbase
@@ -232,7 +216,6 @@ jobs:
           sudo microk8s config > config
           cat settings.json | sed 's/"INSTALL_COUCHBASE": "Y"/"INSTALL_COUCHBASE": "N"/g' |  sed -s "s@cbgluu.cbns.svc.cluster.local@$COUCHBASE_IP@g" > tmpfile.py && mv tmpfile.py settings.json
           cat settings.json | sed 's/"GLUU_INSTALL_SQL": "N"/"GLUU_INSTALL_SQL": "Y"/g' > tmpfile.py && mv tmpfile.py settings.json
-          cat settings.json | sed 's/"GLUU_SQL_DB_HOST": "gluu-postgresql.sql.svc.cluster.local"/"GLUU_SQL_DB_HOST": "gluu-mysql.sql.svc.cluster.local"/g' > tmpfile.py && mv tmpfile.py settings.json
           touch sqlfile
 
 
@@ -259,8 +242,8 @@ jobs:
           sudo microk8s.kubectl get po -n gluu
           cat /home/runner/work/test/settings.json
           sudo kubectl -n gluu wait --for=condition=available --timeout=600s deploy/gluu-oxauth || sudo kubectl logs -l app=oxauth -c oxauth -n gluu || echo "Not Found"
-          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
-          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxtrust-0 || sudo kubectl logs -l app=oxtrust -c oxtrust -n gluu || echo "Not Found"
           sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxd-server || sudo kubectl logs -l app=oxd-server -c oxd-server -n gluu || echo "Not Found"
-          sudo kubectl wait -n gluu --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=ready pod --timeout=300s -l statefulset.kubernetes.io/pod-name=gluu-oxshibboleth-0 || sudo kubectl logs -l app=oxshiboleth -c oxshiboleth -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-casa || sudo kubectl logs -l app=casa -c casa -n gluu || echo "Not Found"
+          sudo kubectl -n gluu wait --for=condition=available --timeout=300s deploy/gluu-oxpassport || sudo kubectl logs -l app=oxpassport -c oxpassport -n gluu || echo "Not Found"
