@@ -1080,7 +1080,7 @@ oxauth:
     normal: {}
     # -- Add custom secret envs to the service
     # variable1: value1
-    secret: {}
+    secret: {}k
   # -- Add custom dns policy
   dnsPolicy: ""
   # -- Add custom dns config

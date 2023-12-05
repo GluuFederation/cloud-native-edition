@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.27](https://img.shields.io/badge/Version-1.8.27-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
+![Version: 1.8.28](https://img.shields.io/badge/Version-1.8.28-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.22.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.27 |
-|  | config | 1.8.27 |
-|  | cr-rotate | 1.8.27 |
-|  | fido2 | 1.8.27 |
-|  | gluu-alb-ingress | 1.8.27 |
-|  | gluu-istio-ingress | 1.8.27 |
-|  | jackrabbit | 1.8.27 |
-|  | nginx-ingress | 1.8.27 |
-|  | opendj | 1.8.27 |
-|  | oxauth | 1.8.27 |
-|  | oxauth-key-rotation | 1.8.27 |
-|  | oxd-server | 1.8.27 |
-|  | oxpassport | 1.8.27 |
-|  | oxshibboleth | 1.8.27 |
-|  | oxtrust | 1.8.27 |
-|  | persistence | 1.8.27 |
-|  | scim | 1.8.27 |
+|  | casa | 1.8.28 |
+|  | config | 1.8.28 |
+|  | cr-rotate | 1.8.28 |
+|  | fido2 | 1.8.28 |
+|  | gluu-alb-ingress | 1.8.28 |
+|  | gluu-istio-ingress | 1.8.28 |
+|  | jackrabbit | 1.8.28 |
+|  | nginx-ingress | 1.8.28 |
+|  | opendj | 1.8.28 |
+|  | oxauth | 1.8.28 |
+|  | oxauth-key-rotation | 1.8.28 |
+|  | oxd-server | 1.8.28 |
+|  | oxpassport | 1.8.28 |
+|  | oxshibboleth | 1.8.28 |
+|  | oxtrust | 1.8.28 |
+|  | persistence | 1.8.28 |
+|  | scim | 1.8.28 |
 
 ## Values
 
@@ -616,7 +616,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxpassport.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | oxpassport.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | oxpassport.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| oxshibboleth | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxshibboleth","tag":"4.5.3-2"},"lifecycle":{},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":1},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}},"service":{"name":"http-oxshib","oxShibbolethServiceName":"oxshibboleth","port":8080,"sessionAffinity":"ClientIP"},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Shibboleth project for the Gluu Server's SAML IDP functionality. |
+| oxshibboleth | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxshibboleth","tag":"4.5.3-3"},"lifecycle":{},"livenessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":1},"readinessProbe":{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}},"service":{"name":"http-oxshib","oxShibbolethServiceName":"oxshibboleth","port":8080,"sessionAffinity":"ClientIP"},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Shibboleth project for the Gluu Server's SAML IDP functionality. |
 | oxshibboleth.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxshibboleth.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | oxshibboleth.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
@@ -628,7 +628,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxshibboleth.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | oxshibboleth.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxshibboleth.image.repository | string | `"gluufederation/oxshibboleth"` | Image  to use for deploying. |
-| oxshibboleth.image.tag | string | `"4.5.3-2"` | Image  tag to use for deploying. |
+| oxshibboleth.image.tag | string | `"4.5.3-3"` | Image  tag to use for deploying. |
 | oxshibboleth.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxshibboleth if needed. |
 | oxshibboleth.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py |
 | oxshibboleth.pdb | object | `{"enabled":true,"maxUnavailable":1}` | Configure the PodDisruptionBudget |
