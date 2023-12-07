@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.28](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.27...v1.8.28) (2023-12-07)
+
+
+### Bug Fixes
+
+* changes to microk8s workflow ([#605](https://github.com/GluuFederation/cloud-native-edition/issues/605)) ([bfe6929](https://github.com/GluuFederation/cloud-native-edition/commit/bfe6929d662c0ce648322b19cd227adef368f77d))
+
 ## [1.8.27](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.26...v1.8.27) (2023-11-01)
 
 
