@@ -34,7 +34,7 @@ jobs:
         GluuFederation/gluu-admin-ui
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of sonarqube analysis
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Cache SonarCloud packages for JVM based project
         if: contains(env.JVM_PROJECTS, github.repository)
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
