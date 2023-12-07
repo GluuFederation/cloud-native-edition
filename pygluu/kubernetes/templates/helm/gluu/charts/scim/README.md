@@ -1,6 +1,6 @@
 # scim
 
-![Version: 1.8.27](https://img.shields.io/badge/Version-1.8.27-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.2](https://img.shields.io/badge/AppVersion-4.5.2-informational?style=flat-square)
+![Version: 1.8.28](https://img.shields.io/badge/Version-1.8.28-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
 
 System for Cross-domain Identity Management (SCIM) version 2.0
 
@@ -37,7 +37,7 @@ Kubernetes: `>=v1.22.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/scim"` | Image  to use for deploying. |
-| image.tag | string | `"4.5.2-1"` | Image  tag to use for deploying. |
+| image.tag | string | `"4.5.3-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
 | livenessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for SCIM if needed. |
 | livenessProbe.httpGet.path | string | `"/scim/restv1/scim/v2/ServiceProviderConfig"` | http liveness probe endpoint |
