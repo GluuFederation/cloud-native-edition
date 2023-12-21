@@ -75,12 +75,17 @@ spec:
             {{- include "oxd-server.usr-envs" . | indent 12 }}
             {{- include "oxd-server.usr-secret-envs" . | indent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
-          command:
-            - /bin/sh
-            - -c 
-            - |
-                /usr/bin/python3 /scripts/updatelbip.py &
+          {{- if or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local") ( .Values.customScripts) }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+              {{- with .Values.customScripts }}
+              {{- toYaml . | replace "- " "" | nindent 14}}
+              {{- end }}
+              {{- if and (not .Values.global.isDomainRegistered ) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+              /usr/bin/python3 /scripts/updatelbip.py &
+              {{- end}}
                 /app/scripts/entrypoint.sh
           {{- end }}
           ports:

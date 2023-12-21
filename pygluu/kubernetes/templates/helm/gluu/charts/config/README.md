@@ -102,6 +102,7 @@ Kubernetes: `>=v1.22.0-0`
 | configmap.gluuSyncShibManifests | bool | `false` | Activate manual Shib files sync - depreciated |
 | configmap.lbAddr | string | `""` | Loadbalancer address for AWS if the FQDN is not registered. |
 | countryCode | string | `"US"` | Country code. Used for certificate creation. |
+| customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. |
 | dnsConfig | object | `{}` | Add custom dns config |
 | dnsPolicy | string | `""` | Add custom dns policy |
 | email | string | `"support@gluu.com"` | Email address of the administrator usually. Used for certificate creation. |

@@ -47,6 +47,16 @@ spec:
           {{- end }}
           containers:
             - name: {{ include "oxauth-key-rotation.name" . }}
+              {{- if .Values.customScripts }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                    {{- with .Values.customScripts }}
+                    {{- toYaml . | replace "- " "" | nindent 20}}
+                    {{- end }}
+                    /app/scripts/entrypoint.sh
+              {{- end}}
               lifecycle:
 {{- toYaml .Values.lifecycle | nindent 16 }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
