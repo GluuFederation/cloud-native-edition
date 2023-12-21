@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.6.1
+        uses: actions/setup-python@v4.7.1
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -26,7 +26,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install jq
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Update images
         run: |

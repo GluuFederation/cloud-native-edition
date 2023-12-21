@@ -32,7 +32,8 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       # handle edge case with ALB in a non FQDN setup .Values.global.alb.ingress.enabled
-      {{- if and (eq .Values.global.isDomainRegistered "false") (.Values.global.alb.ingress.enabled) }}
+      # removed: if and (eq .Values.global.isDomainRegistered "false") (.Values.global.alb.ingress.enabled)
+      {{- if eq .Values.global.isDomainRegistered "false"}}
       hostAliases:
        - ip: {{ .Values.global.lbIp }}
          hostnames:
@@ -149,7 +150,9 @@ spec:
               {{- else }}
               /app/scripts/entrypoint.sh load
               {{- end }}
+              {{- if eq .Values.global.sslCertFromDomain "false"}}
               /usr/bin/python3 /scripts/tls_generator.py
+              {{- end }}
               {{- if .Values.global.istio.enabled }}
               curl -X POST http://localhost:15020/quitquitquit
               {{- end }}

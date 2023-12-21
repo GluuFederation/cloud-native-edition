@@ -3,6 +3,126 @@ entries:
   gluu:
   - annotations:
       artifacthub.io/changes: |
+        - Gluu 4.5.3 official chart release
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.5.3_dev
+        - name: fido2
+          image: gluufederation/fido2:4.5.3_dev
+        - name: scim
+          image: gluufederation/scim:4.5.3_dev
+        - name: configuration-manager
+          image: gluufederation/config-init:4.5.3_dev
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.5.3_dev
+        - name: certmanager
+          image: gluufederation/certmanager:4.5.3_dev
+        - name: opendj
+          image: gluufederation/opendj:4.5.3_dev
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.5.3_dev
+        - name: oxauth
+          image: gluufederation/oxauth:4.5.3_dev
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.5.3_dev
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.5.3_dev
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.5.3_dev
+        - name: persistence
+          image: gluufederation/persistence:4.5.3_dev
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.5.3_dev
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.5.3
+    created: "2023-12-05T14:17:15.657858084Z"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.8.28
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.8.28
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.8.28
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.8.28
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.8.28
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.8.28
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.8.28
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.8.28
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.8.28
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.8.28
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.8.28
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.8.28
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.8.28
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.8.28
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.8.28
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.8.28
+    - condition: global.alb.ingress
+      name: gluu-alb-ingress
+      repository: ""
+      version: 1.8.28
+    description: Gluu Access and Identity Mangement
+    digest: 0955e368bf1625590b73faadd027e33c127cee51028e450dc434c997c5f63575
+    home: https://www.gluu.org
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
+    kubeVersion: '>=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://gluu.org/docs/gluu-server
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.8.28.tgz
+    version: 1.8.28
+  - annotations:
+      artifacthub.io/changes: |
         - Gluu 4.5.2 official chart release
       artifacthub.io/images: |
         - name: casa
@@ -36,7 +156,247 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.2
-    created: "2023-09-18T19:35:01.818914+03:00"
+    created: "2023-12-05T14:17:15.623124692Z"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.8.27
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.8.27
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.8.27
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.8.27
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.8.27
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.8.27
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.8.27
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.8.27
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.8.27
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.8.27
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.8.27
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.8.27
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.8.27
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.8.27
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.8.27
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.8.27
+    - condition: global.alb.ingress
+      name: gluu-alb-ingress
+      repository: ""
+      version: 1.8.27
+    description: Gluu Access and Identity Mangement
+    digest: 0e8f70ac7f3daa0e3a5a5b61bc8310ff2d7aa4c252db11f848aff4e772d0deb5
+    home: https://www.gluu.org
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
+    kubeVersion: '>=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://gluu.org/docs/gluu-server
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.8.27.tgz
+    version: 1.8.27
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.5.2 official chart release
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.5.2_dev
+        - name: fido2
+          image: gluufederation/fido2:4.5.2_dev
+        - name: scim
+          image: gluufederation/scim:4.5.2_dev
+        - name: configuration-manager
+          image: gluufederation/config-init:4.5.2_dev
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.5.2_dev
+        - name: certmanager
+          image: gluufederation/certmanager:4.5.2_dev
+        - name: opendj
+          image: gluufederation/opendj:4.5.2_dev
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.5.2_dev
+        - name: oxauth
+          image: gluufederation/oxauth:4.5.2_dev
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.5.2_dev
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.5.2_dev
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.5.2_dev
+        - name: persistence
+          image: gluufederation/persistence:4.5.2_dev
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.5.2_dev
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.5.2
+    created: "2023-12-05T14:17:15.597807984Z"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.8.26
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.8.26
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.8.26
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.8.26
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.8.26
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.8.26
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.8.26
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.8.26
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.8.26
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.8.26
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.8.26
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.8.26
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.8.26
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.8.26
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.8.26
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.8.26
+    - condition: global.alb.ingress
+      name: gluu-alb-ingress
+      repository: ""
+      version: 1.8.26
+    description: Gluu Access and Identity Mangement
+    digest: d907c244d9bccc1d4479cbf085fefd82fbb041b6791a2fa1a5aac6c971b54a4c
+    home: https://www.gluu.org
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
+    kubeVersion: '>=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://gluu.org/docs/gluu-server
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.8.26.tgz
+    version: 1.8.26
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.5.2 official chart release
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.5.2_dev
+        - name: fido2
+          image: gluufederation/fido2:4.5.2_dev
+        - name: scim
+          image: gluufederation/scim:4.5.2_dev
+        - name: configuration-manager
+          image: gluufederation/config-init:4.5.2_dev
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.5.2_dev
+        - name: certmanager
+          image: gluufederation/certmanager:4.5.2_dev
+        - name: opendj
+          image: gluufederation/opendj:4.5.2_dev
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.5.2_dev
+        - name: oxauth
+          image: gluufederation/oxauth:4.5.2_dev
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.5.2_dev
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.5.2_dev
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.5.2_dev
+        - name: persistence
+          image: gluufederation/persistence:4.5.2_dev
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.5.2_dev
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.5.2
+    created: "2023-12-05T14:17:15.578278242Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -156,7 +516,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.2
-    created: "2023-09-18T19:35:01.811328+03:00"
+    created: "2023-12-05T14:17:15.555593548Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -277,7 +637,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.803316+03:00"
+    created: "2023-12-05T14:17:15.519586108Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -398,7 +758,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.79537+03:00"
+    created: "2023-12-05T14:17:15.498395607Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -519,7 +879,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.787418+03:00"
+    created: "2023-12-05T14:17:15.478103944Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -640,7 +1000,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.779494+03:00"
+    created: "2023-12-05T14:17:15.448951506Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -761,7 +1121,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.763572+03:00"
+    created: "2023-12-05T14:17:15.401798174Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -882,7 +1242,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.755478+03:00"
+    created: "2023-12-05T14:17:15.379249599Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1003,7 +1363,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.1
-    created: "2023-09-18T19:35:01.747314+03:00"
+    created: "2023-12-05T14:17:15.353464227Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1124,7 +1484,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.738523+03:00"
+    created: "2023-12-05T14:17:15.327118543Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1245,7 +1605,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.7308+03:00"
+    created: "2023-12-05T14:17:15.293938002Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1366,7 +1726,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.72296+03:00"
+    created: "2023-12-05T14:17:15.261626047Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1487,7 +1847,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.715152+03:00"
+    created: "2023-12-05T14:17:15.226744555Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1608,7 +1968,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.707357+03:00"
+    created: "2023-12-05T14:17:15.191627003Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1729,7 +2089,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.699377+03:00"
+    created: "2023-12-05T14:17:15.166255915Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1851,7 +2211,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.691018+03:00"
+    created: "2023-12-05T14:17:15.143313986Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -1973,7 +2333,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.871603+03:00"
+    created: "2023-12-05T14:17:15.857634975Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2095,7 +2455,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.86426+03:00"
+    created: "2023-12-05T14:17:15.821954722Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2217,7 +2577,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.857025+03:00"
+    created: "2023-12-05T14:17:15.792712339Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2337,7 +2697,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.848791+03:00"
+    created: "2023-12-05T14:17:15.770882905Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2457,7 +2817,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.841151+03:00"
+    created: "2023-12-05T14:17:15.748721216Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2577,7 +2937,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.833825+03:00"
+    created: "2023-12-05T14:17:15.71824327Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2697,7 +3057,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.826432+03:00"
+    created: "2023-12-05T14:17:15.683100856Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2817,7 +3177,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.771223+03:00"
+    created: "2023-12-05T14:17:15.424362286Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -2937,7 +3297,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.683873+03:00"
+    created: "2023-12-05T14:17:15.124235254Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3057,7 +3417,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.5.0
-    created: "2023-09-18T19:35:01.675705+03:00"
+    created: "2023-12-05T14:17:15.101445137Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3179,7 +3539,251 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.2
-    created: "2023-09-18T19:35:01.616376+03:00"
+    created: "2023-12-05T14:17:14.919452917Z"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.7.14
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.7.14
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.7.14
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.7.14
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.7.14
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.7.14
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.7.14
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.7.14
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.7.14
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.7.14
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.7.14
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.7.14
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.7.14
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.7.14
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.7.14
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.7.14
+    - condition: global.alb.ingress
+      name: gluu-alb-ingress
+      repository: ""
+      version: 1.7.14
+    description: Gluu Access and Identity Mangement
+    digest: c6c25d5e49e8ca36d6c03112925dde981bbc2ab8134443f2bcc3bac8733ee954
+    home: https://www.gluu.org
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
+    kubeVersion: '>=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://gluu.org/docs/gluu-server
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.7.14.tgz
+    version: 1.7.14
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.4.2 official chart release
+        - Added PDB and Topology spread constraints
+        - Fixed global envs override in Configmaps
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.4.2_dev
+        - name: fido2
+          image: gluufederation/fido2:4.4.2_dev
+        - name: scim
+          image: gluufederation/scim:4.4.2_dev
+        - name: configuration-manager
+          image: gluufederation/config-init:4.4.2_dev
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.4.2_dev
+        - name: certmanager
+          image: gluufederation/certmanager:4.4.2_dev
+        - name: opendj
+          image: gluufederation/opendj:4.4.2_dev
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.4.2_dev
+        - name: oxauth
+          image: gluufederation/oxauth:4.4.2_dev
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.4.2_dev
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.4.2_dev
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.4.2_dev
+        - name: persistence
+          image: gluufederation/persistence:4.4.2_dev
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.4.2_dev
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.4.2
+    created: "2023-12-05T14:17:14.859308887Z"
+    dependencies:
+    - condition: global.config.enabled
+      name: config
+      repository: ""
+      version: 1.7.13
+    - condition: global.opendj.enabled
+      name: opendj
+      repository: ""
+      version: 1.7.13
+    - condition: global.jackrabbit.enabled
+      name: jackrabbit
+      repository: ""
+      version: 1.7.13
+    - condition: global.oxauth.enabled
+      name: oxauth
+      repository: ""
+      version: 1.7.13
+    - condition: global.fido2.enabled
+      name: fido2
+      repository: ""
+      version: 1.7.13
+    - condition: global.scim.enabled
+      name: scim
+      repository: ""
+      version: 1.7.13
+    - condition: global.oxtrust.enabled
+      name: oxtrust
+      repository: ""
+      version: 1.7.13
+    - condition: global.nginx-ingress.enabled
+      name: nginx-ingress
+      repository: ""
+      version: 1.7.13
+    - condition: global.oxshibboleth.enabled
+      name: oxshibboleth
+      repository: ""
+      version: 1.7.13
+    - condition: config.configmap.gluuPassportEnabled
+      name: oxpassport
+      repository: ""
+      version: 1.7.13
+    - condition: config.configmap.gluuCasaEnabled
+      name: casa
+      repository: ""
+      version: 1.7.13
+    - condition: global.oxauth-key-rotation.enabled
+      name: oxauth-key-rotation
+      repository: ""
+      version: 1.7.13
+    - condition: global.cr-rotate.enabled
+      name: cr-rotate
+      repository: ""
+      version: 1.7.13
+    - condition: global.oxd-server.enabled
+      name: oxd-server
+      repository: ""
+      version: 1.7.13
+    - condition: global.persistence.enabled
+      name: persistence
+      repository: ""
+      version: 1.7.13
+    - condition: global.istio.ingress
+      name: gluu-istio-ingress
+      repository: ""
+      version: 1.7.13
+    - condition: global.alb.ingress
+      name: gluu-alb-ingress
+      repository: ""
+      version: 1.7.13
+    description: Gluu Access and Identity Mangement
+    digest: e189ecb7c151aef05e85c8b4061c566639b4269707f279f1429079150dc805dd
+    home: https://www.gluu.org
+    icon: https://gluu.org/docs/gluu-server/favicon.ico
+    kubeVersion: '>=v1.22.0-0'
+    maintainers:
+    - email: support@gluu.org
+      name: moabu
+    name: gluu
+    sources:
+    - https://gluu.org/docs/gluu-server
+    - https://github.com/GluuFederation/cloud-native-edition
+    urls:
+    - gluu-1.7.13.tgz
+    version: 1.7.13
+  - annotations:
+      artifacthub.io/changes: |
+        - Gluu 4.4.2 official chart release
+        - Added PDB and Topology spread constraints
+        - Fixed global envs override in Configmaps
+      artifacthub.io/images: |
+        - name: casa
+          image: gluufederation/casa:4.4.2_dev
+        - name: fido2
+          image: gluufederation/fido2:4.4.2_dev
+        - name: scim
+          image: gluufederation/scim:4.4.2_dev
+        - name: configuration-manager
+          image: gluufederation/config-init:4.4.2_dev
+        - name: cr-rotate
+          image: gluufederation/cr-rotate:4.4.2_dev
+        - name: certmanager
+          image: gluufederation/certmanager:4.4.2_dev
+        - name: opendj
+          image: gluufederation/opendj:4.4.2_dev
+        - name: jackrabbit
+          image: gluufederation/jackrabbit:4.4.2_dev
+        - name: oxauth
+          image: gluufederation/oxauth:4.4.2_dev
+        - name: oxd-server
+          image: gluufederation/oxd-server:4.4.2_dev
+        - name: oxpassport
+          image: gluufederation/oxpassport:4.4.2_dev
+        - name: oxshibboleth
+          image: gluufederation/oxshibboleth:4.4.2_dev
+        - name: persistence
+          image: gluufederation/persistence:4.4.2_dev
+        - name: oxtrust
+          image: gluufederation/oxtrust:4.4.2_dev
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.4.2
+    created: "2023-12-05T14:17:14.840305349Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3301,7 +3905,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.2
-    created: "2023-09-18T19:35:01.609117+03:00"
+    created: "2023-12-05T14:17:14.815834248Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3423,7 +4027,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.2
-    created: "2023-09-18T19:35:01.600934+03:00"
+    created: "2023-12-05T14:17:14.795856948Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3545,7 +4149,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.2
-    created: "2023-09-18T19:35:01.668075+03:00"
+    created: "2023-12-05T14:17:15.078752012Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3665,7 +4269,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.2
-    created: "2023-09-18T19:35:01.660697+03:00"
+    created: "2023-12-05T14:17:15.059115312Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3785,7 +4389,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.1
-    created: "2023-09-18T19:35:01.653014+03:00"
+    created: "2023-12-05T14:17:15.04018864Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -3905,7 +4509,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.1
-    created: "2023-09-18T19:35:01.645962+03:00"
+    created: "2023-12-05T14:17:15.020655056Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4025,7 +4629,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.1
-    created: "2023-09-18T19:35:01.638718+03:00"
+    created: "2023-12-05T14:17:14.988582828Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4145,7 +4749,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.1
-    created: "2023-09-18T19:35:01.631115+03:00"
+    created: "2023-12-05T14:17:14.962100763Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4265,7 +4869,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.1
-    created: "2023-09-18T19:35:01.624125+03:00"
+    created: "2023-12-05T14:17:14.941864316Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4385,7 +4989,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.0
-    created: "2023-09-18T19:35:01.592502+03:00"
+    created: "2023-12-05T14:17:14.775242349Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4505,7 +5109,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.4.0
-    created: "2023-09-18T19:35:01.585145+03:00"
+    created: "2023-12-05T14:17:14.749157535Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4625,7 +5229,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.1
-    created: "2023-09-18T19:35:01.571642+03:00"
+    created: "2023-12-05T14:17:14.704071761Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4745,7 +5349,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.1
-    created: "2023-09-18T19:35:01.564156+03:00"
+    created: "2023-12-05T14:17:14.671115862Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4865,7 +5469,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.1
-    created: "2023-09-18T19:35:01.55616+03:00"
+    created: "2023-12-05T14:17:14.652916035Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -4985,7 +5589,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.1
-    created: "2023-09-18T19:35:01.549198+03:00"
+    created: "2023-12-05T14:17:14.612544131Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5105,7 +5709,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.1
-    created: "2023-09-18T19:35:01.542118+03:00"
+    created: "2023-12-05T14:17:14.592250568Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5225,7 +5829,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.534843+03:00"
+    created: "2023-12-05T14:17:14.569451165Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5345,7 +5949,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.527986+03:00"
+    created: "2023-12-05T14:17:14.553878016Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5465,7 +6069,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.520968+03:00"
+    created: "2023-12-05T14:17:14.533939528Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5585,7 +6189,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.513714+03:00"
+    created: "2023-12-05T14:17:14.504128164Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5705,7 +6309,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.577395+03:00"
+    created: "2023-12-05T14:17:14.727244587Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5829,7 +6433,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2023-09-18T19:35:01.498911+03:00"
+    created: "2023-12-05T14:17:14.427633579Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -5952,7 +6556,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2023-09-18T19:35:01.4939+03:00"
+    created: "2023-12-05T14:17:14.409990112Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -6075,7 +6679,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2023-09-18T19:35:01.50693+03:00"
+    created: "2023-12-05T14:17:14.479851808Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -6198,7 +6802,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
-    created: "2023-09-18T19:35:01.502767+03:00"
+    created: "2023-12-05T14:17:14.455753026Z"
     dependencies:
     - condition: global.config.enabled
       name: config
@@ -6285,7 +6889,7 @@ entries:
   ldap-backup:
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.872801+03:00"
+    created: "2023-12-05T14:17:15.859505581Z"
     description: A backup strategy for LDAP
     digest: f00564718757bd0d53f1f3dbaa9399327695eb883000f5d6ade7690bb8a2d371
     home: https://gluu.org/docs/gluu-server
@@ -6308,7 +6912,7 @@ entries:
     version: 1.6.11
   - apiVersion: v2
     appVersion: 4.3.0
-    created: "2023-09-18T19:35:01.873203+03:00"
+    created: "2023-12-05T14:17:15.860441662Z"
     description: A backup strategy for LDAP
     digest: 2fd5f9c62784f0bc6c4b30e5b90abb5edeca1a6cb865e414a3e87a42b115b647
     home: https://gluu.org/docs/gluu-server
@@ -6331,7 +6935,7 @@ entries:
     version: 1.6.9
   - apiVersion: v2
     appVersion: 4.2.3
-    created: "2023-09-18T19:35:01.872235+03:00"
+    created: "2023-12-05T14:17:15.858544452Z"
     description: A backup strategy for LDAP
     digest: 838ca4b13bb22686f6ff7da98abc523878d64a105ec27cb85da5489d208bf8dc
     home: https://www.gluu.org
@@ -6347,4 +6951,4 @@ entries:
     urls:
     - ldap-backup-1.5.9.tgz
     version: 1.5.9
-generated: "2023-09-18T19:35:01.487766+03:00"
+generated: "2023-12-05T14:17:14.389995494Z"

@@ -26,4 +26,5 @@ spec:
         httpCookie:
           name: shib-stateful-route
           ttl: 60s
+          path: /idp
 {{- end }}

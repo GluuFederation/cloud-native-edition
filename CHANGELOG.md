@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.8.28](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.27...v1.8.28) (2023-12-07)
+
+
+### Bug Fixes
+
+* changes to microk8s workflow ([#605](https://github.com/GluuFederation/cloud-native-edition/issues/605)) ([bfe6929](https://github.com/GluuFederation/cloud-native-edition/commit/bfe6929d662c0ce648322b19cd227adef368f77d))
+
+## [1.8.27](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.26...v1.8.27) (2023-11-01)
+
+
+### Bug Fixes
+
+* wrong condition on sslCertFromDomain ([a153cb6](https://github.com/GluuFederation/cloud-native-edition/commit/a153cb64e21bff37e1a59334ca7db6fe71bf797a))
+
+## [1.8.26](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.25...v1.8.26) (2023-10-20)
+
+
+### Features
+
+* add idp path to shibboleth ([#601](https://github.com/GluuFederation/cloud-native-edition/issues/601)) ([cc6f0c6](https://github.com/GluuFederation/cloud-native-edition/commit/cc6f0c608d391a4808b1e943f68519b88e00cf41))
+
+
+### Bug Fixes
+
+* add helm release as a prefix ([#598](https://github.com/GluuFederation/cloud-native-edition/issues/598)) ([2abe135](https://github.com/GluuFederation/cloud-native-edition/commit/2abe135db6af4d23b14346c1aa861923ba448629))
+* handle ssl case with cert maanger. Force ssl pull from domain only ([eaf8180](https://github.com/GluuFederation/cloud-native-edition/commit/eaf818070bdb63a30493256500eb34422ebb64fb))
+* release 1.8.26 ([2533b26](https://github.com/GluuFederation/cloud-native-edition/commit/2533b269e268217e2479d1f98ea4fa9ddaae06d3))
+
 ## [1.8.25](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.24...v1.8.25) (2023-09-18)
 
 
