@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.28](https://img.shields.io/badge/Version-1.8.28-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
+![Version: 1.8.29](https://img.shields.io/badge/Version-1.8.29-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.22.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.28 |
-|  | config | 1.8.28 |
-|  | cr-rotate | 1.8.28 |
-|  | fido2 | 1.8.28 |
-|  | gluu-alb-ingress | 1.8.28 |
-|  | gluu-istio-ingress | 1.8.28 |
-|  | jackrabbit | 1.8.28 |
-|  | nginx-ingress | 1.8.28 |
-|  | opendj | 1.8.28 |
-|  | oxauth | 1.8.28 |
-|  | oxauth-key-rotation | 1.8.28 |
-|  | oxd-server | 1.8.28 |
-|  | oxpassport | 1.8.28 |
-|  | oxshibboleth | 1.8.28 |
-|  | oxtrust | 1.8.28 |
-|  | persistence | 1.8.28 |
-|  | scim | 1.8.28 |
+|  | casa | 1.8.29 |
+|  | config | 1.8.29 |
+|  | cr-rotate | 1.8.29 |
+|  | fido2 | 1.8.29 |
+|  | gluu-alb-ingress | 1.8.29 |
+|  | gluu-istio-ingress | 1.8.29 |
+|  | jackrabbit | 1.8.29 |
+|  | nginx-ingress | 1.8.29 |
+|  | opendj | 1.8.29 |
+|  | oxauth | 1.8.29 |
+|  | oxauth-key-rotation | 1.8.29 |
+|  | oxd-server | 1.8.29 |
+|  | oxpassport | 1.8.29 |
+|  | oxshibboleth | 1.8.29 |
+|  | oxtrust | 1.8.29 |
+|  | persistence | 1.8.29 |
+|  | scim | 1.8.29 |
 
 ## Values
 
@@ -80,12 +80,11 @@ Kubernetes: `>=v1.22.0-0`
 | casa.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | casa.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | casa.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| config | object | `{"additionalAnnotations":{},"additionalLabels":{},"adminPass":"P@ssw0rd","affinity":{},"city":"Austin","configmap":{"cnAwsAccessKeyId":"","cnAwsDefaultRegion":"us-west-1","cnAwsProfile":"gluu","cnAwsSecretAccessKey":"","cnAwsSecretsEndpointUrl":"","cnAwsSecretsNamePrefix":"gluu","cnAwsSecretsReplicaRegions":[],"cnGoogleProjectId":"google-project-to-save-config-and-secrets-to","cnGoogleServiceAccount":"SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=","cnGoogleSpannerDatabaseId":"","cnGoogleSpannerEmulatorHost":"","cnGoogleSpannerInstanceId":"","cnSecretGoogleSecretNamePrefix":"gluu","cnSecretGoogleSecretVersionId":"latest","cnSqlDbDialect":"mysql","cnSqlDbHost":"my-release-mysql.default.svc.cluster.local","cnSqlDbName":"gluu","cnSqlDbPort":3306,"cnSqlDbTimezone":"UTC","cnSqlDbUser":"gluu","cnSqlPasswordFile":"/etc/gluu/conf/sql_password","cnSqldbUserPassword":"Test1234#","containerMetadataName":"kubernetes","customScripts":[],"gluuCacheType":"NATIVE_PERSISTENCE","gluuCasaEnabled":false,"gluuCouchbaseBucketPrefix":"gluu","gluuCouchbaseCertFile":"/etc/certs/couchbase.crt","gluuCouchbaseCrt":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=","gluuCouchbaseIndexNumReplica":0,"gluuCouchbasePass":"P@ssw0rd","gluuCouchbasePassFile":"/etc/gluu/conf/couchbase_password","gluuCouchbaseSuperUser":"admin","gluuCouchbaseSuperUserPass":"P@ssw0rd","gluuCouchbaseSuperUserPassFile":"/etc/gluu/conf/couchbase_superuser_password","gluuCouchbaseUrl":"cbgluu.default.svc.cluster.local","gluuCouchbaseUser":"gluu","gluuDocumentStoreType":"DB","gluuJackrabbitAdminId":"admin","gluuJackrabbitAdminIdFile":"/etc/gluu/conf/jackrabbit_admin_id","gluuJackrabbitAdminPassFile":"/etc/gluu/conf/jackrabbit_admin_password","gluuJackrabbitPostgresDatabaseName":"jackrabbit","gluuJackrabbitPostgresHost":"postgresql.postgres.svc.cluster.local","gluuJackrabbitPostgresPasswordFile":"/etc/gluu/conf/postgres_password","gluuJackrabbitPostgresPort":5432,"gluuJackrabbitPostgresUser":"jackrabbit","gluuJackrabbitSyncInterval":300,"gluuJackrabbitUrl":"http://jackrabbit:8080","gluuLdapUrl":"opendj:1636","gluuMaxRamPercent":"75.0","gluuOxauthBackend":"oxauth:8080","gluuOxdAdminCertCn":"oxd-server","gluuOxdApplicationCertCn":"oxd-server","gluuOxdBindIpAddresses":"*","gluuOxdServerUrl":"oxd-server:8443","gluuOxtrustApiEnabled":false,"gluuOxtrustApiTestMode":false,"gluuOxtrustBackend":"oxtrust:8080","gluuOxtrustConfigGeneration":true,"gluuPassportEnabled":false,"gluuPassportFailureRedirectUrl":"","gluuPersistenceLdapMapping":"default","gluuRedisSentinelGroup":"","gluuRedisSslTruststore":"","gluuRedisType":"STANDALONE","gluuRedisUrl":"redis:6379","gluuRedisUseSsl":"false","gluuSamlEnabled":false,"gluuScimProtectionMode":"OAUTH","gluuSyncCasaManifests":false,"gluuSyncShibManifests":false,"lbAddr":""},"countryCode":"US","dnsConfig":{},"dnsPolicy":"","email":"support@gluu.com","image":{"pullSecrets":[],"repository":"gluufederation/config-init","tag":"4.5.3-1"},"ldapPass":"P@ssw0rd","lifecycle":{},"migration":{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"},"nodeSelector":{},"orgName":"Gluu","redisPass":"P@assw0rd","resources":{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}},"salt":"","state":"TX","tolerations":[],"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Configuration parameters for setup and initial configuration secret and config layers used by Gluu services. |
+| config | object | `{"additionalAnnotations":{},"additionalLabels":{},"adminPass":"P@ssw0rd","affinity":{},"city":"Austin","configmap":{"cnAwsAccessKeyId":"","cnAwsDefaultRegion":"us-west-1","cnAwsProfile":"gluu","cnAwsSecretAccessKey":"","cnAwsSecretsEndpointUrl":"","cnAwsSecretsNamePrefix":"gluu","cnAwsSecretsReplicaRegions":[],"cnGoogleProjectId":"google-project-to-save-config-and-secrets-to","cnGoogleServiceAccount":"SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo=","cnGoogleSpannerDatabaseId":"","cnGoogleSpannerEmulatorHost":"","cnGoogleSpannerInstanceId":"","cnSecretGoogleSecretNamePrefix":"gluu","cnSecretGoogleSecretVersionId":"latest","cnSqlDbDialect":"mysql","cnSqlDbHost":"my-release-mysql.default.svc.cluster.local","cnSqlDbName":"gluu","cnSqlDbPort":3306,"cnSqlDbTimezone":"UTC","cnSqlDbUser":"gluu","cnSqlPasswordFile":"/etc/gluu/conf/sql_password","cnSqldbUserPassword":"Test1234#","containerMetadataName":"kubernetes","gluuCacheType":"NATIVE_PERSISTENCE","gluuCasaEnabled":false,"gluuCouchbaseBucketPrefix":"gluu","gluuCouchbaseCertFile":"/etc/certs/couchbase.crt","gluuCouchbaseCrt":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURlakNDQW1LZ0F3SUJBZ0lKQUwyem5UWlREUHFNTUEwR0NTcUdTSWIzRFFFQkN3VUFNQzB4S3pBcEJnTlYKQkFNTUlpb3VZMkpuYkhWMUxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0hoY05NakF3TWpBMQpNRGt4T1RVeFdoY05NekF3TWpBeU1Ea3hPVFV4V2pBdE1Tc3dLUVlEVlFRRERDSXFMbU5pWjJ4MWRTNWtaV1poCmRXeDBMbk4yWXk1amJIVnpkR1Z5TG14dlkyRnNNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUIKQ2dLQ0FRRUFycmQ5T3lvSnRsVzhnNW5nWlJtL2FKWjJ2eUtubGU3dVFIUEw4Q2RJa1RNdjB0eHZhR1B5UkNQQgo3RE00RTFkLzhMaU5takdZZk41QjZjWjlRUmNCaG1VNmFyUDRKZUZ3c0x0cTFGT3MxaDlmWGo3d3NzcTYrYmlkCjV6Umw3UEE0YmdvOXVkUVRzU1UrWDJUUVRDc0dxVVVPWExrZ3NCMjI0RDNsdkFCbmZOeHcvYnFQa2ZCQTFxVzYKVXpxellMdHN6WE5GY0dQMFhtU3c4WjJuaFhhUGlva2pPT2dyMkMrbVFZK0htQ2xGUWRpd2g2ZjBYR0V0STMrKwoyMStTejdXRkF6RlFBVUp2MHIvZnk4TDRXZzh1YysvalgwTGQrc2NoQTlNQjh3YmJORUp2ZjNMOGZ5QjZ0cTd2CjF4b0FnL0g0S1dJaHdqSEN0dFVnWU1oU0xWV3UrUUlEQVFBQm80R2NNSUdaTUIwR0ExVWREZ1FXQkJTWmQxWU0KVGNIRVZjSENNUmp6ejczZitEVmxxREJkQmdOVkhTTUVWakJVZ0JTWmQxWU1UY0hFVmNIQ01Sanp6NzNmK0RWbApxS0V4cEM4d0xURXJNQ2tHQTFVRUF3d2lLaTVqWW1kc2RYVXVaR1ZtWVhWc2RDNXpkbU11WTJ4MWMzUmxjaTVzCmIyTmhiSUlKQUwyem5UWlREUHFNTUF3R0ExVWRFd1FGTUFNQkFmOHdDd1lEVlIwUEJBUURBZ0VHTUEwR0NTcUcKU0liM0RRRUJDd1VBQTRJQkFRQk9meTVWSHlKZCtWUTBXaUQ1aSs2cmhidGNpSmtFN0YwWVVVZnJ6UFN2YWVFWQp2NElVWStWOC9UNnE4Mk9vVWU1eCtvS2dzbFBsL01nZEg2SW9CRnVtaUFqek14RTdUYUhHcXJ5dk13Qk5IKzB5CnhadG9mSnFXQzhGeUlwTVFHTEs0RVBGd3VHRlJnazZMRGR2ZEN5NVdxWW1MQWdBZVh5VWNaNnlHYkdMTjRPUDUKZTFiaEFiLzRXWXRxRHVydFJrWjNEejlZcis4VWNCVTRLT005OHBZN05aaXFmKzlCZVkvOEhZaVQ2Q0RRWWgyTgoyK0VWRFBHcFE4UkVsRThhN1ZLL29MemlOaXFyRjllNDV1OU1KdjM1ZktmNUJjK2FKdWduTGcwaUZUYmNaT1prCkpuYkUvUENIUDZFWmxLaEFiZUdnendtS1dDbTZTL3g0TklRK2JtMmoKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=","gluuCouchbaseIndexNumReplica":0,"gluuCouchbasePass":"P@ssw0rd","gluuCouchbasePassFile":"/etc/gluu/conf/couchbase_password","gluuCouchbaseSuperUser":"admin","gluuCouchbaseSuperUserPass":"P@ssw0rd","gluuCouchbaseSuperUserPassFile":"/etc/gluu/conf/couchbase_superuser_password","gluuCouchbaseUrl":"cbgluu.default.svc.cluster.local","gluuCouchbaseUser":"gluu","gluuDocumentStoreType":"DB","gluuJackrabbitAdminId":"admin","gluuJackrabbitAdminIdFile":"/etc/gluu/conf/jackrabbit_admin_id","gluuJackrabbitAdminPassFile":"/etc/gluu/conf/jackrabbit_admin_password","gluuJackrabbitPostgresDatabaseName":"jackrabbit","gluuJackrabbitPostgresHost":"postgresql.postgres.svc.cluster.local","gluuJackrabbitPostgresPasswordFile":"/etc/gluu/conf/postgres_password","gluuJackrabbitPostgresPort":5432,"gluuJackrabbitPostgresUser":"jackrabbit","gluuJackrabbitSyncInterval":300,"gluuJackrabbitUrl":"http://jackrabbit:8080","gluuLdapUrl":"opendj:1636","gluuMaxRamPercent":"75.0","gluuOxauthBackend":"oxauth:8080","gluuOxdAdminCertCn":"oxd-server","gluuOxdApplicationCertCn":"oxd-server","gluuOxdBindIpAddresses":"*","gluuOxdServerUrl":"oxd-server:8443","gluuOxtrustApiEnabled":false,"gluuOxtrustApiTestMode":false,"gluuOxtrustBackend":"oxtrust:8080","gluuOxtrustConfigGeneration":true,"gluuPassportEnabled":false,"gluuPassportFailureRedirectUrl":"","gluuPersistenceLdapMapping":"default","gluuRedisSentinelGroup":"","gluuRedisSslTruststore":"","gluuRedisType":"STANDALONE","gluuRedisUrl":"redis:6379","gluuRedisUseSsl":"false","gluuSamlEnabled":false,"gluuScimProtectionMode":"OAUTH","gluuSyncCasaManifests":false,"gluuSyncShibManifests":false,"lbAddr":""},"countryCode":"US","customScripts":[],"dnsConfig":{},"dnsPolicy":"","email":"support@gluu.com","image":{"pullSecrets":[],"repository":"gluufederation/config-init","tag":"4.5.3-1"},"ldapPass":"P@ssw0rd","lifecycle":{},"migration":{"enabled":false,"migrationDataFormat":"ldif","migrationDir":"/ce-migration"},"nodeSelector":{},"orgName":"Gluu","redisPass":"P@assw0rd","resources":{"limits":{"cpu":"300m","memory":"300Mi"},"requests":{"cpu":"300m","memory":"300Mi"}},"salt":"","state":"TX","tolerations":[],"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Configuration parameters for setup and initial configuration secret and config layers used by Gluu services. |
 | config.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | config.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | config.adminPass | string | `"P@ssw0rd"` | Admin password to log in to the UI. |
 | config.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
-| config.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | config.city | string | `"Austin"` | City. Used for certificate creation. |
 | config.configmap.cnGoogleProjectId | string | `"google-project-to-save-config-and-secrets-to"` | Project id of the google project the secret manager and/or spanner instance belongs to. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
 | config.configmap.cnGoogleServiceAccount | string | `"SWFtTm90YVNlcnZpY2VBY2NvdW50Q2hhbmdlTWV0b09uZQo="` | Service account with roles roles/secretmanager.admin base64 encoded string. This is used often inside the services to reach the configuration layer. Used only when global.configAdapterName and global.configSecretAdapter is set to google. |
@@ -151,6 +150,7 @@ Kubernetes: `>=v1.22.0-0`
 | config.configmap.gluuSyncShibManifests | bool | `false` | Activate manual Shib files sync - depreciated |
 | config.configmap.lbAddr | string | `""` | Loadbalancer address for AWS if the FQDN is not registered. |
 | config.countryCode | string | `"US"` | Country code. Used for certificate creation. |
+| config.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | config.dnsConfig | object | `{}` | Add custom dns config |
 | config.dnsPolicy | string | `""` | Add custom dns policy |
 | config.email | string | `"support@gluu.com"` | Email address of the administrator usually. Used for certificate creation. |
@@ -378,8 +378,8 @@ Kubernetes: `>=v1.22.0-0`
 | jackrabbit.additionalAnnotations | object | `{}` | Additional annotations that will be added across the gateway in the format of {cert-manager.io/issuer: "letsencrypt-prod"} |
 | jackrabbit.additionalLabels | object | `{}` | Additional labels that will be added across the gateway in the format of {mylabel: "myapp"} |
 | jackrabbit.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
-| jackrabbit.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | jackrabbit.clusterId | string | `""` | This id needs to be unique to each kubernetes cluster in a multi cluster setup west, east, south, north, region ...etc If left empty it will be randomly generated. |
+| jackrabbit.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | jackrabbit.dnsConfig | object | `{}` | Add custom dns config |
 | jackrabbit.dnsPolicy | string | `""` | Add custom dns policy |
 | jackrabbit.hpa | object | `{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50}` | Configure the HorizontalPodAutoscaler |
@@ -629,7 +629,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxshibboleth.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxshibboleth.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | oxshibboleth.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
-| oxsibboleth.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
+| oxshibboleth.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | oxshibboleth.dnsConfig | object | `{}` | Add custom dns config |
 | oxshibboleth.dnsPolicy | string | `""` | Add custom dns policy |
 | oxshibboleth.hpa | object | `{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50}` | Configure the HorizontalPodAutoscaler |
