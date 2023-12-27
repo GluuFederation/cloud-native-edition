@@ -1,6 +1,6 @@
 # oxauth
 
-![Version: 1.8.28](https://img.shields.io/badge/Version-1.8.28-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
+![Version: 1.8.29](https://img.shields.io/badge/Version-1.8.29-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.3](https://img.shields.io/badge/AppVersion-4.5.3-informational?style=flat-square)
 
 OAuth Authorization Server, the OpenID Connect Provider, the UMA Authorization Server--this is the main Internet facing component of Gluu. It's the service that returns tokens, JWT's and identity assertions. This service must be Internet facing.
 
@@ -28,6 +28,7 @@ Kubernetes: `>=v1.22.0-0`
 | additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
+| customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. |
 | dnsConfig | object | `{}` | Add custom dns config |
 | dnsPolicy | string | `""` | Add custom dns policy |
 | hpa | object | `{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50}` | Configure the HorizontalPodAutoscaler |

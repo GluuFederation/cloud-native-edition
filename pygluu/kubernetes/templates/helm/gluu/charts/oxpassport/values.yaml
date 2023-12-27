@@ -106,3 +106,5 @@ additionalLabels: { }
 additionalAnnotations: { }
 # -- https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 tolerations: []
+# -- Add custom scripts that have been mounted to run before the entrypoint.
+customScripts: []
