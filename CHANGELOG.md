@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.29](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.28...v1.8.29) (2023-12-27)
+
+
+### Features
+
+* add custom scripts to cn ([#613](https://github.com/GluuFederation/cloud-native-edition/issues/613)) ([7e7705d](https://github.com/GluuFederation/cloud-native-edition/commit/7e7705d23a1aa4bcabc3a339b94cf0f0a8712e4f))
+
+
+### Bug Fixes
+
+* clean up zip ([c73ae4c](https://github.com/GluuFederation/cloud-native-edition/commit/c73ae4cd4c1a67de34e0c03ee57295f8331ee6a3))
+
 ## [1.8.28](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.27...v1.8.28) (2023-12-07)
 
 
