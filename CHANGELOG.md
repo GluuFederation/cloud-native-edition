@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.30](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.29...v1.8.30) (2024-01-02)
+
+
+### Bug Fixes
+
+* prepare for 1.8.30 release ([a81a02b](https://github.com/GluuFederation/cloud-native-edition/commit/a81a02bc448fc54584e997cbec49674d963e0b3d))
+
 ## [1.8.29](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.28...v1.8.29) (2023-12-27)
 
 
