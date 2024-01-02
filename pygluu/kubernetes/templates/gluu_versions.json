@@ -23,13 +23,13 @@
     "OXPASSPORT_IMAGE_NAME": "gluufederation/oxpassport",
     "OXPASSPORT_IMAGE_TAG": "4.5.3-1",
     "OXSHIBBOLETH_IMAGE_NAME": "gluufederation/oxshibboleth",
-    "OXSHIBBOLETH_IMAGE_TAG": "4.5.3-3",
+    "OXSHIBBOLETH_IMAGE_TAG": "4.5.3-4",
     "OXTRUST_IMAGE_NAME": "gluufederation/oxtrust",
     "OXTRUST_IMAGE_TAG": "4.5.3-1",
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
-    "PERSISTENCE_IMAGE_TAG": "4.5.3-1",
+    "PERSISTENCE_IMAGE_TAG": "4.5.3-2",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.5.3-1"
+    "UPGRADE_IMAGE_TAG": "4.5.3-2"
   },
   "4.5.3_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
