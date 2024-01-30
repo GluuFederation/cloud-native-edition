@@ -18,7 +18,13 @@ metadata:
 {{- end }}
 spec:
   gateways:
+{{- if .Values.global.istio.gateways }}
+{{- with .Values.global.istio.gateways }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+{{- else }}
   - {{ .Release.Name }}-global-gtw
+{{- end }}
   hosts:
   - {{ .Values.global.domain }}
   http:

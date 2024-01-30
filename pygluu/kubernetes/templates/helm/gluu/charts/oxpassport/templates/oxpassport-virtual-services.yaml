@@ -19,7 +19,13 @@ spec:
   hosts:
   - {{ .Values.global.domain }}
   gateways:
+{{- if .Values.global.istio.gateways }}
+{{- with .Values.global.istio.gateways }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+{{- else }}
   - {{ .Release.Name }}-global-gtw
+{{- end }}
   http:
   - name: {{ .Release.Name }}-istio-passport
     match:
