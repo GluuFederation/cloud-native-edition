@@ -20,7 +20,13 @@ spec:
   hosts:
   - {{ .Values.global.domain }}
   gateways:
-  - {{ .Release.Name }}-global-gtw # can omit the namespace if gateway is in same namespace as virtual service.
+{{- if .Values.global.istio.gateways }}
+{{- with .Values.global.istio.gateways }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+{{- else }}
+  - {{ .Release.Name }}-global-gtw
+{{- end }} # can omit the namespace if gateway is in same namespace as virtual service.
   http:
   - name: "{{ .Release.Name }}-istio-openid-config"
     match:
