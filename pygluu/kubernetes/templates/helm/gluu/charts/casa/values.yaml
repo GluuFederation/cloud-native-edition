@@ -113,3 +113,5 @@ tolerations: []
 # -- https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
 affinity: {}
 nodeSelector: {}
+# -- Add custom scripts that have been mounted to run before the entrypoint.
+customScripts: []

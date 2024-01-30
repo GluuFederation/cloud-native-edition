@@ -73,12 +73,17 @@ spec:
           runAsUser: 1000
           runAsNonRoot: true
         {{- end }}
-        {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
+        {{- if or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local") ( .Values.customScripts) }}
         command:
           - /bin/sh
           - -c
           - |
+              {{- with .Values.customScripts }}
+              {{- toYaml . | replace "- " "" | nindent 14}}
+              {{- end }}
+              {{- if and (not .Values.global.isDomainRegistered ) (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
               /usr/bin/python3 /scripts/updatelbip.py &
+              {{- end}}
               /app/scripts/entrypoint.sh
         {{- end }}
         {{- if and ( or ( .Values.global.opendj.enabled ) ( .Values.global.jackrabbit.enabled) ) (or (eq .Values.global.storageClass.provisioner "microk8s.io/hostpath" ) (eq .Values.global.storageClass.provisioner "k8s.io/minikube-hostpath")) }}

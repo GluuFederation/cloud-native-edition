@@ -188,7 +188,7 @@ class Helm(object):
                 or self.settings.get("TEST_ENVIRONMENT") == "Y":
             values_file_parser["global"]["cloud"]["testEnviroment"] = True
         if self.settings.get("DEPLOYMENT_ARCH") == "microk8s":
-            values_file_parser["nginx-ingress"]["ingress"]["ingressClassName"] =  "public"
+            values_file_parser["nginx-ingress"]["ingress"]["ingressClassName"] = "public"
         values_file_parser["config"]["configmap"]["lbAddr"] = self.settings.get("LB_ADD")
         values_file_parser["global"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
         values_file_parser["config"]["configmap"]["gluuPersistenceType"] = self.settings.get("PERSISTENCE_BACKEND")
@@ -456,6 +456,9 @@ class Helm(object):
 
         # add custom salt
         values_file_parser["config"]["salt"] = self.settings.get("SALT") or ""
+
+        # document store
+        values_file_parser["config"]["configmap"]["gluuDocumentStoreType"] = self.settings.get("DOCUMENT_STORE_TYPE") or "DB"
 
         values_file_parser.dump_it()
 
