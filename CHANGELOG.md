@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.31](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.30...v1.8.31) (2024-01-30)
+
+
+### Bug Fixes
+
+* add support for custom istio gateways ([#623](https://github.com/GluuFederation/cloud-native-edition/issues/623)) ([d2e03ee](https://github.com/GluuFederation/cloud-native-edition/commit/d2e03ee9a7401c4f532e4b1b5aba27149face8fb))
+* gluuDocumentStoreType changes not reflected when using pygluu-kubernetes installer ([#617](https://github.com/GluuFederation/cloud-native-edition/issues/617)) ([1644fad](https://github.com/GluuFederation/cloud-native-edition/commit/1644fad597b52003366548dd43e8ce23a544548b))
+
 ## [1.8.30](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.29...v1.8.30) (2024-01-02)
 
 
