@@ -68,6 +68,18 @@ Create user custom defined secret envs
 {{- end }}
 
 {{/*
+Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
+*/}}
+{{- define "fido2.customJavaOptions"}}
+{{ $custom := "" }}
+{{- if .Values.global.fido2.gluuCustomJavaOptions }}
+{{ $custom = printf "%s" .Values.global.fido2.gluuCustomJavaOptions }}
+{{- end}}
+{{ $customJavaOptions := printf "%s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom }}
+{{ $customJavaOptions | trimSuffix " " | quote }}
+{{- end }}
+
+{{/*
 Create topologySpreadConstraints lists
 */}}
 {{- define "fido2.topology-spread-constraints"}}

@@ -135,6 +135,8 @@ global:
   oxauth:
     # -- Boolean flag to enable/disable oxauth chart. You should never set this to false.
     enabled: true
+    # -- passing custom  java options to oxauth.
+    gluuCustomJavaOptions: "-XX:MaxDirectMemorySize=2500m -Xmx2200m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -176,6 +178,8 @@ global:
   fido2:
     # -- Boolean flag to enable/disable the fido2 chart.
     enabled: false
+    # -- passing custom  java options to fido2.
+    gluuCustomJavaOptions: "-XX:MaxDirectMemorySize=500m -Xmx200m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -193,6 +197,8 @@ global:
   scim:
     # -- Boolean flag to enable/disable the SCIM chart.
     enabled: false
+    # -- passing custom  java options to scim.
+    gluuCustomJavaOptions: "-XX:MaxDirectMemorySize=1000m -Xmx700m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -238,7 +244,7 @@ global:
     # -- Boolean flag to enable/disable the oxtrust chart.
     enabled: true
     # -- passing custom  java options to oxTrust.
-    gluuCustomJavaOptions: "-XshowSettings:vm -XX:MaxRAMPercentage=80"
+    gluuCustomJavaOptions: "-XshowSettings:vm -XX:MaxRAMPercentage=80 -XX:MaxDirectMemorySize=2500m -Xmx2200m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -299,8 +305,8 @@ global:
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
     enabled: false
-    # -- passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers.
-    gluuCustomJavaOptions: ""
+    # -- passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers.
+    gluuCustomJavaOptions: "-XX:MaxDirectMemorySize=1000m -Xmx700m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
@@ -337,6 +343,8 @@ global:
   oxd-server:
     # -- Boolean flag to enable/disable the oxd-server chart.
     enabled: true
+    # -- passing custom  java options to oxd-server.
+    gluuCustomJavaOptions: "-XX:MaxDirectMemorySize=400m -Xmx100m"
     # -- App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed.
     # log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
     # Targets are "STDOUT" and "FILE"
