@@ -72,8 +72,9 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 */}}
 {{- define "oxd-server.customJavaOptions"}}
 {{ $custom := "" }}
-{{- if .Values.global.oxd-server.gluuCustomJavaOptions }}
-{{ $custom = printf "%s" .Values.global.oxd-server.gluuCustomJavaOptions }}
+{{- $gluuCustomJavaOptions := index .Values.global "oxd-server" "gluuCustomJavaOptions" }}
+{{- if $gluuCustomJavaOptions }}
+{{- $custom := printf "%s" $gluuCustomJavaOptions }}
 {{- end}}
 {{ $customJavaOptions := printf "%s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom }}
 {{ $customJavaOptions | trimSuffix " " | quote }}
