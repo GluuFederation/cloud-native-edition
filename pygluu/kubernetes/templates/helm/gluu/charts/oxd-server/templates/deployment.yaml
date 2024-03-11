@@ -72,6 +72,8 @@ spec:
             runAsNonRoot: true
           {{- end }}
           env:
+          - name: GLUU_JAVA_OPTIONS
+            value: "-XX:MaxDirectMemorySize={{ (.Values.resources.limits.memory | replace "Mi" "") }}m -Xmx{{sub (.Values.resources.limits.memory  | replace "Mi" "") 300}}m"
             {{- include "oxd-server.usr-envs" . | indent 12 }}
             {{- include "oxd-server.usr-secret-envs" . | indent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
