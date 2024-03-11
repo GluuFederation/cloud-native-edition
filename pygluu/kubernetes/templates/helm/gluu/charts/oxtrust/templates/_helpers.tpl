@@ -73,7 +73,6 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 */}}
 {{- define "oxtrust.customJavaOptions"}}
 {{ $custom := "" }}
-{{- $custom := printf "-XX:MaxDirectMemorySize=%sm -Xmx%s" (.Values.resources.limits.memory | replace "Mi" "") (sub (.Values.resources.limits.memory | replace "Mi" "") 300) }}
 {{- if .Values.global.oxtrust.gluuCustomJavaOptions }}
 {{ $custom = printf "%s" .Values.global.oxtrust.gluuCustomJavaOptions }}
 {{- end}}
