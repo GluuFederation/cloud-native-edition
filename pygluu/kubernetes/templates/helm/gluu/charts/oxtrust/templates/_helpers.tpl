@@ -76,7 +76,10 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 {{- if .Values.global.oxtrust.gluuCustomJavaOptions }}
 {{ $custom = printf "%s" .Values.global.oxtrust.gluuCustomJavaOptions }}
 {{- end}}
-{{ $customJavaOptions := printf "%s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom }}
+{{ $memory := .Values.resources.limits.memory | replace "Mi" "" | int -}}
+{{- $maxDirectMemory := printf "-XX:MaxDirectMemorySize=%dm" $memory -}}
+{{- $xmx := printf "-Xmx%dm" (sub $memory 300) -}}
+{{- $customJavaOptions := printf "%s %s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom (printf "%s %s" $maxDirectMemory $xmx) -}}
 {{ $customJavaOptions | trimSuffix " " | quote }}
 {{- end }}
 
