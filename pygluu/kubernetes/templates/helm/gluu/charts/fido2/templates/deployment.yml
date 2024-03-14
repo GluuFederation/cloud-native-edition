@@ -74,7 +74,7 @@ spec:
         {{- end }}
         env:
         - name: GLUU_JAVA_OPTIONS
-          value: "-XX:MaxDirectMemorySize={{ (.Values.resources.limits.memory | replace "Mi" "") }}m -Xmx{{sub (.Values.resources.limits.memory  | replace "Mi" "") 300}}m"
+          value: {{ include "fido2.customJavaOptions" . | trim }}
           {{- include "fido2.usr-envs" . | indent 12 }}
           {{- include "fido2.usr-secret-envs" . | indent 12 }}
         {{- if and (eq .Values.global.isDomainRegistered "false") (or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local")) }}
