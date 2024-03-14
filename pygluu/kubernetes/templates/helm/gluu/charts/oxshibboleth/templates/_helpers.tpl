@@ -84,9 +84,7 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 {{ $container := "" }}
 {{ $xmlsec := "" }}
 {{ $custom := "" }}
-{{- if .Values.global.oxshibboleth.gluuCustomJavaOptions }}
 {{ $custom = printf "%s " .Values.global.oxshibboleth.gluuCustomJavaOptions }}
-{{- end}}
 {{- if .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
 {{ $ldap = printf "-Didp.loglevel.ldap=%s " .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
 {{- end}}

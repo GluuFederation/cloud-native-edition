@@ -72,9 +72,7 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 */}}
 {{- define "oxauth.customJavaOptions"}}
 {{ $custom := "" }}
-{{- if .Values.global.oxauth.gluuCustomJavaOptions }}
 {{ $custom = printf "%s" .Values.global.oxauth.gluuCustomJavaOptions }}
-{{- end}}
 {{ $memory := .Values.resources.limits.memory | replace "Mi" "" | int -}}
 {{- $maxDirectMemory := printf "-XX:MaxDirectMemorySize=%dm" $memory -}}
 {{- $xmx := printf "-Xmx%dm" (sub $memory 300) -}}
