@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.32](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.31...v1.8.32) (2024-03-20)
+
+
+### Features
+
+* add java memory arguments in helpers file ([#628](https://github.com/GluuFederation/cloud-native-edition/issues/628)) ([31de98f](https://github.com/GluuFederation/cloud-native-edition/commit/31de98fb2888591f63541a367b1c5c54473a9f90))
+
+
+### Miscellaneous Chores
+
+* prepare for 1.8.32 release ([53546a0](https://github.com/GluuFederation/cloud-native-edition/commit/53546a03dd7358a0e6abab3710ed21dbfda2bae8))
+
 ## [1.8.31](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.30...v1.8.31) (2024-01-30)
 
 
