@@ -71,6 +71,9 @@ Create user custom defined secret envs
 Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 */}}
 {{- define "oxshibboleth.detailedLogs"}}
+{{ $memory := .Values.resources.limits.memory | replace "Mi" "" | int -}}
+{{ $maxDirectMemory := printf "-XX:MaxDirectMemorySize=%dm" $memory -}}
+{{ $xmx := printf "-Xmx%dm" (sub $memory 300) -}}
 {{ $ldap := "" }}
 {{ $messages := "" }}
 {{ $encryption := "" }}
@@ -81,9 +84,7 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 {{ $container := "" }}
 {{ $xmlsec := "" }}
 {{ $custom := "" }}
-{{- if .Values.global.oxshibboleth.gluuCustomJavaOptions }}
 {{ $custom = printf "%s " .Values.global.oxshibboleth.gluuCustomJavaOptions }}
-{{- end}}
 {{- if .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
 {{ $ldap = printf "-Didp.loglevel.ldap=%s " .Values.global.oxshibboleth.appLoggers.ldapLogLevel }}
 {{- end}}
@@ -112,7 +113,7 @@ Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
 {{ $xmlsec = printf "-Didp.loglevel.xmlsec=%s " .Values.global.oxshibboleth.appLoggers.xmlsecLogLevel }}
 {{- end}}
 
-{{ $detailLogs := printf "%s%s%s%s%s%s%s%s%s%s" $custom $ldap $messages $encryption $opensaml $props $httpclient $spring $container $xmlsec }}
+{{ $detailLogs := printf "%s%s%s%s%s%s%s%s%s%s %s %s" $custom $ldap $messages $encryption $opensaml $props $httpclient $spring $container $xmlsec $maxDirectMemory $xmx }}
 {{ $detailLogs | trimSuffix " " | quote }}
 {{- end }}
 

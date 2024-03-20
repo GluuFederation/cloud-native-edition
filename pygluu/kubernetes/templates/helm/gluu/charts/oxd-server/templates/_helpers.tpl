@@ -68,6 +68,20 @@ Create user custom defined secret envs
 {{- end }}
 
 {{/*
+Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
+*/}}
+{{- define "oxd-server.customJavaOptions"}}
+{{ $custom := "" }}
+{{- $gluuCustomJavaOptions := index .Values.global "oxd-server" "gluuCustomJavaOptions" }}
+{{- $custom := printf "%s" $gluuCustomJavaOptions }}
+{{ $memory := .Values.resources.limits.memory | replace "Mi" "" | int -}}
+{{- $maxDirectMemory := printf "-XX:MaxDirectMemorySize=%dm" $memory -}}
+{{- $xmx := printf "-Xmx%dm" (sub $memory 300) -}}
+{{- $customJavaOptions := printf "%s %s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom (printf "%s %s" $maxDirectMemory $xmx) -}}
+{{ $customJavaOptions | trimSuffix " " | quote }}
+{{- end }}
+
+{{/*
 Create topologySpreadConstraints lists
 */}}
 {{- define "oxd-server.topology-spread-constraints"}}
