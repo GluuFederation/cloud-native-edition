@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.33](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.32...v1.8.33) (2024-04-01)
+
+
+### Bug Fixes
+
+* address gateway customization in shib and overide ttl ([ef59ebe](https://github.com/GluuFederation/cloud-native-edition/commit/ef59ebe1dc5182f28252bb35d92afd97ad02221e)), closes [#630](https://github.com/GluuFederation/cloud-native-edition/issues/630)
+
 ## [1.8.32](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.31...v1.8.32) (2024-03-20)
 
 
