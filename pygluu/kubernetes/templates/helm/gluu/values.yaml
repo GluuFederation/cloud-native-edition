@@ -301,7 +301,7 @@ global:
       apachehcLogTarget: "FILE"
   opendj:
     # -- Boolean flag to enable/disable the OpenDJ  chart.
-    enabled: true
+    enabled: false
   oxshibboleth:
     # -- Boolean flag to enable/disable the oxShibbboleth chart.
     enabled: false
