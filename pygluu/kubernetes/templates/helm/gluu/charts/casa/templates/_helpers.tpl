@@ -79,6 +79,19 @@ Create user custom defined secret envs
 {{- end }}
 
 {{/*
+Create GLUU_JAVA_OPTIONS ENV for passing custom work and detailed logs
+*/}}
+{{- define "casa.customJavaOptions"}}
+{{ $custom := "" }}
+{{ $custom = printf "%s" .Values.global.casa.gluuCustomJavaOptions }}
+{{ $memory := .Values.resources.limits.memory | replace "Mi" "" | int -}}
+{{- $maxDirectMemory := printf "-XX:MaxDirectMemorySize=%dm" $memory -}}
+{{- $xmx := printf "-Xmx%dm" (sub $memory 300) -}}
+{{- $customJavaOptions := printf "%s %s -DCN_IDP_HOST=http://oxshibboleth:8080" $custom (printf "%s %s" $maxDirectMemory $xmx) -}}
+{{ $customJavaOptions | trim | quote }}
+{{- end }}
+
+{{/*
 Create topologySpreadConstraints lists
 */}}
 {{- define "casa.topology-spread-constraints"}}

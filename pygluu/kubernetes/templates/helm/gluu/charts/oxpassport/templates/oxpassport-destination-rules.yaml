@@ -24,5 +24,5 @@ spec:
       consistentHash:
         httpCookie:
           name: passport-statefulset-route
-          ttl: 60s
+          ttl: {{ .Values.istioDestinationRuleCookieTTL }}
 {{- end }}

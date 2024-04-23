@@ -59,6 +59,7 @@ Kubernetes: `>=v1.22.0-0`
 | casa.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | casa.image.repository | string | `"gluufederation/casa"` | Image  to use for deploying. |
 | casa.image.tag | string | `"4.5.4-1"` | Image  tag to use for deploying. |
+| casa.istioDestinationRuleCookieTTL | string | `"60s"` | Istio Destination Rule loadBalancer.consistentHash.httpCookie.ttl if istio ingress is enabled |
 | casa.livenessProbe | object | `{"httpGet":{"path":"/casa/health-check","port":"http-casa"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for casa if needed. |
 | casa.livenessProbe.httpGet.path | string | `"/casa/health-check"` | http liveness probe endpoint |
 | casa.pdb | object | `{"enabled":true,"maxUnavailable":"90%"}` | Configure the PodDisruptionBudget |
@@ -644,6 +645,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxshibboleth.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxshibboleth.image.repository | string | `"gluufederation/oxshibboleth"` | Image  to use for deploying. |
 | oxshibboleth.image.tag | string | `"4.5.4-1"` | Image  tag to use for deploying. |
+| oxshibboleth.istioDestinationRuleCookieTTL | string | `"60s"` | Istio Destination Rule loadBalancer.consistentHash.httpCookie.ttl if istio ingress is enabled |
 | oxshibboleth.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxshibboleth if needed. |
 | oxshibboleth.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py |
 | oxshibboleth.pdb | object | `{"enabled":true,"maxUnavailable":1}` | Configure the PodDisruptionBudget |
@@ -678,6 +680,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxtrust.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxtrust.image.repository | string | `"gluufederation/oxtrust"` | Image  to use for deploying. |
 | oxtrust.image.tag | string | `"4.5.4-1"` | Image  tag to use for deploying. |
+| oxtrust.istioDestinationRuleCookieTTL | string | `"60s"` | Istio Destination Rule loadBalancer.consistentHash.httpCookie.ttl if istio ingress is enabled |
 | oxtrust.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the auth server if needed. |
 | oxtrust.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py |
 | oxtrust.pdb | object | `{"enabled":true,"maxUnavailable":1}` | Configure the PodDisruptionBudget |

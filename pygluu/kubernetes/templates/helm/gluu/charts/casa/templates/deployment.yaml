@@ -79,6 +79,8 @@ spec:
             runAsNonRoot: true
           {{- end }}
           env:
+          - name: GLUU_JAVA_OPTIONS
+            value: {{ include "casa.customJavaOptions" . | trim }}
             {{- include "casa.usr-envs" . | indent 12 }}
             {{- include "casa.usr-secret-envs" . | indent 12 }}
           {{- if or (eq .Values.global.storageClass.provisioner "kubernetes.io/aws-ebs") (eq .Values.global.storageClass.provisioner "openebs.io/local") ( .Values.customScripts) }}

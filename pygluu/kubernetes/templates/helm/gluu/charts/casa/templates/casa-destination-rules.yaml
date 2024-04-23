@@ -25,5 +25,5 @@ spec:
       consistentHash:
         httpCookie:
           name: casa-route
-          ttl: 60s
+          ttl: {{ .Values.istioDestinationRuleCookieTTL }}
 {{- end }}
