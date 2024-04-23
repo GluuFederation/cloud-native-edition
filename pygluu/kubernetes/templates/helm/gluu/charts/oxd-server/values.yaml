@@ -62,7 +62,7 @@ livenessProbe:
     command:
       - curl
       - -k
-      - https://localhost:8443/health-check
+      - http://localhost:8080/health-check
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
@@ -72,7 +72,7 @@ readinessProbe:
     command:
       - curl
       - -k
-      - https://localhost:8443/health-check
+      - http://localhost:8080/health-check
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
