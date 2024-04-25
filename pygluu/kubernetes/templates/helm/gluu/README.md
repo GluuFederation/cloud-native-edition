@@ -269,7 +269,7 @@ Kubernetes: `>=v1.22.0-0`
 | global.fido2.appLoggers.persistenceLogLevel | string | `"INFO"` | fido2_persistence.log level |
 | global.fido2.appLoggers.persistenceLogTarget | string | `"FILE"` | fido2_persistence.log target |
 | global.fido2.enabled | bool | `false` | Boolean flag to enable/disable the fido2 chart. |
-| global.fido2.gluuCustomJavaOptions | string | `""` | passing custom  java options to fido2. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
+| global.fido2.gluuCustomJavaOptions | string | `""` | passing custom  java options to fido2. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
 | global.gcePdStorageType | string | `"pd-standard"` | GCE storage kind if using Google disks |
 | global.gluuJackrabbitCluster | string | `"true"` | Boolean flag if enabled will enable jackrabbit in cluster mode with Postgres. |
 | global.gluuPersistenceType | string | `"couchbase"` | Persistence backend to run Gluu with ldap|couchbase|hybrid|sql|spanner. |
@@ -309,12 +309,12 @@ Kubernetes: `>=v1.22.0-0`
 | global.oxauth.appLoggers.scriptLogLevel | string | `"INFO"` | oxauth_script.log level |
 | global.oxauth.appLoggers.scriptLogTarget | string | `"FILE"` | oxauth_script.log target |
 | global.oxauth.enabled | bool | `true` | Boolean flag to enable/disable oxauth chart. You should never set this to false. |
-| global.oxauth.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxauth. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
+| global.oxauth.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxauth. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
 | global.oxd-server.appLoggers | object | `{"oxdServerLogLevel":"INFO","oxdServerLogTarget":"STDOUT"}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxd-server.appLoggers.oxdServerLogLevel | string | `"INFO"` | oxd-server.log level |
 | global.oxd-server.appLoggers.oxdServerLogTarget | string | `"STDOUT"` | oxd-server.log target |
 | global.oxd-server.enabled | bool | `true` | Boolean flag to enable/disable the oxd-server chart. |
-| global.oxd-server.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
+| global.oxd-server.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
 | global.oxshibboleth.appLoggers | object | `{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","consentAuditLogLevel":"INFO","consentAuditLogTarget":"FILE","containerLogLevel":"","enableStdoutLogPrefix":"true","encryptionLogLevel":"","httpclientLogLevel":"","idpLogLevel":"INFO","idpLogTarget":"STDOUT","ldapLogLevel":"","messagesLogLevel":"","opensamlLogLevel":"","propsLogLevel":"","scriptLogLevel":"INFO","scriptLogTarget":"FILE","springLogLevel":"","xmlsecLogLevel":""}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxshibboleth.appLoggers.auditStatsLogLevel | string | `"INFO"` | idp-audit.log level |
 | global.oxshibboleth.appLoggers.auditStatsLogTarget | string | `"FILE"` | idp-audit.log target |
@@ -327,7 +327,7 @@ Kubernetes: `>=v1.22.0-0`
 | global.oxshibboleth.appLoggers.scriptLogLevel | string | `"INFO"` | idp-script.log level |
 | global.oxshibboleth.appLoggers.scriptLogTarget | string | `"FILE"` | idp-script.log target |
 | global.oxshibboleth.enabled | bool | `false` | Boolean flag to enable/disable the oxShibbboleth chart. |
-| global.oxshibboleth.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
+| global.oxshibboleth.gluuCustomJavaOptions | string | `""` | passing custom  java options to oxShibboleth. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
 | global.oxtrust.appLoggers | object | `{"apachehcLogLevel":"INFO","apachehcLogTarget":"FILE","auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","cacheRefreshLogLevel":"INFO","cacheRefreshLogTarget":"FILE","cacheRefreshPythonLogLevel":"INFO","cacheRefreshPythonLogTarget":"FILE","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","enableStdoutLogPrefix":"true","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","oxtrustLogLevel":"INFO","oxtrustLogTarget":"STDOUT","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE","velocityLogLevel":"INFO","velocityLogTarget":"FILE"}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxtrust.appLoggers.apachehcLogLevel | string | `"INFO"` | apachehc log level |
 | global.oxtrust.appLoggers.apachehcLogTarget | string | `"FILE"` | apachehc log target |
@@ -368,7 +368,7 @@ Kubernetes: `>=v1.22.0-0`
 | global.scim.appLoggers.scriptLogLevel | string | `"INFO"` | scim_script.log level |
 | global.scim.appLoggers.scriptLogTarget | string | `"FILE"` | scim_script.log target |
 | global.scim.enabled | bool | `false` | Boolean flag to enable/disable the SCIM chart. |
-| global.scim.gluuCustomJavaOptions | string | `""` | passing custom  java options to scim. Notice you do not need to pass in any loggers optoins as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
+| global.scim.gluuCustomJavaOptions | string | `""` | passing custom  java options to scim. Notice you do not need to pass in any loggers options as they are introduced below in appLoggers. DO NOT PASS GLUU_JAVA_OPTIONS in envs. |
 | global.sslCertFromDomain | string | `"false"` | Validate certificate is downloaded from given domain. If set to true (default to false), raise an error if cert is not downloaded. Note that the flag is ignored if mounted SSL cert and key files exist |
 | global.storageClass | object | `{"allowVolumeExpansion":true,"allowedTopologies":[],"mountOptions":["debug"],"parameters":{},"provisioner":"microk8s.io/hostpath","reclaimPolicy":"Retain","volumeBindingMode":"WaitForFirstConsumer"}` | StorageClass section for Jackrabbit and OpenDJ charts. This is not currently used by the openbanking distribution. You may specify custom parameters as needed. |
 | global.storageClass.parameters | object | `{}` | parameters: fsType: "" kind: "" pool: "" storageAccountType: "" type: "" |
