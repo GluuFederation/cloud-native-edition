@@ -68,7 +68,7 @@ Kubernetes: `>=v1.22.0-0`
 | casa.replicas | int | `1` | Service replica number. |
 | casa.resources | object | `{"limits":{"cpu":"500m","memory":"500Mi"},"requests":{"cpu":"500m","memory":"500Mi"}}` | Resource specs. |
 | casa.resources.limits.cpu | string | `"500m"` | CPU limit. |
-| casa.resources.limits.memory | string | `"500Mi"` | Memory limit. |
+| casa.resources.limits.memory | string | `"500Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | casa.resources.requests.cpu | string | `"500m"` | CPU request. |
 | casa.resources.requests.memory | string | `"500Mi"` | Memory request. |
 | casa.service.casaServiceName | string | `"casa"` | Name of the casa service. Please keep it as default. |
@@ -223,7 +223,7 @@ Kubernetes: `>=v1.22.0-0`
 | fido2.replicas | int | `1` | Service replica number. |
 | fido2.resources | object | `{"limits":{"cpu":"500m","memory":"500Mi"},"requests":{"cpu":"500m","memory":"500Mi"}}` | Resource specs. |
 | fido2.resources.limits.cpu | string | `"500m"` | CPU limit. |
-| fido2.resources.limits.memory | string | `"500Mi"` | Memory limit. |
+| fido2.resources.limits.memory | string | `"500Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | fido2.resources.requests.cpu | string | `"500m"` | CPU request. |
 | fido2.resources.requests.memory | string | `"500Mi"` | Memory request. |
 | fido2.service.fido2ServiceName | string | `"fido2"` | Name of the fido2 service. Please keep it as default. |
@@ -289,7 +289,7 @@ Kubernetes: `>=v1.22.0-0`
 | global.lbIp | string | `"22.22.22.22"` | The Loadbalancer IP created by nginx or istio on clouds that provide static IPs. This is not needed if `global.domain` is globally resolvable. |
 | global.ldapServiceName | string | `"opendj"` | Name of the OpenDJ service. Please keep it as default. |
 | global.nginx-ingress.enabled | bool | `true` | Boolean flag to enable/disable the nginx-ingress definitions chart. |
-| global.opendj.enabled | bool | `true` | Boolean flag to enable/disable the OpenDJ  chart. |
+| global.opendj.enabled | bool | `false` | Boolean flag to enable/disable the OpenDJ  chart. |
 | global.oxauth-key-rotation.enabled | bool | `false` | Boolean flag to enable/disable the oxauth-server-key rotation cronjob chart. |
 | global.oxauth.appLoggers | object | `{"auditStatsLogLevel":"INFO","auditStatsLogTarget":"FILE","authLogLevel":"INFO","authLogTarget":"STDOUT","cleanerLogLevel":"INFO","cleanerLogTarget":"FILE","enableStdoutLogPrefix":"true","httpLogLevel":"INFO","httpLogTarget":"FILE","ldapStatsLogLevel":"INFO","ldapStatsLogTarget":"FILE","persistenceDurationLogLevel":"INFO","persistenceDurationLogTarget":"FILE","persistenceLogLevel":"INFO","persistenceLogTarget":"FILE","scriptLogLevel":"INFO","scriptLogTarget":"FILE"}` | App loggers can be configured to define where the logs will be redirected to and the level of each in which it should be displayed. log levels are "OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" Targets are "STDOUT" and "FILE" |
 | global.oxauth.appLoggers.auditStatsLogLevel | string | `"INFO"` | oxauth_audit.log level |
@@ -552,7 +552,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxauth.replicas | int | `1` | Service replica number. |
 | oxauth.resources | object | `{"limits":{"cpu":"2500m","memory":"2500Mi"},"requests":{"cpu":"2500m","memory":"2500Mi"}}` | Resource specs. |
 | oxauth.resources.limits.cpu | string | `"2500m"` | CPU limit. |
-| oxauth.resources.limits.memory | string | `"2500Mi"` | Memory limit. |
+| oxauth.resources.limits.memory | string | `"2500Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | oxauth.resources.requests.cpu | string | `"2500m"` | CPU request. |
 | oxauth.resources.requests.memory | string | `"2500Mi"` | Memory request. |
 | oxauth.service.name | string | `"http-oxauth"` | The name of the oxauth port within the oxauth service. Please keep it as default. |
@@ -586,7 +586,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxd-server.replicas | int | `1` | Service replica number. |
 | oxd-server.resources | object | `{"limits":{"cpu":"1000m","memory":"400Mi"},"requests":{"cpu":"1000m","memory":"400Mi"}}` | Resource specs. |
 | oxd-server.resources.limits.cpu | string | `"1000m"` | CPU limit. |
-| oxd-server.resources.limits.memory | string | `"400Mi"` | Memory limit. |
+| oxd-server.resources.limits.memory | string | `"400Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | oxd-server.resources.requests.cpu | string | `"1000m"` | CPU request. |
 | oxd-server.resources.requests.memory | string | `"400Mi"` | Memory request. |
 | oxd-server.service.oxdServerServiceName | string | `"oxd-server"` | Name of the OXD server service. This must match config.configMap.gluuOxdApplicationCertCn. Please keep it as default. |
@@ -655,7 +655,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxshibboleth.replicas | int | `1` | Service replica number. |
 | oxshibboleth.resources | object | `{"limits":{"cpu":"1000m","memory":"1000Mi"},"requests":{"cpu":"1000m","memory":"1000Mi"}}` | Resource specs. |
 | oxshibboleth.resources.limits.cpu | string | `"1000m"` | CPU limit. |
-| oxshibboleth.resources.limits.memory | string | `"1000Mi"` | Memory limit. |
+| oxshibboleth.resources.limits.memory | string | `"1000Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | oxshibboleth.resources.requests.cpu | string | `"1000m"` | CPU request. |
 | oxshibboleth.resources.requests.memory | string | `"1000Mi"` | Memory request. |
 | oxshibboleth.service.name | string | `"http-oxshib"` | Port of the oxShibboleth service. Please keep it as default. |
@@ -690,7 +690,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxtrust.replicas | int | `1` | Service replica number. |
 | oxtrust.resources | object | `{"limits":{"cpu":"2500m","memory":"2500Mi"},"requests":{"cpu":"2500m","memory":"2500Mi"}}` | Resource specs. |
 | oxtrust.resources.limits.cpu | string | `"2500m"` | CPU limit. |
-| oxtrust.resources.limits.memory | string | `"2500Mi"` | Memory limit. |
+| oxtrust.resources.limits.memory | string | `"2500Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | oxtrust.resources.requests.cpu | string | `"2500m"` | CPU request. |
 | oxtrust.resources.requests.memory | string | `"2500Mi"` | Memory request. |
 | oxtrust.service.name | string | `"http-oxtrust"` | The name of the oxtrust port within the oxtrust service. Please keep it as default. |
@@ -746,7 +746,7 @@ Kubernetes: `>=v1.22.0-0`
 | scim.readinessProbe.httpGet.path | string | `"/scim/restv1/scim/v2/ServiceProviderConfig"` | http readiness probe endpoint |
 | scim.replicas | int | `1` | Service replica number. |
 | scim.resources.limits.cpu | string | `"1000m"` | CPU limit. |
-| scim.resources.limits.memory | string | `"1000Mi"` | Memory limit. |
+| scim.resources.limits.memory | string | `"1000Mi"` | Memory limit. This value is used to calculate memory allocation for Java. Currently it only supports `Mi`. Please refrain from using other units. |
 | scim.resources.requests.cpu | string | `"1000m"` | CPU request. |
 | scim.resources.requests.memory | string | `"1000Mi"` | Memory request. |
 | scim.service.name | string | `"http-scim"` | The name of the scim port within the scim service. Please keep it as default. |
