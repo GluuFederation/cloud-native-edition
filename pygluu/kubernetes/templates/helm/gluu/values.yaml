@@ -1600,7 +1600,7 @@ oxd-server:
     # -- Image  to use for deploying.
     repository: gluufederation/oxd-server
     # -- Image  tag to use for deploying.
-    tag: 4.5.4-1
+    tag: 4.5.4-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number.
