@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.8.34](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.33...v1.8.34) (2024-05-30)
+
+
+### Features
+
+* add java arguments to casa and fix typo ([#632](https://github.com/GluuFederation/cloud-native-edition/issues/632)) ([7ac2227](https://github.com/GluuFederation/cloud-native-edition/commit/7ac2227cad038ec602ff00d7b027fc533f19ef76))
+
+
+### Bug Fixes
+
+* disable opendj by default as jans and flex to avoid backup job fail ([#633](https://github.com/GluuFederation/cloud-native-edition/issues/633)) ([c4b6d59](https://github.com/GluuFederation/cloud-native-edition/commit/c4b6d59dcf4e3c387c30f827a966f12ebfa0ef84))
+* README.md ([ea5f6ad](https://github.com/GluuFederation/cloud-native-edition/commit/ea5f6ad7ca6e5ac7a0582e80ed608c409fafe644))
+
+
+### Documentation
+
+* add note on memory limit to avoid java args break and fix typo ([#636](https://github.com/GluuFederation/cloud-native-edition/issues/636)) ([9dfaf86](https://github.com/GluuFederation/cloud-native-edition/commit/9dfaf86afd90408e2dd08d48935f23581af2e16a))
+
 ## [1.8.33](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.32...v1.8.33) (2024-04-01)
 
 
