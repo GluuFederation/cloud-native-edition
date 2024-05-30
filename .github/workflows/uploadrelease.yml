@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.9]
         include:
           - os: ubuntu-latest
             artifact_name: pygluu-kubernetes.pyz
@@ -47,7 +47,7 @@ jobs:
       run: |
         sudo apt-get update || brew install jq
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
-        pip3 install shiv
+        pip3 install -U shiv wheel setuptools
         make zipapp
 
     - name: Get project

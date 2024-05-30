@@ -23,10 +23,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.7
+    - name: Set up Python 3.9
       uses: actions/setup-python@v5.0.0
       with:
-        python-version: 3.7
+        python-version: 3.9
 
     - name: Install dependencies
       run: |
@@ -36,7 +36,7 @@ jobs:
         sudo pip3 install pyOpenSSL --upgrade
         sudo pip3 install requests --upgrade
         sudo apt-get install build-essential
-        sudo pip3 install shiv
+        sudo pip3 install -U shiv wheel setuptools
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/

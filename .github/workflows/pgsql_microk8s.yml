@@ -17,8 +17,8 @@ jobs:
     strategy:
       max-parallel: 6
       matrix:
-        python-version: [3.7]
-        gluu-version: ['"4.5.0_dev"']
+        python-version: [3.9]
+        gluu-version: ['"4.5.4_dev"']
         test-cases: ["install", "helm-install"]
 
     steps:
@@ -50,7 +50,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install build-essential
-        sudo pip3 install shiv
+        sudo pip3 install -U shiv wheel setuptools
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/

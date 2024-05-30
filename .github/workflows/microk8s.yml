@@ -33,7 +33,7 @@ jobs:
     - name: Build Zipapp
       run: |
         sudo apt-get install build-essential
-        sudo pip3 install shiv
+        sudo pip3 install -U shiv wheel setuptools
         mkdir /home/runner/work/test
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/

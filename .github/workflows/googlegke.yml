@@ -8,7 +8,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
 
     steps:
     - name: Checkout code
@@ -39,7 +39,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install build-essential
-        sudo pip3 install shiv
+        sudo pip3 install -U shiv wheel setuptools
         mkdir /home/runner/work/test/
         cp -r ./* /home/runner/work/test/
         cd /home/runner/work/test/
@@ -84,7 +84,7 @@ jobs:
     #      curl -sL https://istio.io/downloadIstioctl | sh -
     #      export PATH=$PATH:$HOME/.istioctl/bin
     #      istioctl operator init
-        
+
     - name: Create settings.json
       id: test1_settings
       run: |
