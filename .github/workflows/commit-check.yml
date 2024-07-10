@@ -28,7 +28,7 @@ jobs:
           # We need to fetch with a depth of 2 for pull_request so we can do HEAD^2
           fetch-depth: 2
 
-      - uses: actions/setup-node@v4.0.0
+      - uses: actions/setup-node@v4.0.3
         with:
           node-version: 14
 
