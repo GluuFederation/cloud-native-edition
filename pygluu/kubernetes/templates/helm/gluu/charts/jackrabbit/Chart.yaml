@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: jackrabbit
-version: 1.8.35
+version: 1.8.36
 kubeVersion: ">=v1.22.0-0"
 description: Jackrabbit Oak is a complementary implementation of the JCR specification. It is an effort to implement a scalable and performant hierarchical content repository for use as the foundation of modern world-class web sites and other demanding content applications.
 type: application
