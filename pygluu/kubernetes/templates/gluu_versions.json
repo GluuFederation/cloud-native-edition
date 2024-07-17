@@ -29,7 +29,7 @@
     "PERSISTENCE_IMAGE_NAME": "gluufederation/persistence",
     "PERSISTENCE_IMAGE_TAG": "4.5.4-2",
     "UPGRADE_IMAGE_NAME": "gluufederation/upgrade",
-    "UPGRADE_IMAGE_TAG": "4.5.4-2"
+    "UPGRADE_IMAGE_TAG": "4.5.4-3"
   },
   "4.5.4_dev": {
     "CASA_IMAGE_NAME": "gluufederation/casa",
