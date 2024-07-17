@@ -74,7 +74,7 @@ global:
       # -- Image  to use for deploying.
       repository: gluufederation/upgrade
       # -- Image  tag to use for deploying.
-      tag: 4.5.4-2
+      tag: 4.5.4-3
     # -- Source version currently running. This is normally one minor version down.
     # The step should only be one minor version per upgrade
     sourceVersion: "4.5"
