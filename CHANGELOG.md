@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.36](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.35...v1.8.36) (2024-07-19)
+
+
+### Bug Fixes
+
+* update image tag of upgrade job ([#646](https://github.com/GluuFederation/cloud-native-edition/issues/646)) ([644a7ad](https://github.com/GluuFederation/cloud-native-edition/commit/644a7ad7e067e026099dcc99e1a07496ee762e9a))
+
 ## [1.8.35](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.34...v1.8.35) (2024-07-15)
 
 
