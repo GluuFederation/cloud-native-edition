@@ -1836,7 +1836,7 @@ oxpassport:
     # -- Image  to use for deploying.
     repository: gluufederation/oxpassport
     # -- Image  tag to use for deploying.
-    tag: 4.5.4-1
+    tag: 4.5.4-2
     # -- Image Pull Secrets
     pullSecrets: [ ]
   # -- Service replica number

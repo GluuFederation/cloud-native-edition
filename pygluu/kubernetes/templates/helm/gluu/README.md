@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.36](https://img.shields.io/badge/Version-1.8.36-informational?style=flat-square) ![AppVersion: 4.5.4](https://img.shields.io/badge/AppVersion-4.5.4-informational?style=flat-square)
+![Version: 1.8.37](https://img.shields.io/badge/Version-1.8.37-informational?style=flat-square) ![AppVersion: 4.5.4](https://img.shields.io/badge/AppVersion-4.5.4-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -23,23 +23,23 @@ Kubernetes: `>=v1.22.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.36 |
-|  | config | 1.8.36 |
-|  | cr-rotate | 1.8.36 |
-|  | fido2 | 1.8.36 |
-|  | gluu-alb-ingress | 1.8.36 |
-|  | gluu-istio-ingress | 1.8.36 |
-|  | jackrabbit | 1.8.36 |
-|  | nginx-ingress | 1.8.36 |
-|  | opendj | 1.8.36 |
-|  | oxauth | 1.8.36 |
-|  | oxauth-key-rotation | 1.8.36 |
-|  | oxd-server | 1.8.36 |
-|  | oxpassport | 1.8.36 |
-|  | oxshibboleth | 1.8.36 |
-|  | oxtrust | 1.8.36 |
-|  | persistence | 1.8.36 |
-|  | scim | 1.8.36 |
+|  | casa | 1.8.37 |
+|  | config | 1.8.37 |
+|  | cr-rotate | 1.8.37 |
+|  | fido2 | 1.8.37 |
+|  | gluu-alb-ingress | 1.8.37 |
+|  | gluu-istio-ingress | 1.8.37 |
+|  | jackrabbit | 1.8.37 |
+|  | nginx-ingress | 1.8.37 |
+|  | opendj | 1.8.37 |
+|  | oxauth | 1.8.37 |
+|  | oxauth-key-rotation | 1.8.37 |
+|  | oxd-server | 1.8.37 |
+|  | oxpassport | 1.8.37 |
+|  | oxshibboleth | 1.8.37 |
+|  | oxtrust | 1.8.37 |
+|  | persistence | 1.8.37 |
+|  | scim | 1.8.37 |
 
 ## Values
 
@@ -597,7 +597,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxd-server.usrEnvs.secret | object | `{}` | Add custom secret envs to the service variable1: value1 |
 | oxd-server.volumeMounts | list | `[]` | Configure any additional volumesMounts that need to be attached to the containers |
 | oxd-server.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
-| oxpassport | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"customScripts":[],"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxpassport","tag":"4.5.4-1"},"istioDestinationRuleCookieTTL":"60s","lifecycle":{},"livenessProbe":{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":"90%"},"readinessProbe":{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"700m","memory":"900Mi"},"requests":{"cpu":"700m","memory":"900Mi"}},"service":{"name":"http-passport","oxPassportServiceName":"oxpassport","port":8090},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Gluu interface to Passport.js to support social login and inbound identity. |
+| oxpassport | object | `{"additionalAnnotations":{},"additionalLabels":{},"affinity":{},"customScripts":[],"dnsConfig":{},"dnsPolicy":"","hpa":{"behavior":{},"enabled":true,"maxReplicas":10,"metrics":[],"minReplicas":1,"targetCPUUtilizationPercentage":50},"image":{"pullPolicy":"IfNotPresent","pullSecrets":[],"repository":"gluufederation/oxpassport","tag":"4.5.4-2"},"istioDestinationRuleCookieTTL":"60s","lifecycle":{},"livenessProbe":{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5},"nodeSelector":{},"pdb":{"enabled":true,"maxUnavailable":"90%"},"readinessProbe":{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5},"replicas":1,"resources":{"limits":{"cpu":"700m","memory":"900Mi"},"requests":{"cpu":"700m","memory":"900Mi"}},"service":{"name":"http-passport","oxPassportServiceName":"oxpassport","port":8090},"tolerations":[],"topologySpreadConstraints":{},"usrEnvs":{"normal":{},"secret":{}},"volumeMounts":[],"volumes":[]}` | Gluu interface to Passport.js to support social login and inbound identity. |
 | oxpassport.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxpassport.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | oxpassport.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
@@ -610,7 +610,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxpassport.image.pullPolicy | string | `"IfNotPresent"` | Image pullPolicy to use for deploying. |
 | oxpassport.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxpassport.image.repository | string | `"gluufederation/oxpassport"` | Image  to use for deploying. |
-| oxpassport.image.tag | string | `"4.5.4-1"` | Image  tag to use for deploying. |
+| oxpassport.image.tag | string | `"4.5.4-2"` | Image  tag to use for deploying. |
 | oxpassport.istioDestinationRuleCookieTTL | string | `"60s"` | Istio Destination Rule loadBalancer.consistentHash.httpCookie.ttl if istio ingress is enabled |
 | oxpassport.livenessProbe | object | `{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for oxPassport if needed. |
 | oxpassport.livenessProbe.httpGet.path | string | `"/passport/health-check"` | http liveness probe endpoint |
@@ -761,4 +761,4 @@ Kubernetes: `>=v1.22.0-0`
 | scim.volumes | list | `[]` | Configure any additional volumes that need to be attached to the pod |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.13.1](https://github.com/norwoodj/helm-docs/releases/v1.13.1)

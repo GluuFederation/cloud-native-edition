@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: oxpassport
-version: 1.8.36
+version: 1.8.37
 kubeVersion: ">=v1.22.0-0"
 description: Gluu interface to Passport.js to support social login and inbound identity.
 type: application
