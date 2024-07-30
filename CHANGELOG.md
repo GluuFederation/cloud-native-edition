@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.37](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.36...v1.8.37) (2024-07-30)
+
+
+### Bug Fixes
+
+* resolve permission denied error when installing passport library ([#648](https://github.com/GluuFederation/cloud-native-edition/issues/648)) ([ec0b9ce](https://github.com/GluuFederation/cloud-native-edition/commit/ec0b9ce09e97fadce2ffe15f81c7c74a4c29a267))
+
 ## [1.8.36](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.35...v1.8.36) (2024-07-19)
 
 
