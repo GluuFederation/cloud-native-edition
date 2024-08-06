@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: cr-rotate
-version: 1.8.37
+version: 1.8.38
 kubeVersion: ">=v1.22.0-0"
 description: CacheRefreshRotation is a special container to monitor cache refresh on oxTrust containers. This may become depreciated in 5.0.
 type: application
@@ -18,4 +18,4 @@ maintainers:
     email: support@gluu.org
     url: https://github.com/moabu
 icon: https://gluu.org/docs/gluu-server/favicon.ico
-appVersion: "4.5.4"
+appVersion: "4.5.5"

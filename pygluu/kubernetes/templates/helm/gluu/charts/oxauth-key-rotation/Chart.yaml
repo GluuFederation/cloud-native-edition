@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: oxauth-key-rotation
-version: 1.8.37
+version: 1.8.38
 kubeVersion: ">=v1.22.0-0"
 description: Responsible for regenerating auth-keys per x hours
 type: application
@@ -17,4 +17,4 @@ maintainers:
     email: support@gluu.org
     url: https://github.com/moabu
 icon: https://gluu.org/docs/gluu-server/favicon.ico
-appVersion: "4.5.4"
+appVersion: "4.5.5"

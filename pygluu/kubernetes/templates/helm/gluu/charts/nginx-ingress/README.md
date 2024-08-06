@@ -1,6 +1,6 @@
 # nginx-ingress
 
-![Version: 1.8.37](https://img.shields.io/badge/Version-1.8.37-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.4](https://img.shields.io/badge/AppVersion-4.5.4-informational?style=flat-square)
+![Version: 1.8.38](https://img.shields.io/badge/Version-1.8.38-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.5.5](https://img.shields.io/badge/AppVersion-4.5.5-informational?style=flat-square)
 
 Nginx ingress definitions chart
 

@@ -180,7 +180,7 @@ image:
   # -- Image  to use for deploying.
   repository: gluufederation/config-init
   # -- Image  tag to use for deploying.
-  tag: 4.5.4-2
+  tag: 4.5.5-1
   # -- Image Pull Secrets
   pullSecrets: [ ]
 # -- Configure any additional volumes that need to be attached to the pod
