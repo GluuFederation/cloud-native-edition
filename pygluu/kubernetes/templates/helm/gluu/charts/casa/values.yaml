@@ -61,19 +61,19 @@ service:
       timeoutSeconds: 10800
 # -- Configure the liveness healthcheck for casa if needed.
 livenessProbe:
-  httpGet:
-    # -- http liveness probe endpoint
-    path: /casa/health-check
-    port: http-casa
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
 # -- Configure the readiness healthcheck for the casa if needed.
 readinessProbe:
-  httpGet:
-    # -- http readiness probe endpoint
-    path: /casa/health-check
-    port: http-casa
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5

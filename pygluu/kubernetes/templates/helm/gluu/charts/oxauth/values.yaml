@@ -62,7 +62,6 @@ service:
 # -- Configure the liveness healthcheck for the auth server if needed.
 livenessProbe:
   # -- Executes the python3 healthcheck.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
   exec:
     command:
       - python3
@@ -71,7 +70,6 @@ livenessProbe:
   periodSeconds: 30
   timeoutSeconds: 5
 # -- Configure the readiness healthcheck for the auth server if needed.
-# https://github.com/GluuFederation/docker-oxauth/blob/4.3/scripts/healthcheck.py
 readinessProbe:
   exec:
     command:

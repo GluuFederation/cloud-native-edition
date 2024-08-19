@@ -60,19 +60,19 @@ service:
       timeoutSeconds: 10800
 # -- Configure the liveness healthcheck for SCIM if needed.
 livenessProbe:
-  httpGet:
-    # -- http liveness probe endpoint
-    path: /scim/restv1/scim/v2/ServiceProviderConfig
-    port: 8080
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
 # -- Configure the readiness healthcheck for the SCIM if needed.
 readinessProbe:
-  httpGet:
-    # -- http readiness probe endpoint
-    path:  /scim/restv1/scim/v2/ServiceProviderConfig
-    port: 8080
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5

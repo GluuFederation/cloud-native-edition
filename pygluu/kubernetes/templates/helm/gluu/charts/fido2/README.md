@@ -40,10 +40,9 @@ Kubernetes: `>=v1.22.0-0`
 | image.repository | string | `"gluufederation/fido2"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
-| livenessProbe | object | `{"httpGet":{"path":"/fido2/restv1/fido2/configuration","port":"http-fido2"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for the fido2 if needed. |
-| livenessProbe.httpGet | object | `{"path":"/fido2/restv1/fido2/configuration","port":"http-fido2"}` | http liveness probe endpoint |
+| livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for the fido2 if needed. |
 | nodeSelector | object | `{}` |  |
-| readinessProbe | object | `{"httpGet":{"path":"/fido2/restv1/fido2/configuration","port":"http-fido2"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the readiness healthcheck for the fido2 if needed. |
+| readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the readiness healthcheck for the fido2 if needed. |
 | replicas | int | `1` | Service replica number. |
 | resources | object | `{"limits":{"cpu":"500m","memory":"500Mi"},"requests":{"cpu":"500m","memory":"500Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"500m"` | CPU limit. |

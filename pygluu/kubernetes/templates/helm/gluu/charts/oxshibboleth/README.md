@@ -49,11 +49,11 @@ Kubernetes: `>=v1.22.0-0`
 | resources.requests.cpu | string | `"1000m"` | CPU request. |
 | resources.requests.memory | string | `"1000Mi"` | Memory request. |
 | service.livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for the oxshibboleth if needed. |
-| service.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py |
+| service.livenessProbe.exec | object | `{"command":["python3","/app/scripts/healthcheck.py"]}` | Executes the python3 healthcheck. |
 | service.name | string | `"http-oxshib"` | Port of the oxShibboleth service. Please keep it as default. |
 | service.oxShibbolethServiceName | string | `"oxshibboleth"` | Name of the oxShibboleth service. Please keep it as default. |
 | service.port | int | `8080` | The name of the oxPassport port within the oxPassport service. Please keep it as default. |
-| service.readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]}}` | Configure the readiness healthcheck for the oxshibboleth if needed. https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py |
+| service.readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]}}` | Configure the readiness healthcheck for the oxshibboleth if needed. |
 | service.sessionAffinity | string | `"None"` | Default set to None If you want to make sure that connections from a particular client are passed to the same Pod each time, you can select the session affinity based on the client's IP addresses by setting this to ClientIP |
 | service.sessionAffinityConfig | object | `{"clientIP":{"timeoutSeconds":10800}}` | the maximum session sticky time if sessionAffinity is ClientIP |
 | service.targetPort | int | `8080` |  |

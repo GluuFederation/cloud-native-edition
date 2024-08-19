@@ -40,11 +40,9 @@ Kubernetes: `>=v1.22.0-0`
 | image.repository | string | `"gluufederation/scim"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
-| livenessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for SCIM if needed. |
-| livenessProbe.httpGet.path | string | `"/scim/restv1/scim/v2/ServiceProviderConfig"` | http liveness probe endpoint |
+| livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for SCIM if needed. |
 | nodeSelector | object | `{}` |  |
-| readinessProbe | object | `{"httpGet":{"path":"/scim/restv1/scim/v2/ServiceProviderConfig","port":8080},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the SCIM if needed. |
-| readinessProbe.httpGet.path | string | `"/scim/restv1/scim/v2/ServiceProviderConfig"` | http readiness probe endpoint |
+| readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the SCIM if needed. |
 | replicas | int | `1` | Service replica number. |
 | resources.limits.cpu | string | `"1000m"` | CPU limit. |
 | resources.limits.memory | string | `"1000Mi"` | Memory limit. |

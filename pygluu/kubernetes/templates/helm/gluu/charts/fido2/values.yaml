@@ -62,18 +62,19 @@ service:
       timeoutSeconds: 10800
 # -- Configure the liveness healthcheck for the fido2 if needed.
 livenessProbe:
-  # -- http liveness probe endpoint
-  httpGet:
-    path: /fido2/restv1/fido2/configuration
-    port: http-fido2
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5
 # -- Configure the readiness healthcheck for the fido2 if needed.
 readinessProbe:
-  httpGet:
-    path: /fido2/restv1/fido2/configuration
-    port: http-fido2
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5

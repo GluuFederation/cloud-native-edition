@@ -60,9 +60,8 @@ livenessProbe:
   # -- Executes the python3 healthcheck.
   exec:
     command:
-      - curl
-      - -k
-      - http://localhost:8080/health-check
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
@@ -70,9 +69,8 @@ livenessProbe:
 readinessProbe:
   exec:
     command:
-      - curl
-      - -k
-      - http://localhost:8080/health-check
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5

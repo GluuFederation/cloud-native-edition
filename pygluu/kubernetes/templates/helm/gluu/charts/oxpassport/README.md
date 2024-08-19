@@ -40,12 +40,10 @@ Kubernetes: `>=v1.22.0-0`
 | image.repository | string | `"gluufederation/oxpassport"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
-| livenessProbe | object | `{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for oxPassport if needed. |
-| livenessProbe.httpGet.path | string | `"/passport/health-check"` | http liveness probe endpoint |
+| livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the liveness healthcheck for oxPassport if needed. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
-| readinessProbe | object | `{"failureThreshold":20,"httpGet":{"path":"/passport/health-check","port":"http-passport"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the oxPassport if needed. |
-| readinessProbe.httpGet.path | string | `"/passport/health-check"` | http readiness probe endpoint |
+| readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"failureThreshold":20,"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the readiness healthcheck for the oxPassport if needed. |
 | replicas | int | `1` | Service replica number |
 | resources | object | `{"limits":{"cpu":"700m","memory":"900Mi"},"requests":{"cpu":"700m","memory":"900Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"700m"` | CPU limit. |

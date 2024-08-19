@@ -41,13 +41,11 @@ Kubernetes: `>=v1.22.0-0`
 | image.repository | string | `"gluufederation/casa"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
 | lifecycle | object | `{}` |  |
-| livenessProbe | object | `{"httpGet":{"path":"/casa/health-check","port":"http-casa"},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for casa if needed. |
-| livenessProbe.httpGet.path | string | `"/casa/health-check"` | http liveness probe endpoint |
+| livenessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":25,"periodSeconds":25,"timeoutSeconds":5}` | Configure the liveness healthcheck for casa if needed. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| readinessProbe | object | `{"httpGet":{"path":"/casa/health-check","port":"http-casa"},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the readiness healthcheck for the casa if needed. |
-| readinessProbe.httpGet.path | string | `"/casa/health-check"` | http readiness probe endpoint |
+| readinessProbe | object | `{"exec":{"command":["python3","/app/scripts/healthcheck.py"]},"initialDelaySeconds":30,"periodSeconds":30,"timeoutSeconds":5}` | Configure the readiness healthcheck for the casa if needed. |
 | replicas | int | `1` | Service replica number. |
 | resources | object | `{"limits":{"cpu":"500m","memory":"500Mi"},"requests":{"cpu":"500m","memory":"500Mi"}}` | Resource specs. |
 | resources.limits.cpu | string | `"500m"` | CPU limit. |

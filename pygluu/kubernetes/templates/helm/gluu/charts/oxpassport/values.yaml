@@ -61,20 +61,20 @@ service:
       timeoutSeconds: 10800
 # -- Configure the liveness healthcheck for oxPassport if needed.
 livenessProbe:
-  httpGet:
-    # -- http liveness probe endpoint
-    path: /passport/health-check
-    port: http-passport
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 30
   periodSeconds: 30
   timeoutSeconds: 5
   failureThreshold: 20
 # -- Configure the readiness healthcheck for the oxPassport if needed.
 readinessProbe:
-  httpGet:
-    # -- http readiness probe endpoint
-    path: /passport/health-check
-    port: http-passport
+  exec:
+    command:
+      - python3
+      - /app/scripts/healthcheck.py
   initialDelaySeconds: 25
   periodSeconds: 25
   timeoutSeconds: 5

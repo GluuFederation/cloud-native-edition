@@ -63,7 +63,6 @@ service:
   # -- Configure the liveness healthcheck for the oxshibboleth if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -72,7 +71,6 @@ service:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the oxshibboleth if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:

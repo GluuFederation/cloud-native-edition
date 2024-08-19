@@ -968,7 +968,6 @@ opendj:
       # -- Memory request.
       memory: 2000Mi
   # -- Configure the liveness healthcheck for OpenDJ if needed.
-  # https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
   livenessProbe:
     # -- Executes the python3 healthcheck.
     exec:
@@ -980,7 +979,6 @@ opendj:
     timeoutSeconds: 5
     failureThreshold: 20
   # -- Configure the readiness healthcheck for OpenDJ if needed.
-  # https://github.com/GluuFederation/docker-opendj/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     tcpSocket:
       port: 1636
@@ -1149,7 +1147,6 @@ oxauth:
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -1158,7 +1155,6 @@ oxauth:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the auth server if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:
@@ -1271,7 +1267,6 @@ oxtrust:
   # -- Configure the liveness healthcheck for the auth server if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -1280,7 +1275,6 @@ oxtrust:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the auth server if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.4/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:
@@ -1392,18 +1386,19 @@ fido2:
     port: 8080
   # -- Configure the liveness healthcheck for the fido2 if needed.
   livenessProbe:
-    # -- http liveness probe endpoint
-    httpGet:
-      path: /fido2/restv1/fido2/configuration
-      port: http-fido2
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the fido2 if needed.
   readinessProbe:
-    httpGet:
-      path: /fido2/restv1/fido2/configuration
-      port: http-fido2
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
@@ -1508,19 +1503,19 @@ scim:
     port: 8080
   # -- Configure the liveness healthcheck for SCIM if needed.
   livenessProbe:
-    httpGet:
-      # -- http liveness probe endpoint
-      path: /scim/restv1/scim/v2/ServiceProviderConfig
-      port: 8080
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the SCIM if needed.
   readinessProbe:
-    httpGet:
-      # -- http readiness probe endpoint
-      path:  /scim/restv1/scim/v2/ServiceProviderConfig
-      port: 8080
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
@@ -1625,9 +1620,8 @@ oxd-server:
     # -- Executes the python3 healthcheck.
     exec:
       command:
-        - curl
-        - -k
-        - http://localhost:8080/health-check
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
@@ -1635,9 +1629,8 @@ oxd-server:
   readinessProbe:
     exec:
       command:
-        - curl
-        - -k
-        - http://localhost:8080/health-check
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
@@ -1743,19 +1736,19 @@ casa:
     name: http-casa
   # -- Configure the liveness healthcheck for casa if needed.
   livenessProbe:
-    httpGet:
-      # -- http liveness probe endpoint
-      path: /casa/health-check
-      port: http-casa
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the casa if needed.
   readinessProbe:
-    httpGet:
-      # -- http readiness probe endpoint
-      path: /casa/health-check
-      port: http-casa
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
@@ -1862,20 +1855,20 @@ oxpassport:
     name: http-passport
   # -- Configure the liveness healthcheck for oxPassport if needed.
   livenessProbe:
-    httpGet:
-      # -- http liveness probe endpoint
-      path: /passport/health-check
-      port: http-passport
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
     failureThreshold: 20
   # -- Configure the readiness healthcheck for the oxPassport if needed.
   readinessProbe:
-    httpGet:
-      # -- http readiness probe endpoint
-      path: /passport/health-check
-      port: http-passport
+    exec:
+      command:
+        - python3
+        - /app/scripts/healthcheck.py
     initialDelaySeconds: 25
     periodSeconds: 25
     timeoutSeconds: 5
@@ -1986,7 +1979,6 @@ oxshibboleth:
   # -- Configure the liveness healthcheck for the oxshibboleth if needed.
   livenessProbe:
     # -- Executes the python3 healthcheck.
-    # https://github.com/GluuFederation/docker-oxshibboleth/blob/4.5/scripts/healthcheck.py
     exec:
       command:
         - python3
@@ -1995,7 +1987,6 @@ oxshibboleth:
     periodSeconds: 30
     timeoutSeconds: 5
   # -- Configure the readiness healthcheck for the oxshibboleth if needed.
-  # https://github.com/GluuFederation/docker-oxauth/blob/4.5/scripts/healthcheck.py
   readinessProbe:
     exec:
       command:
