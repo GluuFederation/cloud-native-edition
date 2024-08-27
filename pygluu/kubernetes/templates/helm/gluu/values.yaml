@@ -2120,7 +2120,7 @@ oxauth-key-rotation:
     tag: 4.5.5-1
     # -- Image Pull Secrets
     pullSecrets: [ ]
-  # -- Auth server key rotation job schedule  
+  # -- Auth server key rotation job schedule.
   cronJobSchedule: ""
   # -- Auth server key rotation keys life in hours. Used only if cronJobSchedule is not set.
   keysLife: 48
