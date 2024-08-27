@@ -16,7 +16,11 @@ metadata:
 {{ toYaml .Values.additionalAnnotations | indent 4 }}
 {{- end }}
 spec:
+{{- if ne .Values.cronJobSchedule "" }}
+  schedule: {{ .Values.cronJobSchedule | quote }}
+{{- else }}
   schedule: "@every {{ .Values.keysLife }}h"
+{{- end }}  
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:

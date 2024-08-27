@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.38](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.37...v1.8.38) (2024-08-22)
+
+
+### Features
+
+* prepare assets for Gluu v4.5.5 ([#651](https://github.com/GluuFederation/cloud-native-edition/issues/651)) ([eac45e8](https://github.com/GluuFederation/cloud-native-edition/commit/eac45e8a9d37880317960676af8e014880ead0d7))
+
+
+### Bug Fixes
+
+* fix release ([4689603](https://github.com/GluuFederation/cloud-native-edition/commit/468960373effa91f760724c823ac63f125811088))
+
 ## [1.8.37](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.36...v1.8.37) (2024-07-30)
 
 

@@ -57,3 +57,4 @@
     ```
 
     This command will generate executable called `pygluu-kubernetes-gui.pyz` under the same directory.
+
