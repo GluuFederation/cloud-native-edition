@@ -28,7 +28,7 @@ Kubernetes: `>=v1.22.0-0`
 | additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | affinity | object | `{}` |  |
-| cronJobSchedule | string | `""` | Auth server key rotation job schedule. |
+| cronJobSchedule | string | `""` | Auth server key rotation job schedule. It accepts any Cron syntax supported by Kubernetes. If empty, the schedule will run based on keysLife value. |
 | customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. |
 | dnsConfig | object | `{}` | Add custom dns config |
 | dnsPolicy | string | `""` | Add custom dns policy |
@@ -36,7 +36,7 @@ Kubernetes: `>=v1.22.0-0`
 | image.pullSecrets | list | `[]` | Image Pull Secrets |
 | image.repository | string | `"gluufederation/certmanager"` | Image  to use for deploying. |
 | image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
-| keysLife | int | `48` | Auth server key rotation keys life in hours. Used only if cronJobSchedule is not set. |
+| keysLife | int | `48` | Auth server key rotation keys life in hours. |
 | keysPushDelay | int | `0` | Delay (in seconds) before pushing private keys to Auth server |
 | keysPushStrategy | string | `"NEWER"` | Set key selection strategy after pushing private keys to Auth server (only takes effect when keysPushDelay value is greater than 0) |
 | keysStrategy | string | `"NEWER"` | Set key selection strategy used by Auth server |

@@ -510,7 +510,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxauth-key-rotation.additionalAnnotations | object | `{}` | Additional annotations that will be added across all resources  in the format of {cert-manager.io/issuer: "letsencrypt-prod"}. key app is taken |
 | oxauth-key-rotation.additionalLabels | object | `{}` | Additional labels that will be added across all resources definitions in the format of {mylabel: "myapp"} |
 | oxauth-key-rotation.affinity | object | `{}` | https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ |
-| oxauth-key-rotation.cronJobSchedule | string | `""` | Auth server key rotation job schedule. |
+| oxauth-key-rotation.cronJobSchedule | string | `""` | Auth server key rotation job schedule. It accepts any Cron syntax supported by Kubernetes. If empty, the schedule will run based on keysLife value. |
 | oxauth-key-rotation.customScripts | list | `[]` | Add custom scripts that have been mounted to run before the entrypoint. - /tmp/custom.sh - /tmp/custom2.sh |
 | oxauth-key-rotation.dnsConfig | object | `{}` | Add custom dns config |
 | oxauth-key-rotation.dnsPolicy | string | `""` | Add custom dns policy |
@@ -518,7 +518,7 @@ Kubernetes: `>=v1.22.0-0`
 | oxauth-key-rotation.image.pullSecrets | list | `[]` | Image Pull Secrets |
 | oxauth-key-rotation.image.repository | string | `"gluufederation/certmanager"` | Image  to use for deploying. |
 | oxauth-key-rotation.image.tag | string | `"4.5.5-1"` | Image  tag to use for deploying. |
-| oxauth-key-rotation.keysLife | int | `48` | Auth server key rotation keys life in hours. Used only if cronJobSchedule is not set. |
+| oxauth-key-rotation.keysLife | int | `48` | Auth server key rotation keys life in hours. |
 | oxauth-key-rotation.keysPushDelay | int | `0` | Delay (in seconds) before pushing private keys to Auth server |
 | oxauth-key-rotation.keysPushStrategy | string | `"NEWER"` | Set key selection strategy after pushing private keys to Auth server (only takes effect when keysPushDelay value is greater than 0) |
 | oxauth-key-rotation.keysStrategy | string | `"NEWER"` | Set key selection strategy used by Auth server |
