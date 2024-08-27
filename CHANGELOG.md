@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.38...v1.9.0) (2024-08-27)
+
+
+### Features
+
+* **oxauth-key-rotation:** add schedule property ([#654](https://github.com/GluuFederation/cloud-native-edition/issues/654)) ([87fedbc](https://github.com/GluuFederation/cloud-native-edition/commit/87fedbc7dfaf6b0612dc82db348b9b7ab776285e))
+
 ## [1.8.38](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.37...v1.8.38) (2024-08-22)
 
 
