@@ -2,7 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 apiVersion: v2
 name: oxshibboleth
-version: 1.8.38
+version: 1.8.39
 kubeVersion: ">=v1.22.0-0"
 description: Shibboleth project for the Gluu Server's SAML IDP functionality.
 type: application

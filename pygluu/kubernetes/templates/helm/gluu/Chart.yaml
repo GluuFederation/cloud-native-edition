@@ -46,73 +46,73 @@ maintainers:
   email: support@gluu.org
 description: Gluu Access and Identity Mangement
 name: gluu
-version: 1.8.38
+version: 1.8.39
 
 dependencies:
     - name: config
       condition: global.config.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: opendj
       condition: global.opendj.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: jackrabbit
       condition: global.jackrabbit.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: oxauth
       condition: global.oxauth.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: fido2
       condition: global.fido2.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: scim
       condition: global.scim.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: oxtrust
       condition: global.oxtrust.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: nginx-ingress
       condition: global.nginx-ingress.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: oxshibboleth
       condition: global.oxshibboleth.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: oxpassport
-      version: 1.8.38
+      version: 1.8.39
       condition: config.configmap.gluuPassportEnabled
 
     - name: casa
-      version: 1.8.38
+      version: 1.8.39
       condition: config.configmap.gluuCasaEnabled
 
     - name: oxauth-key-rotation
       condition: global.oxauth-key-rotation.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: cr-rotate
-      version: 1.8.38
+      version: 1.8.39
       condition: global.cr-rotate.enabled
 
     - name: oxd-server
       condition: global.oxd-server.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: persistence
       condition: global.persistence.enabled
-      version: 1.8.38
+      version: 1.8.39
 
     - name: gluu-istio-ingress
       condition: global.istio.ingress
-      version: 1.8.38
+      version: 1.8.39
 
     - name: gluu-alb-ingress
       condition: global.alb.ingress
-      version: 1.8.38
+      version: 1.8.39
