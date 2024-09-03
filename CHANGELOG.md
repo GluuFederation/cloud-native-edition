@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.39](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.38...v1.8.39) (2024-09-03)
+
+
+### Features
+
+* change readiness and liveness checks to use script instead of http call ([#656](https://github.com/GluuFederation/cloud-native-edition/issues/656)) ([3b61542](https://github.com/GluuFederation/cloud-native-edition/commit/3b61542d9d8b2e6ba666a6b16b0b3acd86714a7e))
+* **oxauth-key-rotation:** add schedule property ([#654](https://github.com/GluuFederation/cloud-native-edition/issues/654)) ([87fedbc](https://github.com/GluuFederation/cloud-native-edition/commit/87fedbc7dfaf6b0612dc82db348b9b7ab776285e))
+
+
+### Bug Fixes
+
+* update oxtrust and oxpasspoort image version to 4.5.5-2 ([#660](https://github.com/GluuFederation/cloud-native-edition/issues/660)) ([0b9a639](https://github.com/GluuFederation/cloud-native-edition/commit/0b9a6397859d1c90b034cd63b55c42f8f544b141))
+
 ## [1.8.38](https://github.com/GluuFederation/cloud-native-edition/compare/v1.8.37...v1.8.38) (2024-08-22)
 
 
