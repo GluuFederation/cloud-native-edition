@@ -3,7 +3,7 @@
     "CASA_IMAGE_NAME": "gluufederation/casa",
     "CASA_IMAGE_TAG": "4.5.5-1",
     "FIDO2_IMAGE_NAME": "gluufederation/fido2",
-    "FIDO2_IMAGE_TAG": "4.5.5-1",
+    "FIDO2_IMAGE_TAG": "4.5.5-2",
     "SCIM_IMAGE_NAME": "gluufederation/scim",
     "SCIM_IMAGE_TAG": "4.5.5-1",
     "CONFIG_IMAGE_NAME": "gluufederation/config-init",
